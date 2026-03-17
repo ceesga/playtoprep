@@ -1270,23 +1270,26 @@ function renderStatusBars() {
 
 function renderSceneVisual(scene) {
   // Update page background per scene
-  const isSupermarkt = scene.id === 'scene_6b';
+  const isSupermarkt   = scene.id === 'scene_6b';
+  const isBrandendeAuto = scene.id === 'scene_13';
   document.body.style.backgroundImage = isSupermarkt
     ? "url('supermarkt.jpg')"
-    : "url('winter_huis.jpg')";
+    : isBrandendeAuto
+      ? "url('brandende_auto.jpg')"
+      : "url('winter_huis.jpg')";
 
   // Brightness overlay based on time of day (only for outdoor/winter background)
   const darkness = document.getElementById('bg-darkness');
-  if (darkness && !isSupermarkt) {
+  if (darkness && !isSupermarkt && !isBrandendeAuto) {
     const [h] = (scene.time || '12:00').split(':').map(Number);
     let bg, opacity;
-    if (h >= 22 || h < 6)      { bg = '#000'; opacity = 0.78; } // nacht — zeer donker
-    else if (h < 9 || h >= 18) { bg = '#000'; opacity = 0.50; } // ochtend/avond — donker
+    if (h >= 22 || h < 6)      { bg = '#000'; opacity = 0.88; } // nacht — bijna zwart
+    else if (h < 9 || h >= 18) { bg = '#000'; opacity = 0.68; } // ochtend/avond — donker
     else                        { bg = '#fff'; opacity = 0.18; } // overdag — lichte opheldering
     darkness.style.background = bg;
     darkness.style.opacity = opacity;
   } else if (darkness) {
-    darkness.style.opacity = 0; // supermarkt: geen overlay
+    darkness.style.opacity = 0; // supermarkt / brandende auto: geen overlay
   }
 
   const el = document.getElementById('buiten-content');
