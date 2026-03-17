@@ -860,25 +860,6 @@ const scenes = [
       {text:'😰 Aarzelen — je weet niet wat je kunt doen', consequence:'Je staat in de deuropening en weet niet waar te beginnen. Annie kijkt je smekend aan. Je ziet hoe ernstig het is en dwingt jezelf toch naar binnen te gaan.', stateChange:{helpedNeighbor:true}}
     ]
   },
-  // SCENE 11 — Sewage fails
-  {
-    id: 'scene_11',
-    time: '06:30',
-    date: 'Maandag 1 februari 2027',
-    dayBadge: 'Dag 1',
-    dayBadgeClass: '',
-    channels: {
-      news: [], whatsapp: [], nlalert: null, radio: null
-    },
-    narrative: 'Als je de wc gebruikt en doortrekt, merk je dat het water nauwelijks wegstroomt. Even later borrelt de afvoer van de wasbak en stinkt het naar riool. De waterdruk van de kraan is ook sterk verminderd. In deze wijk zit een rioolgemaal dat het afvalwater wegpompt. Zonder stroom werkt dat niet meer goed.',
-    choices: [
-      {text:'🚫 Waterafvoer afsluiten en zo min mogelijk water gebruiken', consequence:'Je stopt de afvoeropeningen af met doppen of plastiek. Zo voorkom je dat rioolwater terugstroomt in huis. Goed instinct.', stateChange:{handledSewage:true}},
-
-      {text:'🌳 Naar de achtertuin gaan (schep en vuilniszak)', consequence:'Buiten, in de hoek van de tuin. Je graaft een klein gat, doet wat je moet doen en gooit er aarde over. Primitief. Effectief. Minder erg dan je dacht.', stateChange:{comfort:-1}},
-      {text:'🚽 Een noodemmer inrichten als wc', consequence:'Een plastic emmer, een vuilniszak erin, wat desinfectiemiddel bij de hand. Je hebt een nood-wc. Het is niet fijn, maar het werkt zonder water te verspillen.', stateChange:{}},
-      {text:'📵 Nog even wachten, het valt vast mee', consequence:'Je wacht. Het valt niet mee. Dat had je kunnen weten.', stateChange:{comfort:-1}}
-    ]
-  },
   // SCENE MORN_D1 — Day 1 morning, 08:00
   {
     id: 'scene_morn_d1',
@@ -900,6 +881,25 @@ const scenes = [
       {text:'🔭 Door het raam kijken — wat zie je buiten?', consequence:'Een man loopt langzaam met een hond. Twee buren staan bij het tuinhek te praten, wijzen naar de straat. Op de hoek staat iemand lang stil naar zijn telefoon te staren. Niemand rijdt. De stilte is scherp.', stateChange:{}},
       {text:'📻 De radio aanzetten voor nieuws', consequence:'Op de AM-frequentie een rustige stem: "De stroomstoring duurt voort. Plunderingen in meerdere steden. Politie vraagt iedereen binnen te blijven. Herstel niet voor morgennacht verwacht." Morgennacht.', stateChange:{}},
       {text:'🤝 Water delen met buurman Rob', consequence:'Je loopt naar de deur. Rob staat buiten met een lege fles. Zijn gezicht zegt genoeg. Je kijkt naar jouw eigen reserve — ook niet oneindig. Je geeft hem een fles. Het voelt goed én ongemakkelijk tegelijk: elke liter telt nu.', stateChange:{water:-1, knowsNeighbors:true}}
+    ]
+  },
+  // SCENE 11 — Sewage fails
+  {
+    id: 'scene_11',
+    time: '08:30',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 1',
+    dayBadgeClass: '',
+    channels: {
+      news: [], whatsapp: [], nlalert: null, radio: null
+    },
+    narrative: 'Als je de wc gebruikt en doortrekt, merk je dat het water nauwelijks wegstroomt. Even later borrelt de afvoer van de wasbak en stinkt het naar riool. De waterdruk van de kraan is ook sterk verminderd. In deze wijk zit een rioolgemaal dat het afvalwater wegpompt. Zonder stroom werkt dat niet meer goed.',
+    choices: [
+      {text:'🚫 Waterafvoer afsluiten en zo min mogelijk water gebruiken', consequence:'Je stopt de afvoeropeningen af met doppen of plastiek. Zo voorkom je dat rioolwater terugstroomt in huis. Goed instinct.', stateChange:{handledSewage:true}},
+
+      {text:'🌳 Naar de achtertuin gaan (schep en vuilniszak)', consequence:'Buiten, in de hoek van de tuin. Je graaft een klein gat, doet wat je moet doen en gooit er aarde over. Primitief. Effectief. Minder erg dan je dacht.', stateChange:{comfort:-1}},
+      {text:'🚽 Een noodemmer inrichten als wc', consequence:'Een plastic emmer, een vuilniszak erin, wat desinfectiemiddel bij de hand. Je hebt een nood-wc. Het is niet fijn, maar het werkt zonder water te verspillen.', stateChange:{}},
+      {text:'📵 Nog even wachten, het valt vast mee', consequence:'Je wacht. Het valt niet mee. Dat had je kunnen weten.', stateChange:{comfort:-1}}
     ]
   },
   // SCENE WATERTRUCK — Conditional: water or food at 0, Day 1 10:30
@@ -1231,7 +1231,7 @@ const sceneVisuals = {
   scene_8b:      {seed:'candle-blanket-dark-room', label:'Dag 0 · 19:30', title:'De eerste avond'},
   scene_9:       {seed:'night-dark-cold-street',   label:'Dag 1 · 02:30', title:'Inbraak in de buurt'},
   scene_10:      {seed:'emergency-neighbor-help',  label:'Dag 1 · 05:30', title:'Buurvrouw heeft hulp nodig'},
-  scene_11:      {seed:'pipes-water-basement',     label:'Dag 1 · 06:30', title:'Riolering valt uit'},
+  scene_11:      {seed:'pipes-water-basement',     label:'Dag 1 · 08:30', title:'Riolering valt uit'},
   scene_morn_d1:    {seed:'frost-winter-dawn-house',      label:'Dag 1 · 08:00', title:'Eerste crisisochtend'},
   scene_watertruck: {seed:'water-truck-queue-street',     label:'Dag 1 · 10:30', title:'Watertruck bij de supermarkt'},
   scene_12:         {seed:'empty-street-curfew-night',    label:'Dag 1 · 14:30', title:'Avondklok ingesteld'},
