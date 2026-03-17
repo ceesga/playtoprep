@@ -1285,7 +1285,7 @@ function renderSceneVisual(scene) {
     let bg, opacity;
     if (h >= 22 || h < 6)      { bg = '#000'; opacity = 0.88; } // nacht — bijna zwart
     else if (h < 9 || h >= 18) { bg = '#000'; opacity = 0.68; } // ochtend/avond — donker
-    else                        { bg = '#fff'; opacity = 0.18; } // overdag — lichte opheldering
+    else                        { bg = '#000'; opacity = 0; }    // overdag — geen overlay
     darkness.style.background = bg;
     darkness.style.opacity = opacity;
   } else if (darkness) {
