@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Stroomuitval Scenario | PlayToPrep.nl</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',Arial,sans-serif;background:#1a1a1a url('winter_huis.jpg') center/cover no-repeat fixed;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+#bg-darkness{position:fixed;inset:0;background:#000;opacity:.15;pointer-events:none;transition:opacity 1.2s ease;z-index:0}
+.logo{display:none}
+.card{background:#fff;border-radius:0;max-width:680px;width:100%;box-shadow:0 2px 16px rgba(0,0,0,.13);overflow:hidden;position:relative;z-index:1}
+h1{font-family:'Inter',sans-serif;font-size:1.9rem;font-weight:800;line-height:1.2;margin-bottom:12px;color:#1a1a1a}
+h1 span{color:#0066cc}
+h2{font-family:'Inter',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:8px;color:#1a1a1a}
+p.sub{font-family:'Inter',sans-serif;color:#666;line-height:1.7;margin-bottom:22px;font-size:.91rem}
+.phase-label{font-family:'Inter',sans-serif;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#0066cc;margin-bottom:8px}
+.progress-wrap{background:#e8e8e8;border-radius:0;height:3px;margin-bottom:0;overflow:hidden}
+.progress-fill{background:#0066cc;height:100%;transition:width .4s}
+.q-label{font-family:'Inter',sans-serif;font-size:.73rem;color:#888;margin-bottom:14px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.cards.single{grid-template-columns:1fr}
+.choice-card{background:#fafafa;border:1px solid #e0e0e0;border-radius:3px;padding:15px 16px;cursor:pointer;text-align:left;color:#333;font-family:'Inter',sans-serif;font-size:.88rem;line-height:1.5;transition:all .2s;display:flex;align-items:flex-start;gap:10px}
+.choice-card .icon{font-size:1.3rem;flex-shrink:0}
+.choice-card:hover{border-color:#0066cc;background:#f0f5ff}
+.choice-card.selected{border-color:#0066cc;background:#eaf2ff}
+.choice-card.multi:hover,.choice-card.multi.selected{border-color:#0066cc}
+.prep-row{display:flex;align-items:center;justify-content:space-between;background:#fafafa;border:1px solid #e8e8e8;border-radius:3px;padding:13px 15px;margin-bottom:8px;gap:12px}
+.prep-row .prep-text{font-family:'Inter',sans-serif;font-size:.88rem;line-height:1.5;flex:1;color:#333}
+.toggle-wrap{display:flex;gap:6px;flex-shrink:0}
+.tog{background:#fff;border:1px solid #ccc;color:#888;border-radius:3px;padding:6px 14px;font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;transition:all .15s}
+.tog.yes.active{background:#f0fff4;border-color:#2d7a3a;color:#2d7a3a}
+.tog.no.active{background:#eaf2ff;border-color:#cc3333;color:#cc3333}
+.tog:hover{border-color:#0066cc;color:#0066cc}
+.btn{background:#0066cc;color:#fff;border:none;border-radius:3px;padding:12px 28px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:.2px;cursor:pointer;transition:all .2s}
+.btn:hover{background:#0055aa}
+.btn:disabled{opacity:.35;cursor:default}
+.btn-row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.btn-ghost{background:#fff;border:1px solid #ccc;color:#666;border-radius:3px;padding:11px 24px;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-ghost:hover{border-color:#0066cc;color:#0066cc}
+.full{width:100%}
+.screen{display:none}
+.screen.active{display:block}
+#s-intake,#s-prep,#s-start,#s-report{padding:32px}
+
+/* ── SCENARIO SCREEN ── */
+#s-scenario{padding:0}
+.sc-topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 10px 18px;background:#0066cc}
+.sc-topbar-left{display:flex;align-items:center;gap:14px}
+.sc-topbar .time-big{font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:1px;color:#fff;font-variant-numeric:tabular-nums;line-height:1}
+.sc-topbar .date-small{font-family:'Inter',sans-serif;font-size:.72rem;color:rgba(255,255,255,.8);margin-top:3px}
+.sc-topbar .scene-num{font-family:'Inter',sans-serif;font-size:.62rem;color:rgba(255,255,255,.55)}
+.scene-day-badge{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.35);color:#fff;font-family:'Inter',sans-serif;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:3px 9px;border-radius:2px;flex-shrink:0;white-space:nowrap}
+.scene-day-badge.blue{background:rgba(30,80,200,.35);border-color:rgba(120,160,255,.5)}
+.scene-day-badge.green{background:rgba(30,130,60,.35);border-color:rgba(80,200,100,.5)}
+.audio-toggle{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.85);border-radius:3px;padding:5px 12px;font-family:'Inter',sans-serif;font-size:.65rem;font-weight:600;cursor:pointer;transition:all .15s}
+.audio-toggle:hover{background:rgba(0,0,0,.3)}
+.audio-toggle.on{background:rgba(0,0,0,.25);border-color:rgba(255,255,255,.6);color:#fff}
+
+.status-sidebar{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:200;display:none;flex-direction:column;align-items:center;gap:12px;background:rgba(0,42,102,.88);border-radius:8px;padding:14px 10px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.12)}
+.status-sidebar.visible{display:flex}
+.ss-stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+.ss-stat-icon{font-size:1rem;line-height:1}
+.ss-stat-segs{display:flex;flex-direction:column;gap:2px}
+.ss-stat-seg{width:10px;height:11px;border-radius:2px;background:rgba(255,255,255,.13);transition:background .35s}
+.ss-stat-seg.on{background:rgba(255,255,255,.82)}
+.ss-stat-seg.on.warn{background:#fbbf24}
+.ss-stat-seg.on.danger{background:#f87171}
+.ss-stat-label{font-family:'Inter',sans-serif;font-size:.48rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.6px}
+@keyframes blink-alert{0%,100%{opacity:1}50%{opacity:.15}}
+.ss-stat.zero .ss-stat-icon{animation:blink-alert .8s ease-in-out infinite}
+.ss-stat.zero .ss-stat-label{color:#f87171;animation:blink-alert .8s ease-in-out infinite}
+
+.channel-tabs{display:flex;gap:0;margin-bottom:0;border-bottom:2px solid #e8e8e8;background:#fff;padding:0 12px}
+.ch-tab{background:transparent;border:none;color:#888;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;padding:10px 13px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap}
+.ch-tab:hover{color:#0066cc}
+.ch-tab.active{color:#0066cc;border-bottom-color:#0066cc}
+.ch-tab.hidden-tab{display:none}
+@keyframes tabglow{0%,100%{color:#888;border-bottom-color:transparent}50%{color:#002a5c;border-bottom-color:#002a5c;background:#99c2ff}}
+.ch-tab.has-unread{animation:tabglow 1s ease-in-out infinite;border-radius:3px 3px 0 0}
+.ch-tab.active.has-unread{animation:none}
+
+.sv-wrap{position:relative;overflow:hidden;margin-bottom:0;height:200px;background:#ddd;flex-shrink:0}
+.sv-wrap img{width:100%;height:100%;object-fit:cover;display:block;opacity:.95;transition:opacity .6s}
+.sv-grad{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.15) 55%,transparent 100%)}
+.sv-info{position:absolute;bottom:14px;left:18px}
+.sv-label{font-family:'Inter',sans-serif;font-size:.58rem;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:2px;font-weight:600;margin-bottom:3px}
+.sv-title{font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.8)}
+
+.radio-play-btn{background:#fff;border:1px solid #ccc;color:#555;border-radius:3px;padding:9px 16px;font-family:'Inter',sans-serif;font-size:.76rem;font-weight:500;cursor:pointer;margin-top:12px;width:100%;text-align:center;transition:all .2s}
+.radio-play-btn:hover{border-color:#0066cc;color:#0066cc}
+.radio-play-btn.playing{border-color:#2d7a3a;color:#2d7a3a}
+
+.channel-panel{display:none;padding:16px;background:#fff;height:220px;overflow-y:auto}
+.channel-panel.active{display:block}
+
+.nos-header{font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;color:#0066cc;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #0066cc}
+.news-item{border-bottom:1px solid #f0f0f0;padding:10px 0;display:flex;gap:12px}
+.news-item:last-child{border-bottom:none;padding-bottom:0}
+.news-time{font-family:'Inter',sans-serif;font-size:.67rem;color:#aaa;white-space:nowrap;margin-top:3px;min-width:38px}
+.news-content .news-headline{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:700;line-height:1.35;margin-bottom:4px;color:#1a1a1a}
+.news-content .news-body{font-family:'Inter',sans-serif;font-size:.77rem;color:#666;line-height:1.55}
+
+.wa-bg{background:#f0f0f0;margin:-16px;padding:16px}
+.wa-msg{margin-bottom:10px;display:flex;flex-direction:column}
+.wa-msg.incoming{align-items:flex-start}
+.wa-msg.outgoing{align-items:flex-end}
+.wa-bubble{max-width:82%;padding:9px 14px;border-radius:12px;font-family:'Inter',sans-serif;font-size:.83rem;line-height:1.6;color:#1a1a1a}
+.wa-msg.incoming .wa-bubble{background:#fff;border:1px solid #e0e0e0}
+.wa-msg.outgoing .wa-bubble{background:#dcf8c6}
+.wa-from{font-family:'Inter',sans-serif;font-size:.66rem;color:#0066cc;font-weight:700;margin-bottom:4px;padding:0 2px;letter-spacing:.3px;text-transform:uppercase}
+.wa-time{font-family:'Inter',sans-serif;font-size:.62rem;color:#aaa;margin-top:3px;padding:0 2px}
+
+.alert-card{background:#f0f5ff;border:1px solid #cce0ff;border-left:3px solid #0066cc;border-radius:3px;padding:14px 16px;margin-bottom:10px}
+.alert-card .alert-header{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;color:#0066cc}
+.alert-card .alert-body{font-family:'Inter',sans-serif;font-size:.84rem;line-height:1.65;white-space:pre-line;color:#333}
+.alert-card .alert-time{font-size:.66rem;margin-top:8px;opacity:.6}
+
+.radio-panel-bg{background:#f8f8f8;border-radius:3px;padding:16px;border:1px solid #e0e0e0;margin:-16px;padding:16px}
+.radio-display{background:#111d11;border-radius:3px;padding:10px 14px;font-family:'Courier New',monospace;color:#3aad60;font-size:.77rem;margin-bottom:10px;min-height:40px;border:1px solid #1e3a1e}
+.radio-display::before{content:'📻 Radio — ';color:#22c55e;font-weight:700}
+.radio-knobs{display:flex;gap:8px;margin-top:8px}
+.radio-knob{background:#fff;border:1px solid #ccc;border-radius:2px;padding:4px 10px;font-family:'Inter',sans-serif;font-size:.65rem;color:#888;letter-spacing:.6px;text-transform:uppercase}
+.radio-text{font-family:'Inter',sans-serif;font-size:.84rem;line-height:1.85;color:#444;white-space:pre-line}
+
+#nl-alert-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+#nl-alert-overlay.show{display:flex}
+@keyframes alertslide{from{transform:translateY(-18px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.nl-alert-box{background:#f2f2f7;border-radius:14px;max-width:360px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.38);overflow:hidden;font-family:-apple-system,'Inter',sans-serif;animation:alertslide .25s ease-out}
+.nl-alert-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 11px;border-bottom:1px solid rgba(0,0,0,.1)}
+.nl-alert-header-title{font-size:.93rem;font-weight:700;color:#1c1c1e;letter-spacing:-.01em}
+.nl-alert-header-ago{font-size:.78rem;color:#8e8e93}
+.nl-alert-body{display:flex;gap:13px;padding:14px 16px 16px;background:#fff}
+.nl-alert-icon{font-size:1.6rem;flex-shrink:0;margin-top:1px}
+.nl-alert-text{font-size:.86rem;line-height:1.55;color:#1c1c1e;white-space:pre-line}
+.nl-alert-text b{font-weight:600}
+.nl-alert-footer{border-top:1px solid rgba(0,0,0,.1)}
+.nl-alert-close{display:block;width:100%;background:transparent;border:none;color:#007aff;font-size:.95rem;font-weight:400;padding:13px;cursor:pointer;text-align:center;font-family:-apple-system,'Inter',sans-serif;transition:background .1s}
+.nl-alert-close:hover{background:rgba(0,0,0,.04)}
+
+.scenario-zones{display:flex;flex-direction:column;gap:0}
+.zone-top{background:#fff;overflow:hidden;border-bottom:1px solid #e8e8e8}
+.zone-bottom{background:#fafafa;padding:20px 24px 26px}
+.zone-label{font-family:'Inter',sans-serif;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#bbb;margin-bottom:10px}
+.narrative-text{font-family:'Inter',sans-serif;font-size:.93rem;line-height:1.8;color:#333}
+.narrative-text b{color:#0066cc;font-weight:700}
+
+.choice-btn{background:#fff;border:1px solid #e0e0e0;border-radius:3px;padding:14px 18px;color:#333;font-family:'Inter',sans-serif;font-size:.88rem;line-height:1.5;cursor:pointer;text-align:left;transition:all .2s;width:100%;margin-bottom:8px;position:relative}
+.choice-btn:hover:not(:disabled){border-color:#0066cc;background:#f0f5ff;padding-left:22px}
+.choice-btn:disabled{cursor:default;opacity:.65}
+.choice-btn.picked{border-color:#0066cc;background:#eaf2ff;color:#0066cc;font-weight:600;opacity:1}
+.consequence-box{background:#fff;border:1px solid #e8e8e8;border-left:3px solid #0066cc;border-radius:3px;padding:14px 18px;margin-top:4px;margin-bottom:10px;line-height:1.85;font-family:'Inter',sans-serif;font-size:.87rem;color:#555;display:none}
+.consequence-box.show{display:block}
+
+.scene-indicator{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.scene-num{font-family:'Inter',sans-serif;font-size:.66rem;color:#aaa}
+
+.report-section-title{font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#0066cc;margin:24px 0 12px;padding-bottom:7px;border-bottom:2px solid #f0f0f0}
+.tip-card{background:#fafafa;border-radius:3px;padding:14px 16px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;border-left:3px solid #0066cc}
+.tip-card .tip-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.tip-card .tip-text{font-family:'Inter',sans-serif;font-size:.87rem;line-height:1.6;color:#333}
+.tip-card .tip-text b{color:#1a1a1a;font-weight:700}
+.tip-card.good{border-left-color:#2d7a3a}
+.tip-card.bad{border-left-color:#cc3333}
+.tip-card.neutral{border-left-color:#999}
+.timeline-entry{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start}
+.tl-time{font-family:'Inter',sans-serif;font-size:.68rem;color:#aaa;min-width:72px;flex-shrink:0;margin-top:2px}
+.tl-text{font-family:'Inter',sans-serif;font-size:.84rem;line-height:1.55;color:#333}
+.tl-text b{color:#1a1a1a;font-weight:700}
+.status-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.status-badge{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:3px;font-family:'Inter',sans-serif;font-size:.74rem;font-weight:600}
+.status-badge.has{background:#f0fff4;border:1px solid #2d7a3a;color:#2d7a3a}
+.status-badge.missing{background:#eaf2ff;border:1px solid #cc3333;color:#cc3333}
+
+@media(max-width:480px){.cards{grid-template-columns:1fr}#s-intake,#s-prep,#s-start,#s-report{padding:20px 16px}h1{font-size:1.6rem}.ch-tab{font-size:.62rem;padding:8px 9px}.sc-topbar .time-big{font-size:1.2rem}}
+</style>
+</head>
+<body>
+<div id="bg-darkness"></div>
+<div class="card">
+
+<!-- START SCREEN -->
+<div id="s-start" class="screen active">
+  <div class="phase-label">Uitgebreid Noodscenario</div>
+  <h1>Heel Europa <span>zonder stroom</span></h1>
+  <p class="sub">Een immersief scenario dat zich ontvouwt over enkele dagen. Jij maakt keuzes — realistische, herkenbare keuzes — die bepalen hoe jij de stroomstoring doorstaat. Aan het einde: een persoonlijk rapport.</p>
+  <div class="cards">
+    <div class="choice-card"><div class="icon">📋</div><div><b>Stap 1</b><br/>Jouw thuissituatie</div></div>
+    <div class="choice-card"><div class="icon">🎒</div><div><b>Stap 2</b><br/>Jouw voorbereiding</div></div>
+    <div class="choice-card"><div class="icon">⚡</div><div><b>Stap 3</b><br/>2,5 dagen scenario</div></div>
+    <div class="choice-card"><div class="icon">📊</div><div><b>Stap 4</b><br/>Persoonlijk rapport</div></div>
+  </div>
+  <p class="sub" style="margin-bottom:14px">Het scenario speelt zich af in <b style="color:#003d7a">de winter van 2027</b>. Jij neemt de rol aan van jezelf. Veel van de keuzes zijn niet goed of fout — maar ze hebben wel consequenties.</p>
+  <button class="btn full" onclick="gotoIntake()">Begin →</button>
+</div>
+
+<!-- INTAKE SCREEN -->
+<div id="s-intake" class="screen">
+  <div class="progress-wrap"><div class="progress-fill" id="intake-prog"></div></div>
+  <div class="phase-label">Stap 1 — Thuissituatie</div>
+  <div id="intake-body"></div>
+  <div class="btn-row"><button class="btn" id="intake-next" onclick="intakeNext()" disabled>Volgende →</button></div>
+</div>
+
+<!-- PREP SCREEN -->
+<div id="s-prep" class="screen">
+  <div class="progress-wrap"><div class="progress-fill" id="prep-prog"></div></div>
+  <div class="phase-label">Stap 2 — Jouw voorbereiding</div>
+  <h2 style="margin-bottom:6px">Wat heb je al in huis</h2>
+  <p class="sub">Beantwoord de vragen eerlijk — zo wordt het rapport nauwkeuriger.</p>
+  <p style="font-size:.82rem;font-weight:700;color:#555;margin-bottom:10px;margin-top:-8px">Heb je in huis:</p>
+  <div id="prep-body"></div>
+  <div class="btn-row"><button class="btn" onclick="startScenario()">Naar het scenario →</button></div>
+</div>
+
+<!-- SCENARIO SCREEN -->
+<div id="s-scenario" class="screen">
+  <div class="progress-wrap"><div class="progress-fill" id="sc-prog"></div></div>
+  <!-- Topbar: dag, tijd, scenenummer + audio toggle -->
+  <div class="sc-topbar">
+    <div class="sc-topbar-left">
+      <div class="scene-day-badge" id="day-badge">Dag -7</div>
+      <div>
+        <div class="time-big" id="sc-time">12:00</div>
+        <div class="date-small" id="sc-date">Zondag 24 januari 2027</div>
+      </div>
+      <div class="scene-num" id="scene-num-label">Scene 1 / 16</div>
+    </div>
+    <button class="audio-toggle on" id="audio-toggle" onclick="toggleAudio()">🔊 Geluid Aan</button>
+  </div>
+  <div class="scenario-zones">
+    <!-- TOP ZONE: channels -->
+    <div class="zone-top">
+      <div class="channel-tabs">
+        <button class="ch-tab active" id="tab-buiten" onclick="switchTab('buiten')">📖 Wat je ervaart</button>
+        <button class="ch-tab" id="tab-news" onclick="switchTab('news')">📰 Nieuws</button>
+        <button class="ch-tab" id="tab-whatsapp" onclick="switchTab('whatsapp')">💬 Berichten</button>
+        <button class="ch-tab" id="tab-alerts" onclick="switchTab('alerts')">🚨 Meldingen</button>
+        <button class="ch-tab hidden-tab" id="radio-tab" onclick="switchTab('radio')">📻 Radio</button>
+      </div>
+      <div id="panel-buiten" class="channel-panel active">
+        <div class="narrative-text" id="sc-narrative"></div>
+      </div>
+      <div id="panel-news" class="channel-panel">
+        <div class="nos-header">Nieuws — Liveblog</div>
+        <div id="news-content"></div>
+      </div>
+      <div id="panel-whatsapp" class="channel-panel">
+        <div class="wa-bg">
+          <div id="wa-content"></div>
+        </div>
+      </div>
+      <div id="panel-alerts" class="channel-panel">
+        <div id="alerts-content"><p style="color:#aaa;font-size:.85rem">Nog geen meldingen ontvangen.</p></div>
+      </div>
+      <div id="panel-radio" class="channel-panel">
+        <div class="radio-panel-bg" id="radio-bg">
+          <div class="radio-display" id="radio-freq">88.6 MHz — Zoeken...</div>
+          <div id="radio-content" class="radio-text" style="margin-top:10px;color:#aaa;font-size:.85rem">Draai aan de knop om een zender te vinden...</div>
+          <div class="radio-knobs">
+            <div class="radio-knob">AM/FM</div>
+            <div class="radio-knob">VOL</div>
+            <div class="radio-knob">SCAN</div>
+          </div>
+          <button class="radio-play-btn" id="radio-play-btn" onclick="speakRadio()">▶ Speel radiobericht</button>
+        </div>
+      </div>
+    </div>
+    <!-- BOTTOM ZONE: choices -->
+    <div class="zone-bottom">
+      <div id="sc-choices-wrap">
+        <div id="sc-choices"></div>
+        <div class="consequence-box" id="sc-consequence"></div>
+        <div id="sc-afterword" style="display:none;margin-top:4px"></div>
+        <div id="sc-next-row" style="margin-top:12px">
+          <button class="btn-ghost" id="btn-back" onclick="goBack()" style="display:none">← Terug</button>
+          <button class="btn" onclick="advanceScene()">Verder →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- REPORT SCREEN -->
+<div id="s-report" class="screen">
+  <div class="phase-label">Stap 4 — Jouw rapport</div>
+  <h2 style="margin-bottom:8px">Jouw scenario — hoe liep het?</h2>
+  <p class="sub" id="rep-intro"></p>
+  <div class="report-section-title">Tijdlijn van jouw keuzes</div>
+  <div id="rep-timeline"></div>
+  <div class="report-section-title">Jouw crisisstatus</div>
+  <div id="rep-status"></div>
+  <div class="report-section-title">Dit deed je goed</div>
+  <div id="rep-good"></div>
+  <div class="report-section-title">Dit kun je verbeteren</div>
+  <div id="rep-improve"></div>
+  <div class="report-section-title">Persoonlijke tips voor jouw situatie</div>
+  <div id="rep-personal"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="location.reload()">Opnieuw spelen</button>
+  </div>
+</div>
+
+</div><!-- end .card -->
+
+<!-- STATUS SIDEBAR -->
+<div class="status-sidebar" id="status-sidebar">
+  <div class="ss-stat" id="ss-water">
+    <span class="ss-stat-icon">💧</span>
+    <div class="ss-stat-segs" id="stat-water"><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div></div>
+    <span class="ss-stat-label">Water</span>
+  </div>
+  <div class="ss-stat" id="ss-food">
+    <span class="ss-stat-icon">🍞</span>
+    <div class="ss-stat-segs" id="stat-food"><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div></div>
+    <span class="ss-stat-label">Voedsel</span>
+  </div>
+  <div class="ss-stat" id="ss-comfort">
+    <span class="ss-stat-icon">🧣</span>
+    <div class="ss-stat-segs" id="stat-comfort"><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div></div>
+    <span class="ss-stat-label">Comfort</span>
+  </div>
+  <div class="ss-stat" id="ss-health">
+    <span class="ss-stat-icon">❤️</span>
+    <div class="ss-stat-segs" id="stat-health"><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div><div class="ss-stat-seg"></div></div>
+    <span class="ss-stat-label">Gezondheid</span>
+  </div>
+</div>
+
+<!-- NL-ALERT OVERLAY -->
+<div id="nl-alert-overlay">
+  <div class="nl-alert-box">
+    <div class="nl-alert-header">
+      <span class="nl-alert-header-title">Emergency Alert</span>
+      <span class="nl-alert-header-ago">zojuist</span>
+    </div>
+    <div class="nl-alert-body">
+      <span class="nl-alert-icon">⚠️</span>
+      <div class="nl-alert-text" id="overlay-text"></div>
+    </div>
+    <div class="nl-alert-footer">
+      <button class="nl-alert-close" onclick="closeAlert()">Sluiten</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIGURABLE CONSTANTS ───────────────────────────────────────────────────
+const SCENARIO_DATE = '31 januari 2027';
+const SCENARIO_DAY = 'Zondag';
+
+// ─── PROFILE ──────────────────────────────────────────────────────────────────
+const profile = {
+  houseType:'', members:1,
+  hasChildren:false, hasElderly:false, hasPets:false, hasMedNeeds:false,
+  location:[], hasCar:false, region:'',
+  hasKit:false, hasWater:false, hasFirstAid:false, hasFlashlight:false,
+  hasRadio:false, hasCash:false, hasDocuments:false,
+  hasPowerbank:false, hasMeds:false,
+  hasGasStove:false
+};
+
+// ─── GAME STATE ───────────────────────────────────────────────────────────────
+const state = {
+  awarenessLevel: 0,
+  hasCash: false,
+  hasExtraFood: false,
+  wentToSupermarket: null,
+  supermarketItems: [],
+  hasWater: false,
+  hasFlashlight: false,
+  houseLocked: false,
+  helpedNeighbor: false,
+  contactedAnnie: false,
+  handledSewage: false,
+  wentToFoodDist: false,
+  hasCarRadio: false,
+  hasCampingStove: false,
+  knowsNeighbors: false,
+  water: 3,
+  food: 3,
+  comfort: 5,
+  health: 5
+};
+
+// Scene decay — automatic stat reductions when a scene is entered
+// Water & food: only once per day (at morning scenes)
+// Comfort: when house gets colder
+// Health: NOT automatic — only via explicit bad choices
+const sceneDecay = {
+  scene_8b:      {comfort: -1},
+  scene_9:       {comfort: -1},
+  scene_morn_d1: {water: -1, food: -1, comfort: 1},
+  scene_11:      {},
+  scene_morn_d2: {water: -1, food: -1, comfort: 1},
+  scene_13:      {comfort: -1},
+
+  scene_morn_d3: {water: -1, food: -1, comfort: 1},
+  scene_16:      {comfort: -1}
+};
+
+// ─── PERSISTENT CHANNEL CONTENT ───────────────────────────────────────────────
+const channels = {
+  news: [],
+  whatsapp: [],
+  alerts: [],
+  radio: []
+};
+
+// History of choices for report
+const choiceHistory = [];
+
+// ─── INTAKE ───────────────────────────────────────────────────────────────────
+let intakeStep = 0;
+let intakeAnswers = {};
+
+const intakeQs = [
+  {id:'houseType', q:'In wat voor woning woon je?', multi:false, opts:[
+    {icon:'🏢', label:'Appartement', val:'apartment'},
+    {icon:'🏠', label:'Rijtjeshuis', val:'terraced'},
+    {icon:'🏡', label:'Vrijstaande woning', val:'detached'},
+    {icon:'🌾', label:'Boerderij / buitengebied', val:'rural'}]},
+  {id:'members', q:'Uit hoeveel personen bestaat jouw huishouden?', multi:false, opts:[
+    {icon:'👤', label:'1 persoon', val:'1'},
+    {icon:'👥', label:'2 personen', val:'2'},
+    {icon:'👨‍👩‍👦', label:'3 of 4 personen', val:'3'},
+    {icon:'👨‍👩‍👧‍👦', label:'5 of meer', val:'5'}]},
+  {id:'special', q:'Zijn er bijzondere bewoners in het huishouden?', multi:true, opts:[
+    {icon:'👶', label:'Kinderen (onder 12)', val:'children'},
+    {icon:'👴', label:'Ouderen (65+)', val:'elderly'},
+    {icon:'🐕', label:'Huisdieren', val:'pets'},
+    {icon:'💊', label:'Chronisch zieken / medicijngebruikers', val:'meds'},
+    {icon:'✅', label:'Geen van bovenstaande', val:'none'}]},
+  {id:'location', q:'Hoe zou jij de omgeving van jouw woning omschrijven?', multi:true, opts:[
+    {icon:'🌊', label:'Nabij water (rivier, meer, zee)', val:'water'},
+    {icon:'🌳', label:'Nabij bos of natuur', val:'forest'},
+    {icon:'🏭', label:'Nabij industrie of strategische objecten', val:'industrial'},
+    {icon:'🏙️', label:'Stedelijk / stadscentrum', val:'city'},
+    {icon:'🛤️', label:'Landelijk / buitengebied', val:'rural_area'},
+    {icon:'✈️', label:'Nabij vliegveld of snelweg', val:'transport'}]},
+  {id:'region', q:'In welk deel van Nederland woon je?', multi:false, opts:[
+    {icon:'🌊', label:'Laagland / polder (Holland, Zeeland, Friesland)', val:'lowland'},
+    {icon:'🏞️', label:'Rivierengebied (Gelderland, Utrecht, Brabant)', val:'rivers'},
+    {icon:'🌿', label:'Hogere gronden (Veluwe, Twente, Limburg)', val:'highlands'},
+    {icon:'🏢', label:'Randstad (Amsterdam, Rotterdam, Den Haag, Utrecht)', val:'randstad'}]},
+  {id:'car', q:'Beschik je over een auto of ander vervoermiddel?', multi:true, opts:[
+    {icon:'🚗', label:'Ja, een auto', val:'car'},
+    {icon:'🛵', label:'Motor of scooter', val:'motor'},
+    {icon:'🚲', label:'Alleen fiets', val:'bike'},
+    {icon:'🚶', label:'Geen eigen vervoer', val:'none'}]}
+];
+
+function gotoIntake() {
+  intakeStep = 0;
+  renderIntake();
+  show('s-intake');
+}
+function renderIntake() {
+  const q = intakeQs[intakeStep];
+  document.getElementById('intake-prog').style.width = ((intakeStep / intakeQs.length) * 100) + '%';
+  document.getElementById('intake-next').disabled = true;
+  intakeAnswers[q.id] = q.multi ? [] : null;
+  let html = `<h2>${q.q}</h2>${q.multi ? '<p class="sub" style="margin-bottom:14px">Meerdere antwoorden mogelijk.</p>' : '<p class="sub" style="margin-bottom:14px">&nbsp;</p>'}`;
+  html += `<div class="cards${q.opts.length <= 2 ? ' single' : ''}">`;
+  q.opts.forEach(o => {
+    html += `<button class="choice-card${q.multi ? ' multi' : ''}" data-val="${o.val}" onclick="intakePick(this,'${q.id}',${q.multi},'${o.val}')">
+      <div class="icon">${o.icon}</div><div>${o.label}</div></button>`;
+  });
+  html += '</div>';
+  document.getElementById('intake-body').innerHTML = html;
+}
+function intakePick(el, id, multi, val) {
+  if (!multi) {
+    document.querySelectorAll('#intake-body .choice-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    intakeAnswers[id] = val;
+    document.getElementById('intake-next').disabled = false;
+  } else {
+    if (val === 'none') {
+      document.querySelectorAll('#intake-body .choice-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      intakeAnswers[id] = ['none'];
+    } else {
+      const nb = document.querySelector('#intake-body .choice-card[data-val="none"]');
+      if (nb) nb.classList.remove('selected');
+      el.classList.toggle('selected');
+      const arr = intakeAnswers[id].filter(v => v !== 'none');
+      const i = arr.indexOf(val);
+      if (i > -1) arr.splice(i, 1); else arr.push(val);
+      intakeAnswers[id] = arr;
+    }
+    document.getElementById('intake-next').disabled = intakeAnswers[id].length === 0;
+  }
+}
+function intakeNext() {
+  const a = intakeAnswers;
+  if (intakeStep === 0) profile.houseType = a.houseType;
+  if (intakeStep === 1) profile.members = {1:1, 2:2, 3:3, 5:5}[a.members] || 1;
+  if (intakeStep === 2) {
+    profile.hasChildren = a.special.includes('children');
+    profile.hasElderly = a.special.includes('elderly');
+    profile.hasPets = a.special.includes('pets');
+    profile.hasMedNeeds = a.special.includes('meds');
+  }
+  if (intakeStep === 3) profile.location = a.location || [];
+  if (intakeStep === 4) profile.region = a.region;
+  if (intakeStep === 5) profile.hasCar = (a.car || []).some(v => ['car','motor'].includes(v));
+  intakeStep++;
+  if (intakeStep >= intakeQs.length) gotoPrep(); else renderIntake();
+}
+
+// ─── PREP ─────────────────────────────────────────────────────────────────────
+const prepQs = [
+  {id:'hasKit', q:'Een noodpakket met eten, water en basisbenodigdheden'},
+  {id:'hasWater', q:'Minimaal 9 liter drinkwater per persoon'},
+  {id:'hasFirstAid', q:'Een goed gevulde EHBO-doos'},
+  {id:'hasFlashlight', q:'Een zaklamp'},
+  {id:'hasRadio', q:'Een radio op batterijen'},
+  {id:'hasCash', q:'Contant geld voor noodgevallen'},
+  {id:'hasDocuments', q:'Kopieën van belangrijke documenten'},
+  {id:'hasPowerbank', q:'Een opgeladen powerbank'},
+  {id:'hasGasStove', q:'Een gasfornuis of gaskookplaat'},
+  {id:'hasMeds', q:'Medicijnen voor meerdere dagen', onlyIf:'hasMedNeeds'}
+];
+function gotoPrep() {
+  renderPrep();
+  show('s-prep');
+}
+function renderPrep() {
+  document.getElementById('prep-prog').style.width = '50%';
+  document.getElementById('prep-body').innerHTML = prepQs
+    .filter(q => !q.onlyIf || profile[q.onlyIf])
+    .map(q => `<div class="prep-row"><div class="prep-text">${q.q}</div>
+      <div class="toggle-wrap">
+        <button class="tog yes" id="y_${q.id}" onclick="setToggle('${q.id}',true)">Ja</button>
+        <button class="tog no active" id="n_${q.id}" onclick="setToggle('${q.id}',false)">Nee</button>
+      </div></div>`).join('');
+}
+function setToggle(id, val) {
+  profile[id] = val;
+  document.getElementById('y_' + id).classList.toggle('active', val);
+  document.getElementById('n_' + id).classList.toggle('active', !val);
+}
+
+// ─── SCENARIO DATA ─────────────────────────────────────────────────────────────
+const scenes = [
+  // SCENE 1 — Day -7
+  {
+    id: 'scene_1',
+    time: '12:00',
+    date: 'Zondag 24 januari 2027',
+    dayBadge: 'Dag -7',
+    dayBadgeClass: 'blue',
+    channels: {
+      news: [
+        {time:'10:31', headline:'Energie-experts: Europese omvormers zijn kwetsbare schakel in stroomnet', body:'Een internationaal consortium van energie-experts waarschuwt dat verouderde omvormers in het Europese hoogspanningsnet een risico vormen. Een storing bij één centrale kan in theorie een cascade veroorzaken.'},
+        {time:'11:02', headline:'Kabinet verhoogt budget voor cyberveiligheid vitale infrastructuur', body:'Het kabinet trekt 340 miljoen extra uit voor de beveiliging van energiecentrales, waterwerken en communicatienetwerken.'}
+      ],
+      whatsapp: [],
+      nlalert: null,
+      radio: null
+    },
+    narrative: 'Je leest het nieuws tijdens je lunchpauze. De berichten over kwetsbare energienetwerken vallen je op, maar je hebt het druk. Buiten waait een koude wind.',
+    choices: [
+      {text:'💡 Ik lees het artikel over de kwetsbare omvormers door en sla het op', consequence:'Je leest het technische artikel aandachtig door. Experts leggen uit hoe een storing bij één centrale via het gekoppelde Europese net kan doorwerken. Je vergeet het daarna grotendeels — maar iets in je achterhoofd onthoudt het.', stateChange:{awarenessLevel:1}},
+      {text:'📱 Ik scan de koppen maar lees verder niets', consequence:'Je ziet de berichten vluchtig voorbijkomen. Niets bijzonders.', stateChange:{}},
+{text:'🙈 Ik scroll verder — het is nieuws dat er altijd is', consequence:'Je scrollt door naar sport en entertainment. Altijd dat gezeur over energie.', stateChange:{}}
+    ]
+  },
+  // SCENE 2 — Day -1
+  {
+    id: 'scene_2',
+    time: '12:00',
+    date: 'Zaterdag 30 januari 2027',
+    dayBadge: 'Dag -1',
+    dayBadgeClass: 'blue',
+    channels: {
+      news: [
+        {time:'11:47', headline:'Sabotage aan stroomkabels op de Noordzeebodem', body:'Onderzoekers van de NCTV hebben sporen gevonden van opzettelijke beschadiging aan twee hoogspanningskabels op de Noordzee. Het is nog onduidelijk wie verantwoordelijk is. De kabels verbinden het Nederlandse net met Noorwegen en het Verenigd Koninkrijk.'},
+        {time:'12:00', headline:'Minister: \'Geen acuut gevaar voor stroomvoorziening\'', body:'De minister van Economische Zaken stelt dat de beschadigde kabels niet direct leiden tot problemen met de stroomlevering. Nederland heeft voldoende redundantie in het net.'}
+      ],
+      whatsapp: [
+        {from:'Buurman Rob', msg:'Hé, heb je dat nieuws over die kabels in de Noordzee gelezen? Beetje eng hè', time:'12:15', outgoing:false}
+      ],
+      nlalert: null,
+      radio: null
+    },
+    narrative: 'Het nieuws over de kabelsabotage is groot. Op je werk wordt er even over gepraat, maar de minister stelt gerust: geen direct gevaar.',
+    choices: [
+      {text:'💵 Ik pin even €100 contant geld, voor de zekerheid', consequence:'Je haalt €100 op uit de automaat. Achteraf een verstandige beslissing — maar dat weet je nu nog niet.', stateChange:{hasCash:true}},
+      {text:'🔦 Ik pak de zaklamp eruit en check of de batterijen het nog doen', consequence:'Je vindt de zaklamp in de keukenkast. De batterijen zijn bijna leeg. Je legt de zaklamp klaar maar vergeet nieuwe batterijen te kopen.', stateChange:{hasFlashlight:true}},
+      {text:'💬 Ik stuur Rob terug: "Ja, beetje raar. Maar de minister zegt dat het goed zit"', consequence:'Rob antwoordt: "Ja dat zal wel. Okay, ff kijken. Fijne avond!" Je gaat verder met je dag.', stateChange:{}},
+      {text:'🙈 Ik maak me geen zorgen — de minister heeft het al gezegd', consequence:'Je sluit het nieuwsartikel. Die ministers weten wat ze doen.', stateChange:{}}
+    ]
+  },
+  // SCENE MORN_D0 — Day 0 morning, 08:00 (before outage)
+  {
+    id: 'scene_morn_d0',
+    time: '08:00',
+    date: 'Zondag 31 januari 2027',
+    dayBadge: 'Dag 0',
+    dayBadgeClass: '',
+    channels: { news: [], whatsapp: [], nlalert: null, radio: null },
+    narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#22c55e">18°C</b> &nbsp;|&nbsp; 🌨️ Buiten: <b style="color:#93c5fd">−1°C</b> </div>Zondag ochtend. De CV tikt, de koelkast zoemt, de waterkoker fluit. Gewone geluiden. Buiten ligt een dun laagje rijp op de daken. Bewolkt, stil. Je scrolt even door het nieuws bij je koffie. Niets bijzonders. Een gewone zondag — het voelt zo, tenminste.',
+    choices: [
+      {text:'☕ Koffie zetten en rustig ontbijten', consequence:'Je zet koffie. Warm water, verse geur, de krant. Normaal. Je weet nog niet dat dit de laatste gewone ochtend is voor een tijdje.', stateChange:{}},
+      {text:'🧺 Een was draaien — zondag is wasdag', consequence:'Je gooit de was in de machine. Terwijl hij draait kijk je even buiten. Alles normaal. Ergens achter in je hoofd: die berichten van gisteren over de kabels...', stateChange:{}},
+      {text:'🛌 Uitslapen — het is zondag', consequence:'Je besluit bij te slapen. Je hebt het verdiend. Even later — om 11:30 — word je gewekt door iets raars: de koelkast valt stil.', stateChange:{}}
+    ]
+  },
+  // SCENE 3 — First outage, 11:30
+  {
+    id: 'scene_3',
+    time: '11:30',
+    date: 'Zondag 31 januari 2027',
+    dayBadge: 'Dag 0',
+    dayBadgeClass: '',
+    channels: {
+      news: [
+        {time:'11:30', headline:'Stroomstoring gemeld in meerdere provincies', body:'Netbeheerder Liander bevestigt een grote stroomstoring die meerdere provincies treft. De oorzaak wordt onderzocht.'}
+      ],
+      whatsapp: [
+        {from:'Werk - Teams', msg:'Heeft iedereen last van de stroom? Servers zijn down.', time:'11:32', outgoing:false},
+        {from:'Thuis (partner/huisgenoot)', msg:'De stroom is uitgevallen hier. Jij ook? CV doet het niet meer', time:'11:33', outgoing:false}
+      ],
+      nlalert: null,
+      radio: null
+    },
+    narrative: 'Midden in de ochtend valt plotseling de stroom uit. Alles wordt stil — de koelkast, de verwarming, het wifi-lampje. Alleen je telefoon werkt nog, op mobiel bereik. Buiten zie je dat ook de buren naar buiten komen kijken. De koelkast valt stil. De CV stopt met tikken. De stilte is bijna schokkend — alsof iemand het geluid van de wereld heeft uitgezet.',
+    choices: [
+      {text:'📱 Nieuws checken op mijn telefoon — wat is er aan de hand?', consequence:'Je vindt het bericht op NOS: storing door kortsluting bij een energiecentrale in Dronten. Er wordt geen herstelterm genoemd. Oké, dan wachten we even.', stateChange:{}},
+      {text:'🔌 Alle grote apparaten uitschakelen en de zekering uitzetten', consequence:'Je loopt door het huis en zet alles handmatig uit: wasmachine, oven, verwarming. Goed idee — bij herstel van de stroom kunnen pieken apparaten beschadigen.', stateChange:{}},
+      {text:'☕ Even koffie zetten op het gasfornuis en rustig afwachten', consequence:'Het gasfornuis werkt gelukkig nog. Je zet koffie. Het is vast snel voorbij.', stateChange:{}},
+      {text:'🤷 Gewoon doorgaan — dit is toch zo opgelost', consequence:'Je wacht. Niets aan de hand. Zo zijn er wel vaker kleine storingen.', stateChange:{}}
+    ]
+  },
+  // SCENE 4 — Stroom terug, info-only
+  {
+    id: 'scene_4',
+    time: '11:57',
+    date: 'Zondag 31 januari 2027',
+    dayBadge: 'Dag 0',
+    dayBadgeClass: '',
+    channels: {
+      news: [
+        {time:'11:54', headline:'Grote stroomstoring in Nederland voorbij, wel nog problemen op spoor', body:'"Er is overal weer stroom. De voorziening is samen met netbeheerder Liander weer hersteld. Wel is er nog een brand op een hoogspanningsstation in Dronten", aldus de woordvoerder.'}
+      ],
+      whatsapp: [
+        {from:'Thuis (partner/huisgenoot)', msg:'Stroom is terug! CV springt ook weer aan 🙌', time:'11:58', outgoing:false}
+      ],
+      nlalert: null,
+      radio: null
+    },
+    narrative: 'De lichten flikkeren en springen aan. De koelkast begint te zoemen, de CV-ketel zoekt de vlam. Normaal. Buiten hoor je mensen lachen. Loos alarm. Maar iets in je zegt: gebruik dit moment.',
+    choices: [
+      {text:'🔋 Snel de powerbank opladen zolang het kan', consequence:'Je steekt de powerbank in het stopcontact. Na een paar minuten staat hij op tien procent — beter dan niks. Als de stroom opnieuw uitvalt, heb je die minuten gehad.', stateChange:{}},
+      {text:'🌊 Extra water opslaan voor de zekerheid', consequence:'Je vult pannen, flessen en een emmer. Misschien overdreven. Maar water is water — als het pomp straks geen stroom heeft, heb je het niet meer uit de kraan.', stateChange:{hasWater:true}},
+      {text:'📺 Kijken wat het nieuws zegt', consequence:'De nieuwszender: "Grote storing in Nederland, inmiddels hersteld." Je leunt achterover. Mooi. Dit was dus niets.', stateChange:{}},
+      {text:'😌 Niets doen — alles is toch weer normaal', consequence:'Je laat het zitten. De stroom is terug, alles zoemt weer. Je gaat verder met je dag. Het was maar een kleine storing.', stateChange:{}}
+    ]
+  },
+  // SCENE 5 — Second outage + NL-Alert
+  {
+    id: 'scene_5',
+    time: '12:20',
+    date: 'Zondag 31 januari 2027',
+    dayBadge: 'Dag 0',
+    dayBadgeClass: '',
+    channels: {
+      news: [
+        {time:'12:28', headline:'Opnieuw grote stroomstoring — nu heel Europa getroffen', body:'Door een brand bij de energiecentrale Jänschwalde in Duitsland is opnieuw een cascade-storing opgetreden in het Europese hoogspanningsnet. Ook het hoogspanningsstation in Dronten staat nog in brand.'}
+      ],
+      whatsapp: [
+        {from:'Mama', msg:'Lieverd, is alles goed bij jullie? Bij ons ook geen stroom. Ik probeer jullie al een tijdje te bellen maar kom er niet door', time:'12:35', outgoing:false},
+        {from:'Buurman Rob', msg:'Hé man, nu ook bij jou weg? Wat denk jij? Dit keer misschien even wat serieuzer...', time:'12:38', outgoing:false}
+      ],
+      nlalert: 'NL-Alert\n31 januari 2027 – 12:32\n\nDoor een kortsluiting bij de energiecentrale in Jänschwalde (Duitsland) zijn er grote stroomstoringen door heel Europa. De stroomstoring kan enkele uren duren. Update volgt.',
+      radio: 'Hier Radio 1. We onderbreken onze uitzending voor een urgent noodbericht. Er is een grootschalige stroomstoring in heel Europa. Oorzaak: brand bij de energiecentrale Jänschwalde in Duitsland, gevolgd door een kettingreactie in het Europese hoogspanningsnet. De overheid vraagt iedereen thuis te blijven, warm te blijven en voldoende drinkwater achter de hand te houden. Houd uw autoradio of batterijradio aan voor verdere updates. We houden u op de hoogte.'
+    },
+    narrative: 'De stroom valt opnieuw uit, dit keer met een zwaardere klap. Je telefoon begint te trillen: NL-Alert. Dit is andere koek dan daarnet — het gaat om heel Europa. Je accu staat op 68%.',
+    choices: [
+      {text:'🔋 Telefoon direct op de powerbank aansluiten en opladen', consequence:'Goed idee. Je sluit de powerbank aan. Je accu loopt niet verder leeg. Zonder stroom is je telefoon je enige verbinding met de buitenwereld.', stateChange:{}},
+      {text:'🍶 Lege flessen vullen met water — voor noodgebruik', consequence:'Je pakt alle lege flessen, pannen en emmers die je kunt vinden en vult ze met kraanwater. Goed instinct: als de waterpomp uitvalt (werkt op stroom), heb je dit water nog voor drinken, koken en de wc.', stateChange:{hasWater:true, water:2}},
+      {text:'🚗 Naar de auto — autoradio aanzetten voor nieuws', consequence:'Je loopt naar je auto en zet de radio aan. Radio 1 is volop in de lucht: een breed noodbericht. Heel Europa, kettingreactie, onbekende duur. Je luistert aandachtig. De autoradio wordt je venster op de wereld.', stateChange:{hasCarRadio:true}},
+      {text:'📞 Proberen mama terug te bellen', consequence:"Je belt maar het netwerk is overbelast. Je hoort een bezettoon, dan niets. Je sms't haar: \"Alles goed hier. Wacht af.\" Of het aankomt weet je niet.", stateChange:{}},
+      {text:'🤷 Niets doen — ik wacht af wat er gaat gebeuren', consequence:'Je zit op de bank en wacht. Er komt geen stroom. Je accu loopt langzaam verder leeg. Buiten klinkt een sirene.', stateChange:{}}
+    ]
+  },
+  // SCENE 6 — Phone network down, shops closing
+  {
+    id: 'scene_6',
+    time: '13:30',
+    date: 'Zondag 31 januari 2027',
+    dayBadge: 'Dag 0',
+    dayBadgeClass: '',
+    channels: {
+      news: [
+        {time:'13:12', headline:'Telefoonnetwerken overbelast, 112 slecht bereikbaar', body:'Telecomproviders melden extreme drukte op het netwerk. 112 is beperkt bereikbaar. Bel alleen in levensbedreigende situaties.'},
+        {time:'13:25', headline:'Winkels sluiten deuren, supermarkten open maar druk', body:'Veel winkels sluiten vanwege de stroomstoring. Supermarkten zijn voorlopig open maar accepteren alleen contant geld. Bij pinautomaten staan lange rijen.'}
+      ],
+      whatsapp: [
+        {from:'Buurman Rob', msg:'Ben jij naar de super gegaan? Bij de supermarkt staat een rij van 50 meter. Ik ga proberen...', time:'13:28', outgoing:false},
+        {from:'Collega Sanne', msg:'Heeft iemand nog bereik?? Wij zitten vast in kantoor, liften doen het niet', time:'13:22', outgoing:false}
+      ],
+      nlalert: null,
+      radio: null
+    },
+    narrative: 'Je telefoon heeft nauwelijks bereik meer. Je hoort constant politiesirenes in de verte. Op straat zijn mensen nerveus — kleine groepjes staan bij elkaar te praten. De supermarkt om de hoek is nog open maar je ziet de rij al van ver. Het begint merkbaar kouder te worden in huis: de thermostaat staat op 19°C maar de CV werkt niet.',
+    choices: [
+      {text:'🛒 Nu naar de supermarkt gaan — voor het te laat is', consequence:'Je pakt je jas en gaat. De rij is lang maar beweegt. Na 25 minuten ben je binnen. Alleen contant geld — maar dan kom je er achter.', stateChange:{wentToSupermarket:'early'}},
+      {text:'🏠 Thuis blijven en inventariseren wat we al hebben', consequence:'Je maakt een overzicht: wat ligt er in de vriezer, de kelder, de kast? Je weet nu wat je hebt.', stateChange:{}},
+      {text:'🚗 Met de auto naar een tankstation voor benzine', consequence:'Bij het tankstation staat een rij van 40 auto\'s. Na een uur wachten krijg je te horen: "Alleen voor hulpdiensten." Teleurgesteld rij je terug. Je hebt gezien hoe gespannen de sfeer buiten is.', stateChange:{}},
+      {text:'👴 Even bij de buren langs of alles goed is', consequence:'Buurvrouw Annie (78) staat verward in de deuropening. Je legt het kort uit en vraagt of ze nog eten heeft. "Ja hoor, ik red me wel", zegt ze. Maar ze ziet er bleek uit.', stateChange:{knowsNeighbors:true}}
+    ]
+  },
+  // SCENE 6B — At the supermarket (conditional)
+  {
+    id: 'scene_6b',
+    time: '14:00',
+    date: 'Zondag 31 januari 2027',
+    dayBadge: 'Dag 0',
+    dayBadgeClass: '',
+    conditionalOn: () => state.wentToSupermarket === 'early',
+    channels: {
+      news: [], whatsapp: [], nlalert: null, radio: null
+    },
+    narrative: 'Je staat in de rij bij de supermarkt. Er staan minstens 60 mensen voor je. Iedereen praat zachtjes of staart naar hun telefoon. Een vrouw vooraan begint hard te schreeuwen dat ze voordringt omdat ze kleine kinderen heeft. Er ontstaat een discussie. Een beveiliger doet zijn best maar is duidelijk nerveus. Als je eindelijk binnen bent: de schappen zijn al behoorlijk uitgedund. Drinkwater is uitverkocht. Hetzelfde geldt voor wc-papier, olie, benzine en lucifers. Honing en blikopeners zijn ook al weg.',
+    choices: [
+      {text:'🥫 Zoveel mogelijk blikvoer, rijst en pasta inslaan', consequence:'Je vult een grote tas: blikken soep, bonen, tomaten, rijst, pasta, crackers. Aan de kassa: "Alleen contant."', stateChange:{supermarketItems:['blikvoer','rijst','pasta','crackers'], food:2}},
+      {text:'🕯️ Kaarsen, aansteker, batterijen — praktische spullen', consequence:'Je vindt nog twee pakken kaarsen, een aansteker en het laatste pakje AA-batterijen. Aan de kassa: "Alleen contant." Minder eten, maar je hebt licht.', stateChange:{hasFlashlight:true, supermarketItems:['kaarsen','batterijen','aansteker']}},
+      {text:'😤 Ik ga weg — de sfeer is te gespannen en ik wil niet in dit gedrang', consequence:'De spanning in de winkel is tastbaar. Je besluit te vertrekken. Veiliger, maar je gaat met lege handen naar huis.', stateChange:{wentToSupermarket:null}}
+    ]
+  },
+  // SCENE 7 — NL-Alert: days long
+  {
+    id: 'scene_7',
+    time: '14:00',
+    date: 'Zondag 31 januari 2027',
+    dayBadge: 'Dag 0',
+    dayBadgeClass: '',
+    channels: {
+      news: [
+        {time:'13:55', headline:'Stroomstoring kan tot morgen duren — overheid roept op tot kalmte', body:'Door een kortsluiting en brand bij energiecentrale Jänschwalde is een cascade van storingen opgetreden bij vrijwel alle Europese centrales. Een expert legt uit dat het Europese energienetwerk uit efficiëntie-overwegingen sterk aan elkaar gekoppeld is. "Het was een kwestie van tijd dat dit zou gebeuren." De overheid geeft aan niet te weten hoe lang de uitval duurt en vraagt rekening te houden met een of meerdere dagen.'},
+        {time:'14:00', headline:'Stuwen en gemalen vallen uit — overstromingsrisico in laaggelegen gebieden', body:'Rijkswaterstaat waarschuwt dat waterkerende systemen die op elektriciteit draaien zijn uitgevallen. In laaggelegen gebieden kan dit leiden tot wateroverlast.'}
+      ],
+      whatsapp: [],
+      nlalert: 'NL-Alert\n31 januari 2027 – 13:28\n\nDoor een kortsluiting bij de energiecentrale in Jänschwalde (Duitsland) zijn er grote stroomstoringen door heel Europa. De stroomstoring kan tot morgen duren.\n\nBlijf thuis. Blijf warm. Zorg voor voldoende water en voedsel. Denk aan uw (oudere) buren.',
+      radio: null
+    },
+    narrative: 'Het NL-Alert zegt iets wat je niet had verwacht: <b>tot morgen</b>. Dit is geen storing van een uur. Buiten hoor je meer sirenes. Je ziet een auto voorbijrijden die heel langzaam rijdt — als of de bestuurder ook niet weet wat te doen.',
+    choices: [
+      {text:'🍶 Lege flessen en pannen vullen met water', consequence:'Je vult alles wat je hebt: flessen, pannen, emmers, zelfs de gootsteen afgedopt. Zolang er nog druk op het waternet staat, kun je nog water tappen.', stateChange:{hasWater:true, water:2}},
+      {text:'🌡️ Alle kamers afsluiten behalve de woonkamer — warmte bewaren', consequence:'Je sluit alle deuren. Eén kamer warm houden kost veel minder energie dan het hele huis. Je trekt een extra trui aan.', stateChange:{}},
+      {text:'👴 Bij buurvrouw Annie aanbellen en vragen of ze het redt', consequence:'Je loopt naar buurvrouw Annie. Ze staat bij de deur en ziet er verward uit. "Ik probeer mn dochter te bellen maar ik kom er niet door", zegt ze. Je helpt haar een sms sturen. Ze is opgelucht.', stateChange:{}},
+      {text:'🔋 Alle apparaten opladen die nog wat batterij hebben', consequence:'Je laadt telefoons, de powerbank, tablets op via de auto — die heeft nog accustroom. Goede keuze voor later.', stateChange:{}},
+      {text:'😶 Niets doen — de overheid zal het snel oplossen', consequence:'Je gaat op de bank zitten en wacht. Het huis wordt kouder. Er komt geen stroom. Geen water opgeslagen, geen extra warmte geregeld. Je hoopt maar dat het snel voorbij is.', stateChange:{}}
+    ]
+  },
+  // SCENE 8 — Evening cooking, Dag 0
+  {
+    id: 'scene_8',
+    time: '18:00',
+    date: 'Zondag 31 januari 2027',
+    dayBadge: 'Dag 0',
+    dayBadgeClass: '',
+    channels: {
+      news: [], whatsapp: [], nlalert: null, radio: null
+    },
+    narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">13°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−2°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~6 uur zonder stroom</div>Het is al donker buiten — vroeg in februari. In huis is het merkbaar kouder geworden. De koelkast staat stil, de vriezer begint langzaam op te dooi. Je maag rammelt. De supermarkten zijn al dicht. Hoe kook je vanavond?',
+    choices: [
+      {text:'🍲 Koken op het gasfornuis', consequence:'Het gasfornuis werkt nog. Je steekt het handmatig aan met een aansteker. Het aardgasnet werkt nog omdat de druk in de leidingen mechanisch wordt geregeld. Je kookt rijst of soep uit blik. Warm eten doet het moreel goed én helpt je lichaam warm te blijven.', stateChange:{comfort:1}},
+      {text:'⚡ Proberen op de inductieplaat of elektrisch fornuis', consequence:'De inductieplaat reageert niet. Inductie werkt op elektriciteit — geen stroom, geen koken. Hetzelfde geldt voor een elektrisch fornuis. Je hebt een alternatief nodig: gas, campingkooktoestel, of koude maaltijd.', stateChange:{}},
+      {text:'🏕️ Campingkooktoestel of barbecue gebruiken', consequence:'Je haalt het campingkooktoestel tevoorschijn. Belangrijk: buiten gebruiken of bij een open raam — koolmonoxide is dodelijk in een besloten ruimte. Je kookt een warme maaltijd.', stateChange:{comfort:1, hasCampingStove:true}},
+      {text:'🥫 Koude maaltijd — crackers, kaas, direct uit blik', consequence:'Je eet koud: crackers met kaas, een blik mais of bonen direct erbij. Voedzaam maar koud eten voelt dubbel koud bij 13°C in huis. Het werkt — maar bewaar warme maaltijden voor als het echt koud wordt.', stateChange:{}}
+    ]
+  },
+  // SCENE 8B — Evening comfort, Dag 0
+  {
+    id: 'scene_8b',
+    time: '19:30',
+    date: 'Zondag 31 januari 2027',
+    dayBadge: 'Dag 0',
+    dayBadgeClass: '',
+    channels: {
+      news: [],
+      whatsapp: [
+        {from:'Buurman Rob', msg:'Jullie ook kaarsen aan? Hele straat is donker. Hoe lang duurt dit denk je?', time:'19:22', outgoing:false}
+      ],
+      nlalert: null,
+      radio: null
+    },
+    narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">12°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; 🌙 Nacht valt in</div>Je hebt gegeten. Nu begint de lange avond. Buiten is het pikzwart — geen lantaarnpalen, geen lichtjes bij de buren. Alleen hier en daar het flakkerende schijnsel van een kaars achter een raam. Het huis koelt langzaam maar zeker af. Je telefoon staat op 41%.',
+    choices: [
+      {text:'🕯️ Kaarsen aansteken en in de woonkamer bij elkaar blijven', consequence:'Je zet kaarsen in glazen voor stabiliteit en verzamelt iedereen in de woonkamer. Eén kamer verlichten en verwarmen met lichaamswarmte is veel efficiënter dan het hele huis. Het flakkerende licht maakt het minder zwaar.', stateChange:{}},
+      {text:'🛏️ Slaapzakken en alle dekens naar de woonkamer halen', consequence:'Je sleept slaapzakken, dekens en kussens naar de woonkamer. Eén kamer openhouden en met lichaamswarmte verwarmen is verstandig. Je legt alles klaar voor de nacht.', stateChange:{}},
+      {text:'🔦 Zaklamp pakken en de rest van de avond op batterijen doorbrengen', consequence:'Je haalt de zaklamp tevoorschijn en zet hem als sfeerverlichting op tafel. Handig en functioneel — geen brandgevaar, geen kaarsenrook.', stateChange:{hasFlashlight:true}},
+      {text:'📵 Telefoon op vliegtuigmodus — accu zo lang mogelijk sparen', consequence:'Je zet de telefoon op vliegtuigmodus. Geen berichten meer, maar ook geen accuverlies. Morgen heb je hem harder nodig dan vanavond.', stateChange:{}},
+      {text:'😴 Vroeg naar bed — spaar je energie', consequence:'Je kroop vroeg in bed met zo veel mogelijk lagen kleding aan. Slim: lichaamswarmte in een slaapzak houdt je warm. Je slaapt onrustig maar wel.', stateChange:{}}
+    ]
+  },
+  // SCENE 9 — Night robbery
+  {
+    id: 'scene_9',
+    time: '02:30',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 1',
+    dayBadgeClass: '',
+    channels: {
+      news: [], whatsapp: [], nlalert: null, radio: null
+    },
+    narrative: 'Je wordt wakker van een geluid. Glas dat breekt. Als je voorzichtig naar het raam van de slaapkamer sluipt en naar de tuin van de overburen kijkt, zie je twee mensen via het achterraam naar binnen gaan. Even later hoor je ze er vandoor rennen — een tas in hun handen. Het is donker op straat. IJskoud. Je hart bonkt.',
+    choices: [
+      {text:'📱 112 bellen', consequence:'Je belt 112. Na 4 minuten krijg je iemand aan de lijn. Ze nemen de melding aan maar zijn eerlijk: ze zijn overbelast. "We registreren het. We proberen zo snel mogelijk langs te komen." Er komt niemand die nacht.', stateChange:{}},
+      {text:'🔒 Zelf alle deuren en ramen dubbel controleren en vergrendelen', consequence:'Je loopt stil door het huis. Achterdeur op slot, schuifpui vergrendeld, ramen dicht. Je zet een stoel onder de deurklink van de voordeur. Niet veel, maar het voelt beter.', stateChange:{houseLocked:true}},
+      {text:'👊 Naar buiten gaan om te confronteren', consequence:'Je doet de voordeur open. De straat is verlaten. De inbrekers zijn allang weg. Je staat in de vrieskou in je pyjamabroek. Je gaat snel weer naar binnen.', stateChange:{}},
+      {text:'🙈 Niets doen — het gaat niet om ons huis', consequence:'Je kruipt terug in bed maar kunt niet meer slapen. Je ligt te luisteren naar elk geluid. De rest van de nacht doe je geen oog dicht.', stateChange:{}}
+    ]
+  },
+  // SCENE 10 — Neighbor emergency + radio
+  {
+    id: 'scene_10',
+    time: '05:30',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 1',
+    dayBadgeClass: '',
+    channels: {
+      news: [],
+      whatsapp: [
+        {from:'Buurvrouw Annie', msg:'Help. Mijn man is bewusteloos geslagen. Ze hebben al ons eten gestolen. Mijn telefoon werkt bijna niet meer. Kunnen jullie komen?', time:'05:28', outgoing:false}
+      ],
+      nlalert: null,
+      radio: 'Je zoekt een tijdje door de frequenties. De meeste zenders zijn stil. Dan vind je een lokale zender: "...door een kortsluiting bij energiecentrales in heel Europa is er vrijwel nergens stroom. We weten niet hoe lang we nog kunnen uitzenden. Schakel over naar AM-radio."\n\nOp de AM-frequentie hoor je een rustiger stem: "Het herstellen van de stroomstoring blijkt ingewikkelder dan gedacht. Er zijn aanwijzingen dat de sabotage mogelijk opzettelijk was. We roepen iedereen op tot kalmte en vragen mensen hun buren te helpen."'
+    },
+    narrative: 'Het begint net licht te worden. Buiten is het bitter koud — in huis staat de thermometer nu op 5°C, net boven het vriespunt. Dan trilt je telefoon: een bericht van buurvrouw Annie. Haar man is bewusteloos geslagen door de inbrekers van vannacht. Ze heeft geen eten meer en haar telefoon is bijna leeg.',
+    choices: [
+      {text:'💬 Reageer op het bericht — ga kijken bij Annie', consequence:'Je pakt je telefoon en typt snel terug: "We komen eraan." Je trekt je jas aan en loopt naar de overkant.', stateChange:{contactedAnnie:true}},
+      {text:'😔 Negeer het bericht — ik heb het zelf ook zwaar', consequence:'Je legt je telefoon weg. Het voelt zwaar om dit te doen, maar je hebt zelf nauwelijks energie en middelen. Je hoopt dat Annie andere hulp vindt.', stateChange:{}}
+    ]
+  },
+  // SCENE 10b — Detailed help options for Annie
+  {
+    id: 'scene_10b',
+    time: '05:30',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 1',
+    dayBadgeClass: '',
+    conditionalOn: () => state.contactedAnnie === true,
+    channels: {
+      news: [], whatsapp: [], nlalert: null, radio: null
+    },
+    narrative: 'Je staat voor de deur van Annie. Ze doet open — haar ogen zijn rood van het huilen. Achter haar zie je haar man Jan op de bank liggen. Je moet snel beslissen hoe je het best kunt helpen.',
+    choices: [
+      {text:'🩺 Direct naar Jan kijken en zijn toestand beoordelen', consequence:'Je loopt naar binnen. Jan (81) ligt op de bank — hij reageert maar is verward en heeft een grote wond op zijn hoofd. Je controleert zijn ademhaling — die is stabiel. Je reinigt de wond zo goed als je kunt en zorgt dat hij warm blijft.', stateChange:{helpedNeighbor:true}},
+      {text:'📱 Eerst 112 bellen voordat je naar binnen gaat', consequence:'Je belt 112 op de stoep. Na lange wachttijd krijg je iemand. Ze registreren het maar kunnen niet inschatten wanneer er iemand komt. "Houd hem warm en stil." Je gaat dan naar binnen om te helpen.', stateChange:{helpedNeighbor:true}},
+      {text:'🍞 Snel terug naar huis, eten halen, dan terugkomen', consequence:'Je zegt Annie dat je zo terug bent. Thuis pak je crackers en een blik soep uit je eigen voorraad. Als je terugkomt zijn Annie\'s ogen rood van het huilen. Je geeft haar het eten en kijkt dan naar haar man.', stateChange:{helpedNeighbor:true}},
+      {text:'😰 Aarzelen — je weet niet wat je kunt doen', consequence:'Je staat in de deuropening en weet niet waar te beginnen. Annie kijkt je smekend aan. Je ziet hoe ernstig het is en dwingt jezelf toch naar binnen te gaan.', stateChange:{helpedNeighbor:true}}
+    ]
+  },
+  // SCENE 11 — Sewage fails
+  {
+    id: 'scene_11',
+    time: '06:30',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 1',
+    dayBadgeClass: '',
+    channels: {
+      news: [], whatsapp: [], nlalert: null, radio: null
+    },
+    narrative: 'Als je de wc gebruikt en doortrekt, merk je dat het water nauwelijks wegstroomt. Even later borrelt de afvoer van de wasbak en stinkt het naar riool. De waterdruk van de kraan is ook sterk verminderd. In deze wijk zit een rioolgemaal dat het afvalwater wegpompt. Zonder stroom werkt dat niet meer goed.',
+    choices: [
+      {text:'🚫 Waterafvoer afsluiten en zo min mogelijk water gebruiken', consequence:'Je stopt de afvoeropeningen af met doppen of plastiek. Zo voorkom je dat rioolwater terugstroomt in huis. Goed instinct.', stateChange:{handledSewage:true}},
+
+      {text:'🌳 Naar de achtertuin gaan (schep en vuilniszak)', consequence:'Buiten, in de hoek van de tuin. Je graaft een klein gat, doet wat je moet doen en gooit er aarde over. Primitief. Effectief. Minder erg dan je dacht.', stateChange:{comfort:-1}},
+      {text:'🚽 Een noodemmer inrichten als wc', consequence:'Een plastic emmer, een vuilniszak erin, wat desinfectiemiddel bij de hand. Je hebt een nood-wc. Het is niet fijn, maar het werkt zonder water te verspillen.', stateChange:{}},
+      {text:'📵 Nog even wachten, het valt vast mee', consequence:'Je wacht. Het valt niet mee. Dat had je kunnen weten.', stateChange:{comfort:-1}}
+    ]
+  },
+  // SCENE MORN_D1 — Day 1 morning, 08:00
+  {
+    id: 'scene_morn_d1',
+    time: '08:00',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 1',
+    dayBadgeClass: '',
+    channels: { news: [], whatsapp: [], nlalert: null, radio: null },
+    get narrative() {
+      const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">5°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~20 uur zonder stroom</div>';
+      const mood = state.comfort >= 4
+        ? 'Je hebt een paar uur geslapen. Je voelt je redelijk.'
+        : state.comfort >= 2
+        ? 'Je hebt slecht geslapen. Alles voelt zwaarder dan normaal.'
+        : 'Je bent uitgeput. De spanning van gisterennacht, de kou, de geluiden buiten — je lichaam protesteert.';
+      return statusBar + mood + ' Een bleke streep licht achter de gordijnen. Je adem stomt voor je gezicht — ook binnen. Op straat: rijp op alle daken, ijsbloemen op de auto\'s. De stilte is het meest onwerkelijke.';
+    },
+    choices: [
+      {text:'🔭 Door het raam kijken — wat zie je buiten?', consequence:'Een man loopt langzaam met een hond. Twee buren staan bij het tuinhek te praten, wijzen naar de straat. Op de hoek staat iemand lang stil naar zijn telefoon te staren. Niemand rijdt. De stilte is scherp.', stateChange:{}},
+      {text:'📻 De radio aanzetten voor nieuws', consequence:'Op de AM-frequentie een rustige stem: "De stroomstoring duurt voort. Plunderingen in meerdere steden. Politie vraagt iedereen binnen te blijven. Herstel niet voor morgennacht verwacht." Morgennacht.', stateChange:{}},
+      {text:'🤝 Water delen met buurman Rob', consequence:'Je loopt naar de deur. Rob staat buiten met een lege fles. Zijn gezicht zegt genoeg. Je kijkt naar jouw eigen reserve — ook niet oneindig. Je geeft hem een fles. Het voelt goed én ongemakkelijk tegelijk: elke liter telt nu.', stateChange:{water:-1, knowsNeighbors:true}}
+    ]
+  },
+  // SCENE WATERTRUCK — Conditional: water or food at 0, Day 1 10:30
+  {
+    id: 'scene_watertruck',
+    time: '10:30',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 1',
+    dayBadgeClass: '',
+    conditionalOn: () => state.water === 0 || state.food === 0,
+    channels: {
+      news: [],
+      whatsapp: [
+        {from:'Buurman Rob', msg:'Heb je het gezien? Bij de Aldi staat een watertruck van de gemeente. Ze delen uit, maar de rij is lang. Schiet op!', time:'10:14', outgoing:false}
+      ],
+      nlalert: null,
+      radio: null
+    },
+    narrative: 'Je huis heeft bijna niets meer. Je pakt je jas en stapt naar buiten. Bij de supermarkt een onverwacht tafereel: een grote blauwe watertruck van de gemeente, omringd door tientallen mensen met jerrycans en flessen. Er is een ordelijke rij. Medewerkers met hesjes verdelen water — per persoon maximaal tien liter. Er ligt ook een kleine tafel met bakken droog voedsel (noodbiscuits, gedroogde soep).',
+    choices: [
+      {text:'💧 In de rij gaan voor water', consequence:'Je staat 25 minuten in de rij. Als je aan de beurt bent, vul je twee grote flessen. De medewerker stempelt je hand — één keer per persoon.', stateChange:{water:2, hasWater:true}},
+      {text:'🤝 Water halen én een extra fles meebrengen voor Annie', consequence:'Je vertelt dat je ook voor een oudere buurvrouw haalt. De medewerker knikt en geeft je een extra fles. \'Eén extra — meer mag niet.\' Bij Annie thuis is ze sprakeloos van dankbaarheid.', stateChange:{water:1, hasWater:true, helpedNeighbor:true}},
+      {text:'🍞 Vragen of er ook eten is bij de tafel', consequence:'Je loopt naar de tafel met noodbiscuits. Er zijn kleine pakketjes. Je neemt er één — bescheiden, maar het scheelt. Water moet je elders vandaan halen.', stateChange:{food:1}},
+      {text:'🏠 Terugkeren zonder te wachten — de rij is te lang', consequence:'Je kijkt naar de rij en schat: nog een uur. Je draait om. Misschien later. Misschien morgen.', stateChange:{}}
+    ]
+  },
+  // SCENE 12 — Curfew + chaos
+  {
+    id: 'scene_12',
+    time: '14:30',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 1',
+    dayBadgeClass: '',
+    channels: {
+      news: [],
+      whatsapp: [
+        {from:'Buurman Rob', msg:'Heb je de radio gehoord? Avondklok. Shit man. Ik heb nog genoeg eten gelukkig. Hoe zitten jullie ervoor?', time:'14:22', outgoing:false}
+      ],
+      nlalert: null,
+      radio: '"Vanaf heden is er een avondklok van kracht. Niemand mag na het donker buiten zijn. In meerdere steden hebben plunderingen plaatsgevonden. De politie heeft zijn handen vol. Het is nog steeds niet duidelijk wanneer de stroom hersteld is. Blijf thuis, blijf warm, help uw buren."'
+    },
+    narrative: 'De dag vordert en het wordt steeds duidelijker dat dit niet morgen opgelost is. Op de radio hoor je berichten over plunderingen in meerdere steden. Er is een avondklok ingesteld. Het begint nu serieus te voelen. Het is 9°C in huis.',
+    choices: [
+      {text:'🏘️ De buren bij elkaar roepen — samen staan we sterker', consequence:'Je klopt bij Rob, Annie en nog twee buren aan. Je spreekt af: eten delen, elkaar op de hoogte houden, om beurten wacht houden. Het voelt beter dan alleen zijn.', stateChange:{}},
+      {text:'📦 Alle voedsel en water inventariseren en rantsoeneren', consequence:'Je legt alles wat je hebt op de keukentafel. Je verdeelt het over de komende dagen — eerlijk en realistisch.', stateChange:{}},
+      {text:'🚗 Snel de auto in om te kijken hoe het er in de stad uitziet', consequence:"Je rijdt voorzichtig de straat uit. Bij het centrum zie je politiewagens en mensen die snel lopen. Bij een supermarkt zijn de ramen ingeslagen. Je draait snel terug. Je had het kunnen weten.", stateChange:{}},
+      {text:'🎲 Een bordspel pakken met het huishouden', consequence:'Je trekt het spel tevoorschijn en gaat zitten met kaarsen erbij. Schaak, mens-erger-je-niet, kaarten — het maakt niet uit. Een uur lang is de crisis even op de achtergrond. Iedereen is even wat minder gespannen. Soms is afleiding het beste wat je kunt doen.', stateChange:{comfort:1}}
+    ]
+  },
+  // SCENE COOK_D1 — Day 1 evening cooking, 18:00
+  {
+    id: 'scene_cook_d1',
+    time: '18:00',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 1',
+    dayBadgeClass: '',
+    channels: { news: [], whatsapp: [], nlalert: null, radio: null },
+    get narrative() {
+      const foodNote = (state.supermarketItems.length > 0 || state.hasExtraFood)
+        ? 'Je hebt genoeg te eten.'
+        : 'Je voorraad begint krap te worden.';
+      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">7°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−4°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~30 uur zonder stroom</div>De tweede avond zonder stroom. ' + foodNote + ' In de woonkamer staat het kwik op 7°C. Magen rammelen. Er is een avondklok. Hoe kook je vanavond?';
+    },
+    choices: [
+      {text:'🍲 Koken op het gasfornuis', consequence:'Het gasfornuis werkt nog. Je steekt het handmatig aan met een aansteker. Het aardgasnet werkt nog omdat de druk in de leidingen mechanisch wordt geregeld. Soep of rijst met groenten uit blik. Warm eten bij 7°C in huis doet meer dan je denkt.', stateChange:{comfort:1}},
+      {text:'⚡ Proberen op de inductieplaat of elektrisch fornuis', consequence:'Geen stroom, geen inductie. De plaat reageert niet. Je hebt een alternatief nodig: gas, campingkooktoestel, of koude maaltijd.', stateChange:{}},
+      {text:'🏕️ Campingkooktoestel of barbecue gebruiken', consequence:'Je zet het campingkooktoestel bij een open raam — nooit volledig binnen, koolmonoxide is gevaarlijk. Het werkt. Je kookt een warme maaltijd.', stateChange:{comfort:1, hasCampingStove:true}},
+      {text:'🥫 Koude maaltijd — direct uit blik, crackers', consequence:'Je eet koud. Het vult, maar koud eten voelt dubbel koud bij 7°C. Je lichaam heeft warmte nodig om te blijven functioneren.', stateChange:{}},
+      {text:'🥄 Zuinig koken — kleine portie, voorraad sparen', consequence:'Je bereidt een halve portie — genoeg om de ergste honger te stillen. De rest bewaar je. Slim in een situatie die nog dagen kan duren. Het knort in je buik, maar je voelt de controle.', stateChange:{food:1, comfort:-1}}
+    ]
+  },
+  // SCENE 13 — Explosion
+  {
+    id: 'scene_13',
+    time: '01:30',
+    date: 'Dinsdag 2 februari 2027',
+    dayBadge: 'Dag 2',
+    dayBadgeClass: '',
+    channels: {
+      news: [], whatsapp: [], nlalert: null, radio: null
+    },
+    narrative: 'Eerst hoor je geschreeuw in de verte. Dan een doffe knal. De ramen trillen. Je hart staat even stil. Je kruipt voorzichtig naar het raam — buiten zie je een grote brand. Mensen staan er omheen. Via de vage lichtcontouren zie je dat het een auto is. De auto van de overburen. Je hoort geen sirenes komen.',
+    choices: [
+      {text:'🏠 Binnenblijven — het is gevaarlijk en de avondklok is van kracht', consequence:'Je blijft binnen. Goed besluit — de avondklok is ingesteld precies voor dit soort situaties. Je kijkt door het raam maar gaat niet naar buiten.', stateChange:{}},
+      {text:'👥 Controleren of de overburen veilig zijn via de achterdeur', consequence:'Je sluipt via de achterdeur naar de overburen. Ze staan buiten te kijken, geschrokken maar ongedeerd. "Gelukkig stond hij op straat", fluistert de man. Je gaat snel weer naar binnen.', stateChange:{}},
+      {text:'🔥 Naar buiten om te helpen blussen', consequence:'Je loopt naar buiten. De brand is hevig en je hebt geen brandblusser. Er is niets wat je kunt doen. Je staat nutteloos te kijken in de vrieskou en staat buiten tijdens de avondklok.', stateChange:{}}
+    ]
+  },
+  // SCENE MORN_D2 — Day 2 morning, 08:00
+  {
+    id: 'scene_morn_d2',
+    time: '08:00',
+    date: 'Dinsdag 2 februari 2027',
+    dayBadge: 'Dag 2',
+    dayBadgeClass: '',
+    get channels() {
+      const wa = state.helpedNeighbor
+        ? [{from:'Buurvrouw Annie', msg:'Hoe gaat het bij jullie? Jan is iets stabieler. We zijn zo blij dat jullie er gisterennacht waren. Heel erg bedankt.', time:'07:45', outgoing:false}]
+        : [{from:'Buurvrouw Annie', msg:'Jan gaat niet goed. Kunnen jullie iets brengen? Water misschien? Ik maak me zo ongerust.', time:'07:48', outgoing:false}];
+      return { news: [], whatsapp: wa, nlalert: null, radio: null };
+    },
+    get narrative() {
+      const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">5°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−4°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~44 uur zonder stroom</div>';
+      const mood = state.comfort >= 4
+        ? 'Je hebt geslapen. Niet goed, maar genoeg.'
+        : state.comfort >= 2
+        ? 'Je hebt slecht geslapen. Je ogen branden, je lichaam is stijf van de kou.'
+        : 'Je bent op. Twee nachten van stress en kou — je trekt de dekens nog even over je hoofd voor je opstaat.';
+      return statusBar + mood + ' Op straat staat de uitgebrande auto van de overburen nog — zwartgeblakerd, raampjes gebarsten. Niemand die hem weghaalt. Er is geen gemeente die functioneert. Dit is de tweede dag.';
+    },
+    choices: [
+      {text:'👁️ De straat bekijken door het raam', consequence:'Een paar mensen lopen snel langs. Niemand praat. Iedereen houdt het hoofd gebogen. Op de hoek staat een man lang stil — hij kijkt omhoog naar de lucht alsof hij op iets wacht.', stateChange:{}},
+      {text:'📻 De radio aanzetten voor nieuws', consequence:'Op de AM-frequentie: "Delen van Duitsland en Oostenrijk hebben stroom gekregen. Herstel in Nederland wordt verwacht binnen 24 uur." 24 uur. Dat is lang. Maar het is iets.', stateChange:{}},
+      {text:'🤝 Naar Rob of Annie gaan voor informatie', consequence:'"Ik heb gehoord dat er vandaag een voedseluitdeling is," zegt Rob. "Ergens bij de wijk. Weet niet precies waar." Je maakt een mentale notitie.', stateChange:{}},
+      {text:'😔 Binnenblijven en wachten', consequence:'Je trekt de gordijnen dicht. Binnenblijven is de veiligste optie. Je hebt nog wat eten. Je wacht.', stateChange:{}}
+    ]
+  },
+  // SCENE 14 — Day 2, morning + flyer + food distribution
+  {
+    id: 'scene_14',
+    time: '11:30',
+    date: 'Dinsdag 2 februari 2027',
+    dayBadge: 'Dag 2',
+    dayBadgeClass: '',
+    channels: {
+      news: [],
+      whatsapp: [
+        {from:'Overbuurman', msg:'Onze auto is weg. Gelukkig niemand gewond. Die lui... Jullie goed?', time:'10:45', outgoing:false}
+      ],
+      nlalert: null,
+      radio: '"In meerdere delen van Europa is de stroom kort hersteld door het net fysiek los te koppelen. Ook in sommige delen van Nederland is gisteravond kort stroom geweest. Minister-president Rob Jetten heeft het land toegesproken en vraagt iedereen de rust te bewaren. Hij geeft aan dat het draaiend houden van de drinkwatervoorziening de hoogste prioriteit heeft. In meerdere steden zijn gisteravond onrusten geweest — er zijn doden gevallen bij politie-ingrepen."'
+    },
+    get narrative() {
+      const foodSituation = (state.wentToSupermarket && state.supermarketItems.length > 0)
+        ? 'Je hebt genoeg eten dankzij je supermarktbezoek.'
+        : (state.hasExtraFood
+          ? 'Je hebt gelukkig wat extra voedsel in huis dat je eerder ingeslagen hebt.'
+          : 'Je voedselvoorraad is bijna op.');
+      return `De stank van riool is nu echt onhoudbaar — uit het afvoerputje in de bijkeuken borrelt vuil water omhoog. ${foodSituation} Dan klinkt er gebel. Een meneer loopt door de straat en stopt bij elk huis: hij deelt gemeenteflyers uit. Op de flyer: <b>tips om warm te blijven, waarschuwing koolmonoxide, advies om flessen en pannen te vullen met kraanwater, en een aankondiging: morgen van 10 tot 15 uur wordt er bij de supermarkt voedsel uitgedeeld.</b>`;
+    },
+    choices: [
+      {text:'📋 De flyer zorgvuldig lezen en de tips opvolgen', consequence:'Je leest alle tips. Eén springt eruit: sluit alle waterafvoeren af om rioolwater te weren. Je doet dat alsnog.', stateChange:{handledSewage:true}},
+      {text:'🍚 Nu al plannen om morgen naar de voedseluitdeling te gaan', consequence:'Je besluit te gaan. Je zet een wekker (op batterijen) voor 09:00. Je wil vroeg in de rij staan.', stateChange:{wentToFoodDist:true}},
+      {text:'🤝 De flyer ook bij de buren brengen die hem misschien niet hebben gehad', consequence:'Je loopt de straat in en duwt de flyer bij drie huizen in de bus waarvan je weet dat er ouderen wonen. Buurvrouw Annie krijgt hem persoonlijk — je vertelt haar ook over de voedseluitdeling.', stateChange:{}},
+      {text:'📄 De flyer weggooien — ik weet het al wel', consequence:'Je legt de flyer opzij. Misschien stond er toch iets nuttigs in. Je zult het nooit weten.', stateChange:{}}
+    ]
+  },
+  // SCENE COOK_D2 — Day 2 evening cooking, 18:00
+  {
+    id: 'scene_cook_d2',
+    time: '18:00',
+    date: 'Dinsdag 2 februari 2027',
+    dayBadge: 'Dag 2',
+    dayBadgeClass: '',
+    channels: { news: [], whatsapp: [], nlalert: null, radio: null },
+    get narrative() {
+      const foodNote = state.wentToFoodDist
+        ? 'Je hebt morgen de voedseluitdeling gepland — dat geeft rust.'
+        : (state.supermarketItems.length > 0 || state.hasExtraFood)
+          ? 'Je hebt nog voorraad uit je voorbereiding.'
+          : 'Je voedselvoorraad is bijna op.';
+      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">6°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~54 uur zonder stroom</div>De derde avond. ' + foodNote + ' Het huis is echt koud nu — je kunt je adem zien. Je hebt inmiddels geleerd hoe je deze situatie overleeft. Vanavond weer koken.';
+    },
+    choices: [
+      {text:'🍲 Koken op het gasfornuis', consequence:'Het gasfornuis werkt nog. Je steekt het handmatig aan met een aansteker. Het aardgasnet werkt nog omdat de druk in de leidingen mechanisch wordt geregeld. Je kookt rijst of pasta met de laatste blikken groenten. Één warme maaltijd per dag maakt een groot verschil.', stateChange:{comfort:1}},
+      {text:'⚡ Proberen op de inductieplaat of elektrisch fornuis', consequence:'Nog steeds geen stroom, dus de inductieplaat werkt niet. Je weet het eigenlijk al.', stateChange:{}},
+      {text:'🏕️ Campingkooktoestel of barbecue gebruiken', consequence:'Campingkooktoestel buiten of bij een open raam — nooit binnen, koolmonoxide. De gasbus is bijna leeg maar er zit nog genoeg in voor één maaltijd.', stateChange:{comfort:1, hasCampingStove:true}},
+      {text:'🥫 Koude maaltijd', consequence:'Crackers, pindakaas, een blikje. Koud maar het vult. Je bewaart de laatste warme kookmogelijkheid voor morgenochtend.', stateChange:{}},
+      {text:'🤝 Buurvrouw Annie uitnodigen om mee te eten', consequence:'Je klopt bij Annie aan. Ze aarzelt, maar je staat erop. Ze eet bij jou aan tafel — kaarslicht, een warme pot. Ze huilt een beetje. "Jan zou dit fijn vinden," zegt ze zacht. Het is de eerlijkste maaltijd die je ooit hebt gedeeld.', stateChange:{food:-1, comfort:1, helpedNeighbor:true}}
+    ]
+  },
+  // SCENE MORN_D3 — Day 3 morning, 08:00
+  {
+    id: 'scene_morn_d3',
+    time: '08:00',
+    date: 'Woensdag 3 februari 2027',
+    dayBadge: 'Dag 3',
+    dayBadgeClass: 'green',
+    channels: { news: [], whatsapp: [], nlalert: null, radio: null },
+    narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">4°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~68 uur zonder stroom</div>De derde ochtend. Bijna windstil buiten. Op de radio — als je er een hebt — wordt gemeld dat grote delen van Europa inmiddels stroom hebben. Nederland is een van de laatste. Maar de verwachting is: vandaag. Om 10:00 is er een voedseluitdeling in de buurt. Je voelt iets wat al lang weg was: voorzichtige hoop.',
+    choices: [
+      {text:'📻 De radio aanzetten voor het laatste nieuws', consequence:'Op de AM-radio: "De herstelwerkzaamheden zijn in de afrondende fase. We verwachten dat het stroomnet stapsgewijs wordt hersteld vandaag. Houd apparaten uitgeschakeld bij herstel om stroompieken te voorkomen." Je houdt je adem in.', stateChange:{}},
+      {text:'🍽️ Een klein ontbijtje van de laatste resten', consequence:'Crackers, de laatste pindakaas, een appel. Koud maar plechtig. Vandaag misschien de laatste dag zonder stroom.', stateChange:{}},
+      {text:'🤝 De buren informeren over de voedseluitdeling en de hoop', consequence:'Je klopt bij Rob en Annie aan. Rob grijpt je hand. "Echt?" Annie veegt een traan weg. Je brengt hoop naar mensen die het nodig hebben.', stateChange:{}},
+      {text:'🙈 Niets verwachten — ik geloof het pas als ik het zie', consequence:'Te vaak gehoord: "binnenkort". Je houdt jezelf rustig. Verwacht niets, dan val je niet.', stateChange:{}}
+    ]
+  },
+  // SCENE 15 — Food distribution (conditional: player planned to go)
+  {
+    id: 'scene_15',
+    time: '10:15',
+    date: 'Woensdag 3 februari 2027',
+    dayBadge: 'Dag 3',
+    dayBadgeClass: 'green',
+    conditionalOn: () => state.wentToFoodDist === true,
+    channels: {
+      news: [], whatsapp: [], nlalert: null, radio: null
+    },
+    narrative: 'Bij de supermarkt staat een enorme rij. Honderden mensen. Het is rustig maar gespannen. Om 10:00 precies gaan de deuren open en schuifelt de rij langzaam vooruit. Een voor een krijgt iedereen een tasje met voedsel en een kruisje in inkt op je rechterhand — zodat je niet twee keer kunt komen. In jouw tasje: een kilo rijst, een blik tomaten, een paar appels en een brood. Terwijl je in de rij staat, beginnen de mensen om je heen te praten.',
+    choices: [
+      {text:'💬 Praten met de mensen in de rij — informatie verzamelen', consequence:'Je hoort van iemand dat in Amsterdam-Noord de stroom al kort terug was. Een ander zegt dat de overheid overweegt het net per regio los te koppelen en dan stapsgewijs te herstellen. Geruchten, maar het geeft hoop.', stateChange:{}},
+      {text:'👴 Een oudere man voor me laten gaan — hij staat te trillen van de kou', consequence:'Je laat hem voorgaan. Hij bedankt je met een knik. Zijn vrouw staat naast hem en pakt even je hand. Kleine gebaren tellen op dit soort momenten.', stateChange:{}},
+      {text:'🎒 Extra vragen of ze ook wat voor de zieke buurman hebben', consequence:'Je vraagt aan de medewerker of er extra is voor een zieke buurman. Ze kijken elkaar aan. Na een korte aarzeling geven ze je een tweede klein pakketje. "Eén extra, meer kunnen we niet."', stateChange:{}},
+      {text:'⚡ Snel naar huis — ik wil niet te lang weg zijn', consequence:'Je pakt je tasje en loopt snel terug. Je bent 45 minuten weg geweest. Thuis is alles nog zoals je het hebt achtergelaten.', stateChange:{}}
+    ]
+  },
+  // SCENE 16 — Power restored
+  {
+    id: 'scene_16',
+    time: '12:45',
+    date: 'Woensdag 3 februari 2027',
+    dayBadge: 'Dag 3',
+    dayBadgeClass: 'green',
+    channels: {
+      news: [], whatsapp: [], nlalert: null, radio: null
+    },
+    narrative: 'Dan — onverwacht — flakkert het licht aan. De koelkast begint te zoemen. De wasmachine, die je vergeten was uit te zetten, begint plotseling te draaien. Uit de televisie komt een branderige geur. Eén lamp knalt. Je hoort de buren juichen. Het is voorbij. Of toch niet helemaal: de CV heeft tijd nodig om op te warmen. De waterdruk is er maar de stank van riool hangt nog. Maar er is licht.',
+    choices: [
+      {text:'⚡ Alle apparaten uitschakelen voordat er stroompieken schade aanrichten', consequence:'Goed instinct. Je loopt door het huis en zet alles handmatig uit. Daarna zet je apparaat voor apparaat langzaam terug aan. De TV ruikt wat gebrand, maar werkt nog.', stateChange:{}},
+      {text:'📱 Als eerste mama bellen — ze weet vast niets van ons', consequence:'Je belt. Ze neemt direct op. Ze huilt. "Ik heb me zo ongerust gemaakt. Jullie zijn toch goed?" Je praat tien minuten.', stateChange:{}},
+      {text:'🛁 Het water laten lopen om de leidingen door te spoelen', consequence:'Je draait de kraan open. Eerst bruin, dan helderder. De leidingen worden schoongespoeld. Goed idee na een langdurige lage druk.', stateChange:{}},
+      {text:'🤝 Bij Annie en Rob aanbellen om het nieuws te vieren', consequence:'Je loopt de straat op. Rob staat al in de deuropening en zwaait. Bij Annie is het stiller — haar man Jan is nog niet volledig bijgekomen. Ze zijn blij met de stroom, maar Jan heeft medische aandacht nodig.', stateChange:{}}
+    ],
+    get afterword() {
+      const lines = [];
+      if (state.helpedNeighbor) lines.push('Annie stuurt je de week erna nog appjes. Die band is er nu — en die had je voor de storing niet.');
+      if (state.handledSewage) lines.push('Je weet nu hoe je een ramp overleeft: niet via een app, maar via praktijk en aandacht.');
+      if (state.hasWater) lines.push('Het ingeslagen water bleek goud waard. De tip om alvast te vullen staat nu permanent in je hoofd.');
+      if (!state.hasCash) lines.push('Eén les die je nooit vergeet: zorg altijd voor contant geld in huis.');
+      if (!lines.length) return null;
+      return `<div style="background:#0a1f0a;border-left:3px solid #22c55e;padding:12px 16px;margin-top:8px;font-size:.85rem;color:#bbf7d0;line-height:1.8"><b style="color:#4ade80">Drie weken later</b><br><br>${lines.join('<br>')}</div>`;
+    }
+  }
+];
+
+// ─── AUDIO ENGINE ────────────────────────────────────────────────────────────
+let audioEnabled = true;
+let currentRadioText = '';
+
+function toggleAudio() {
+  audioEnabled = !audioEnabled;
+  const btn = document.getElementById('audio-toggle');
+  btn.textContent = audioEnabled ? '🔊 Geluid Aan' : '🔇 Geluid';
+  btn.classList.toggle('on', audioEnabled);
+  if (!audioEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
+}
+
+function playNLAlertSound() {
+  if (!audioEnabled) return;
+  const audio = new Audio('NL-Alert.mp3');
+  audio.play().catch(() => {});
+}
+
+function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[523, 0], [659, 0.18]].forEach(([freq, offset]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.28, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.3);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.3);
+    });
+  } catch(e) {}
+}
+
+let _dutchVoice = null;
+function _loadDutchVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return;
+  // Prefer: Google Nederlands > any nl-NL > any nl > first available
+  _dutchVoice = voices.find(v => /google/i.test(v.name) && v.lang.startsWith('nl'))
+    || voices.find(v => v.lang === 'nl-NL')
+    || voices.find(v => v.lang.startsWith('nl'))
+    || null;
+}
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = _loadDutchVoice;
+  _loadDutchVoice();
+}
+
+function speakRadio() {
+  if (!window.speechSynthesis) { alert('Je browser ondersteunt geen spraaksynthese.'); return; }
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    updateRadioBtn(false);
+    return;
+  }
+  if (!currentRadioText) return;
+  _loadDutchVoice(); // try again in case voices loaded late
+  const div = document.createElement('div');
+  div.innerHTML = currentRadioText;
+  const plain = (div.textContent || div.innerText || '').replace(/\[.*?\]/g, '').trim();
+  const utt = new SpeechSynthesisUtterance(plain);
+  utt.lang = 'nl-NL';
+  if (_dutchVoice) utt.voice = _dutchVoice;
+  utt.rate = 0.88;
+  utt.pitch = 0.95;
+  utt.volume = 1.0;
+  utt.onstart = () => updateRadioBtn(true);
+  utt.onend = () => updateRadioBtn(false);
+  utt.onerror = () => updateRadioBtn(false);
+  window.speechSynthesis.speak(utt);
+}
+
+function updateRadioBtn(playing) {
+  const btn = document.getElementById('radio-play-btn');
+  if (!btn) return;
+  btn.textContent = playing ? '⏹ Stop' : '▶ Speel radiobericht';
+  btn.classList.toggle('playing', playing);
+}
+
+// ─── SCENE VISUALS ───────────────────────────────────────────────────────────
+const sceneVisuals = {
+  scene_morn_d0: {seed:'suburb-morning-calm',     label:'Dag 0 · 08:00', title:'Vóór de storing'},
+  scene_3:       {seed:'city-street-daylight',     label:'Dag 0 · 11:30', title:'Eerste stroomstoring'},
+  scene_4:       {seed:'flicker-lights-house',     label:'Dag 0 · 11:57', title:'Stroom even terug'},
+  scene_5:       {seed:'dramatic-storm-europe',    label:'Dag 0 · 12:20', title:'Heel Europa zonder stroom'},
+  scene_6:       {seed:'supermarket-long-queue',   label:'Dag 0 · 13:30', title:'Winkels sluiten'},
+  scene_6b:      {seed:'supermarket-empty-shelves',label:'Dag 0 · 14:00', title:'Bij de supermarkt'},
+  scene_7:       {seed:'dark-warning-street',      label:'Dag 0 · 14:00', title:'Kan dagenlang duren'},
+  scene_8:       {seed:'dark-home-candle-warm',    label:'Dag 0 · 18:00', title:'Koken zonder stroom'},
+  scene_8b:      {seed:'candle-blanket-dark-room', label:'Dag 0 · 19:30', title:'De eerste avond'},
+  scene_9:       {seed:'night-dark-cold-street',   label:'Dag 1 · 02:30', title:'Inbraak in de buurt'},
+  scene_10:      {seed:'emergency-neighbor-help',  label:'Dag 1 · 05:30', title:'Buurvrouw heeft hulp nodig'},
+  scene_11:      {seed:'pipes-water-basement',     label:'Dag 1 · 06:30', title:'Riolering valt uit'},
+  scene_morn_d1:    {seed:'frost-winter-dawn-house',      label:'Dag 1 · 08:00', title:'Eerste crisisochtend'},
+  scene_watertruck: {seed:'water-truck-queue-street',     label:'Dag 1 · 10:30', title:'Watertruck bij de supermarkt'},
+  scene_12:         {seed:'empty-street-curfew-night',    label:'Dag 1 · 14:30', title:'Avondklok ingesteld'},
+  scene_cook_d1: {seed:'cold-dark-kitchen-evening',label:'Dag 1 · 18:00', title:'Koken zonder stroom'},
+  scene_13:      {seed:'car-fire-night-dramatic',  label:'Dag 2 · 01:30', title:'Explosie op straat'},
+  scene_morn_d2: {seed:'burnt-car-cold-morning',   label:'Dag 2 · 08:00', title:'Tweede crisisochtend'},
+  scene_14:         {seed:'neighborhood-flyer-door',    label:'Dag 2 · 11:30', title:'Gemeente deelt flyers uit'},
+
+  scene_cook_d2: {seed:'candle-sparse-meal-dark',  label:'Dag 2 · 18:00', title:'Derde avond'},
+  scene_morn_d3: {seed:'hopeful-winter-morning',   label:'Dag 3 · 08:00', title:'Derde ochtend — hoop'},
+  scene_15:      {seed:'food-distribution-queue',  label:'Dag 3 · 10:15', title:'Voedseluitdeling'},
+  scene_16:      {seed:'lights-on-relief-home',    label:'Dag 3 · 12:45', title:'Stroom terug!'},
+};
+
+function renderStatusBars() {
+  const defs = [
+    {segId:'stat-water',   wrapId:'ss-water',   val:state.water},
+    {segId:'stat-food',    wrapId:'ss-food',     val:state.food},
+    {segId:'stat-comfort', wrapId:'ss-comfort',  val:state.comfort},
+    {segId:'stat-health',  wrapId:'ss-health',   val:state.health}
+  ];
+  defs.forEach(({segId, wrapId, val}) => {
+    const segs = document.querySelectorAll('#' + segId + ' .ss-stat-seg');
+    segs.forEach((seg, i) => {
+      seg.classList.remove('on','warn','danger');
+      if (i < val) {
+        seg.classList.add('on');
+        if (val <= 1) seg.classList.add('danger');
+        else if (val <= 2) seg.classList.add('warn');
+      }
+    });
+    const wrap = document.getElementById(wrapId);
+    if (wrap) wrap.classList.toggle('zero', val === 0);
+  });
+}
+
+function renderSceneVisual(scene) {
+  // Update page background per scene
+  const isSupermarkt = scene.id === 'scene_6b';
+  document.body.style.backgroundImage = isSupermarkt
+    ? "url('supermarkt.jpg')"
+    : "url('winter_huis.jpg')";
+
+  // Brightness overlay based on time of day (only for outdoor/winter background)
+  const darkness = document.getElementById('bg-darkness');
+  if (darkness && !isSupermarkt) {
+    const [h] = (scene.time || '12:00').split(':').map(Number);
+    let bg, opacity;
+    if (h >= 22 || h < 6)      { bg = '#000'; opacity = 0.78; } // nacht — zeer donker
+    else if (h < 9 || h >= 18) { bg = '#000'; opacity = 0.50; } // ochtend/avond — donker
+    else                        { bg = '#fff'; opacity = 0.18; } // overdag — lichte opheldering
+    darkness.style.background = bg;
+    darkness.style.opacity = opacity;
+  } else if (darkness) {
+    darkness.style.opacity = 0; // supermarkt: geen overlay
+  }
+
+  const el = document.getElementById('buiten-content');
+  const v = sceneVisuals[scene.id];
+  if (!v) {
+    if (el) el.innerHTML = '<p style="color:#aaa;font-size:.85rem;padding:16px">Geen beeld beschikbaar.</p>';
+    return;
+  }
+  const imgUrl = scene.bg || 'achtergrond-1.jpg';
+  if (el) el.innerHTML = `<div class="sv-wrap" style="height:200px;margin:-16px -16px 0">
+    <img src="${imgUrl}" alt="" loading="lazy" onerror="this.style.display='none'">
+    <div class="sv-grad"></div>
+    <div class="sv-info">
+      <div class="sv-title">${v.title}</div>
+    </div>
+  </div>`;
+}
+
+// ─── SCENARIO ENGINE ──────────────────────────────────────────────────────────
+let currentSceneIdx = 0;
+let activeTab = 'buiten';
+let radioUnlocked = false;
+const stateSnapshots = [];
+const historySnapshots = [];
+
+function startScenario() {
+  // Merge profile prep answers into state
+  if (profile.hasCash) state.hasCash = true;
+  if (profile.hasFlashlight) state.hasFlashlight = true;
+  if (profile.hasWater) state.hasWater = true;
+
+  // Initialize survival stats from profile
+  state.water   = profile.hasWater ? 5 : 1;
+  state.food    = (profile.hasKit || profile.hasExtraFood) ? 5 : 2;
+  state.comfort = 5;
+  state.health  = 5;
+  state.hasCampingStove = false;
+  state.knowsNeighbors  = false;
+
+  currentSceneIdx = 0;
+  channels.news = [];
+  channels.whatsapp = [];
+  channels.alerts = [];
+  channels.radio = [];
+  choiceHistory.length = 0;
+  radioUnlocked = false;
+  stateSnapshots.length = 0;
+  historySnapshots.length = 0;
+
+  show('s-scenario');
+  renderScene();
+}
+
+function getActiveScenes() {
+  return scenes.filter(s => !s.conditionalOn || s.conditionalOn());
+}
+
+function markUnread(name) {
+  const tab = document.getElementById('tab-' + name);
+  if (!tab || tab.classList.contains('active')) return;
+  tab.classList.add('has-unread');
+}
+
+function renderScene() {
+  const visibleScenes = getActiveScenes();
+  const scene = visibleScenes[currentSceneIdx];
+  if (!scene) { showReport(); return; }
+
+  // Save state snapshot for back navigation
+  stateSnapshots[currentSceneIdx] = JSON.parse(JSON.stringify(state));
+  historySnapshots[currentSceneIdx] = choiceHistory.length;
+
+  // Apply scene decay (automatic stat reductions)
+  const decay = sceneDecay[scene.id];
+  if (decay) {
+    Object.keys(decay).forEach(k => {
+      state[k] = Math.max(0, Math.min(5, state[k] + decay[k]));
+    });
+  }
+  // Penalty: no water or food causes health and comfort to drop
+  if (state.water === 0) {
+    state.health  = Math.max(0, state.health  - 1);
+    state.comfort = Math.max(0, state.comfort - 1);
+  }
+  if (state.food === 0) {
+    state.health  = Math.max(0, state.health  - 1);
+    state.comfort = Math.max(0, state.comfort - 1);
+  }
+  renderStatusBars();
+
+  // Clear all unread dots — only re-add below for this scene's new content
+  ['news', 'whatsapp', 'radio'].forEach(t => {
+    const tab = document.getElementById('tab-' + t);
+    if (tab) tab.classList.remove('has-unread');
+  });
+
+  // Show/hide back button
+  document.getElementById('btn-back').style.display = currentSceneIdx > 0 ? 'inline-block' : 'none';
+
+  // Progress
+  document.getElementById('sc-prog').style.width = ((currentSceneIdx / visibleScenes.length) * 100) + '%';
+
+  // Scene indicator
+  const badge = document.getElementById('day-badge');
+  badge.textContent = scene.dayBadge;
+  badge.className = 'scene-day-badge' + (scene.dayBadgeClass ? ' ' + scene.dayBadgeClass : '');
+  document.getElementById('scene-num-label').textContent = `Scene ${currentSceneIdx + 1} / ${visibleScenes.length} · ${scene.id}`;
+
+  // Clock
+  document.getElementById('sc-time').textContent = scene.time;
+  document.getElementById('sc-date').textContent = scene.date;
+
+  // Stop any playing speech when navigating
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  updateRadioBtn(false);
+
+  // Scene visual → buiten panel
+  renderSceneVisual(scene);
+
+  // Narrative
+  document.getElementById('sc-narrative').innerHTML = scene.narrative;
+  // Clear afterword
+  const afterEl = document.getElementById('sc-afterword');
+  afterEl.style.display = 'none';
+  afterEl.innerHTML = '';
+
+  // Accumulate channel content (for state tracking)
+  if (scene.channels.news && scene.channels.news.length) {
+    scene.channels.news.forEach(n => channels.news.push(n));
+  }
+  if (scene.channels.whatsapp && scene.channels.whatsapp.length) {
+    scene.channels.whatsapp.forEach(m => channels.whatsapp.push(m));
+  }
+  if (scene.channels.nlalert) {
+    channels.alerts.push({time: scene.time + ' — ' + scene.date, text: scene.channels.nlalert});
+  }
+  if (scene.channels.radio && (profile.hasRadio || state.hasCarRadio)) {
+    channels.radio.push({time: scene.time, text: scene.channels.radio});
+    if (!radioUnlocked) {
+      radioUnlocked = true;
+      document.getElementById('radio-tab').classList.remove('hidden-tab');
+    }
+  }
+
+  // Always open on 'Wat je ervaart' tab at the start of each scene
+  switchTab('buiten');
+
+  // Render only current scene's new content
+  renderChannels(scene);
+
+  // Mark unread dots for tabs with genuinely new content this scene
+  setTimeout(() => {
+    if (scene.channels.news && scene.channels.news.length) markUnread('news');
+    if (scene.channels.whatsapp && scene.channels.whatsapp.length) { markUnread('whatsapp'); playMessagePing(); }
+    if (scene.channels.radio && profile.hasRadio && scene.channels.radio) markUnread('radio');
+    // Active tab never needs a dot
+    document.getElementById('tab-' + activeTab)?.classList.remove('has-unread');
+  }, 200);
+
+  // Render choices or just a "verder" button
+  renderChoices(scene);
+
+  // Trigger NL-Alert overlay
+  if (scene.channels.nlalert) {
+    setTimeout(() => {
+      triggerAlert(scene.channels.nlalert);
+    }, 400);
+  }
+
+  // Scroll to top
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderChannels(scene) {
+  const sc = scene ? scene.channels : {news:[], whatsapp:[], nlalert:null, radio:null};
+
+  // NEWS — show only this scene's new items, newest on top
+  let newsHtml = '';
+  const newNews = sc.news || [];
+  if (newNews.length === 0) {
+    newsHtml = '<p style="color:#64748b;font-size:.85rem;padding-top:4px">Geen nieuwe berichten.</p>';
+  } else {
+    [...newNews].reverse().forEach(n => {
+      newsHtml += `<div class="news-item">
+        <div class="news-time">${n.time}</div>
+        <div class="news-content">
+          <div class="news-headline">${n.headline}</div>
+          <div class="news-body">${n.body}</div>
+        </div>
+      </div>`;
+    });
+  }
+  document.getElementById('news-content').innerHTML = newsHtml;
+
+  // WHATSAPP — show only this scene's new messages, newest on top
+  let waHtml = '';
+  const newWa = sc.whatsapp || [];
+  if (newWa.length === 0) {
+    waHtml = '<p style="color:#64748b;font-size:.85rem">Geen nieuwe berichten.</p>';
+  } else {
+    [...newWa].reverse().forEach(m => {
+      const isOut = m.outgoing;
+      waHtml += `<div class="wa-msg ${isOut ? 'outgoing' : 'incoming'}">
+        ${!isOut ? `<div class="wa-from">${m.from}</div>` : ''}
+        <div class="wa-bubble">${m.msg}</div>
+        <div class="wa-time">${m.time}</div>
+      </div>`;
+    });
+  }
+  document.getElementById('wa-content').innerHTML = waHtml;
+
+  // ALERTS — show only this scene's new alert
+  let alertsHtml = '';
+  if (!sc.nlalert) {
+    alertsHtml = '<p style="color:#64748b;font-size:.85rem">Geen nieuwe meldingen.</p>';
+  } else {
+    alertsHtml = `<div class="alert-card">
+      <div class="alert-header">🚨 NL-Alert</div>
+      <div class="alert-body">${sc.nlalert}</div>
+    </div>`;
+  }
+  document.getElementById('alerts-content').innerHTML = alertsHtml;
+
+  // RADIO — show only this scene's new radio message
+  const radioBtn = document.getElementById('radio-play-btn');
+  if ((profile.hasRadio || state.hasCarRadio) && sc.radio) {
+    document.getElementById('radio-freq').textContent = state.hasCarRadio && !profile.hasRadio ? 'Autoradio — FM/AM' : '693 kHz AM — ONTVANGST';
+    document.getElementById('radio-content').style.color = '#cbd5e1';
+    document.getElementById('radio-content').innerHTML =
+      `<div style="font-size:.7rem;color:#4ade80;margin-bottom:6px">[${scene.time}]</div>${sc.radio}`;
+    currentRadioText = sc.radio;
+    if (radioBtn) radioBtn.style.display = 'block';
+  } else if (radioUnlocked) {
+    document.getElementById('radio-content').innerHTML = '<p style="color:#64748b;font-size:.85rem">Geen nieuwe uitzending.</p>';
+    currentRadioText = '';
+    if (radioBtn) radioBtn.style.display = 'none';
+  }
+}
+
+function getChoiceAnnotation(scene, i) {
+  const has = (key) => profile[key] || state[key];
+  let note = '';
+  // cash
+  if ((scene.id === 'scene_6' && i === 0) || (scene.id === 'scene_6b' && i <= 1)) {
+    note = state.hasCash
+      ? ' <span style="color:#86efac;font-size:.78rem">(contant geld ✓)</span>'
+      : ' <span style="color:#fca5a5;font-size:.78rem">(geen contant geld)</span>';
+  }
+  if (scene.id === 'scene_2' && i === 0 && state.hasCash)
+    note = ' <span style="color:#86efac;font-size:.78rem">(al in huis ✓)</span>';
+  // water already stored
+  if (scene.id === 'scene_7' && i === 0 && state.hasWater)
+    note = ' <span style="color:#86efac;font-size:.78rem">(al gedaan ✓)</span>';
+  if (scene.id === 'scene_5' && i === 1 && state.hasWater)
+    note = ' <span style="color:#86efac;font-size:.78rem">(al gedaan ✓)</span>';
+  // powerbank
+  if (scene.id === 'scene_5' && i === 0) {
+    note = profile.hasPowerbank
+      ? ' <span style="color:#86efac;font-size:.78rem">(powerbank ✓)</span>'
+      : ' <span style="color:#fca5a5;font-size:.78rem">(je hebt geen powerbank)</span>';
+  }
+  // zaklamp
+  if (scene.id === 'scene_2' && i === 1) {
+    note = profile.hasFlashlight
+      ? ' <span style="color:#86efac;font-size:.78rem">(zaklamp ✓)</span>'
+      : ' <span style="color:#fca5a5;font-size:.78rem">(je hebt geen zaklamp)</span>';
+  }
+  // kaarsen / zaklamp scene_8
+  if (scene.id === 'scene_8' && i === 2) {
+    const hasLight = state.hasFlashlight || (state.supermarketItems && state.supermarketItems.includes('kaarsen'));
+    note = hasLight
+      ? ' <span style="color:#86efac;font-size:.78rem">(kaarsen/zaklamp ✓)</span>'
+      : ' <span style="color:#fca5a5;font-size:.78rem">(je hebt geen kaarsen of zaklamp)</span>';
+  }
+  // auto voor scene_7 opladen
+  if (scene.id === 'scene_7' && i === 3) {
+    note = profile.hasCar
+      ? ' <span style="color:#86efac;font-size:.78rem">(auto ✓)</span>'
+      : ' <span style="color:#fca5a5;font-size:.78rem">(je hebt geen auto)</span>';
+  }
+  // cooking scenes — gas, induction, camping
+  const cookScenes = ['scene_8','scene_cook_d1','scene_cook_d2'];
+  if (cookScenes.includes(scene.id)) {
+    if (i === 0) note = profile.hasGasStove
+      ? ' <span style="color:#86efac;font-size:.78rem">(gasfornuis ✓)</span>'
+      : ' <span style="color:#fca5a5;font-size:.78rem">(alleen bij gasfornuis)</span>';
+    if (i === 1) note = ' <span style="color:#fca5a5;font-size:.78rem">(werkt niet zonder stroom)</span>';
+    if (i === 2 && scene.id !== 'scene_8') note = state.hasCampingStove
+      ? ' <span style="color:#86efac;font-size:.78rem">(campingkooktoestel ✓)</span>'
+      : ' <span style="color:#fca5a5;font-size:.78rem">(campingkooktoestel nodig)</span>';
+  }
+  // buurvrouw Annie — kennen we haar al?
+  if (scene.id === 'scene_10' && i === 0 && state.knowsNeighbors) {
+    note = ' <span style="color:#86efac;font-size:.78rem">(je kent Annie ✓)</span>';
+  }
+  // cook_d1 zuinig koken (index 4)
+  if (scene.id === 'scene_cook_d1' && i === 4) {
+    note = (state.food <= 2)
+      ? ' <span style="color:#fca5a5;font-size:.78rem">(voedsel bijna op — slim)</span>'
+      : '';
+  }
+  // cook_d2 Annie uitnodigen (index 4)
+  if (scene.id === 'scene_cook_d2' && i === 4) {
+    note = state.helpedNeighbor
+      ? ' <span style="color:#86efac;font-size:.78rem">(je kent Annie ✓)</span>'
+      : '';
+  }
+  // auto radio annotatie — scene_5 keuze 2
+  if (scene.id === 'scene_5' && i === 2) {
+    note = profile.hasCar
+      ? ' <span style="color:#86efac;font-size:.78rem">(auto ✓)</span>'
+      : ' <span style="color:#fca5a5;font-size:.78rem">(je hebt geen auto)</span>';
+  }
+  // radio annotatie voor ochtendscenes
+  const mornRadioIdx = {scene_morn_d1:1, scene_morn_d2:1, scene_morn_d3:0};
+  if (scene.id in mornRadioIdx && i === mornRadioIdx[scene.id]) {
+    note = profile.hasRadio
+      ? ' <span style="color:#86efac;font-size:.78rem">(batterijradio ✓)</span>'
+      : ' <span style="color:#fca5a5;font-size:.78rem">(je hebt geen batterijradio)</span>';
+  }
+  return note;
+}
+
+function renderChoices(scene) {
+  const wrap = document.getElementById('sc-choices');
+  document.getElementById('sc-consequence').classList.remove('show');
+  if (!scene.choices) {
+    wrap.innerHTML = '';
+    return;
+  }
+  let html = '';
+  scene.choices.forEach((c, i) => {
+    const note = getChoiceAnnotation(scene, i);
+    html += `<button class="choice-btn" id="cbtn-${i}" onclick="pickChoice(${i})">${c.text}${note}</button>`;
+  });
+  wrap.innerHTML = html;
+}
+
+function pickChoice(idx) {
+  const btn = document.getElementById('cbtn-' + idx);
+  if (btn.classList.contains('picked')) return; // prevent double-picking same choice
+
+  const visibleScenes = getActiveScenes();
+  const scene = visibleScenes[currentSceneIdx];
+  const choice = scene.choices[idx];
+
+  btn.classList.add('picked');
+  btn.disabled = true;
+
+  // Apply state changes
+  const sc = choice.stateChange;
+  const STAT_KEYS = new Set(['water','food','comfort','health']);
+  Object.keys(sc).forEach(k => {
+    if (k === 'awarenessLevel') {
+      state[k] = Math.max(state[k], sc[k]);
+    } else if (STAT_KEYS.has(k)) {
+      state[k] = Math.max(0, Math.min(5, state[k] + sc[k]));
+    } else if (Array.isArray(sc[k])) {
+      state[k] = sc[k].slice();
+    } else {
+      state[k] = sc[k];
+    }
+  });
+  renderStatusBars();
+
+  // Handle cash check for scene_6b first choice
+  if (scene.id === 'scene_6b' && idx === 0 && !state.hasCash) {
+    state.supermarketItems = ['blikken'];
+  }
+
+  // Record choice history
+  choiceHistory.push({
+    sceneId: scene.id,
+    time: scene.time,
+    date: scene.date,
+    dayBadge: scene.dayBadge,
+    choiceText: choice.text
+  });
+
+  // Update single consequence box at bottom (replaces previous)
+  const consBox = document.getElementById('sc-consequence');
+  consBox.innerHTML = choice.consequence;
+  consBox.classList.add('show');
+
+  // Show afterword if this scene has one (e.g. scene_16 epilogue)
+  if (scene.afterword) {
+    const afterEl = document.getElementById('sc-afterword');
+    afterEl.innerHTML = scene.afterword;
+    afterEl.style.display = 'block';
+  }
+
+  setTimeout(() => {
+    consBox.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }, 100);
+}
+
+function advanceScene() {
+  currentSceneIdx++;
+  renderScene();
+}
+
+function goBack() {
+  if (currentSceneIdx === 0) return;
+  currentSceneIdx--;
+  // Restore state and history to before this scene was entered
+  const snap = stateSnapshots[currentSceneIdx];
+  if (snap) Object.keys(snap).forEach(k => { state[k] = Array.isArray(snap[k]) ? snap[k].slice() : snap[k]; });
+  const histLen = historySnapshots[currentSceneIdx];
+  if (histLen !== undefined) choiceHistory.length = histLen;
+  renderScene();
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+  // Clear unread dot for this tab
+  const tabEl = document.getElementById('tab-' + tab);
+  if (tabEl) tabEl.classList.remove('has-unread');
+
+  document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.channel-panel').forEach(p => p.classList.remove('active'));
+
+  const panelMap = {buiten:'panel-buiten', news:'panel-news', whatsapp:'panel-whatsapp', alerts:'panel-alerts', radio:'panel-radio'};
+  if (tabEl) tabEl.classList.add('active');
+  document.getElementById(panelMap[tab]).classList.add('active');
+}
+
+// ─── NL-ALERT OVERLAY ─────────────────────────────────────────────────────────
+function triggerAlert(text) {
+  playNLAlertSound();
+  const overlay = document.getElementById('nl-alert-overlay');
+  const lines = text.split('\n');
+  // lines[0] = "NL-Alert", lines[1] = date/time, rest = body
+  const timeLine = lines[1] || '';
+  const bodyLines = lines.slice(2);
+  const fullText = 'NL-Alert ' + timeLine + '\n\n' + bodyLines.join('\n').trim();
+  document.getElementById('overlay-text').textContent = fullText;
+  overlay.classList.add('show');
+}
+function closeAlert() {
+  document.getElementById('nl-alert-overlay').classList.remove('show');
+}
+
+// ─── REPORT ───────────────────────────────────────────────────────────────────
+function showReport() {
+  document.getElementById('sc-prog').style.width = '100%';
+  show('s-report');
+
+  // Intro
+  let intro = 'Je hebt het stroomuitval-scenario van enkele dagen doorlopen. Hieronder zie je een overzicht van wat je koos, wat je goed deed en waar ruimte voor verbetering zit.';
+  document.getElementById('rep-intro').textContent = intro;
+
+  // Timeline
+  let tlHtml = '';
+  choiceHistory.forEach(ch => {
+    tlHtml += `<div class="timeline-entry">
+      <div class="tl-time">${ch.dayBadge}<br/>${ch.time}</div>
+      <div class="tl-text">${ch.choiceText}</div>
+    </div>`;
+  });
+  if (!tlHtml) tlHtml = '<p style="color:#64748b;font-size:.85rem">Geen keuzes geregistreerd.</p>';
+  document.getElementById('rep-timeline').innerHTML = tlHtml;
+
+  // Status badges
+  const statusItems = [
+    {key:'hasCash', label:'Contant geld', icon:'💵'},
+    {key:'hasWater', label:'Noodwater opgeslagen', icon:'🛁'},
+    {key:'hasFlashlight', label:'Zaklamp / kaarsen', icon:'🔦'},
+    {key:'houseLocked', label:'Huis afgesloten', icon:'🔒'},
+    {key:'knowsNeighbors', label:'Buren leren kennen', icon:'👋'},
+    {key:'helpedNeighbor', label:'Buurman geholpen', icon:'🤝'},
+    {key:'hasCampingStove', label:'Campingkooktoestel gebruikt', icon:'🏕️'},
+    {key:'handledSewage', label:'Riolering aangepakt', icon:'🚽'},
+    {key:'wentToFoodDist', label:'Voedseluitdeling bezocht', icon:'🍚'},
+    {key:'hasExtraFood', label:'Voedsel vooraf ingeslagen', icon:'🛒'}
+  ];
+  let statusHtml = '<div class="status-row">';
+  statusItems.forEach(item => {
+    const has = state[item.key];
+    statusHtml += `<div class="status-badge ${has ? 'has' : 'missing'}">${item.icon} ${item.label}</div>`;
+  });
+  statusHtml += '</div>';
+  document.getElementById('rep-status').innerHTML = statusHtml;
+
+  // GOOD
+  const goodItems = [];
+  if (state.hasCash) goodItems.push({icon:'💵', text:'<b>Contant geld</b> — Je had contant geld beschikbaar. In een stroomstoring werken pinautomaten niet. Dit maakte direct een verschil bij de supermarkt.'});
+  if (state.hasWater) goodItems.push({icon:'🍶', text:'<b>Noodwater opgeslagen</b> — Je vulde op tijd flessen en pannen met water. Toen de waterpomp uitviel had je nog een buffer voor drinken, koken en de wc.'});
+  if (state.houseLocked) goodItems.push({icon:'🔒', text:'<b>Huis afgesloten</b> — Je controleerde ramen en deuren. Inbrekers sloegen toe in de buurt — jouw huis bleef gespaard.'});
+  if (state.knowsNeighbors) goodItems.push({icon:'👋', text:'<b>Buren leren kennen</b> — Je ging al vroeg bij Annie langs. Daardoor wist je wie er woonde en kon je sneller helpen toen het mis ging.'});
+  if (state.helpedNeighbor) goodItems.push({icon:'🤝', text:'<b>Buurman geholpen</b> — Je hielp buurvrouw Annie en haar gewonde man. In een crisis zijn buren je meest directe vangnet.'});
+  if (state.hasCampingStove) goodItems.push({icon:'🏕️', text:'<b>Campingkooktoestel gebruikt</b> — Je kookte warm eten met het campingkooktoestel. Warm eten in een koud huis doet meer voor het moreel dan je denkt.'});
+  if (state.handledSewage) goodItems.push({icon:'🚽', text:'<b>Rioleringsprobleem aangepakt</b> — Je reageerde goed op de uitgevallen rioolpompen. Zo bleef het huis leefbaar.'});
+  if (state.hasExtraFood) goodItems.push({icon:'🛒', text:'<b>Voedsel vooraf ingeslagen</b> — Je kocht al voor de crisis wat extra in. Kleine voorbereiding, groot verschil.'});
+  if (state.hasFlashlight) goodItems.push({icon:'🔦', text:'<b>Verlichting geregeld</b> — Je zorgde voor een zaklamp of kaarsen. In het donker, bij -3 graden buiten, was dit essentieel.'});
+  if (state.awarenessLevel > 0) goodItems.push({icon:'💡', text:'<b>Bewustzijn voor risico\'s</b> — Je las de nieuwsberichten over kwetsbare energienetwerken. Dat bewustzijn is de eerste stap in voorbereiding.'});
+
+  let goodHtml = '';
+  if (goodItems.length === 0) {
+    goodHtml = '<div class="tip-card neutral"><div class="tip-icon">📋</div><div class="tip-text">In dit scenario maakte je geen keuzes die direct bijdroegen aan veiligheid of voorbereiding. Dat is oké — dit scenario is juist bedoeld om te ontdekken waar de blinde vlekken zitten.</div></div>';
+  } else {
+    goodItems.forEach(g => {
+      goodHtml += `<div class="tip-card good"><div class="tip-icon">${g.icon}</div><div class="tip-text">${g.text}</div></div>`;
+    });
+  }
+  document.getElementById('rep-good').innerHTML = goodHtml;
+
+  // IMPROVE
+  const improveItems = [];
+  if (!state.hasCash) improveItems.push({icon:'💵', text:'<b>Contant geld</b> — Je had geen contant geld bij de hand. Supermarkten en tankstations accepteerden tijdens de crisis alleen contant. Bewaar altijd €100-200 thuis in een noodpakket.'});
+  if (!state.hasWater) improveItems.push({icon:'🍶', text:'<b>Noodwater</b> — Je vulde geen flessen of pannen met water. Toen de waterpomp uitviel had je geen reserve. Vul bij een dreigende storing direct flessen, pannen en emmers — minimaal 2 liter per persoon per dag.'});
+  if (!state.houseLocked) improveItems.push({icon:'🔒', text:'<b>Beveiliging</b> — Je controleerde je huis niet goed. Inbrekers sloegen toe in de nacht. Vergrendel deuren én ramen en zet een stoel onder de deurklink als extra maatregel.'});
+  if (!state.knowsNeighbors) improveItems.push({icon:'👋', text:'<b>Buren niet gekend</b> — Je ging niet vroeg bij de buren langs. Toen Annie hulp nodig had kende je haar niet. Leer je directe buren kennen — en weet wie er oud of ziek is.'});
+  if (!state.helpedNeighbor) improveItems.push({icon:'🤝', text:'<b>Buurhulp</b> — Je hielp buurvrouw Annie niet of nauwelijks. Haar man had medische hulp nodig. Ken je buren — ouderen en zieken zijn als eerste kwetsbaar in een crisis.'});
+  if (!state.hasCampingStove) improveItems.push({icon:'🏕️', text:'<b>Geen campingkooktoestel</b> — Je at meerdere dagen koud of was afhankelijk van het gasfornuis. Een campingkooktoestel of barbecue geeft je een extra kookoptie. Let op: nooit binnen gebruiken vanwege koolmonoxide.'});
+  if (!state.handledSewage) improveItems.push({icon:'🚽', text:'<b>Riolering</b> — Je pakte het rioleringsprobleem niet goed aan. Rioolwater dat terugstroomt in huis is een ernstig hygiënerisico. Sluit afvoeren af bij het eerste teken van terugsijpeling.'});
+  if (!state.wentToSupermarket && !state.hasExtraFood) improveItems.push({icon:'🛒', text:'<b>Voedselvoorraad</b> — Je ging niet vroeg naar de supermarkt en had geen extra voorraad thuis. Na 24 uur waren alle supermarkten leeg of gesloten. Een basisvoorraad van 72 uur maakt je onafhankelijk.'});
+
+  let improveHtml = '';
+  if (improveItems.length === 0) {
+    improveHtml = '<div class="tip-card good"><div class="tip-icon">🌟</div><div class="tip-text">Je hebt in dit scenario alle cruciale acties ondernomen. Goed gedaan.</div></div>';
+  } else {
+    improveItems.forEach(it => {
+      improveHtml += `<div class="tip-card bad"><div class="tip-icon">${it.icon}</div><div class="tip-text">${it.text}</div></div>`;
+    });
+  }
+  document.getElementById('rep-improve').innerHTML = improveHtml;
+
+  // PERSONAL TIPS based on profile
+  const personalTips = [];
+
+  // Water/flood risk
+  if (profile.region === 'lowland' || (profile.location && profile.location.includes('water'))) {
+    personalTips.push({icon:'🌊', text:'<b>Laaggelegen gebied</b> — Jij woont in een gebied dat extra kwetsbaar is voor wateroverlast bij uitval van gemalen en stuwen. Controleer of je woning boven de vloedlijn ligt en ken de evacuatieroutes.'});
+  }
+
+  // House type
+  if (profile.houseType === 'apartment') {
+    personalTips.push({icon:'🏢', text:'<b>Appartement</b> — Zet grote jerrycans, flessen of emmers klaar met kraanwater (minimaal 2 liter per persoon per dag voor 3 dagen). De lift werkt niet bij stroomuitval — plan dit mee als je beperkt mobiel bent.'});
+  }
+
+  // Children
+  if (profile.hasChildren) {
+    personalTips.push({icon:'👶', text:'<b>Kinderen</b> — Kinderen hebben extra warmte, voeding en structuur nodig in een crisis. Zorg voor spelmateriaal en extra voedsel op maat. Leg ook aan kinderen uit wat er gebeurt — onzekerheid is voor hen zwaarder als ze niets weten.'});
+  }
+
+  // Elderly
+  if (profile.hasElderly) {
+    personalTips.push({icon:'👴', text:'<b>Ouderen in huis</b> — Ouderen koelen sneller af en zijn gevoeliger voor hypothermie. Houd één kamer zo warm mogelijk en let op tekenen van onderkoeling: rillen, verwardheid, slaperigheid.'});
+  }
+
+  // Medical needs
+  if (profile.hasMedNeeds) {
+    personalTips.push({icon:'💊', text:'<b>Medicijnen</b> — Sommige medicijnen vereisen koeling (insuline, biologicals). Zorg altijd voor een koeltasje met ijspacks als back-up. Houd ook een week extra medicijnen op voorraad voor noodgevallen.'});
+  }
+
+  // Pets
+  if (profile.hasPets) {
+    personalTips.push({icon:'🐾', text:'<b>Huisdieren</b> — Huisdieren hebben ook noodvoorraden nodig: voer voor minimaal 3 dagen, water, en een transportmand klaar bij de deur. Let op stress-symptomen bij je huisdier.'});
+  }
+
+  // No car
+  if (!profile.hasCar) {
+    personalTips.push({icon:'🚲', text:'<b>Geen auto</b> — Zonder auto ben je afhankelijk van je fiets of te voet. Zorg dat je weet waar de dichtstbijzijnde voedseluitdelingspunten, crisisopvang en hulpposten zijn.'});
+  }
+
+  // Radio
+  if (!profile.hasRadio) {
+    personalTips.push({icon:'📻', text:'<b>Geen batterijradio</b> — In dit scenario was de AM-radio de enige betrouwbare informatiebron na dag 1. Een batterijradio of handslingerradio kost €20-40 en is onmisbaar bij stroomuitval.'});
+  }
+
+  // Cash
+  if (!profile.hasCash && !state.hasCash) {
+    personalTips.push({icon:'💵', text:'<b>Geen contant geld</b> — Zowel voor als tijdens de crisis had je geen contant geld. Leg altijd €100-200 in biljetten thuis klaar op een vaste, veilige plek.'});
+  }
+
+  // Kit
+  if (!profile.hasKit) {
+    personalTips.push({icon:'🎒', text:'<b>Geen noodpakket</b> — Je hebt geen noodpakket thuis. Een noodpakket hoeft niet duur of ingewikkeld te zijn: water (2L/dag), voedsel voor 3 dagen, zaklamp, batterijen, EHBO-doos, contant geld, en een radio. Klaarleggen in één rugzak kost een uur.'});
+  }
+
+  // Powerbank
+  if (!profile.hasPowerbank) {
+    personalTips.push({icon:'🔋', text:'<b>Geen powerbank</b> — Je telefoon was je enige verbinding met de buitenwereld. Zonder powerbank was die na een dag leeg. Schaf een powerbank aan (minimaal 10.000 mAh) en houd hem opgeladen.'});
+  }
+
+  // Generic tip always shown
+  personalTips.push({icon:'⚡', text:'<b>Stroomstoring langer dan 72 uur</b> — Nederland heeft officieel een norm van 72-uurs noodpakket. Dit scenario duurde enkele dagen. In de praktijk is 5-7 dagen zelfvoorzienend zijn de aanbevolen maat voor een grote infrastructuurcrisis.'});
+
+  let personalHtml = '';
+  personalTips.forEach(t => {
+    personalHtml += `<div class="tip-card"><div class="tip-icon">${t.icon}</div><div class="tip-text">${t.text}</div></div>`;
+  });
+  document.getElementById('rep-personal').innerHTML = personalHtml;
+}
+
+// ─── UTILITIES ────────────────────────────────────────────────────────────────
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const sidebar = document.getElementById('status-sidebar');
+  if (sidebar) sidebar.classList.toggle('visible', id === 's-scenario');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
