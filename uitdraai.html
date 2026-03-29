@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<title>Uitdraai — Stroomuitval Scenario</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Helvetica Neue',Arial,sans-serif;font-size:9.5pt;color:#111;background:#fff;padding:16mm 18mm;line-height:1.45}
+  h1{font-size:16pt;font-weight:800;margin-bottom:4px;color:#003d7a}
+  .subtitle{font-size:9pt;color:#666;margin-bottom:10mm}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:4mm;padding:8px 12px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9;font-size:8.5pt}
+  .legend-item{display:flex;align-items:center;gap:5px}
+  .badge{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:3px;font-size:7.5pt;font-weight:700;white-space:nowrap}
+  .w-plus{background:#dbeafe;color:#1e40af}
+  .w-min{background:#fee2e2;color:#991b1b}
+  .f-plus{background:#dcfce7;color:#166534}
+  .f-min{background:#fef9c3;color:#854d0e}
+  .c-plus{background:#f3e8ff;color:#6b21a8}
+  .c-min{background:#fce7f3;color:#9d174d}
+  .h-min{background:#ffeedd;color:#9a3412}
+  .decay-note{display:inline-flex;align-items:center;gap:3px;padding:1px 7px;border-radius:3px;font-size:7.5pt;font-weight:600;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1}
+  .penalty-note{margin-bottom:6mm;padding:6px 10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:4px;font-size:8pt;color:#9a3412}
+  .startvals{margin-bottom:8mm;padding:8px 12px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9;font-size:8.5pt}
+  .startvals table{border-collapse:collapse;width:100%}
+  .startvals td{padding:2px 8px;font-size:8pt}
+  .startvals th{padding:2px 8px;font-size:7.5pt;font-weight:700;color:#555;text-align:left;border-bottom:1px solid #e5e7eb}
+  .scene{margin-bottom:9mm;page-break-inside:avoid}
+  .scene-header{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;padding-bottom:4px;border-bottom:2px solid #003d7a}
+  .scene-num{font-size:7.5pt;font-weight:700;color:#003d7a;text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
+  .scene-day{font-size:7.5pt;background:#003d7a;color:#fff;padding:1px 7px;border-radius:2px;white-space:nowrap}
+  .scene-day.dag0{background:#475569}
+  .scene-day.dag1,.scene-day.dag2{background:#92400e}
+  .scene-day.dag3{background:#166534}
+  .scene-day.dagmin{background:#1e40af}
+  .scene-title{font-size:11pt;font-weight:700;flex:1}
+  .scene-time{font-size:8pt;color:#666;white-space:nowrap}
+  .scene-decay{margin-bottom:5px}
+  .narrative{font-size:8.8pt;line-height:1.6;color:#222;margin-bottom:5px;padding:6px 10px;background:#f8fafc;border-left:3px solid #cbd5e1;border-radius:2px}
+  .choices-label{font-size:7.5pt;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:3px}
+  .choice{margin-bottom:4px;padding:5px 9px;border:1px solid #e5e7eb;border-radius:3px}
+  .choice.has-stat{border-color:#93c5fd;background:#f0f7ff}
+  .choice-text{font-size:8.8pt;font-weight:600;color:#111;margin-bottom:2px}
+  .choice-badges{margin-bottom:2px}
+  .consequence{font-size:8pt;color:#555;line-height:1.5;font-style:italic}
+  .no-choices{font-size:8pt;color:#999;font-style:italic;padding:4px 0}
+  .conditional-note{font-size:7.5pt;color:#b45309;font-weight:600;margin-bottom:4px}
+  @media print{
+    body{padding:12mm 15mm}
+    .scene{page-break-inside:avoid}
+  }
+  @page{size:A4;margin:0}
+</style>
+</head>
+<body>
+
+<h1>Stroomuitval Scenario — Volledige Uitdraai</h1>
+<div class="subtitle">Alle scènes, narratieven en keuzes · Inclusief indicator-effecten · Afgedrukt: 16 maart 2026</div>
+
+<div class="legend">
+  <strong style="font-size:8.5pt;color:#333">Indicatoren:</strong>
+  <div class="legend-item"><span class="badge w-plus">💧 +n</span> Water stijgt</div>
+  <div class="legend-item"><span class="badge w-min">💧 −n</span> Water daalt</div>
+  <div class="legend-item"><span class="badge f-plus">🍞 +n</span> Voedsel stijgt</div>
+  <div class="legend-item"><span class="badge f-min">🍞 −n</span> Voedsel daalt</div>
+  <div class="legend-item"><span class="badge c-plus">🧣 +n</span> Comfort stijgt</div>
+  <div class="legend-item"><span class="badge c-min">🧣 −n</span> Comfort daalt</div>
+  <div class="legend-item"><span class="badge h-min">❤️ −n</span> Gezondheid daalt</div>
+  <div class="legend-item"><span class="decay-note">↓ auto</span> Automatische wijziging bij binnenkomst scène</div>
+</div>
+
+<div class="penalty-note">
+  ⚠ <strong>Strafmechanisme:</strong> Als water = 0 of voedsel = 0 bij het binnenkomen van een scène, daalt zowel comfort als gezondheid met −1 (per indicator). Bij allebei tegelijk dus −2 per scène.
+</div>
+
+<div class="startvals">
+  <strong style="font-size:8.5pt;color:#333;display:block;margin-bottom:4px">Startwaarden (schaal 0–5)</strong>
+  <table>
+    <tr><th>Indicator</th><th>Prep = Ja</th><th>Prep = Nee</th></tr>
+    <tr><td>💧 Water</td><td>5</td><td>1</td></tr>
+    <tr><td>🍞 Voedsel</td><td>5</td><td>1</td></tr>
+    <tr><td>🧣 Comfort</td><td>5</td><td>5</td></tr>
+    <tr><td>❤️ Gezondheid</td><td>5</td><td>5</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SCENE 1 -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 1</span>
+    <span class="scene-day dagmin">Dag −7</span>
+    <span class="scene-title">Energienetwerkrisico</span>
+    <span class="scene-time">Zondag 24 januari 2027 · 12:00</span>
+  </div>
+  <div class="narrative">Je leest het nieuws tijdens je lunchpauze. De berichten over kwetsbare energienetwerken vallen je op, maar je hebt het druk. Buiten waait een koude wind.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">💡 Ik lees het artikel over de kwetsbare omvormers door en sla het op</div>
+    <div class="consequence">Je leest het technische artikel aandachtig door. Experts leggen uit hoe een storing bij één centrale via het gekoppelde Europese net kan doorwerken. Je vergeet het daarna grotendeels — maar iets in je achterhoofd onthoudt het.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📱 Ik scan de koppen maar lees verder niets</div>
+    <div class="consequence">Je ziet de berichten vluchtig voorbijkomen. Niets bijzonders.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🙈 Ik scroll verder — het is nieuws dat er altijd is</div>
+    <div class="consequence">Je scrollt door naar sport en entertainment. Altijd dat gezeur over energie.</div>
+  </div>
+</div>
+
+<!-- SCENE 2 -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 2</span>
+    <span class="scene-day dagmin">Dag −1</span>
+    <span class="scene-title">Kabelsabotage op de Noordzee</span>
+    <span class="scene-time">Zaterdag 30 januari 2027 · 12:00</span>
+  </div>
+  <div class="narrative">Het nieuws over de kabelsabotage is groot. Op je werk wordt er even over gepraat, maar de minister stelt gerust: geen direct gevaar. Vanavond krijg je bezoek.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">💵 Ik pin even €100 contant geld, voor de zekerheid</div>
+    <div class="consequence">Je haalt €100 op uit de automaat. Achteraf een verstandige beslissing — maar dat weet je nu nog niet.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🔦 Ik pak de zaklamp eruit en check of de batterijen het nog doen</div>
+    <div class="consequence">Je vindt de zaklamp in de keukenkast. De batterijen zijn bijna leeg. Je legt de zaklamp klaar maar vergeet nieuwe batterijen te kopen.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">💬 Ik stuur Rob terug: "Ja, beetje raar. Maar de minister zegt dat het goed zit"</div>
+    <div class="consequence">Rob antwoordt: "Ja dat zal wel. Okay, ff kijken. Fijne avond!" Je gaat verder met je dag.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🙈 Ik maak me geen zorgen — de minister heeft het al gezegd</div>
+    <div class="consequence">Je sluit het nieuwsartikel. Die ministers weten wat ze doen.</div>
+  </div>
+</div>
+
+<!-- SCENE MORN_D0 -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 3</span>
+    <span class="scene-day dag0">Dag 0</span>
+    <span class="scene-title">Gewone zondagochtend</span>
+    <span class="scene-time">Zondag 31 januari 2027 · 08:00</span>
+  </div>
+  <div class="narrative">Zondag ochtend. De CV tikt, de koelkast zoemt, de waterkoker fluit. Gewone geluiden. Buiten ligt een dun laagje rijp op de daken. Bewolkt, stil. Je scrolt even door het nieuws bij je koffie. Niets bijzonders. Een gewone zondag — het voelt zo, tenminste. 🌡️ Binnen: 18°C · ⚡ Stroom aan</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">☕ Koffie zetten en rustig ontbijten</div>
+    <div class="consequence">Je zet koffie. Warm water, verse geur, de krant. Normaal. Je weet nog niet dat dit de laatste gewone ochtend is voor een tijdje.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🧺 Een was draaien — zondag is wasdag</div>
+    <div class="consequence">Je gooit de was in de machine. Terwijl hij draait kijk je even buiten. Alles normaal.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🛌 Uitslapen — het is zondag</div>
+    <div class="consequence">Je besluit bij te slapen. Je hebt het verdiend. Even later — om 11:30 — word je gewekt door iets raars: de koelkast valt stil.</div>
+  </div>
+</div>
+
+<!-- SCENE 3 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 4</span>
+    <span class="scene-day dag0">Dag 0</span>
+    <span class="scene-title">Eerste stroomstoring</span>
+    <span class="scene-time">Zondag 31 januari 2027 · 11:30</span>
+  </div>
+  <div class="narrative">Midden in de ochtend valt plotseling de stroom uit. Alles wordt stil — de koelkast, de verwarming, het wifi-lampje. Alleen je telefoon werkt nog, op mobiel bereik. Buiten zie je dat ook de buren naar buiten komen kijken. De stilte is bijna schokkend — alsof iemand het geluid van de wereld heeft uitgezet.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">📱 Nieuws checken op mijn telefoon — wat is er aan de hand?</div>
+    <div class="consequence">Je vindt het bericht op NOS: storing door kortsluting bij een energiecentrale in Dronten. Er wordt geen herstelterm genoemd.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🔌 Alle grote apparaten uitschakelen en de zekering uitzetten</div>
+    <div class="consequence">Je loopt door het huis en zet alles handmatig uit. Goed idee — bij herstel van de stroom kunnen pieken apparaten beschadigen.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">☕ Even koffie zetten op het gasfornuis en rustig afwachten</div>
+    <div class="consequence">Het gasfornuis werkt gelukkig nog. Je zet koffie. Het is vast snel voorbij.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🤷 Gewoon doorgaan — dit is toch zo opgelost</div>
+    <div class="consequence">Je wacht. Niets aan de hand. Zo zijn er wel vaker kleine storingen.</div>
+  </div>
+</div>
+
+<!-- SCENE 4 (game) — geen keuzes -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 5</span>
+    <span class="scene-day dag0">Dag 0</span>
+    <span class="scene-title">Stroom terug... even</span>
+    <span class="scene-time">Zondag 31 januari 2027 · 11:57</span>
+  </div>
+  <div class="narrative">De lichten flikkeren en springen aan. De koelkast begint te zoemen, de CV-ketel zoekt de vlam. Normaal. Buiten hoor je mensen lachen. Loos alarm.</div>
+  <div class="no-choices">Geen keuzes — informatieve scène</div>
+</div>
+
+<!-- SCENE 5 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 6</span>
+    <span class="scene-day dag0">Dag 0</span>
+    <span class="scene-title">NL-Alert: heel Europa zonder stroom</span>
+    <span class="scene-time">Zondag 31 januari 2027 · 12:20</span>
+  </div>
+  <div class="narrative">De stroom valt opnieuw uit, dit keer met een zwaardere klap. Je telefoon begint te trillen: NL-Alert. Dit is andere koek dan daarnet — het gaat om heel Europa. Je accu staat op 68%.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">🔋 Telefoon direct op de powerbank aansluiten en opladen</div>
+    <div class="consequence">Goed idee. Je sluit de powerbank aan. Je accu loopt niet verder leeg. Zonder stroom is je telefoon je enige verbinding met de buitenwereld.</div>
+  </div>
+  <div class="choice has-stat">
+    <div class="choice-text">🍶 Lege flessen vullen met water — voor noodgebruik</div>
+    <div class="choice-badges"><span class="badge w-plus">💧 +2</span></div>
+    <div class="consequence">Je pakt alle lege flessen, pannen en emmers die je kunt vinden en vult ze met kraanwater. Als de waterpomp uitvalt, heb je dit water nog voor drinken, koken en de wc.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🚗 Naar de auto — autoradio aanzetten voor nieuws</div>
+    <div class="consequence">Je loopt naar je auto en zet de radio aan. Radio 1 is volop in de lucht: een breed noodbericht. Heel Europa, kettingreactie, onbekende duur.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📞 Proberen mama terug te bellen</div>
+    <div class="consequence">Je belt maar het netwerk is overbelast. Je sms't haar: "Alles goed hier. Wacht af."</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🤷 Niets doen — ik wacht af wat er gaat gebeuren</div>
+    <div class="consequence">Je zit op de bank en wacht. Er komt geen stroom. Je accu loopt langzaam verder leeg. Buiten klinkt een sirene.</div>
+  </div>
+</div>
+
+<!-- SCENE 6 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 7</span>
+    <span class="scene-day dag0">Dag 0</span>
+    <span class="scene-title">Netwerk overbelast — supermarkt of thuis?</span>
+    <span class="scene-time">Zondag 31 januari 2027 · 13:30</span>
+  </div>
+  <div class="narrative">Je telefoon heeft nauwelijks bereik meer. Je hoort constant politiesirenes in de verte. Op straat zijn mensen nerveus. De supermarkt om de hoek is nog open maar je ziet de rij al van ver. Het begint merkbaar kouder te worden in huis.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">🛒 Nu naar de supermarkt gaan — voor het te laat is</div>
+    <div class="consequence">Je pakt je jas en gaat. De rij is lang maar beweegt. Na 25 minuten ben je binnen. Alleen contant geld — maar dan kom je er achter. <em>(→ leidt naar Scène 8: in de supermarkt)</em></div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🏠 Thuis blijven en inventariseren wat we al hebben</div>
+    <div class="consequence">Je maakt een overzicht: wat ligt er in de vriezer, de kelder, de kast? Je weet nu wat je hebt.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🚗 Met de auto naar een tankstation voor benzine</div>
+    <div class="consequence">Bij het tankstation staat een rij van 40 auto's. Na een uur wachten: "Alleen voor hulpdiensten."</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">👴 Even bij de buren langs of alles goed is</div>
+    <div class="consequence">Buurvrouw Annie (78) staat verward in de deuropening. "Ja hoor, ik red me wel", zegt ze. Maar ze ziet er bleek uit. <em style="color:#166534">(→ stelt knowsNeighbors in: je kent Annie — relevant bij Scène 13)</em></div>
+  </div>
+</div>
+
+<!-- SCENE 6B (game) — conditioneel -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 8</span>
+    <span class="scene-day dag0">Dag 0</span>
+    <span class="scene-title">In de supermarkt</span>
+    <span class="scene-time">Zondag 31 januari 2027 · 14:00</span>
+  </div>
+  <div class="conditional-note">⚠ Conditionele scène — alleen zichtbaar als je naar de supermarkt bent gegaan</div>
+  <div class="narrative">Je staat in de rij bij de supermarkt. Er staan minstens 60 mensen voor je. Als je eindelijk binnen bent: de schappen zijn al behoorlijk uitgedund. Drinkwater is uitverkocht. Hetzelfde geldt voor wc-papier, olie, benzine en lucifers.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice has-stat">
+    <div class="choice-text">🥫 Zoveel mogelijk blikvoer, rijst en pasta inslaan</div>
+    <div class="choice-badges"><span class="badge f-plus">🍞 +2</span></div>
+    <div class="consequence">Je vult een grote tas: blikken soep, bonen, tomaten, rijst, pasta, crackers. Aan de kassa: "Alleen contant."</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🕯️ Kaarsen, aansteker, batterijen — praktische spullen</div>
+    <div class="consequence">Je vindt nog twee pakken kaarsen, een aansteker en het laatste pakje AA-batterijen. Minder eten, maar je hebt licht.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">😤 Ik ga weg — de sfeer is te gespannen</div>
+    <div class="consequence">De spanning in de winkel is tastbaar. Je besluit te vertrekken. Veiliger, maar je gaat met lege handen naar huis.</div>
+  </div>
+</div>
+
+<!-- SCENE 7 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 9</span>
+    <span class="scene-day dag0">Dag 0</span>
+    <span class="scene-title">Tweede NL-Alert: dit kan tot morgen duren</span>
+    <span class="scene-time">Zondag 31 januari 2027 · 14:00</span>
+  </div>
+  <div class="narrative">Het NL-Alert zegt iets wat je niet had verwacht: <strong>tot morgen</strong>. Dit is geen storing van een uur. Buiten hoor je meer sirenes.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice has-stat">
+    <div class="choice-text">🍶 Lege flessen en pannen vullen met water</div>
+    <div class="choice-badges"><span class="badge w-plus">💧 +2</span></div>
+    <div class="consequence">Je vult alles wat je hebt: flessen, pannen, emmers, zelfs de gootsteen afgedopt. Zolang er nog druk op het waternet staat, kun je nog water tappen.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🌡️ Alle kamers afsluiten behalve de woonkamer — warmte bewaren</div>
+    <div class="consequence">Je sluit alle deuren. Eén kamer warm houden kost veel minder energie dan het hele huis. Je trekt een extra trui aan.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">👴 Bij buurvrouw Annie aanbellen en vragen of ze het redt</div>
+    <div class="consequence">Je loopt naar buurvrouw Annie. Ze staat bij de deur en ziet er verward uit. Je helpt haar een sms sturen. Ze is opgelucht.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🔋 Alle apparaten opladen die nog wat batterij hebben</div>
+    <div class="consequence">Je laadt telefoons, de powerbank, tablets op via de auto — die heeft nog accustroom. Goede keuze voor later.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">😶 Niets doen — de overheid zal het snel oplossen</div>
+    <div class="consequence">Je gaat op de bank zitten en wacht. Het huis wordt kouder. Geen water opgeslagen, geen extra warmte geregeld.</div>
+  </div>
+</div>
+
+<!-- SCENE 8 (game) — koken dag 0 -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 10</span>
+    <span class="scene-day dag0">Dag 0</span>
+    <span class="scene-title">Koken zonder stroom</span>
+    <span class="scene-time">Zondag 31 januari 2027 · 18:00</span>
+  </div>
+  <div class="narrative">Het is al donker buiten. In huis is het merkbaar kouder geworden. De koelkast staat stil, de vriezer begint langzaam op te dooien. Je maag rammelt. 🌡️ Binnen: 13°C · ❄️ Buiten: −2°C</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice has-stat">
+    <div class="choice-text">🍲 Koken op het gasfornuis</div>
+    <div class="choice-badges"><span class="badge c-plus">🧣 +1</span></div>
+    <div class="consequence">Het gasfornuis werkt nog. Je steekt het handmatig aan met een aansteker. Het aardgasnet werkt nog omdat de druk in de leidingen mechanisch wordt geregeld. Je kookt rijst of soep uit blik. Warm eten doet het moreel goed én helpt je lichaam warm te blijven.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">⚡ Proberen op de inductieplaat of elektrisch fornuis</div>
+    <div class="consequence">De inductieplaat reageert niet. Inductie werkt op elektriciteit — geen stroom, geen koken.</div>
+  </div>
+  <div class="choice has-stat">
+    <div class="choice-text">🏕️ Campingkooktoestel of barbecue gebruiken</div>
+    <div class="choice-badges"><span class="badge c-plus">🧣 +1</span></div>
+    <div class="consequence">Je haalt het campingkooktoestel tevoorschijn. Belangrijk: buiten gebruiken of bij een open raam — koolmonoxide is dodelijk in een besloten ruimte. Je kookt een warme maaltijd.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🥫 Koude maaltijd — crackers, kaas, direct uit blik</div>
+    <div class="consequence">Voedzaam maar koud eten voelt dubbel koud bij 13°C in huis.</div>
+  </div>
+</div>
+
+<!-- SCENE 8B (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 11</span>
+    <span class="scene-day dag0">Dag 0</span>
+    <span class="scene-title">De eerste avond</span>
+    <span class="scene-time">Zondag 31 januari 2027 · 19:30</span>
+  </div>
+  <div class="scene-decay"><span class="decay-note">↓ auto</span> <span class="badge c-min">🧣 −1</span> <span style="font-size:8pt;color:#666">— avond valt in, huis koelt af</span></div>
+  <div class="narrative">Je hebt gegeten. Nu begint de lange avond. Buiten is het pikzwart — geen lantaarnpalen. Alleen hier en daar het flakkerende schijnsel van een kaars achter een raam. Je telefoon staat op 41%. 🌡️ Binnen: 12°C · ❄️ Buiten: −3°C</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">🕯️ Kaarsen aansteken en in de woonkamer bij elkaar blijven</div>
+    <div class="consequence">Je zet kaarsen in glazen voor stabiliteit en verzamelt iedereen in de woonkamer. Eén kamer verlichten en verwarmen met lichaamswarmte is veel efficiënter dan het hele huis.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🛏️ Slaapzakken en alle dekens naar de woonkamer halen</div>
+    <div class="consequence">Je sleept slaapzakken, dekens en kussens naar de woonkamer. Eén kamer openhouden en met lichaamswarmte verwarmen is verstandig.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🔦 Zaklamp pakken en de rest van de avond op batterijen doorbrengen</div>
+    <div class="consequence">Je haalt de zaklamp tevoorschijn en zet hem als sfeerverlichting op tafel. Handig en functioneel — geen brandgevaar, geen kaarsenrook.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📵 Telefoon op vliegtuigmodus — accu zo lang mogelijk sparen</div>
+    <div class="consequence">Je zet de telefoon op vliegtuigmodus. Geen berichten meer, maar ook geen accuverlies.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">😴 Vroeg naar bed — spaar je energie</div>
+    <div class="consequence">Je kroop vroeg in bed met zo veel mogelijk lagen kleding aan. Je slaapt onrustig maar wel.</div>
+  </div>
+</div>
+
+<!-- SCENE 9 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 12</span>
+    <span class="scene-day dag1">Dag 1</span>
+    <span class="scene-title">Nachtelijke inbraak bij de buren</span>
+    <span class="scene-time">Maandag 1 februari 2027 · 02:30</span>
+  </div>
+  <div class="scene-decay"><span class="decay-note">↓ auto</span> <span class="badge c-min">🧣 −1</span> <span style="font-size:8pt;color:#666">— koude nacht</span></div>
+  <div class="narrative">Je wordt wakker van een geluid. Glas dat breekt. Als je voorzichtig naar het raam sluipt zie je twee mensen via het achterraam van de overburen naar binnen gaan. Het is donker op straat. IJskoud. Je hart bonkt.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">📱 112 bellen</div>
+    <div class="consequence">Je belt 112. Na 4 minuten krijg je iemand aan de lijn. "We registreren het. We proberen zo snel mogelijk langs te komen." Er komt niemand die nacht.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🔒 Zelf alle deuren en ramen dubbel controleren en vergrendelen</div>
+    <div class="consequence">Je loopt stil door het huis. Achterdeur op slot, schuifpui vergrendeld, ramen dicht. Je zet een stoel onder de deurklink.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">👊 Naar buiten gaan om te confronteren</div>
+    <div class="consequence">Je doet de voordeur open. De straat is verlaten. Je staat in de vrieskou in je pyjamabroek en gaat snel weer naar binnen.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🙈 Niets doen — het gaat niet om ons huis</div>
+    <div class="consequence">Je kruipt terug in bed maar kunt niet meer slapen. Je luistert de rest van de nacht naar elk geluid.</div>
+  </div>
+</div>
+
+<!-- SCENE 10 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 13</span>
+    <span class="scene-day dag1">Dag 1</span>
+    <span class="scene-title">Annie's noodkreet — buurman gewond</span>
+    <span class="scene-time">Maandag 1 februari 2027 · 05:30</span>
+  </div>
+  <div class="narrative">Het begint net licht te worden. In huis staat de thermometer op 5°C. Dan trilt je telefoon: bericht van buurvrouw Annie. Haar man is bewusteloos geslagen door de inbrekers. Ze heeft geen eten meer en haar telefoon is bijna leeg.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">🏃 Direct naar Annie gaan om haar man te beoordelen <em style="color:#166534;font-weight:normal">(✓ als je Annie al kent)</em></div>
+    <div class="consequence">Haar man Jan (81) ligt op bed. Verward, grote wond op zijn hoofd. Je controleert zijn ademhaling — stabiel. Je reinigt de wond en zorgt dat hij warm blijft.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📱 112 bellen voor de buren</div>
+    <div class="consequence">Na lange wachttijd: "Houd hem warm en stil." Je gaat alsnog naar Annie om te helpen.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🍞 Eerst wat van ons voedsel naar hen brengen, daarna kijken naar de man</div>
+    <div class="consequence">Je pakt crackers en een blik soep en loopt ernaar toe. Annie is in tranen. Je geeft haar het eten en kijkt dan naar haar man.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">😰 We hebben zelf ook bijna niets meer — ik weet niet of ik kan helpen</div>
+    <div class="consequence">Je aarzelt lang. Uiteindelijk loop je toch even langs. Annie staat in de gang en kijkt je smekend aan.</div>
+  </div>
+</div>
+
+<!-- SCENE 11 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 14</span>
+    <span class="scene-day dag1">Dag 1</span>
+    <span class="scene-title">Riolering faalt</span>
+    <span class="scene-time">Maandag 1 februari 2027 · 06:30</span>
+  </div>
+  <div class="scene-decay"><span class="decay-note">↓ auto</span> <span class="badge c-min">🧣 −1</span> <span style="font-size:8pt;color:#666">— sanitaire problemen</span></div>
+  <div class="narrative">Als je de wc gebruikt en doortrekt, merk je dat het water nauwelijks wegstroomt. In deze wijk zit een rioolgemaal dat het afvalwater wegpompt. Zonder stroom werkt dat niet meer goed.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">🚫 Waterafvoer afsluiten en zo min mogelijk water gebruiken</div>
+    <div class="consequence">Je stopt de afvoeropeningen af. Zo voorkom je dat rioolwater terugstroomt in huis. Goed instinct.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🪣 Een emmer regenwater opvangen voor de wc</div>
+    <div class="consequence">Je zet een emmer buiten. Je vangt een paar liter op om de wc handmatig door te spoelen zonder het drinkwater te verspillen.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🚽 Gewoon de wc blijven gebruiken en hopen dat het wegstroomt</div>
+    <div class="consequence">Na een paar keer borrelt het afvoerputje in de bijkeuken en komt er een vieze geur. De situatie verslechtert.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🌿 Naar buiten, zo ver mogelijk van het huis, als alternatief</div>
+    <div class="consequence">Niet ideaal, maar het werkt. Je graaft een kuiltje in de tuin. Primitief, maar je houdt het huis schoon.</div>
+  </div>
+</div>
+
+<!-- SCENE MORN_D1 -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 15</span>
+    <span class="scene-day dag1">Dag 1</span>
+    <span class="scene-title">Eerste crisisochtend</span>
+    <span class="scene-time">Maandag 1 februari 2027 · 08:00</span>
+  </div>
+  <div class="scene-decay"><span class="decay-note">↓ auto</span> <span class="badge w-min">💧 −1</span> <span class="badge f-min">🍞 −1</span> <span class="badge c-plus">🧣 +1</span> <span style="font-size:8pt;color:#666">— dagelijkse consumptie · nieuwe dag geeft nieuwe energie</span></div>
+  <div class="narrative">Een bleke streep licht achter de gordijnen. Je adem stomt voor je gezicht — ook binnen. Na de nacht van de inbraak en Annie heb je nauwelijks geslapen. Op straat: rijp op alle daken, ijsbloemen op de auto's. De stilte is het meest onwerkelijke. 🌡️ Binnen: 5°C · ❄️ Buiten: −3°C · ⏱️ ~20 uur zonder stroom</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">🔭 Door het raam kijken — wat zie je buiten?</div>
+    <div class="consequence">Een man loopt langzaam met een hond. Twee buren staan bij het tuinhek te praten. Niemand rijdt. De stilte is scherp.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📻 De radio aanzetten voor nieuws</div>
+    <div class="consequence">"De stroomstoring duurt voort. Plunderingen in meerdere steden. Politie vraagt iedereen binnen te blijven. Herstel niet voor morgennacht verwacht." Morgennacht.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📋 Een plan voor vandaag opschrijven</div>
+    <div class="consequence">Je pakt een notitieboekje. Prioriteiten: warm blijven, Annie checken, voedsel inventariseren, water sparen. Structuur in chaos.</div>
+  </div>
+</div>
+
+<!-- SCENE 12 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 16</span>
+    <span class="scene-day dag1">Dag 1</span>
+    <span class="scene-title">Avondklok ingesteld</span>
+    <span class="scene-time">Maandag 1 februari 2027 · 14:30</span>
+  </div>
+  <div class="narrative">De dag vordert en het wordt steeds duidelijker dat dit niet morgen opgelost is. Op de radio hoor je berichten over plunderingen in meerdere steden. Er is een avondklok ingesteld. Het begint nu serieus te voelen. Het is 9°C in huis.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">🏘️ De buren bij elkaar roepen — samen staan we sterker</div>
+    <div class="consequence">Je klopt bij Rob, Annie en nog twee buren aan. Je spreekt af: eten delen, elkaar op de hoogte houden, om beurten wacht houden.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📦 Alle voedsel en water inventariseren en rantsoeneren</div>
+    <div class="consequence">Je legt alles wat je hebt op de keukentafel. Je verdeelt het over de komende dagen — eerlijk en realistisch.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🚗 Snel de auto in om te kijken hoe het er in de stad uitziet</div>
+    <div class="consequence">Bij het centrum zie je politiewagens en mensen die snel lopen. Bij een supermarkt zijn de ramen ingeslagen. Je draait snel terug.</div>
+  </div>
+  <div class="choice has-stat">
+    <div class="choice-text">🎲 Een bordspel pakken met het huishouden</div>
+    <div class="choice-badges"><span class="badge c-plus">🧣 +1</span></div>
+    <div class="consequence">Je trekt het spel tevoorschijn en gaat zitten met kaarsen erbij. Een uur lang is de crisis even op de achtergrond. Soms is afleiding het beste wat je kunt doen.</div>
+  </div>
+</div>
+
+<!-- SCENE COOK_D1 -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 17</span>
+    <span class="scene-day dag1">Dag 1</span>
+    <span class="scene-title">Tweede avond koken</span>
+    <span class="scene-time">Maandag 1 februari 2027 · 18:00</span>
+  </div>
+  <div class="narrative">De tweede avond zonder stroom. In de woonkamer staat het kwik op 7°C. Magen rammelen. Er is een avondklok. Hoe kook je vanavond? 🌡️ Binnen: 7°C · ❄️ Buiten: −4°C · ⏱️ ~30 uur zonder stroom</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice has-stat">
+    <div class="choice-text">🍲 Koken op het gasfornuis</div>
+    <div class="choice-badges"><span class="badge c-plus">🧣 +1</span></div>
+    <div class="consequence">Het gasfornuis werkt nog. Je steekt het handmatig aan met een aansteker. Het aardgasnet werkt nog omdat de druk in de leidingen mechanisch wordt geregeld. Soep of rijst met groenten uit blik. Warm eten bij 7°C doet meer dan je denkt.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">⚡ Proberen op de inductieplaat of elektrisch fornuis</div>
+    <div class="consequence">Geen stroom, geen inductie. De plaat reageert niet.</div>
+  </div>
+  <div class="choice has-stat">
+    <div class="choice-text">🏕️ Campingkooktoestel of barbecue gebruiken</div>
+    <div class="choice-badges"><span class="badge c-plus">🧣 +1</span></div>
+    <div class="consequence">Je zet het campingkooktoestel bij een open raam — nooit volledig binnen, koolmonoxide is gevaarlijk. Het werkt. Je kookt een warme maaltijd.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🥫 Koude maaltijd — direct uit blik, crackers</div>
+    <div class="consequence">Je eet koud. Het vult, maar koud eten voelt dubbel koud bij 7°C. Je lichaam heeft warmte nodig.</div>
+  </div>
+</div>
+
+<!-- SCENE 13 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 18</span>
+    <span class="scene-day dag2">Dag 2</span>
+    <span class="scene-title">Explosie in de straat</span>
+    <span class="scene-time">Dinsdag 2 februari 2027 · 01:30</span>
+  </div>
+  <div class="scene-decay"><span class="decay-note">↓ auto</span> <span class="badge c-min">🧣 −1</span> <span style="font-size:8pt;color:#666">— nachtelijk alarm, stress</span></div>
+  <div class="narrative">Eerst hoor je geschreeuw in de verte. Dan een doffe knal. De ramen trillen. Je hart staat even stil. Buiten zie je een grote brand — een auto van de overburen. Je hoort geen sirenes komen.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">🏠 Binnenblijven — het is gevaarlijk en de avondklok is van kracht</div>
+    <div class="consequence">Je blijft binnen. Goed besluit — de avondklok is ingesteld precies voor dit soort situaties.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">👥 Controleren of de overburen veilig zijn via de achterdeur</div>
+    <div class="consequence">Je sluipt via de achterdeur. Ze staan buiten te kijken, geschrokken maar ongedeerd.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📱 Proberen 112 te bellen</div>
+    <div class="consequence">Na een lang wachten krijg je een bezettoon. Er is niemand beschikbaar.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🔥 Naar buiten om te helpen blussen</div>
+    <div class="consequence">De brand is hevig en je hebt geen brandblusser. Je staat nutteloos te kijken in de vrieskou — en buiten tijdens de avondklok.</div>
+  </div>
+</div>
+
+<!-- SCENE MORN_D2 -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 19</span>
+    <span class="scene-day dag2">Dag 2</span>
+    <span class="scene-title">Tweede crisisochtend — uitgebrande auto</span>
+    <span class="scene-time">Dinsdag 2 februari 2027 · 08:00</span>
+  </div>
+  <div class="scene-decay"><span class="decay-note">↓ auto</span> <span class="badge w-min">💧 −1</span> <span class="badge f-min">🍞 −1</span> <span class="badge c-plus">🧣 +1</span> <span style="font-size:8pt;color:#666">— dagelijkse consumptie · nieuwe dag geeft nieuwe energie</span></div>
+  <div class="narrative">Op straat staat de uitgebrande auto van de overburen nog — zwartgeblakerd, raampjes gebarsten. De ochtendlucht is scherp en stil. Dit is de tweede dag. Je lichaam protesteert tegen de kou. 🌡️ Binnen: 5°C · ❄️ Buiten: −4°C · ⏱️ ~44 uur zonder stroom</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">👁️ De straat bekijken door het raam</div>
+    <div class="consequence">Een paar mensen lopen snel langs. Niemand praat. Op de hoek staat een man lang stil — hij kijkt omhoog naar de lucht alsof hij op iets wacht.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📻 De radio aanzetten voor nieuws</div>
+    <div class="consequence">"Delen van Duitsland en Oostenrijk hebben stroom gekregen. Herstel in Nederland wordt verwacht binnen 24 uur." 24 uur. Maar het is iets.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🤝 Naar Rob of Annie gaan voor informatie</div>
+    <div class="consequence">"Ik heb gehoord dat er vandaag een voedseluitdeling is," zegt Rob.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">😔 Binnenblijven en wachten</div>
+    <div class="consequence">Je trekt de gordijnen dicht. Binnenblijven is de veiligste optie. Je wacht.</div>
+  </div>
+</div>
+
+<!-- SCENE 14 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 20</span>
+    <span class="scene-day dag2">Dag 2</span>
+    <span class="scene-title">Gemeenteflyer — voedseluitdeling morgen</span>
+    <span class="scene-time">Dinsdag 2 februari 2027 · 11:30</span>
+  </div>
+  <div class="narrative">De stank van riool is nu echt onhoudbaar. Dan klinkt er gebel: een meneer loopt door de straat en deelt gemeenteflyers uit. Op de flyer: tips om warm te blijven, waarschuwing koolmonoxide, advies om flessen te vullen met kraanwater, en: <strong>morgen van 10–15 uur voedseluitdeling bij de supermarkt.</strong></div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">📋 De flyer zorgvuldig lezen en de tips opvolgen</div>
+    <div class="consequence">Je leest alle tips. Eén springt eruit: sluit alle waterafvoeren af om rioolwater te weren. Je doet dat alsnog.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🍚 Nu al plannen om morgen naar de voedseluitdeling te gaan</div>
+    <div class="consequence">Je besluit te gaan. Je zet een wekker (op batterijen) voor 09:00. Je wil vroeg in de rij staan.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🤝 De flyer ook bij de buren brengen die hem misschien niet hebben gehad</div>
+    <div class="consequence">Je loopt de straat in en duwt de flyer bij drie huizen van ouderen in de bus. Buurvrouw Annie krijgt hem persoonlijk.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📄 De flyer weggooien — ik weet het al wel</div>
+    <div class="consequence">Je legt de flyer opzij. Misschien stond er toch iets nuttigs in. Je zult het nooit weten.</div>
+  </div>
+</div>
+
+<!-- SCENE COOK_D2 -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 21</span>
+    <span class="scene-day dag2">Dag 2</span>
+    <span class="scene-title">Derde avond koken</span>
+    <span class="scene-time">Dinsdag 2 februari 2027 · 18:00</span>
+  </div>
+  <div class="narrative">De derde avond. Het huis is echt koud nu — je kunt je adem zien. Je hebt inmiddels geleerd hoe je deze situatie overleeft. Vanavond weer koken. 🌡️ Binnen: 6°C · ❄️ Buiten: −3°C · ⏱️ ~54 uur zonder stroom</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice has-stat">
+    <div class="choice-text">🍲 Koken op het gasfornuis</div>
+    <div class="choice-badges"><span class="badge c-plus">🧣 +1</span></div>
+    <div class="consequence">Het gasfornuis werkt nog. Je steekt het handmatig aan met een aansteker. Het aardgasnet werkt nog omdat de druk in de leidingen mechanisch wordt geregeld. Je kookt rijst of pasta met de laatste blikken groenten. Één warme maaltijd per dag maakt een groot verschil.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">⚡ Proberen op de inductieplaat of elektrisch fornuis</div>
+    <div class="consequence">Nog steeds geen stroom, dus de inductieplaat werkt niet. Je weet het eigenlijk al.</div>
+  </div>
+  <div class="choice has-stat">
+    <div class="choice-text">🏕️ Campingkooktoestel of barbecue gebruiken</div>
+    <div class="choice-badges"><span class="badge c-plus">🧣 +1</span></div>
+    <div class="consequence">Campingkooktoestel buiten of bij een open raam — nooit binnen, koolmonoxide. De gasbus is bijna leeg maar er zit nog genoeg in voor één maaltijd.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🥫 Koude maaltijd</div>
+    <div class="consequence">Crackers, pindakaas, een blikje. Koud maar het vult. Je bewaart de laatste warme koopmogelijkheid voor morgenochtend.</div>
+  </div>
+</div>
+
+<!-- SCENE MORN_D3 -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 22</span>
+    <span class="scene-day dag3">Dag 3</span>
+    <span class="scene-title">Derde ochtend — voorzichtige hoop</span>
+    <span class="scene-time">Woensdag 3 februari 2027 · 08:00</span>
+  </div>
+  <div class="scene-decay"><span class="decay-note">↓ auto</span> <span class="badge w-min">💧 −1</span> <span class="badge f-min">🍞 −1</span> <span class="badge c-plus">🧣 +1</span> <span style="font-size:8pt;color:#666">— dagelijkse consumptie · nieuwe dag geeft nieuwe energie</span></div>
+  <div class="narrative">De derde ochtend. Op de radio — als je er een hebt — wordt gemeld dat grote delen van Europa inmiddels stroom hebben. Nederland is een van de laatste. Maar de verwachting is: vandaag. Je voelt iets wat al lang weg was: voorzichtige hoop. 🌡️ Binnen: 4°C · ⏱️ ~68 uur zonder stroom</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">📻 De radio aanzetten voor het laatste nieuws</div>
+    <div class="consequence">"De herstelwerkzaamheden zijn in de afrondende fase. We verwachten dat het stroomnet stapsgewijs wordt hersteld vandaag." Je houdt je adem in.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🍽️ Een klein ontbijtje van de laatste resten</div>
+    <div class="consequence">Crackers, de laatste pindakaas, een appel. Koud maar plechtig. Vandaag misschien de laatste dag zonder stroom.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🤝 De buren informeren over de voedseluitdeling en de hoop</div>
+    <div class="consequence">Je klopt bij Rob en Annie aan. Rob grijpt je hand. "Echt?" Annie veegt een traan weg. Je brengt hoop naar mensen die het nodig hebben.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🙈 Niets verwachten — ik geloof het pas als ik het zie</div>
+    <div class="consequence">Te vaak gehoord: "binnenkort". Je houdt jezelf rustig. Verwacht niets, dan val je niet.</div>
+  </div>
+</div>
+
+<!-- SCENE 15 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 23</span>
+    <span class="scene-day dag3">Dag 3</span>
+    <span class="scene-title">Voedseluitdeling bij de supermarkt</span>
+    <span class="scene-time">Woensdag 3 februari 2027 · 10:15</span>
+  </div>
+  <div class="narrative">Bij de supermarkt staat een enorme rij. Honderden mensen. Het is rustig maar gespannen. Iedereen krijgt een tasje: een kilo rijst, een blik tomaten, een paar appels en een brood. Een kruisje in inkt op je rechterhand — zodat je niet twee keer kunt komen.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">💬 Praten met de mensen in de rij — informatie verzamelen</div>
+    <div class="consequence">Je hoort dat in Amsterdam-Noord de stroom al kort terug was. De overheid overweegt het net per regio los te koppelen en stapsgewijs te herstellen. Geruchten, maar het geeft hoop.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">👴 Een oudere man voor me laten gaan — hij staat te trillen van de kou</div>
+    <div class="consequence">Je laat hem voorgaan. Zijn vrouw pakt even je hand. Kleine gebaren tellen op dit soort momenten.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🎒 Extra vragen of ze ook wat voor de zieke buurman hebben</div>
+    <div class="consequence">Na een korte aarzeling geven ze je een tweede klein pakketje. "Eén extra, meer kunnen we niet."</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">⚡ Snel naar huis — ik wil niet te lang weg zijn</div>
+    <div class="consequence">Je pakt je tasje en loopt snel terug. Thuis is alles nog zoals je het hebt achtergelaten.</div>
+  </div>
+</div>
+
+<!-- SCENE 16 (game) -->
+<div class="scene">
+  <div class="scene-header">
+    <span class="scene-num">Scène 24</span>
+    <span class="scene-day dag3">Dag 3</span>
+    <span class="scene-title">Stroom terug</span>
+    <span class="scene-time">Woensdag 3 februari 2027 · 12:45</span>
+  </div>
+  <div class="scene-decay"><span class="decay-note">↓ auto</span> <span class="badge c-min">🧣 −1</span> <span style="font-size:8pt;color:#666">— herstelperiode</span></div>
+  <div class="narrative">Dan — onverwacht — flakkert het licht aan. De koelkast begint te zoemen. De wasmachine begint plotseling te draaien. Uit de televisie komt een branderige geur. Eén lamp knalt. Je hoort de buren juichen. Het is voorbij. Of toch niet helemaal: de CV heeft tijd nodig om op te warmen. De waterdruk is er maar de stank van riool hangt nog. Maar er is licht.</div>
+  <div class="choices-label">Keuzes</div>
+  <div class="choice">
+    <div class="choice-text">⚡ Alle apparaten uitschakelen voordat er stroompieken schade aanrichten</div>
+    <div class="consequence">Goed instinct. Je loopt door het huis en zet alles handmatig uit. Daarna zet je apparaat voor apparaat langzaam terug aan.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">📱 Als eerste mama bellen — ze weet vast niets van ons</div>
+    <div class="consequence">Je belt. Ze neemt direct op. Ze huilt. "Ik heb me zo ongerust gemaakt. Jullie zijn toch goed?" Je praat tien minuten.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🛁 Het water laten lopen om de leidingen door te spoelen</div>
+    <div class="consequence">Eerst bruin, dan helderder. De leidingen worden schoongespoeld. Goed idee na een langdurige lage druk.</div>
+  </div>
+  <div class="choice">
+    <div class="choice-text">🤝 Bij Annie en Rob aanbellen om het nieuws te vieren</div>
+    <div class="consequence">Rob staat al in de deuropening en zwaait. Bij Annie is het stiller — haar man Jan heeft medische aandacht nodig.</div>
+  </div>
+</div>
+
+<hr style="margin:10mm 0;border:none;border-top:1px solid #ddd"/>
+<div style="font-size:8pt;color:#999;text-align:center">Stroomuitval Scenario · PlayToPrep.nl · 24 scènes · enkele dagen speelduur · Uitdraai gegenereerd 16 maart 2026</div>
+
+</body>
+</html>

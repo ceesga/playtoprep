@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Berichtgeluid kiezen</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; color: #60a5fa; }
+    p.sub { color: #8b949e; font-size: .9rem; margin-bottom: 36px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 700px;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color .15s;
+    }
+    .card:hover { border-color: #58a6ff; }
+    .card.selected {
+      border-color: #3fb950;
+      background: #0d2016;
+    }
+    .card-header { display: flex; align-items: center; gap: 10px; }
+    .card-header .icon { font-size: 1.4rem; }
+    .card-header h2 { font-size: 1rem; font-weight: 600; }
+    .card p { font-size: .82rem; color: #8b949e; line-height: 1.5; }
+    .btn-row { display: flex; gap: 8px; margin-top: 4px; }
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .1s, transform .08s;
+    }
+    button:active { transform: scale(.97); }
+    .btn-play {
+      background: #1f6feb;
+      color: #fff;
+      flex: 1;
+    }
+    .btn-play:hover { background: #388bfd; }
+    .btn-select {
+      background: #238636;
+      color: #fff;
+      flex: 1;
+    }
+    .btn-select:hover { background: #2ea043; }
+    .selected .btn-select { background: #1a7f37; }
+    .result {
+      margin-top: 36px;
+      padding: 20px 28px;
+      background: #0d2016;
+      border: 1px solid #3fb950;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 100%;
+      display: none;
+    }
+    .result h3 { color: #3fb950; margin-bottom: 10px; font-size: 1rem; }
+    .result pre {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: .82rem;
+      line-height: 1.6;
+      color: #79c0ff;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .badge {
+      display: inline-block;
+      background: #3fb950;
+      color: #0d1117;
+      font-size: .7rem;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 2px 8px;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔔 Berichtgeluid kiezen</h1>
+  <p class="sub">Klik op ▶ Luister om een geluid te horen. Klik dan op ✓ Kies dit als je het wilt gebruiken.</p>
+
+  <div class="grid" id="grid"></div>
+  <div class="result" id="result">
+    <h3 id="result-title"></h3>
+    <p style="color:#8b949e;font-size:.85rem;margin-bottom:12px">Vervang de inhoud van <code>playMessagePing()</code> in <b>index.html</b> met:</p>
+    <pre id="result-code"></pre>
+  </div>
+
+  <script>
+    const presets = [
+      {
+        id: 'huidig',
+        icon: '📱',
+        name: 'Huidig (sine 880Hz)',
+        desc: 'De huidige instelling. Eén zachte piep, 0.3 seconden, snel vervagend.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, ctx.currentTime);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+          osc.start(); osc.stop(ctx.currentTime + 0.3);
+        }
+      },
+      {
+        id: 'zacht',
+        icon: '🌊',
+        name: 'Zacht & laag (660Hz)',
+        desc: 'Rustiger en minder opvallend. Subtiele lage piep die langzaam wegsterft.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(660, ctx.currentTime);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(660, ctx.currentTime);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+          osc.start(); osc.stop(ctx.currentTime + 0.5);
+        }
+      },
+      {
+        id: 'dubbel',
+        icon: '✌️',
+        name: 'Dubbele ping',
+        desc: 'Twee korte piepjes snel na elkaar. Doet denken aan een notificatie-geluid van een chat-app.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.15].forEach(offset => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.25, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.2);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.2);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [0, 0.15].forEach(offset => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.25, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.2);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.2);
+          });
+        }
+      },
+      {
+        id: 'oplopend',
+        icon: '📈',
+        name: 'Oplopende toon',
+        desc: 'Begint laag en loopt op. Geeft een gevoel van alertheid en urgentie.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(1100, ctx.currentTime + 0.2);
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.35);
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(1100, ctx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+          osc.start(); osc.stop(ctx.currentTime + 0.35);
+        }
+      },
+      {
+        id: 'hoog',
+        icon: '🔔',
+        name: 'Hoge toon (1320Hz)',
+        desc: 'Heldere, hoge ping. Goed hoorbaar, past bij een urgente waarschuwing.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1320, ctx.currentTime);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.25);
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1320, ctx.currentTime);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+          osc.start(); osc.stop(ctx.currentTime + 0.25);
+        }
+      },
+      {
+        id: 'wood',
+        icon: '🪵',
+        name: 'Hout / tok',
+        desc: 'Korte percussieve klap, als een houten blok. Opvallend maar niet schreeuwerig.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.12);
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(800, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.4, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+          osc.start(); osc.stop(ctx.currentTime + 0.12);
+        }
+      },
+      {
+        id: 'marimba',
+        icon: '🎵',
+        name: 'Marimba-achtig',
+        desc: 'Twee tonen (do-mi) na elkaar, zoals een klassieke notificatie. Vriendelijk en herkenbaar.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[523, 0], [659, 0.18]].forEach(([freq, offset]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.28, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.3);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.3);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [[523, 0], [659, 0.18]].forEach(([freq, offset]) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.28, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.3);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.3);
+          });
+        }
+      },
+      {
+        id: 'dreiging',
+        icon: '⚠️',
+        name: 'Lage dreigende toon',
+        desc: 'Twee lage pulsen, donkerder van karakter. Past bij de sfeer van een crisis-scenario.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.22].forEach(offset => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.35, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.25);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.25);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [0, 0.22].forEach(offset => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(220, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.35, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.25);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.25);
+          });
+        }
+      },
+      {
+        id: 'driedubbel',
+        icon: '🔔🔔🔔',
+        name: 'Driedubbele ping',
+        desc: 'Drie korte piepjes snel achter elkaar. Nét iets drukker dan dubbel.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.13, 0.26].forEach(offset => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.22, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.15);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.15);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [0, 0.13, 0.26].forEach(offset => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.22, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.15);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.15);
+          });
+        }
+      },
+      {
+        id: 'ping-hoog-laag',
+        icon: '↕️',
+        name: 'Hoog-laag ping',
+        desc: 'Twee tonen: eerst hoog, dan laag. Klinkt als een bevestiging of melding.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[1046, 0], [523, 0.18]].forEach(([freq, offset]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.25, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.25);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.25);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [[1046, 0], [523, 0.18]].forEach(([freq, offset]) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.25, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.25);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.25);
+          });
+        }
+      },
+      {
+        id: 'laag-hoog',
+        icon: '↗️',
+        name: 'Laag-hoog ping',
+        desc: 'Twee tonen: eerst laag, dan hoog. Positief en opgewekt karakter.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[523, 0], [1046, 0.18]].forEach(([freq, offset]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.25, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.25);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.25);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [[523, 0], [1046, 0.18]].forEach(([freq, offset]) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.25, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.25);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.25);
+          });
+        }
+      },
+      {
+        id: 'drieklank',
+        icon: '🎶',
+        name: 'Drieklank (do-mi-sol)',
+        desc: 'Drie tonen oplopend: do, mi, sol. Herkenbaar akkoord, vriendelijk en melodieus.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[523, 0], [659, 0.16], [784, 0.32]].forEach(([freq, offset]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.24, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.28);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.28);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [[523, 0], [659, 0.16], [784, 0.32]].forEach(([freq, offset]) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.24, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.28);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.28);
+          });
+        }
+      },
+      {
+        id: 'chime',
+        icon: '🎐',
+        name: 'Chime (vier tonen)',
+        desc: 'Vier tonen: do-sol-mi-do (Westminster-stijl). Rustgevend en herkenbaar.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[523, 0], [784, 0.2], [659, 0.4], [523, 0.6]].forEach(([freq, offset]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.22, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.35);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.35);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [[523, 0], [784, 0.2], [659, 0.4], [523, 0.6]].forEach(([freq, offset]) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.22, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.35);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.35);
+          });
+        }
+      },
+      {
+        id: 'ping-echo',
+        icon: '🌀',
+        name: 'Ping met echo',
+        desc: 'Eén piep gevolgd door een zachter echo. Geeft diepte en ruimte.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[0.3, 0], [0.1, 0.22]].forEach(([vol, offset]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(vol, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.3);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.3);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [[0.3, 0], [0.1, 0.22]].forEach(([vol, offset]) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(vol, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.3);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.3);
+          });
+        }
+      },
+      {
+        id: 'alert-dubbel',
+        icon: '🚨',
+        name: 'Alert dubbel (hoog)',
+        desc: 'Twee snelle hoge piepjes. Urgenter dan de standaard dubbele ping.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.12].forEach(offset => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1320, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.14);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.14);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [0, 0.12].forEach(offset => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1320, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.14);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.14);
+          });
+        }
+      },
+      {
+        id: 'whatsapp',
+        icon: '💬',
+        name: 'WhatsApp-stijl',
+        desc: 'Twee snelle tonen (hoog-iets-lager), gevolgd door een kortere derde. Herkenbaar chat-geluid.',
+        code: `function playMessagePing() {
+  if (!audioEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[880, 0, 0.18], [784, 0.18, 0.18], [988, 0.34, 0.12]].forEach(([freq, offset, dur]) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+      gain.gain.setValueAtTime(0.24, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + dur);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + dur);
+    });
+  } catch(e) {}
+}`,
+        play: (ctx) => {
+          [[880, 0, 0.18], [784, 0.18, 0.18], [988, 0.34, 0.12]].forEach(([freq, offset, dur]) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + offset);
+            gain.gain.setValueAtTime(0.24, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + dur);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + dur);
+          });
+        }
+      }
+    ];
+
+    let selectedId = null;
+
+    function renderGrid() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      presets.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card' + (p.id === selectedId ? ' selected' : '');
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="icon">${p.icon}</span>
+            <h2>${p.name}${p.id === selectedId ? '<span class="badge">✓ gekozen</span>' : ''}</h2>
+          </div>
+          <p>${p.desc}</p>
+          <div class="btn-row">
+            <button class="btn-play" onclick="playPreset('${p.id}')">▶ Luister</button>
+            <button class="btn-select" onclick="selectPreset('${p.id}')">✓ Kies dit</button>
+          </div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    function playPreset(id) {
+      const preset = presets.find(p => p.id === id);
+      if (!preset) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        preset.play(ctx);
+      } catch(e) { alert('Kon geluid niet afspelen: ' + e.message); }
+    }
+
+    function selectPreset(id) {
+      selectedId = id;
+      const preset = presets.find(p => p.id === id);
+      renderGrid();
+      const result = document.getElementById('result');
+      result.style.display = 'block';
+      document.getElementById('result-title').textContent = `Gekozen: ${preset.icon} ${preset.name}`;
+      document.getElementById('result-code').textContent = preset.code;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      playPreset(id);
+    }
+
+    renderGrid();
+  </script>
+</body>
+</html>
