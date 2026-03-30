@@ -137,10 +137,11 @@ function renderPrep() {
       if (opts.length && !profile[q.id]) profile[q.id] = q.def || toVal(opts[1]);
       const btns = makeBtns(q, opts);
       if (q.collapsible) {
-        if (prepSectionOpen[q.id] === undefined) prepSectionOpen[q.id] = false;
+        if (prepSectionOpen[q.id] === undefined) prepSectionOpen[q.id] = true;
         const open = prepSectionOpen[q.id];
+        const chevSvg = (typeof ICON_SVG!=='undefined'&&ICON_SVG['chevron-down'])||'';
         html += `<div class="prep-section-header has-toggle prep-collapsible-header" id="phdr-${q.id}" aria-expanded="${open}" onclick="togglePrepSection('${q.id}')">
-          <span class="prep-header-label"><i data-lucide="chevron-down" class="prep-chevron" id="chev-${q.id}" style="${open?'':'transform:rotate(-90deg)'}"></i>${q.section}</span>
+          <span class="prep-header-label"><span class="prep-chevron" id="chev-${q.id}" style="${open?'':'transform:rotate(-90deg)'}">${chevSvg}</span>${q.section}</span>
           ${btns ? `<div class="toggle-wrap" onclick="event.stopPropagation()">${btns}</div>` : ''}
         </div>
         <div class="prep-section-body${open?'':' collapsed'}" id="psec-${q.id}"><div class="prep-section-inner">`;
@@ -160,9 +161,6 @@ function renderPrep() {
   });
   if (openSection) html += `</div></div>`;
   document.getElementById('prep-body').innerHTML = html;
-  if (window.lucide) lucide.createIcons({
-    el: document.getElementById('prep-body')
-  });
 }
 
 function setToggle(id, val) {

@@ -348,12 +348,18 @@ p.sub {
 }
 
 .prep-chevron {
+  display:inline-flex;
   width:15px;
   height:15px;
   flex-shrink:0;
   transition:transform .25s var(--ease-out);
   color:var(--c-primary-dark);
   margin-right:7px;
+}
+.prep-chevron svg {
+  width:15px;
+  height:15px;
+  stroke:currentColor;
 }
 
 .prep-header-label {
@@ -2759,7 +2765,9 @@ p.sub {
   }
 
   #hh-controls {
-    gap:0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px 0;
     padding:12px 10px 18px;
   }
 
