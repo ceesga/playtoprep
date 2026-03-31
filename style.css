@@ -526,13 +526,16 @@ p.sub {
 
 /* Gear toggle button — in linker sidebar onder profielfoto */
 .gear-toggle-btn {
-  width:38px;
-  height:38px;
+  width:52px;
+  height:30px;
   background:rgba(255,255,255,.15);
   border:1px solid rgba(255,255,255,.3);
   border-radius:var(--r-sm);
   color:rgba(255,255,255,.85);
-  font-size:1.05rem;
+  font-size:.7rem;
+  font-weight:600;
+  letter-spacing:.5px;
+  text-transform:uppercase;
   cursor:pointer;
   display:flex;
   align-items:center;
@@ -575,18 +578,23 @@ p.sub {
   align-items:center;
   justify-content:space-between;
   padding:13px 16px 11px;
-  border-bottom:1px solid rgba(0,0,0,.1);
+  background:linear-gradient(180deg,#004a96 0%,#002a5c 100%);
+  border-bottom:2px solid rgba(230,100,0,.55);
 }
 .gear-header span {
   font-size:.93rem;
   font-weight:700;
-  color:var(--c-ios-text);
+  color:#fff;
   letter-spacing:-.01em;
 }
+.gear-header .help-close-x {
+  color:rgba(255,255,255,.8);
+}
+.gear-header .help-close-x:hover { color:#fff; }
 .gear-back {
   background:none;
   border:none;
-  color:var(--c-primary);
+  color:rgba(255,255,255,.85);
   font-size:.82rem;
   font-weight:500;
   cursor:pointer;
@@ -594,7 +602,7 @@ p.sub {
   min-width:64px;
   text-align:left;
 }
-.gear-back:hover { text-decoration:underline; }
+.gear-back:hover { color:#fff; text-decoration:underline; }
 .gear-page { padding:6px 0; }
 .gear-row {
   display:flex;
