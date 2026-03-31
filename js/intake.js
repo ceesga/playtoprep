@@ -57,7 +57,8 @@ function capturePortraitSnapshot() {
 }
 
 function gotoIntake() {
-  intakeStep = -4;
+  intakeStep = -5;
+  profile.playerName = '';
   adultsCount = 1;
   childrenCount = 0;
   slechtTerBeenCount = 0;
@@ -76,11 +77,31 @@ function gotoIntake() {
   show('s-intake');
 }
 
+function renderNameStep() {
+  const household = document.getElementById('intake-household');
+  const layout = document.getElementById('intake-layout');
+  layout.style.display = 'none';
+  household.style.display = 'block';
+  household.innerHTML = `
+    <div class="name-step-wrap">
+      <p class="sub">Vul je naam in zodat het spel persoonlijker aanvoelt. Je kunt dit ook overslaan.</p>
+      <input type="text" id="player-name-input" class="name-input"
+        placeholder="Jouw naam"
+        value="${profile.playerName || ''}"
+        maxlength="30"
+        autocomplete="given-name"
+        oninput="profile.playerName=this.value.trim()">
+    </div>`;
+  document.getElementById('intake-next').disabled = false;
+  setTimeout(() => document.getElementById('player-name-input')?.focus(), 50);
+}
+
 function renderIntake() {
-  const totalSteps = intakeQs.length + 4;
-  const progressStep = intakeStep === -4 ? 0 : intakeStep === -3 ? 1 : intakeStep === -2 ? 2 : intakeStep === -1 ? 3 : intakeStep + 4;
+  const totalSteps = intakeQs.length + 5;
+  const progressStep = intakeStep === -5 ? 0 : intakeStep === -4 ? 1 : intakeStep === -3 ? 2 : intakeStep === -2 ? 3 : intakeStep === -1 ? 4 : intakeStep + 5;
   document.getElementById('intake-prog').style.transform = 'scaleX(' + (12 + progressStep / totalSteps * 48) / 100 + ')';
   const intakeTitles = {
+    '-5': 'Hoe heet je?',
     '-4': 'Hoe ziet jouw huishouden eruit?',
     '-3': 'In wat voor type woning woon je?',
     '-2': 'Welke vervoersmiddelen heb je?',
@@ -92,6 +113,11 @@ function renderIntake() {
 
   const household = document.getElementById('intake-household');
   const layout = document.getElementById('intake-layout');
+
+  if (intakeStep === -5) {
+    renderNameStep();
+    return;
+  }
 
   if (intakeStep === -4) {
     layout.style.display = 'none';
@@ -482,6 +508,7 @@ function getPrimaryAvatarPath() {
 function renderHouseholdIndicator() {
   const faceEl = document.getElementById('ss-household-face');
   const countEl = document.getElementById('ss-household-count');
+  const nameEl = document.getElementById('ss-player-name');
   if (!faceEl || !countEl) return;
 
   const avatarPath = getPrimaryAvatarPath();
@@ -491,6 +518,8 @@ function renderHouseholdIndicator() {
 
   const persons = adultsCount + childrenCount + slechtTerBeenCount;
   countEl.textContent = persons === 1 ? '1 pers.' : `${persons} pers.`;
+
+  if (nameEl) nameEl.textContent = profile.playerName || '';
 }
 
 const ADULT_AVATARS = ['man-1', 'man-3', 'man-4', 'man-5', 'man-6',
@@ -573,6 +602,13 @@ function closePicker(e) {
 function intakeNext() {
   const a = intakeAnswers;
 
+  // Stap -5: naam → stap -4: mensen
+  if (intakeStep === -5) {
+    intakeStep = -4;
+    renderIntake();
+    return;
+  }
+
   // Stap -4: mensen → stap -3: woning
   if (intakeStep === -4) {
     profile.members = adultsCount + childrenCount + slechtTerBeenCount;
@@ -621,9 +657,11 @@ function intakeNext() {
 }
 
 function intakePrev() {
-  if (intakeStep === -4) {
+  if (intakeStep === -5) {
     show('s-uitleg');
     return;
+  } else if (intakeStep === -4) {
+    intakeStep = -5;
   } else if (intakeStep === -3) {
     intakeStep = -4;
   } else if (intakeStep === -2) {

@@ -27,6 +27,7 @@ const MAX_PETS      = 4;
 
 // ─── PROFILE ──────────────────────────────────────────────────────────────────
 const profile = {
+  playerName: '',
   houseType: '',
   members: 1,
   hasChildren: false,
@@ -271,7 +272,7 @@ const channels = {
 const choiceHistory = [];
 
 // ─── INTAKE ───────────────────────────────────────────────────────────────────
-let intakeStep = -4; // -4=mensen, -3=woning, -2=voertuigen, -1=omgeving, 0+=kaart-vragen
+let intakeStep = -5; // -5=naam, -4=mensen, -3=woning, -2=voertuigen, -1=omgeving, 0+=kaart-vragen
 let intakeAnswers = {};
 let adultsCount = 1;
 let childrenCount = 0;

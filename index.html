@@ -131,7 +131,7 @@
 
 <!-- COMMUTE QUESTIONS (thuis komen) -->
 <div id="s-commute" class="screen">
-  <div style="display:flex;justify-content:flex-end;margin-bottom:6px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
     <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
   </div>
   <div class="progress-wrap"><div class="progress-fill" id="commute-prog"></div></div>
@@ -356,11 +356,10 @@
 <!-- LEFT STATUS SIDEBAR -->
 <div class="status-sidebar-left" id="status-sidebar-left">
   <div class="ss-left-item">
-    <span class="ss-stat-label">Huishouden</span>
     <button class="ss-household-face" id="ss-household-face" type="button" onclick="openHouseholdPortrait()" aria-label="Bekijk huishouden"><span>👤</span></button>
     <span class="ss-stat-label" id="ss-household-count">1 pers.</span>
+    <span class="ss-player-name" id="ss-player-name"></span>
   </div>
-  <button class="gear-toggle-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">Menu</button>
 </div>
 
 <!-- HELP OVERLAY -->
