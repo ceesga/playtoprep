@@ -357,6 +357,10 @@ const ENVIRONMENT_TYPES = [{
   thumb: `<img src="afbeelding/avatars/omgeving/stadsgebouw.png" alt="">`
 }, ];
 
+// ─── SAVE / LOAD ───────────────────────────────────────────────────────────────
+const SAVE_KEY = 'ptp_savegame';
+function clearSave() { localStorage.removeItem(SAVE_KEY); }
+
 // ─── SCENARIO DATA ─────────────────────────────────────────────────────────────
 let currentScenario = 'stroom';
 let scenes = [];

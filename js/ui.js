@@ -181,3 +181,22 @@ document.addEventListener('keydown', function(e) {
     focused.click();
   }
 });
+
+// ─── SAVE INDICATOR ───────────────────────────────────────────────────────────
+function checkSave() {
+  const wrap = document.getElementById('continue-wrap');
+  if (!wrap) return;
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) { wrap.style.display = 'none'; return; }
+  try {
+    const d = JSON.parse(raw);
+    const min = Math.round((Date.now() - d.savedAt) / 60000);
+    const timeStr = min < 1 ? 'zojuist' : min < 60 ? `${min} min geleden` : `${Math.round(min / 60)} uur geleden`;
+    const names = { stroom: 'Stroomstoring', natuurbrand: 'Bosbrand', overstroming: 'Overstroming', thuis_komen: 'Gewone winterdag' };
+    const info = document.getElementById('continue-info');
+    if (info) info.textContent = `${names[d.currentScenario] || d.currentScenario} — opgeslagen ${timeStr}`;
+    wrap.style.display = '';
+  } catch(e) { wrap.style.display = 'none'; }
+}
+
+document.addEventListener('DOMContentLoaded', checkSave);

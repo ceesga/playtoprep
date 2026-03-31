@@ -788,6 +788,95 @@ function startScenario(scenarioId) {
   renderScene();
 }
 
+// ─── SAVE / LOAD ─────────────────────────────────────────────────────────────
+
+function saveGame() {
+  const data = {
+    version: 1,
+    savedAt: Date.now(),
+    currentScenario,
+    currentSceneIdx,
+    state: { ...state },
+    profile: { ...profile },
+    choiceHistory: [...choiceHistory],
+    newsLog: [...newsLog],
+    waLog: [...waLog],
+    radioUnlocked,
+    activeTab,
+    adultsCount,
+    childrenCount,
+    slechtTerBeenCount,
+    petsCount,
+    selectedHouseType,
+    selectedVehicles: [...selectedVehicles],
+    selectedEnvironment: [...selectedEnvironment],
+    avatarSelections: JSON.parse(JSON.stringify(avatarSelections))
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    const btn = document.getElementById('save-game-btn');
+    if (btn) {
+      btn.textContent = '✓ Opgeslagen';
+      setTimeout(() => { btn.textContent = '💾 Opslaan'; }, 2000);
+    }
+  } catch(e) {}
+}
+
+function loadGame() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) return;
+  const d = JSON.parse(raw);
+
+  // Herstel state en profiel
+  Object.assign(state, d.state);
+  Object.assign(profile, d.profile);
+
+  // Herstel scenario + scenes
+  currentScenario = d.currentScenario;
+  if (currentScenario === 'stroom')          { scenes = scenes_stroom;       sceneDecay = sceneDecay_stroom; }
+  else if (currentScenario === 'natuurbrand') { scenes = scenes_natuurbrand;   sceneDecay = sceneDecay_natuurbrand; }
+  else if (currentScenario === 'overstroming'){ scenes = scenes_overstroming;  sceneDecay = sceneDecay_overstroming; }
+  else if (currentScenario === 'thuis_komen') { scenes = scenes_thuis_komen;   sceneDecay = sceneDecay_thuis_komen; }
+  currentSceneIdx = d.currentSceneIdx;
+
+  // Herstel geschiedenis
+  choiceHistory.splice(0, Infinity, ...d.choiceHistory);
+  newsLog.splice(0, Infinity, ...d.newsLog);
+  waLog.splice(0, Infinity, ...d.waLog);
+  radioUnlocked = d.radioUnlocked;
+  activeTab = d.activeTab || 'buiten';
+
+  // Markeer al gelogde scenes zodat renderScene ze niet opnieuw toevoegt
+  stateSnapshots.length = 0;
+  historySnapshots.length = 0;
+  newsLoggedIdxs.clear();
+  waLoggedIdxs.clear();
+  newsLog.forEach(e => newsLoggedIdxs.add(e.sceneIdx));
+  waLog.forEach(e => waLoggedIdxs.add(e.sceneIdx));
+  channels.news = [];
+  channels.whatsapp = [];
+  channels.alerts = [];
+  channels.radio = [];
+  newsPage = 0;
+  waPage = 0;
+
+  // Herstel huishoudensvariabelen voor portret-fallback
+  adultsCount = d.adultsCount || 1;
+  childrenCount = d.childrenCount || 0;
+  slechtTerBeenCount = d.slechtTerBeenCount || 0;
+  petsCount = d.petsCount || 0;
+  selectedHouseType = d.selectedHouseType || null;
+  selectedVehicles.splice(0, Infinity, ...(d.selectedVehicles || []));
+  selectedEnvironment.splice(0, Infinity, ...(d.selectedEnvironment || []));
+  if (d.avatarSelections) Object.assign(avatarSelections, d.avatarSelections);
+
+  show('s-scenario');
+  renderScene();
+  renderStatusBars();
+  // Herstel actieve tab na render
+  if (d.activeTab && typeof switchTab === 'function') switchTab(d.activeTab);
+}
+
 function getActiveScenes() {
   return scenes.filter(s => !s.conditionalOn || s.conditionalOn());
 }

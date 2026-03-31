@@ -441,6 +441,55 @@ p.sub {
   width:100%;
 }
 
+.btn-secondary {
+  background:var(--c-white);
+  border:2px solid var(--c-primary);
+  color:var(--c-primary);
+  border-radius:var(--r-sm);
+  padding:11px 24px;
+  font-size:.9rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s;
+}
+.btn-secondary:hover {
+  background:var(--c-primary);
+  color:#fff;
+}
+
+.save-info {
+  font-size:.72rem;
+  color:var(--c-text-faint);
+  margin:5px 0 4px;
+  text-align:center;
+}
+.save-delete-btn {
+  background:none;
+  border:none;
+  color:var(--c-text-faint);
+  font-size:.7rem;
+  cursor:pointer;
+  text-decoration:underline;
+  display:block;
+  margin:0 auto;
+  padding:0;
+}
+.save-game-btn {
+  width:100%;
+  margin-top:14px;
+  padding:7px 0;
+  background:none;
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:var(--r-sm);
+  color:rgba(255,255,255,.7);
+  font-size:.7rem;
+  cursor:pointer;
+  transition:background .15s;
+}
+.save-game-btn:hover {
+  background:rgba(255,255,255,.12);
+}
+
 .screen {
   display:none;
 }

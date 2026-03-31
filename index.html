@@ -34,7 +34,12 @@
           <li class="choice-card" style="cursor:default"><div class="icon" aria-hidden="true">⚡</div><div><b>Stap 2</b><br/>Kies je scenario</div></li>
           <li class="choice-card" style="cursor:default"><div class="icon" aria-hidden="true">📊</div><div><b>Stap 3</b><br/>Persoonlijk rapport</div></li>
         </ol>
-    <button class="btn full" style="margin-top:8px" onclick="show('s-uitleg')">Hoe werkt het? →</button>
+    <button class="btn full" style="margin-top:8px" onclick="show('s-uitleg')">Nieuw spel →</button>
+    <div id="continue-wrap" style="display:none;margin-top:12px">
+      <button class="btn btn-secondary full" onclick="loadGame()">Doorgaan →</button>
+      <p id="continue-info" class="save-info"></p>
+      <button class="save-delete-btn" onclick="clearSave();checkSave()">Verwijder opgeslagen spel</button>
+    </div>
   </div>
 
 <!-- UITLEG SCREEN -->
@@ -304,6 +309,7 @@
     <button class="ss-household-face" id="ss-household-face" type="button" onclick="openHouseholdPortrait()" aria-label="Bekijk huishouden"><span>👤</span></button>
     <span class="ss-stat-label" id="ss-household-count">1 pers.</span>
   </div>
+  <button id="save-game-btn" class="save-game-btn" onclick="saveGame()">💾 Opslaan</button>
 </div>
 
 <!-- HELP OVERLAY -->
