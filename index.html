@@ -143,9 +143,6 @@
 <!-- SCENARIO SCREEN -->
 <div id="s-scenario" class="screen">
   <div class="progress-wrap"><div class="progress-fill" id="sc-prog"></div></div>
-  <!-- Vaste gear-knop linksboven -->
-  <button class="gear-toggle-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">⚙</button>
-
   <!-- Topbar: dag en tijd -->
   <div class="sc-topbar">
     <div class="sc-topbar-left">
@@ -158,33 +155,50 @@
   </div>
 
   <!-- GEAR MENU OVERLAY -->
-  <div id="gear-menu" class="gear-menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <div id="gear-menu" class="gear-menu" role="dialog" aria-modal="true" aria-labelledby="gear-title">
     <div class="gear-backdrop" onclick="closeGearMenu()"></div>
-    <div class="gear-panel">
-      <div class="gear-panel-header">
-        <span class="gear-panel-title">Menu</span>
-        <button class="gear-close" onclick="closeGearMenu()" aria-label="Menu sluiten">✕</button>
-      </div>
-      <div id="gear-feedback" class="gear-feedback" style="display:none"></div>
-
-      <div class="gear-group">
-        <div class="gear-group-label">Opslaan</div>
-        <button class="gear-item" onclick="saveProfile()">👤 Thuissituatie opslaan</button>
-        <button class="gear-item" onclick="saveGame()">💾 Voortgang opslaan</button>
+    <div class="gear-box">
+      <div class="gear-header">
+        <button class="gear-back" id="gear-back" onclick="gearPage(0)" style="visibility:hidden">← Terug</button>
+        <span id="gear-title">Menu</span>
+        <button class="help-close-x" onclick="closeGearMenu()" aria-label="Sluiten">✕</button>
       </div>
 
-      <div class="gear-group">
-        <div class="gear-group-label">Laden</div>
-        <button class="gear-item" onclick="gotoScenariokeuze();closeGearMenu()">🎮 Scenario opnieuw kiezen</button>
-        <button class="gear-item" id="gear-load-btn" onclick="loadGame();closeGearMenu()">📂 Vorige opslag laden</button>
+      <!-- Pagina 0: Hoofdmenu -->
+      <div id="gear-p0" class="gear-page">
+        <button class="gear-row" onclick="gearPage(1)">
+          <span class="gear-row-icon">💾</span><span class="gear-row-label">Opslaan</span><span class="gear-arrow">›</span>
+        </button>
+        <button class="gear-row" onclick="gearPage(2)">
+          <span class="gear-row-icon">📂</span><span class="gear-row-label">Laden</span><span class="gear-arrow">›</span>
+        </button>
+        <button class="gear-row" id="gear-audio-item" onclick="toggleAudio()">
+          <span class="gear-row-icon" id="gear-audio-icon">🔊</span><span class="gear-row-label" id="gear-audio-label">Geluid aan</span>
+        </button>
+        <button class="gear-row" onclick="openHelp('scenario');closeGearMenu()">
+          <span class="gear-row-icon">❓</span><span class="gear-row-label">Uitleg</span>
+        </button>
       </div>
 
-      <div class="gear-group">
-        <button class="gear-item gear-audio-item" id="gear-audio-item" onclick="toggleAudio()">🔊 Geluid aan</button>
+      <!-- Pagina 1: Opslaan -->
+      <div id="gear-p1" class="gear-page" style="display:none">
+        <div id="gear-feedback" class="gear-feedback" style="display:none"></div>
+        <button class="gear-row" onclick="saveProfile()">
+          <span class="gear-row-icon">👤</span><span class="gear-row-label">Thuissituatie opslaan</span>
+        </button>
+        <button class="gear-row" onclick="saveGame()">
+          <span class="gear-row-icon">💾</span><span class="gear-row-label">Voortgang opslaan</span>
+        </button>
       </div>
 
-      <div class="gear-group">
-        <button class="gear-item" onclick="openHelp('scenario');closeGearMenu()">❓ Speluitleg</button>
+      <!-- Pagina 2: Laden -->
+      <div id="gear-p2" class="gear-page" style="display:none">
+        <button class="gear-row" onclick="gotoScenariokeuze();closeGearMenu()">
+          <span class="gear-row-icon">🎮</span><span class="gear-row-label">Scenario opnieuw kiezen</span>
+        </button>
+        <button class="gear-row" id="gear-load-btn" onclick="loadGame();closeGearMenu()">
+          <span class="gear-row-icon">📂</span><span class="gear-row-label">Vorige opslag laden</span>
+        </button>
       </div>
     </div>
   </div>
@@ -342,6 +356,7 @@
     <button class="ss-household-face" id="ss-household-face" type="button" onclick="openHouseholdPortrait()" aria-label="Bekijk huishouden"><span>👤</span></button>
     <span class="ss-stat-label" id="ss-household-count">1 pers.</span>
   </div>
+  <button class="gear-toggle-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">⚙</button>
 </div>
 
 <!-- HELP OVERLAY -->

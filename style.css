@@ -524,34 +524,31 @@ p.sub {
   box-shadow:0 2px 14px rgba(0,0,0,.3);
 }
 
-/* Gear toggle button — vast linksboven in het venster */
+/* Gear toggle button — in linker sidebar onder profielfoto */
 .gear-toggle-btn {
-  position:fixed;
-  top:10px;
-  left:10px;
-  z-index:250;
   width:38px;
   height:38px;
-  background:rgba(0,40,100,.75);
+  background:rgba(255,255,255,.15);
   border:1px solid rgba(255,255,255,.3);
   border-radius:var(--r-sm);
-  color:#fff;
-  font-size:1.1rem;
+  color:rgba(255,255,255,.85);
+  font-size:1.05rem;
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.3);
+  margin-top:10px;
   transition:background .15s;
 }
-.gear-toggle-btn:hover { background:rgba(0,60,150,.85); }
+.gear-toggle-btn:hover { background:rgba(255,255,255,.25); }
 
-/* Gear menu — gecentreerde modal (zelfde patroon als help-overlay) */
+/* Gear menu — gecentreerde modal, zelfde structuur als help-overlay */
 .gear-menu {
   position:fixed;
-  inset:0;
+  top:0; left:0;
+  width:100%; height:100%;
   background:rgba(0,0,0,.45);
-  z-index:300;
+  z-index:1000;
   display:none;
   align-items:center;
   justify-content:center;
@@ -562,45 +559,65 @@ p.sub {
   position:absolute;
   inset:0;
 }
-.gear-panel {
+.gear-box {
   position:relative;
-  background:var(--c-ios-bg, #fff);
+  background:var(--c-ios-bg);
   border-radius:var(--r-modal);
-  max-width:min(380px, 92vw);
+  max-width:min(400px, 92vw);
   width:100%;
   box-shadow:0 24px 60px rgba(0,0,0,.38);
   overflow:hidden;
+  font-family:-apple-system,'Inter',sans-serif;
   animation:alertslide .25s ease-out;
 }
-.gear-panel-header {
+.gear-header {
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:13px 16px 11px;
   border-bottom:1px solid rgba(0,0,0,.1);
 }
-.gear-panel-title {
+.gear-header span {
   font-size:.93rem;
   font-weight:700;
+  color:var(--c-ios-text);
   letter-spacing:-.01em;
 }
-.gear-close {
+.gear-back {
   background:none;
   border:none;
-  font-size:1rem;
-  color:var(--c-ios-muted, #888);
+  color:var(--c-primary);
+  font-size:.82rem;
+  font-weight:500;
   cursor:pointer;
-  padding:4px 6px;
-  min-width:32px;
-  min-height:32px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
+  padding:4px 0;
+  min-width:64px;
+  text-align:left;
 }
-.gear-close:hover { color:var(--c-text); }
-
+.gear-back:hover { text-decoration:underline; }
+.gear-page { padding:6px 0; }
+.gear-row {
+  display:flex;
+  align-items:center;
+  width:100%;
+  background:none;
+  border:none;
+  border-bottom:1px solid var(--c-border-light);
+  padding:13px 16px;
+  gap:12px;
+  font-size:.9rem;
+  color:var(--c-ios-text);
+  cursor:pointer;
+  text-align:left;
+  transition:background .1s;
+}
+.gear-row:last-child { border-bottom:none; }
+.gear-row:hover { background:var(--c-primary-bg); }
+.gear-row-icon { font-size:1.1rem; flex-shrink:0; width:24px; text-align:center; }
+.gear-row-label { flex:1; }
+.gear-arrow { color:var(--c-text-faint); font-size:1.2rem; line-height:1; }
 .gear-feedback {
-  margin:10px 12px 0;
+  margin:10px 16px 4px;
   padding:8px 12px;
   background:#e8f5e9;
   border:1px solid #a5d6a7;
@@ -609,34 +626,6 @@ p.sub {
   color:#2e7d32;
   font-weight:600;
 }
-.gear-group {
-  padding:10px 12px 4px;
-  border-bottom:1px solid var(--c-border-light);
-}
-.gear-group:last-child { border-bottom:none; }
-.gear-group-label {
-  font-size:.62rem;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.8px;
-  color:var(--c-text-faint);
-  margin-bottom:4px;
-}
-.gear-item {
-  display:block;
-  width:100%;
-  text-align:left;
-  background:none;
-  border:none;
-  padding:10px 8px;
-  font-size:.88rem;
-  color:var(--c-text);
-  cursor:pointer;
-  border-radius:var(--r-sm);
-  transition:background .12s;
-}
-.gear-item:hover { background:var(--c-primary-bg); color:var(--c-primary-dark); }
-.gear-audio-item.muted { color:var(--c-text-faint); }
 
 .sc-topbar-left {
   display:flex;

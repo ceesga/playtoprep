@@ -189,27 +189,46 @@ function openGearMenu() {
   const menu = document.getElementById('gear-menu');
   if (!menu) return;
   _lastFocusBeforeModal = document.activeElement;
+  gearPage(0);
   menu.classList.add('show');
-  // Sync audio button label
-  const audioBtn = document.getElementById('gear-audio-item');
-  if (audioBtn) {
-    const on = typeof audioEnabled !== 'undefined' ? audioEnabled : true;
-    audioBtn.textContent = on ? '🔊 Geluid aan' : '🔇 Geluid uit';
-  }
-  // Dim laad-knop als er geen save is
-  const loadBtn = document.getElementById('gear-load-btn');
-  if (loadBtn) loadBtn.style.opacity = localStorage.getItem(SAVE_KEY) ? '1' : '0.4';
   trapFocus(menu);
-  requestAnimationFrame(() => document.querySelector('.gear-close')?.focus());
+  requestAnimationFrame(() => document.querySelector('.help-close-x', menu)?.focus());
 }
 
 function closeGearMenu() {
   const menu = document.getElementById('gear-menu');
   if (!menu) return;
   menu.classList.remove('show');
-  const fb = document.getElementById('gear-feedback');
-  if (fb) fb.style.display = 'none';
   if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
+}
+
+function gearPage(n) {
+  const titles = { 0: 'Menu', 1: 'Opslaan', 2: 'Laden' };
+  document.getElementById('gear-title').textContent = titles[n] || 'Menu';
+  const back = document.getElementById('gear-back');
+  if (back) back.style.visibility = n === 0 ? 'hidden' : 'visible';
+  [0, 1, 2].forEach(i => {
+    const p = document.getElementById('gear-p' + i);
+    if (p) p.style.display = i === n ? '' : 'none';
+  });
+  // Sync audio label op hoofdpagina
+  if (n === 0) {
+    const label = document.getElementById('gear-audio-label');
+    const icon  = document.getElementById('gear-audio-icon');
+    const on = typeof audioEnabled !== 'undefined' ? audioEnabled : true;
+    if (label) label.textContent = on ? 'Geluid aan' : 'Geluid uit';
+    if (icon)  icon.textContent  = on ? '🔊' : '🔇';
+  }
+  // Dim laad-knop als er geen save is
+  if (n === 2) {
+    const loadBtn = document.getElementById('gear-load-btn');
+    if (loadBtn) loadBtn.style.opacity = localStorage.getItem(SAVE_KEY) ? '1' : '0.4';
+  }
+  // Verberg feedback bij terug
+  if (n === 0) {
+    const fb = document.getElementById('gear-feedback');
+    if (fb) fb.style.display = 'none';
+  }
 }
 
 function showGearFeedback(msg) {

@@ -40,8 +40,10 @@ let currentRadioText = '';
 
 function toggleAudio() {
   audioEnabled = !audioEnabled;
-  const gearBtn = document.getElementById('gear-audio-item');
-  if (gearBtn) gearBtn.textContent = audioEnabled ? '🔊 Geluid aan' : '🔇 Geluid uit';
+  const label = document.getElementById('gear-audio-label');
+  const icon  = document.getElementById('gear-audio-icon');
+  if (label) label.textContent = audioEnabled ? 'Geluid aan' : 'Geluid uit';
+  if (icon)  icon.textContent  = audioEnabled ? '🔊' : '🔇';
   if (!audioEnabled) {
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     Ambience.stop();
