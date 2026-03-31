@@ -156,7 +156,7 @@ document.addEventListener('keydown', function(e) {
   // Escape: sluit open overlays
   if (e.key === 'Escape') {
     const gearMenu = document.getElementById('gear-menu');
-    if (gearMenu && gearMenu.style.display !== 'none') { closeGearMenu(); return; }
+    if (gearMenu && gearMenu.classList.contains('show')) { closeGearMenu(); return; }
     if (document.getElementById('help-overlay').classList.contains('show')) {
       closeHelp();
       return;
@@ -189,14 +189,14 @@ function openGearMenu() {
   const menu = document.getElementById('gear-menu');
   if (!menu) return;
   _lastFocusBeforeModal = document.activeElement;
-  menu.style.display = 'flex';
+  menu.classList.add('show');
   // Sync audio button label
   const audioBtn = document.getElementById('gear-audio-item');
   if (audioBtn) {
     const on = typeof audioEnabled !== 'undefined' ? audioEnabled : true;
     audioBtn.textContent = on ? '🔊 Geluid aan' : '🔇 Geluid uit';
   }
-  // Toon/verberg laad-knop afhankelijk van save
+  // Dim laad-knop als er geen save is
   const loadBtn = document.getElementById('gear-load-btn');
   if (loadBtn) loadBtn.style.opacity = localStorage.getItem(SAVE_KEY) ? '1' : '0.4';
   trapFocus(menu);
@@ -206,7 +206,7 @@ function openGearMenu() {
 function closeGearMenu() {
   const menu = document.getElementById('gear-menu');
   if (!menu) return;
-  menu.style.display = 'none';
+  menu.classList.remove('show');
   const fb = document.getElementById('gear-feedback');
   if (fb) fb.style.display = 'none';
   if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }

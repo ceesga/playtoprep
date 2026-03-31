@@ -143,9 +143,11 @@
 <!-- SCENARIO SCREEN -->
 <div id="s-scenario" class="screen">
   <div class="progress-wrap"><div class="progress-fill" id="sc-prog"></div></div>
-  <!-- Topbar: dag, tijd + gear menu knop -->
+  <!-- Vaste gear-knop linksboven -->
+  <button class="gear-toggle-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">⚙</button>
+
+  <!-- Topbar: dag en tijd -->
   <div class="sc-topbar">
-    <button class="gear-toggle-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">⚙</button>
     <div class="sc-topbar-left">
       <div class="day-badge-wrap">
         <div class="sc-dayofweek" id="sc-dayofweek"></div>
@@ -153,11 +155,10 @@
       </div>
       <div class="time-big" id="sc-time">12:00</div>
     </div>
-    <div style="width:40px"></div><!-- balans spacer -->
   </div>
 
   <!-- GEAR MENU OVERLAY -->
-  <div id="gear-menu" class="gear-menu" style="display:none" role="dialog" aria-modal="true" aria-label="Menu">
+  <div id="gear-menu" class="gear-menu" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="gear-backdrop" onclick="closeGearMenu()"></div>
     <div class="gear-panel">
       <div class="gear-panel-header">
