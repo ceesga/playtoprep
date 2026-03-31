@@ -155,6 +155,8 @@ function show(id) {
 document.addEventListener('keydown', function(e) {
   // Escape: sluit open overlays
   if (e.key === 'Escape') {
+    const gearMenu = document.getElementById('gear-menu');
+    if (gearMenu && gearMenu.style.display !== 'none') { closeGearMenu(); return; }
     if (document.getElementById('help-overlay').classList.contains('show')) {
       closeHelp();
       return;
@@ -181,6 +183,62 @@ document.addEventListener('keydown', function(e) {
     focused.click();
   }
 });
+
+// ─── GEAR MENU ────────────────────────────────────────────────────────────────
+function openGearMenu() {
+  const menu = document.getElementById('gear-menu');
+  if (!menu) return;
+  _lastFocusBeforeModal = document.activeElement;
+  menu.style.display = 'flex';
+  // Sync audio button label
+  const audioBtn = document.getElementById('gear-audio-item');
+  if (audioBtn) {
+    const on = typeof audioEnabled !== 'undefined' ? audioEnabled : true;
+    audioBtn.textContent = on ? '🔊 Geluid aan' : '🔇 Geluid uit';
+  }
+  // Toon/verberg laad-knop afhankelijk van save
+  const loadBtn = document.getElementById('gear-load-btn');
+  if (loadBtn) loadBtn.style.opacity = localStorage.getItem(SAVE_KEY) ? '1' : '0.4';
+  trapFocus(menu);
+  requestAnimationFrame(() => document.querySelector('.gear-close')?.focus());
+}
+
+function closeGearMenu() {
+  const menu = document.getElementById('gear-menu');
+  if (!menu) return;
+  menu.style.display = 'none';
+  const fb = document.getElementById('gear-feedback');
+  if (fb) fb.style.display = 'none';
+  if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
+}
+
+function showGearFeedback(msg) {
+  const fb = document.getElementById('gear-feedback');
+  if (!fb) return;
+  fb.textContent = msg;
+  fb.style.display = 'block';
+  clearTimeout(fb._t);
+  fb._t = setTimeout(() => { fb.style.display = 'none'; }, 3000);
+}
+
+function saveProfile() {
+  const data = {
+    version: 1,
+    savedAt: Date.now(),
+    profile: { ...profile },
+    adultsCount, childrenCount, slechtTerBeenCount, petsCount,
+    selectedHouseType,
+    selectedVehicles: [...selectedVehicles],
+    selectedEnvironment: [...selectedEnvironment],
+    avatarSelections: JSON.parse(JSON.stringify(avatarSelections))
+  };
+  try {
+    localStorage.setItem('ptp_profile', JSON.stringify(data));
+    showGearFeedback('✓ Thuissituatie opgeslagen');
+  } catch(e) {
+    showGearFeedback('Opslaan mislukt');
+  }
+}
 
 // ─── SAVE INDICATOR ───────────────────────────────────────────────────────────
 function checkSave() {

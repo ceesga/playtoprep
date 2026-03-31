@@ -814,12 +814,10 @@ function saveGame() {
   };
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    const btn = document.getElementById('save-game-btn');
-    if (btn) {
-      btn.textContent = '✓ Opgeslagen';
-      setTimeout(() => { btn.textContent = '💾 Opslaan'; }, 2000);
-    }
-  } catch(e) {}
+    if (typeof showGearFeedback === 'function') showGearFeedback('✓ Voortgang opgeslagen');
+  } catch(e) {
+    if (typeof showGearFeedback === 'function') showGearFeedback('Opslaan mislukt');
+  }
 }
 
 function loadGame() {

@@ -143,18 +143,50 @@
 <!-- SCENARIO SCREEN -->
 <div id="s-scenario" class="screen">
   <div class="progress-wrap"><div class="progress-fill" id="sc-prog"></div></div>
-  <!-- Topbar: dag, tijd, scenenummer + audio toggle -->
+  <!-- Topbar: dag, tijd + gear menu knop -->
   <div class="sc-topbar">
-    <button class="help-btn" onclick="openHelp('scenario')" aria-label="Speluitleg">?</button>
+    <button class="gear-toggle-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">⚙</button>
     <div class="sc-topbar-left">
       <div class="day-badge-wrap">
         <div class="sc-dayofweek" id="sc-dayofweek"></div>
         <div class="scene-day-badge" id="day-badge">DAG 0</div>
       </div>
-  <div class="time-big" id="sc-time">12:00</div>
-</div>
-<button class="audio-toggle on" id="audio-toggle" onclick="toggleAudio()" aria-pressed="true" aria-label="Geluid aan/uit">🔊 Geluid Aan</button>
-</div>
+      <div class="time-big" id="sc-time">12:00</div>
+    </div>
+    <div style="width:40px"></div><!-- balans spacer -->
+  </div>
+
+  <!-- GEAR MENU OVERLAY -->
+  <div id="gear-menu" class="gear-menu" style="display:none" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="gear-backdrop" onclick="closeGearMenu()"></div>
+    <div class="gear-panel">
+      <div class="gear-panel-header">
+        <span class="gear-panel-title">Menu</span>
+        <button class="gear-close" onclick="closeGearMenu()" aria-label="Menu sluiten">✕</button>
+      </div>
+      <div id="gear-feedback" class="gear-feedback" style="display:none"></div>
+
+      <div class="gear-group">
+        <div class="gear-group-label">Opslaan</div>
+        <button class="gear-item" onclick="saveProfile()">👤 Thuissituatie opslaan</button>
+        <button class="gear-item" onclick="saveGame()">💾 Voortgang opslaan</button>
+      </div>
+
+      <div class="gear-group">
+        <div class="gear-group-label">Laden</div>
+        <button class="gear-item" onclick="gotoScenariokeuze();closeGearMenu()">🎮 Scenario opnieuw kiezen</button>
+        <button class="gear-item" id="gear-load-btn" onclick="loadGame();closeGearMenu()">📂 Vorige opslag laden</button>
+      </div>
+
+      <div class="gear-group">
+        <button class="gear-item gear-audio-item" id="gear-audio-item" onclick="toggleAudio()">🔊 Geluid aan</button>
+      </div>
+
+      <div class="gear-group">
+        <button class="gear-item" onclick="openHelp('scenario');closeGearMenu()">❓ Speluitleg</button>
+      </div>
+    </div>
+  </div>
 <div id="scene-id-corner"></div>
 <!-- MOBILE STATUS BAR — visible only on small screens, replaces fixed sidebars -->
 <div class="mobile-status-bar" id="mobile-status-bar" aria-label="Jouw status" role="status">
@@ -309,7 +341,6 @@
     <button class="ss-household-face" id="ss-household-face" type="button" onclick="openHouseholdPortrait()" aria-label="Bekijk huishouden"><span>👤</span></button>
     <span class="ss-stat-label" id="ss-household-count">1 pers.</span>
   </div>
-  <button id="save-game-btn" class="save-game-btn" onclick="saveGame()">💾 Opslaan</button>
 </div>
 
 <!-- HELP OVERLAY -->
