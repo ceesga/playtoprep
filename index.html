@@ -45,7 +45,7 @@
 <!-- UITLEG SCREEN -->
 <div id="s-uitleg" class="screen">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-    <button class="help-btn-setup" onclick="openHelp('setup')" aria-label="Speluitleg">?</button>
+    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <h2 style="margin:0">Wat doe jij als het echt misgaat?</h2>
   </div>
 <div class="progress-wrap"><div class="progress-fill" style="width:5%"></div></div>
@@ -64,7 +64,7 @@
 <!-- INTAKE SCREEN -->
 <div id="s-intake" class="screen">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-    <button class="help-btn-setup" onclick="openHelp('setup')" aria-label="Speluitleg">?</button>
+    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <h2 id="intake-title" style="margin:0">Wie wonen er bij je?</h2>
   </div>
 <div class="progress-wrap"><div class="progress-fill" id="intake-prog"></div></div>
@@ -86,7 +86,7 @@
 <!-- PREP SCREEN -->
 <div id="s-prep" class="screen">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-    <button class="help-btn-setup" onclick="openHelp('setup')" aria-label="Speluitleg">?</button>
+    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <h2 style="margin:0">Wat heb je al in huis en bij je?</h2>
   </div>
 <div class="progress-wrap"><div class="progress-fill" id="prep-prog"></div></div>
@@ -99,7 +99,7 @@
 <!-- SCENARIOKEUZE SCREEN -->
 <div id="s-scenariokeuze" class="screen">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-    <button class="help-btn-setup" onclick="openHelp('setup')" aria-label="Speluitleg">?</button>
+    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <h2 style="margin:0">Kies een scenario</h2>
   </div>
 <div class="progress-wrap"><div class="progress-fill" style="width:85%"></div></div>
@@ -131,6 +131,9 @@
 
 <!-- COMMUTE QUESTIONS (thuis komen) -->
 <div id="s-commute" class="screen">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:6px">
+    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
+  </div>
   <div class="progress-wrap"><div class="progress-fill" id="commute-prog"></div></div>
   <div class="phase-label">Thuis komen: voorbereiding</div>
   <div id="commute-body"></div>
@@ -145,6 +148,7 @@
   <div class="progress-wrap"><div class="progress-fill" id="sc-prog"></div></div>
   <!-- Topbar: dag en tijd -->
   <div class="sc-topbar">
+    <button class="gear-toggle-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <div class="sc-topbar-left">
       <div class="day-badge-wrap">
         <div class="sc-dayofweek" id="sc-dayofweek"></div>

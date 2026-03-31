@@ -519,31 +519,30 @@ p.sub {
   align-items:center;
   justify-content:space-between;
   padding:8px 16px 8px 12px;
-  background:linear-gradient(180deg,#004a96 0%,#002a5c 100%);
-  border-bottom:2px solid rgba(230,100,0,.55);
+  background:#0f2240;
+  border-bottom:2px solid #0a1a33;
   box-shadow:0 2px 14px rgba(0,0,0,.3);
 }
 
 /* Gear toggle button — in linker sidebar onder profielfoto */
 .gear-toggle-btn {
-  width:52px;
-  height:30px;
+  width:44px;
+  height:44px;
   background:rgba(255,255,255,.15);
   border:1px solid rgba(255,255,255,.3);
-  border-radius:var(--r-sm);
+  border-radius:50%;
   color:rgba(255,255,255,.85);
-  font-size:.7rem;
-  font-weight:600;
-  letter-spacing:.5px;
-  text-transform:uppercase;
+  font-size:1.1rem;
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  margin-top:10px;
+  flex-shrink:0;
   transition:background .15s;
 }
 .gear-toggle-btn:hover { background:rgba(255,255,255,.25); }
+
+.setup-gear-btn { margin-top:0; }
 
 /* Gear menu — gecentreerde modal, zelfde structuur als help-overlay */
 .gear-menu {
@@ -578,8 +577,8 @@ p.sub {
   align-items:center;
   justify-content:space-between;
   padding:13px 16px 11px;
-  background:linear-gradient(180deg,#004a96 0%,#002a5c 100%);
-  border-bottom:2px solid rgba(230,100,0,.55);
+  background:#0f2240;
+  border-bottom:2px solid #0a1a33;
 }
 .gear-header span {
   font-size:.93rem;
