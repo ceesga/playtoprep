@@ -19,7 +19,7 @@ const scenes_natuurbrand = [{
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Het weerbericht voor morgen: temperaturen tot 38 graden, windkracht 6 uit het oosten, luchtvochtigheid extreem laag. Brandweer waarschuwt voor verhoogd risico op natuurbranden in de regio.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het weerbericht voor morgen: temperaturen tot 38 graden, windkracht 6 uit het oosten, luchtvochtigheid extreem laag. Brandweer waarschuwt voor verhoogd risico op natuurbranden in de regio.'
   },
   narrative: 'Het is laat op vrijdagavond. Je woont niet ver van mooie natuur — normaal een prachtig gezicht, al staat de natuur er nu enigszins dor bij na weken van droogte en hitte. De lucht is warm, zelfs nu het donker is, en er staat een droge oostenwind. Buiten ruikt het vaag naar stof en droog gras. Verder niks bijzonders.',
   choices: [{
@@ -59,7 +59,7 @@ const scenes_natuurbrand = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): In de omgeving woedt een grote natuurbrand. De rookontwikkeling is fors. Brandweer is aanwezig. Bewoners van de nabijgelegen wijken wordt geadviseerd deuren en ramen te sluiten. Verdere updates volgen.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): In de omgeving woedt een grote natuurbrand. De rookontwikkeling is fors. Brandweer is aanwezig. Bewoners van de nabijgelegen wijken wordt geadviseerd deuren en ramen te sluiten. Verdere updates volgen.'
   },
   get narrative() {
     return 'Je staat buiten koffie te drinken op een warme augustusochtend. In de verte zie je een dikke, grijze rookpluim opstijgen boven de boomtoppen. Het ruikt vaag naar verbrand hout.' + (state.awarenessLevel > 0 ? ' Die rookpluim verbaast je niet eens meer; vannacht hield je er al een beetje rekening mee.' : '');
@@ -94,7 +94,7 @@ const scenes_natuurbrand = [{
       outgoing: false
     }],
     nlalert: 'NL-Alert\n14 augustus 2027 – 10:08\n\nBosbrand in uw omgeving. Mogelijk evacuatiebevel. Wees alert. Houd deuren en ramen gesloten. Bereid je voor op eventuele evacuatie. Update volgt.',
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Brandweer heeft de natuurbrand in de omgeving nog niet onder controle. De wind heeft licht gedraaid. Een evacuatiebevel voor nabijgelegen wijken is mogelijk. Bewoners wordt geadviseerd een tas klaar te leggen met medicijnen, documenten en kleding voor twee dagen.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Brandweer heeft de natuurbrand in de omgeving nog niet onder controle. De wind heeft licht gedraaid. Een evacuatiebevel voor nabijgelegen wijken is mogelijk. Bewoners wordt geadviseerd een tas klaar te leggen met medicijnen, documenten en kleding voor twee dagen.'
   },
   narrative: 'De rookpluim is groter geworden en je ruikt de rook nu duidelijk. Je ogen prikken licht. Buiten zie je een buurvrouw haar auto volstouwen. Het begint serieus te worden.',
   choices: [{
@@ -135,7 +135,7 @@ const scenes_natuurbrand = [{
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): DRINGEND BERICHT. De wind is gedraaid. Het vuurfront beweegt richting woonwijken. Brandweer schaalt maximaal op. Bewoners van uw wijk en omgeving: zet u klaar voor evacuatie. Evacuatiebevel verwacht binnen dertig minuten.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): DRINGEND BERICHT. De wind is gedraaid. Het vuurfront beweegt richting woonwijken. Brandweer schaalt maximaal op. Bewoners van uw wijk en omgeving: zet u klaar voor evacuatie. Evacuatiebevel verwacht binnen dertig minuten.'
   },
   narrative: 'De rook is nu duidelijk te zien en te ruiken. De lucht heeft een oranje gloed. Je hoort in de verte sirenes. Op straat beginnen mensen hun auto in te rijden. De situatie verandert snel.',
   choices: [{
@@ -398,7 +398,7 @@ const scenes_natuurbrand = [{
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Op de evacuatieroutes staan zware files. Politie leidt verkeer om via alternatieve routes. Gebruik deze omleiding als u nu onderweg bent.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Op de evacuatieroutes staan zware files. Politie leidt verkeer om via alternatieve routes. Gebruik deze omleiding als u nu onderweg bent.'
   },
   get narrative() {
     return state.evacuatedEarly ? 'Jij bent vroeg genoeg vertrokken. De hoofdweg is nog redelijk vrij, al is het wel drukker dan normaal. De radio is nog te horen. Wat doe je?' : 'Je staat muurvast in de file. De rook is overal. De radio doet het nog. Wat doe je?';
@@ -615,7 +615,7 @@ const scenes_natuurbrand = [{
     news: [],
     whatsapp: [],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): De brand is voor 60% onder controle. Brandweer verwacht het vuur voor middernacht geïsoleerd te hebben. Bewoners van de geëvacueerde wijken kunnen naar verwachting morgenochtend terug. De noodopvang blijft de komende nacht open.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): De brand is voor 60% onder controle. Brandweer verwacht het vuur voor middernacht geïsoleerd te hebben. Bewoners van de geëvacueerde wijken kunnen naar verwachting morgenochtend terug. De noodopvang blijft de komende nacht open.'
   },
   narrative: 'Het wachten begint. Er staat een rij voor een maaltijd met brood, kaas en een kop soep. De kinderhoek is druk. Iemand naast je heeft een batterijradio aan. Dat blijkt hier de enige echt betrouwbare informatiebron.',
   choices: [{
@@ -766,7 +766,7 @@ const scenes_natuurbrand = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): De natuurbrand in het gebied is volledig geblust. Bewoners van de geëvacueerde wijken mogen terugkeren. De gemeente vraagt bewoners schade te melden.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): De natuurbrand in het gebied is volledig geblust. Bewoners van de geëvacueerde wijken mogen terugkeren. De gemeente vraagt bewoners schade te melden.'
   },
   narrative: 'Het is eindelijk ochtend. Je hebt slecht geslapen. Buiten is de lucht nog wit van de rook, maar het NL Alert is verdwenen. Mensen komen langzaam overeind. Je vraagt je af of het nu echt veilig is.',
   choices: [{

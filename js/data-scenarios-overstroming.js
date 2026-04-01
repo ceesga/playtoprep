@@ -24,7 +24,7 @@ const scenes_overstroming = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Het KNMI heeft code oranje afgegeven voor het rivierengebied. De waterstanden stijgen snel door zware regenval bovenstrooms. Rijkswaterstaat vraagt bewoners in kwetsbare gebieden voorbereidingen te treffen.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het KNMI heeft code oranje afgegeven voor het rivierengebied. De waterstanden stijgen snel door zware regenval bovenstrooms. Rijkswaterstaat vraagt bewoners in kwetsbare gebieden voorbereidingen te treffen.'
   },
   narrative: 'Het is maandagavond. Je woont op loopafstand van de rivier. Het uitzicht is er mooi en op zonnige dagen kan je er echt van genieten. Buiten regent het gestaag. De lucht voelt zwaar en vochtig, drukkend. In de verte klinkt de regen harder op de daken dan normaal. De rivier stond deze week al hoog.',
   choices: [{
@@ -59,7 +59,7 @@ const scenes_overstroming = [{
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Hoogwaterwaarschuwing voor het rivierengebied. Het verwachte waterpeil stijgt en nadert kritische niveaus. Rijkswaterstaat heeft stuwen en gemalen op maximale capaciteit. Bewoners in laaggelegen gebieden worden geadviseerd alert te zijn.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Hoogwaterwaarschuwing voor het rivierengebied. Het verwachte waterpeil stijgt en nadert kritische niveaus. Rijkswaterstaat heeft stuwen en gemalen op maximale capaciteit. Bewoners in laaggelegen gebieden worden geadviseerd alert te zijn.'
   },
   get narrative() {
     return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. Het klinkt zwaarder dan normaal, aanhoudender.' + (state.awarenessLevel > 0 ? ' Die code oranje van gisteren zat nog vers in je hoofd.' : '');
@@ -175,7 +175,7 @@ const scenes_overstroming = [{
       outgoing: false
     }],
     nlalert: 'NL-Alert\n11 november 2027 – 09:20\n\nHoogwater in uw omgeving. Verwachte waterstand neemt snel toe. Wees alert. Bereid u voor op mogelijk evacuatiebevel. Houd deuren en ramen gesloten.',
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Het waterpeil stijgt sneller dan verwacht. Op meerdere plaatsen langs de rivier begint water over de kaden te lopen. Bewoners in laaggelegen gebieden: zorg dat u kunt vertrekken op korte termijn.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het waterpeil stijgt sneller dan verwacht. Op meerdere plaatsen langs de rivier begint water over de kaden te lopen. Bewoners in laaggelegen gebieden: zorg dat u kunt vertrekken op korte termijn.'
   },
   narrative: 'Je kijkt naar buiten. De straat staat al 5 centimeter blank. Het water stijgt zichtbaar. Een buurman loopt haastig met laarzen door de straat. Er is haast geboden.',
   choices: [{
@@ -305,7 +305,7 @@ const scenes_overstroming = [{
       }] : [];
     },
     nlalert: 'NL-Alert\n11 november 2027 – 10:22\n\nEVACUATIEBEVEL laaggelegen wijken rivierengebied. VERLAAT DIRECT UW WONING of ga naar een hogere verdieping. Gebruik aangewezen evacuatieroutes.',
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Evacuatiebevel voor laaggelegen wijken. Als vertrekken niet meer mogelijk is: ga naar de bovenste verdieping. Sluit de meterkast af. Bel 112 alleen in levensbedreigende situaties.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Evacuatiebevel voor laaggelegen wijken. Als vertrekken niet meer mogelijk is: ga naar de bovenste verdieping. Sluit de meterkast af. Bel 112 alleen in levensbedreigende situaties.'
   },
   narrative: 'De straat staat nu kniehoog blank. Je auto is omringd door water, dus weggrijden is riskant. Het water stijgt nog steeds. Wat doe je?',
   choices: [{
@@ -522,7 +522,7 @@ const scenes_overstroming = [{
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Het water in het rivierengebied stijgt tot historische niveaus. Reddingsoperaties zijn gaande. Bel 112 als u hulp nodig heeft. Sluit de meterkast AF. Er zijn al meldingen van kortsluitingen.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het water in het rivierengebied stijgt tot historische niveaus. Reddingsoperaties zijn gaande. Bel 112 als u hulp nodig heeft. Sluit de meterkast AF. Er zijn al meldingen van kortsluitingen.'
   },
   narrative: 'Beneden hoor je het water kabbelen. De onderkant van de trapleuning staat al onder water. Je bent boven en voorlopig veilig, maar het stijgt nog steeds.',
   choices: [{
@@ -683,7 +683,7 @@ const scenes_overstroming = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Geëvacueerden worden opgevangen in sportcomplexen en buurthuizen in de regio. Er is warm eten, water en slaapgelegenheid beschikbaar. Meld u aan bij de registratiebalie bij binnenkomst.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Geëvacueerden worden opgevangen in sportcomplexen en buurthuizen in de regio. Er is warm eten, water en slaapgelegenheid beschikbaar. Meld u aan bij de registratiebalie bij binnenkomst.'
   },
   get narrative() {
     const aankomst = state.wentUpstairs ?
@@ -853,7 +853,7 @@ const scenes_overstroming = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Het water in het rivierengebied stabiliseert. Daling verwacht in de vroege ochtend. Mensen die boven zijn gebleven: blijf kalm, bel 112 alleen bij directe nood. Reddingsdiensten werken de hele nacht door.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het water in het rivierengebied stabiliseert. Daling verwacht in de vroege ochtend. Mensen die boven zijn gebleven: blijf kalm, bel 112 alleen bij directe nood. Reddingsdiensten werken de hele nacht door.'
   },
   narrative: 'Het is donker. Buiten is het veel stiller geworden. Het water stroomt niet meer langs het huis, maar het is ook nog niet weg. Je zit op de vloer van de slaapkamer. De verwarming is uit en het ruikt koud en muf. Beneden hoor je af en toe nog water druppen. In de verte vaart soms een motorboot langzaam door de straat.',
   choices: [{
@@ -892,7 +892,7 @@ const scenes_overstroming = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 / 92.5 MHz): Het waterpeil stabiliseert. Daling verwacht in de vroege ochtend. Geëvacueerden kunnen naar verwachting morgenochtend terug voor een eerste inspectie.'
+    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het waterpeil stabiliseert. Daling verwacht in de vroege ochtend. Geëvacueerden kunnen naar verwachting morgenochtend terug voor een eerste inspectie.'
   },
   narrative: 'Het is avond. In de sporthal is het rustiger geworden en het licht is gedimd. Overal liggen mensen op slaapmatten en opgerolde jassen. Je telefoon laadt op. Buiten regent het nog steeds, maar het ergste lijkt achter de rug.',
   choices: [{

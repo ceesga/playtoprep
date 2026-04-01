@@ -247,7 +247,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: 'NL-Alert\n31 januari 2027 – 12:32\n\nDoor een kortsluiting bij de energiecentrale in Jänschwalde (Duitsland) zijn er grote stroomstoringen door heel Europa. De stroomstoring kan enkele uren duren. Update volgt.',
-      radio: 'Hier Omrop Fryslân, 92.2 en 92.5 MHz. We onderbreken onze uitzending voor een urgent noodbericht. Er is een grootschalige stroomstoring in heel Europa. Oorzaak: brand bij een energiecentrale in Duitsland, gevolgd door een kettingreactie in het Europese hoogspanningsnet. De overheid vraagt iedereen thuis te blijven, warm te blijven en voldoende drinkwater achter de hand te houden. Houd uw autoradio of batterijradio aan voor verdere updates. We houden u op de hoogte.'
+      radio: 'Hier Omrop Fryslân, 92.2 en 95.5 FM. We onderbreken onze uitzending voor een urgent noodbericht. Er is een grootschalige stroomstoring in heel Europa. Oorzaak: brand bij een energiecentrale in Duitsland, gevolgd door een kettingreactie in het Europese hoogspanningsnet. De overheid vraagt iedereen thuis te blijven, warm te blijven en voldoende drinkwater achter de hand te houden. Houd uw autoradio of batterijradio aan voor verdere updates. We houden u op de hoogte.'
     },
     get narrative() {
       return 'De stroom valt opnieuw uit, dit keer harder dan net. Alles valt weer stil, maar nu voelt het ernstiger dan de eerste keer. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.';
@@ -262,14 +262,14 @@ const scenes_stroom = [
     }, {
       conditionalOn: () => profile.hasRadio === 'ja',
       text: '📻 Batterijradio aanzetten voor nieuws',
-      consequence: 'Je zet de radio aan. Omrop Fryslân (92.2 / 92.5 MHz) zendt nog uit en vertelt dat de storing groot is en lang kan duren. Vanaf nu is de radio je belangrijkste bron van informatie.',
+      consequence: 'Je zet de radio aan. Omrop Fryslân (92.2 en 95.5 FM) zendt nog uit en vertelt dat de storing groot is en lang kan duren. Vanaf nu is de radio je belangrijkste bron van informatie.',
       stateChange: {
         hasCarRadio: true
       }
     }, {
       conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
       text: '🚗 Naar de auto en de autoradio aanzetten',
-      consequence: 'Je loopt naar de auto en zet de radio aan. Omrop Fryslân (92.2 / 92.5 MHz) is nog in de lucht en vertelt dat de storing groot is en lang kan duren. De autoradio wordt nu je belangrijkste bron van informatie.',
+      consequence: 'Je loopt naar de auto en zet de radio aan. Omrop Fryslân (92.2 en 95.5 FM) is nog in de lucht en vertelt dat de storing groot is en lang kan duren. De autoradio wordt nu je belangrijkste bron van informatie.',
       stateChange: {
         hasCarRadio: true
       }
