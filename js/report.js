@@ -33,8 +33,8 @@ function showReport() {
   document.getElementById('rep-intro').textContent = intro;
 
   // Uitkomstheadline
-  const scoreW = state.water / MAX_STAT_WATER;
-  const scoreF = state.food / MAX_STAT_FOOD;
+  const scoreW = state.ranOutOfWater ? 0 : 1;
+  const scoreF = state.ranOutOfFood  ? 0 : 1;
   const scoreC = state.comfort / MAX_STAT_COMFORT;
   const avgScore = (scoreW + scoreF + scoreC) / 3;
   let outcomeText, outcomeClass;
@@ -81,152 +81,185 @@ function showReport() {
   if (currentScenario === 'natuurbrand') {
     statusItems = [{
         key: 'packedBag',
-        label: 'Tas ingepakt',
+        label: 'Noodtas ingepakt',
+        labelMissing: 'Noodtas niet ingepakt',
         icon: '🎒'
       }, {
         key: 'evacuated',
         label: 'Op tijd geëvacueerd',
+        labelMissing: 'Niet op tijd geëvacueerd',
         icon: '🚗'
       }, {
         key: 'returnedHome',
         label: 'Veilig teruggekeerd',
+        labelMissing: 'Niet veilig teruggekeerd',
         icon: '🏠'
       },
       ...(profile.hasPets ? [{
         key: 'tookPets',
         label: 'Huisdier meegenomen',
+        labelMissing: 'Huisdier niet meegenomen',
         icon: '🐾'
       }] : []),
       ...(profile.hasChildren ? [{
         key: 'kidsEvacuated',
-        label: 'Kinderen veilig',
+        label: 'Kinderen veilig gesteld',
+        labelMissing: 'Kinderen niet veilig gesteld',
         icon: '👶'
       }] : []), {
         key: 'helpedNeighbor',
-        label: 'Buren geholpen',
+        label: 'Buren geholpen bij evacuatie',
+        labelMissing: 'Buren niet geholpen bij evacuatie',
         icon: '🤝'
       }, {
         key: 'knowsNeighbors',
-        label: 'Buren leren kennen',
+        label: 'Buren gewaarschuwd',
+        labelMissing: 'Buren niet gewaarschuwd',
         icon: '👋'
       }, {
         key: 'awarenessLevel',
-        label: 'Vroeg gealarmeerd',
+        label: 'Tijdig gealarmeerd',
+        labelMissing: 'Waarschuwingen gemist',
         icon: '⚠️'
       }
     ];
   } else if (currentScenario === 'overstroming') {
     statusItems = [{
       key: 'evacuatedFlood',
-      label: 'Geëvacueerd',
+      label: 'Op tijd geëvacueerd',
+      labelMissing: 'Niet op tijd geëvacueerd',
       icon: '🚤'
     }, {
       key: 'wentUpstairs',
-      label: 'Naar boven gegaan',
+      label: 'Naar hogere verdieping gegaan',
+      labelMissing: 'Niet naar hogere verdieping gegaan',
       icon: '🏠'
     }, {
       key: 'cutElectricity',
-      label: 'Elektriciteit afgesloten',
+      label: 'Meterkast afgesloten',
+      labelMissing: 'Meterkast niet afgesloten',
       icon: '⚡'
     }, {
       key: 'savedItems',
-      label: 'Essentials gered',
+      label: 'Essentials meegenomen',
+      labelMissing: 'Geen essentials meegenomen',
       icon: '📦'
     }, {
       key: 'calledRescue',
-      label: 'Hulpdiensten ingeschakeld',
+      label: 'Hulpdiensten gebeld',
+      labelMissing: 'Hulpdiensten niet gebeld',
       icon: '🆘'
     }, {
       key: 'returnedHome',
       label: 'Veilig teruggekeerd',
+      labelMissing: 'Niet veilig teruggekeerd',
       icon: '🏡'
     }, {
       key: 'helpedNeighbor',
       label: 'Buren geholpen',
+      labelMissing: 'Buren niet geholpen',
       icon: '🤝'
     }, {
       key: 'packedBag',
-      label: 'Tas ingepakt',
+      label: 'Noodtas ingepakt',
+      labelMissing: 'Noodtas niet ingepakt',
       icon: '🎒'
     }];
   } else if (currentScenario === 'thuis_komen') {
     statusItems = [{
       key: 'reachedHome',
       label: 'Thuis aangekomen',
+      labelMissing: 'Niet thuis gekomen',
       icon: '🏠'
     }, {
       key: 'foundAlternative',
-      label: 'Alternatief gevonden',
+      label: 'Alternatief vervoer gevonden',
+      labelMissing: 'Geen alternatief vervoer gevonden',
       icon: '🔄'
     }, {
       key: 'hadEDCBag',
-      label: 'EDC-tas bij je',
+      label: 'Noodtas bij je gehad',
+      labelMissing: 'Geen noodtas bij je gehad',
       icon: '🎒'
     }, {
       key: 'kidsPickedUp',
-      label: 'Kinderen opgehaald',
+      label: 'Kinderen opgehaald of geregeld',
+      labelMissing: 'Kinderen niet opgehaald of geregeld',
       icon: '👶'
     }, {
       key: 'helpedStranger',
-      label: 'Vreemdeling geholpen',
+      label: 'Iemand onderweg geholpen',
+      labelMissing: 'Niemand onderweg geholpen',
       icon: '🤝'
     }, {
       key: 'hasCash',
-      label: 'Contant geld',
+      label: 'Contant geld bij je gehad',
+      labelMissing: 'Geen contant geld bij je gehad',
       icon: '💵'
     }];
   } else {
     statusItems = [{
       key: 'hasCash',
-      label: 'Contant geld',
+      label: 'Contant geld in huis',
+      labelMissing: 'Geen contant geld in huis',
       icon: '💵'
     }, {
       key: 'hasWater',
       label: 'Noodwater opgeslagen',
+      labelMissing: 'Geen noodwater opgeslagen',
       icon: '🛁'
     }, {
       key: 'hasFlashlight',
-      label: 'Zaklamp / kaarsen',
+      label: 'Zaklamp of kaarsen in huis',
+      labelMissing: 'Geen zaklamp of kaarsen in huis',
       icon: '🔦'
     }, {
       key: 'houseLocked',
-      label: 'Huis afgesloten',
+      label: 'Deuren en ramen afgesloten',
+      labelMissing: 'Deuren en ramen niet afgesloten',
       icon: '🔒'
     }, {
       key: 'knowsNeighbors',
-      label: 'Buren leren kennen',
+      label: 'Buren aangesproken',
+      labelMissing: 'Buren niet aangesproken',
       icon: '👋'
     }, {
       key: 'helpedNeighbor',
-      label: 'Buren geholpen',
+      label: 'Buren actief geholpen',
+      labelMissing: 'Buren niet actief geholpen',
       icon: '🤝'
     }, {
       key: 'hasCampingStove',
       label: 'Campingkooktoestel gebruikt',
+      labelMissing: 'Geen campingkooktoestel gebruikt',
       icon: '🏕️'
     }, {
       key: 'handledSewage',
-      label: 'Riolering aangepakt',
+      label: 'Afvoeren afgesloten bij riolering',
+      labelMissing: 'Afvoeren niet afgesloten bij riolering',
       icon: '🚽'
     }, {
       key: 'wentToFoodDist',
       label: 'Voedseluitdeling bezocht',
+      labelMissing: 'Voedseluitdeling niet bezocht',
       icon: '🍚'
     }, {
       key: 'hasExtraFood',
       label: 'Voedsel vooraf ingeslagen',
+      labelMissing: 'Geen voedsel vooraf ingeslagen',
       icon: '🛒'
     }];
   } // end else (stroom)
   let statusHtml = '<div class="status-row">';
   statusItems.forEach(item => {
     const has = state[item.key];
-    statusHtml += `<div class="status-badge ${has ? 'has' : 'missing'}">${item.icon} ${item.label}</div>`;
+    const badgeLabel = has ? item.label : (item.labelMissing || item.label);
+    statusHtml += `<div class="status-badge ${has ? 'has' : 'missing'}">${item.icon} ${badgeLabel}</div>`;
   });
   statusHtml += '</div>';
   document.getElementById('rep-status').innerHTML = statusHtml;
 
-  // Eindstats (water, voedsel, comfort — geen gezondheid)
+  // Eindstats
   function statBar(val, max, icon, label) {
     const pct = Math.max(0, Math.min(100, (val / max) * 100));
     const color = pct >= 60 ? 'var(--c-success)' : pct >= 30 ? '#f59e0b' : 'var(--c-danger)';
@@ -236,10 +269,20 @@ function showReport() {
       <span class="rep-stat-val">${val}/${max}</span>
     </div>`;
   }
+  function shortageIndicator(ranOut, icon, labelOk, labelShortage) {
+    const ok = !ranOut;
+    const color = ok ? 'var(--c-success)' : 'var(--c-danger)';
+    const text  = ok ? labelOk : labelShortage;
+    return `<div class="rep-stat-item">
+      <span class="rep-stat-label">${icon} ${text}</span>
+      <div class="rep-stat-bar-bg"><div class="rep-stat-bar-fill" style="width:${ok ? 100 : 20}%;background:${color}"></div></div>
+      <span class="rep-stat-val" style="color:${color}">${ok ? '✓' : '✗'}</span>
+    </div>`;
+  }
   document.getElementById('rep-endstats').innerHTML = `<div class="rep-endstats">
-    ${statBar(state.water,   MAX_STAT_WATER,   '💧', 'Water')}
-    ${statBar(state.food,    MAX_STAT_FOOD,    '🥫', 'Voedsel')}
-    ${statBar(state.comfort, MAX_STAT_COMFORT, '🧸', 'Comfort')}
+    ${shortageIndicator(state.ranOutOfWater, '💧', 'Geen watertekort', 'Watertekort gehad')}
+    ${shortageIndicator(state.ranOutOfFood,  '🥫', 'Geen voedseltekort', 'Voedseltekort gehad')}
+    ${statBar(state.comfort, MAX_STAT_COMFORT, '🧸', 'Comfort aan het eind')}
   </div>`;
 
   // GOOD
@@ -556,7 +599,7 @@ function showReport() {
   // Generic tip always shown
   personalTips.push({
     icon: '⚡',
-    text: '<b>Grote storing langer dan 72 uur</b>. Denk Vooruit en Fryslân Veilig adviseren je voor te bereiden op de eerste 72 uur: noodpakket, noodvoorraad en een noodplan. Dit scenario duurde langer. Bij een grote calamiteit — stroomuitval, overstroming, extreem weer — is zelfredzaamheid voor 5 tot 7 dagen het doel.'
+    text: '<b>Bereid je voor op 72 uur</b>. Dit scenario laat zien hoe snel je afhankelijk wordt van dingen die normaal vanzelf gaan: stroom, water, verwarming, communicatie. Een noodpakket, noodvoorraad en een noodplan helpen je de eerste 72 uur zelfstandig door te komen.'
   });
 
   let personalHtml = '';

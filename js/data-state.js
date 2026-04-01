@@ -78,6 +78,8 @@ const state = {
   water:        START_WATER,
   food:         START_FOOD,
   comfort:      START_COMFORT,
+  ranOutOfWater: false,
+  ranOutOfFood:  false,
   health:       START_HEALTH,
   cash:         START_CASH,
   powerbank:    0,

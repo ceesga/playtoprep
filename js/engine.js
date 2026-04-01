@@ -927,10 +927,12 @@ function renderScene() {
   if (scene.id === 'st_d2_morgen') state.day2Started = true;
   // Penalty: no water or food causes health and comfort to drop
   if (state.water === 0) {
+    state.ranOutOfWater = true;
     state.health = Math.max(0, state.health - 1);
     state.comfort = Math.max(0, state.comfort - 1);
   }
   if (state.food === 0) {
+    state.ranOutOfFood = true;
     state.health = Math.max(0, state.health - 1);
     state.comfort = Math.max(0, state.comfort - 1);
   }
@@ -1753,6 +1755,8 @@ function pickChoice(idx) {
       state[k] = sc[k];
     }
   });
+  if (state.water === 0) state.ranOutOfWater = true;
+  if (state.food === 0) state.ranOutOfFood = true;
   renderStatusBars();
 
   // Floating stat delta indicators
