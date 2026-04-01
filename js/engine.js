@@ -399,7 +399,7 @@ function renderStatusBars() {
   updateSegs('stat-water', 'msb-seg-water', 'ss-water', 'msb-water', state.water);
   updateSegs('stat-food', 'msb-seg-food', 'ss-food', 'msb-food', state.food);
   updateSegs('stat-comfort', 'msb-seg-comfort', 'ss-comfort', 'msb-comfort', state.comfort);
-  updateSegs('stat-health', 'msb-seg-health', 'ss-health', 'msb-health', state.health);
+  // state.health wordt bijgehouden maar niet getoond in de UI
   // Left sidebar — batteries
   updateBattery('batt-phone-fill', 'batt-phone-pct', 'batt-phone-empty', state.phoneBattery);
   // Cash
@@ -1743,7 +1743,6 @@ function pickChoice(idx) {
     water: 'ss-water',
     food: 'ss-food',
     comfort: 'ss-comfort',
-    health: 'ss-health',
     phoneBattery: 'batt-phone-fill',
     cash: 'ss-cash-amount'
   };

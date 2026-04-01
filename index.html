@@ -209,7 +209,6 @@
 <div id="scene-id-corner"></div>
 <!-- MOBILE STATUS BAR — visible only on small screens, replaces fixed sidebars -->
 <div class="mobile-status-bar" id="mobile-status-bar" aria-label="Jouw status" role="status">
-  <div class="msb-stat" id="msb-health"><div class="msb-segs" id="msb-seg-health"><span class="msb-icon-unit">❤️</span><span class="msb-icon-unit">❤️</span><span class="msb-icon-unit">❤️</span><span class="msb-icon-unit">❤️</span><span class="msb-icon-unit">❤️</span></div></div>
   <div class="msb-stat" id="msb-food"><div class="msb-segs" id="msb-seg-food"><span class="msb-icon-unit">🥫</span><span class="msb-icon-unit">🥫</span><span class="msb-icon-unit">🥫</span><span class="msb-icon-unit">🥫</span><span class="msb-icon-unit">🥫</span></div></div>
   <div class="msb-stat" id="msb-water"><div class="msb-segs" id="msb-seg-water"><span class="msb-icon-unit">💧</span><span class="msb-icon-unit">💧</span><span class="msb-icon-unit">💧</span><span class="msb-icon-unit">💧</span><span class="msb-icon-unit">💧</span></div></div>
   <div class="msb-stat" id="msb-comfort"><div class="msb-segs" id="msb-seg-comfort"><span class="msb-icon-unit">🧸</span><span class="msb-icon-unit">🧸</span><span class="msb-icon-unit">🧸</span><span class="msb-icon-unit">🧸</span><span class="msb-icon-unit">🧸</span></div></div>
@@ -282,12 +281,15 @@
 <!-- REPORT SCREEN -->
 <div id="s-report" class="screen">
   <div class="phase-label">Stap 5: Jouw rapport</div>
-  <h2>Jouw scenario, hoe liep het?</h2>
+  <h2 id="rep-title">Jouw scenario, hoe liep het?</h2>
   <p class="sub" id="rep-intro"></p>
+  <div id="rep-outcome"></div>
+  <div id="rep-context"></div>
   <div class="report-section-title">Tijdlijn van jouw keuzes</div>
   <div id="rep-timeline"></div>
   <div class="report-section-title">Jouw crisisstatus</div>
   <div id="rep-status"></div>
+  <div id="rep-endstats"></div>
   <div class="report-section-title">Dit deed je goed</div>
   <div id="rep-good"></div>
   <div class="report-section-title">Dit kun je verbeteren</div>
@@ -325,11 +327,6 @@
     <span class="ss-stat-label">Comfort</span>
     <div class="ss-icon-row" id="stat-comfort"><span class="ss-icon-unit">🧸</span><span class="ss-icon-unit">🧸</span><span class="ss-icon-unit">🧸</span><span class="ss-icon-unit">🧸</span><span class="ss-icon-unit">🧸</span></div>
   </div>
-<div class="ss-stat-sep"></div>
-<div class="ss-stat" id="ss-health">
-  <span class="ss-stat-label">Gezondheid</span>
-  <div class="ss-icon-row" id="stat-health"><span class="ss-icon-unit">❤️</span><span class="ss-icon-unit">❤️</span><span class="ss-icon-unit">❤️</span><span class="ss-icon-unit">❤️</span><span class="ss-icon-unit">❤️</span></div>
-</div>
 </div>
 <div class="ss-divider"></div>
 <div class="ss-left-item">

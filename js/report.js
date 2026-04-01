@@ -9,18 +9,61 @@ function showReport() {
   document.getElementById('sc-prog').style.transform = 'scaleX(1)';
   show('s-report');
 
-  // Intro
+  // Titel
+  const titleEl = document.getElementById('rep-title');
+  if (titleEl) {
+    titleEl.textContent = profile.playerName
+      ? `${profile.playerName}, hoe liep het?`
+      : 'Jouw scenario, hoe liep het?';
+  }
+
+  // Intro (met naam)
+  const naam = profile.playerName;
+  const jij = naam ? `${naam}, je` : 'Je';
   let intro = '';
   if (currentScenario === 'stroom') {
-    intro = 'Je hebt het stroomuitvalscenario van enkele dagen doorlopen. Hieronder zie je een overzicht van wat je koos, wat je goed deed en waar ruimte voor verbetering zit.';
+    intro = `${jij} hebt het stroomuitvalscenario van enkele dagen doorlopen. Hieronder zie je een overzicht van wat je koos, wat je goed deed en waar ruimte voor verbetering zit.`;
   } else if (currentScenario === 'natuurbrand') {
-    intro = 'Je hebt het natuurbrandscenario doorlopen. Een brand die snel dichterbij komt, dwingt tot snelle beslissingen. Hieronder zie je hoe jij reageerde.';
+    intro = `${jij} hebt het natuurbrandscenario doorlopen. Een brand die snel dichterbij komt, dwingt tot snelle beslissingen. Hieronder zie je hoe jij reageerde.`;
   } else if (currentScenario === 'overstroming') {
-    intro = 'Je hebt het overstromingsscenario doorlopen. Stijgend water geeft weinig tijd en vergeeft weinig fouten. Hieronder zie je hoe jij keuzes maakte.';
+    intro = `${jij} hebt het overstromingsscenario doorlopen. Stijgend water geeft weinig tijd en vergeeft weinig fouten. Hieronder zie je hoe jij keuzes maakte.`;
   } else if (currentScenario === 'thuis_komen') {
-    intro = 'Je hebt het scenario thuiskomen doorlopen. Hoe kom je thuis als alle infrastructuur uitvalt? Hieronder zie je jouw route en keuzes.';
+    intro = `${jij} hebt het scenario thuiskomen doorlopen. Hoe kom je thuis als alle infrastructuur uitvalt? Hieronder zie je jouw route en keuzes.`;
   }
   document.getElementById('rep-intro').textContent = intro;
+
+  // Uitkomstheadline
+  const scoreW = state.water / MAX_STAT_WATER;
+  const scoreF = state.food / MAX_STAT_FOOD;
+  const scoreC = state.comfort / MAX_STAT_COMFORT;
+  const avgScore = (scoreW + scoreF + scoreC) / 3;
+  let outcomeText, outcomeClass;
+  if (avgScore >= 0.7) {
+    outcomeText = naam ? `${naam} doorstond de crisis goed.` : 'Je doorstond de crisis goed.';
+    outcomeClass = 'outcome-good';
+  } else if (avgScore >= 0.4) {
+    outcomeText = naam ? `${naam} overleefde de crisis, maar niet zonder moeite.` : 'Je overleefde de crisis, maar niet zonder moeite.';
+    outcomeClass = 'outcome-mid';
+  } else {
+    outcomeText = naam ? `De crisis liet zijn sporen na bij ${naam}.` : 'De crisis liet zijn sporen na.';
+    outcomeClass = 'outcome-bad';
+  }
+  document.getElementById('rep-outcome').innerHTML = `<div class="rep-outcome-banner ${outcomeClass}">${outcomeText}</div>`;
+
+  // Context-samenvatting
+  const houseLabels = { 'appartement': 'Appartement', 'rijtjeshuis': 'Rijtjeshuis', 'vrijstaande-woning': 'Vrijstaande woning', 'boerderij': 'Boerderij' };
+  const envLabels = { 'water': 'Nabij water', 'forest': 'Bos of natuur', 'rural_area': 'Buitengebied', 'city': 'Stedelijk' };
+  const persons = adultsCount + childrenCount + slechtTerBeenCount;
+  const ctxItems = [
+    profile.houseType ? `🏠 ${houseLabels[profile.houseType] || profile.houseType}` : null,
+    `👥 ${persons === 1 ? '1 persoon' : persons + ' personen'}`,
+    profile.hasChildren ? '👶 Kinderen' : null,
+    profile.hasPets ? '🐾 Huisdieren' : null,
+    profile.hasCar ? '🚗 Auto' : null,
+    profile.hasBike ? '🚲 Fiets' : null,
+    ...((profile.location || []).map(l => envLabels[l] ? `📍 ${envLabels[l]}` : null)),
+  ].filter(Boolean);
+  document.getElementById('rep-context').innerHTML = `<div class="rep-context-bar">${ctxItems.map(i => `<span class="rep-ctx-item">${i}</span>`).join('')}</div>`;
 
   // Timeline
   let tlHtml = '';
@@ -182,6 +225,22 @@ function showReport() {
   });
   statusHtml += '</div>';
   document.getElementById('rep-status').innerHTML = statusHtml;
+
+  // Eindstats (water, voedsel, comfort — geen gezondheid)
+  function statBar(val, max, icon, label) {
+    const pct = Math.max(0, Math.min(100, (val / max) * 100));
+    const color = pct >= 60 ? 'var(--c-success)' : pct >= 30 ? '#f59e0b' : 'var(--c-danger)';
+    return `<div class="rep-stat-item">
+      <span class="rep-stat-label">${icon} ${label}</span>
+      <div class="rep-stat-bar-bg"><div class="rep-stat-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="rep-stat-val">${val}/${max}</span>
+    </div>`;
+  }
+  document.getElementById('rep-endstats').innerHTML = `<div class="rep-endstats">
+    ${statBar(state.water,   MAX_STAT_WATER,   '💧', 'Water')}
+    ${statBar(state.food,    MAX_STAT_FOOD,    '🥫', 'Voedsel')}
+    ${statBar(state.comfort, MAX_STAT_COMFORT, '🧸', 'Comfort')}
+  </div>`;
 
   // GOOD
   const goodItems = [];
@@ -507,7 +566,7 @@ function showReport() {
   document.getElementById('rep-personal').innerHTML = personalHtml;
 
   // Stagger report sections in after screen entrance (screen takes 280ms)
-  const sections = ['rep-intro', 'rep-timeline', 'rep-status', 'rep-good', 'rep-improve', 'rep-personal'];
+  const sections = ['rep-intro', 'rep-outcome', 'rep-context', 'rep-timeline', 'rep-status', 'rep-endstats', 'rep-good', 'rep-improve', 'rep-personal'];
   sections.forEach((id, i) => {
     const el = document.getElementById(id);
     if (el) {
