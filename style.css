@@ -3280,16 +3280,16 @@ a:focus-visible {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  margin: 24px -32px -32px;
-  padding: 16px 32px 20px;
-  background: var(--c-topbar);
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--c-border-light);
 }
 
 .partner-label {
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: rgba(255,255,255,0.5);
+  color: var(--c-text-muted);
 }
 
 .partner-logo-wrap {
@@ -3300,20 +3300,24 @@ a:focus-visible {
 }
 
 .partner-logo {
-  height: 44px;
+  height: 48px;
   width: auto;
-  opacity: 0.4;
-  filter: brightness(0) invert(1);
+  opacity: 0.45;
 }
 
-.partner-qmark {
+.partner-demo {
   position: absolute;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: rgba(255,255,255,0.75);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  color: var(--c-topbar);
+  opacity: 0.85;
   pointer-events: none;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-  line-height: 1;
+  width: 100%;
 }
 
 /* ── REDUCED MOTION ── */
