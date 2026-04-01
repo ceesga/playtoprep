@@ -123,9 +123,12 @@ const sceneDecay_stroom = {
   st_watertruck: {
     phoneBattery: -10
   }, // +2h
+  st_10a: {
+    phoneBattery: -5
+  }, // +0.5h
   st_10: {
-    phoneBattery: -20
-  }, // +4h
+    phoneBattery: -15
+  }, // +3.5h
   st_d1_avond: {
     phoneBattery: -15
   }, // +3.5h

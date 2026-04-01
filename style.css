@@ -500,12 +500,15 @@ p.sub {
 
 #s-intake,
 #s-prep,
-#s-start,
 #s-report,
 #s-commute,
 #s-uitleg,
 #s-scenariokeuze {
   padding:32px;
+}
+
+#s-start {
+  padding:32px 32px 12px;
 }
 
 /* ── SCENARIO SCREEN ── */
@@ -899,6 +902,7 @@ p.sub {
 
 .name-step-wrap {
   padding:16px 2px;
+  padding-left:27px;
 }
 
 .name-input {
@@ -3279,9 +3283,9 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin-top: 24px;
-  padding-top: 16px;
+  gap: 2px;
+  margin-top: 12px;
+  padding-top: 8px;
   border-top: 1px solid var(--c-border-light);
 }
 
@@ -3300,7 +3304,7 @@ a:focus-visible {
 }
 
 .partner-logo {
-  height: 48px;
+  height: 146px;
   width: auto;
   opacity: 0.45;
 }

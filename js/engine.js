@@ -10,118 +10,123 @@
 const sceneVisuals = {
   st_d0_morgen: {
     seed: 'suburb-morning-calm',
-    label: 'Dag 0 · 08:00',
+    label: 'Dag 1 · 08:00',
     title: 'Vóór de storing'
   },
   st_1: {
     seed: 'city-street-daylight',
-    label: 'Dag 0 · 11:30',
+    label: 'Dag 1 · 11:30',
     title: 'Eerste stroomstoring'
   },
   st_2: {
     seed: 'flicker-lights-house',
-    label: 'Dag 0 · 11:57',
+    label: 'Dag 1 · 11:57',
     title: 'Stroom even terug'
   },
   st_3: {
     seed: 'dramatic-storm-europe',
-    label: 'Dag 0 · 12:20',
+    label: 'Dag 1 · 12:20',
     title: 'Heel Europa zonder stroom'
   },
   st_4: {
     seed: 'supermarket-long-queue',
-    label: 'Dag 0 · 13:30',
+    label: 'Dag 1 · 13:30',
     title: 'Winkels sluiten'
   },
   st_4b: {
     seed: 'supermarket-empty-shelves',
-    label: 'Dag 0 · 14:00',
+    label: 'Dag 1 · 14:00',
     title: 'Bij de supermarkt'
   },
   st_5: {
     seed: 'dark-warning-street',
-    label: 'Dag 0 · 14:00',
+    label: 'Dag 1 · 14:00',
     title: 'Kan dagenlang duren'
   },
   st_6: {
     seed: 'dark-home-candle-warm',
-    label: 'Dag 0 · 18:00',
+    label: 'Dag 1 · 18:00',
     title: 'Koken zonder stroom'
   },
   st_6b: {
     seed: 'candle-blanket-dark-room',
-    label: 'Dag 0 · 19:30',
+    label: 'Dag 1 · 19:30',
     title: 'De eerste avond'
   },
   st_7: {
     seed: 'night-dark-cold-street',
-    label: 'Dag 1 · 02:30',
+    label: 'Dag 2 · 02:30',
     title: 'Inbraak in de buurt'
   },
   st_8: {
     seed: 'emergency-neighbor-help',
-    label: 'Dag 1 · 05:30',
+    label: 'Dag 2 · 05:30',
     title: 'Buurvrouw heeft hulp nodig'
   },
   st_9: {
     seed: 'pipes-water-basement',
-    label: 'Dag 1 · 08:30',
+    label: 'Dag 2 · 08:30',
     title: 'Riolering valt uit'
   },
   st_d1_morgen: {
     seed: 'frost-winter-dawn-house',
-    label: 'Dag 1 · 08:00',
+    label: 'Dag 2 · 08:00',
     title: 'Eerste crisisochtend'
   },
   st_watertruck: {
     seed: 'water-truck-queue-street',
-    label: 'Dag 1 · 10:30',
+    label: 'Dag 2 · 10:30',
     title: 'Watertruck bij de supermarkt'
   },
+  st_10a: {
+    seed: 'neighbor-at-door-water-bottle',
+    label: 'Dag 2 · 14:15',
+    title: 'Buurman Rob aan de deur'
+  },
   st_10: {
-    seed: 'empty-street-curfew-night',
-    label: 'Dag 1 · 14:30',
-    title: 'Avondklok ingesteld'
+    seed: 'empty-street-curfew-day',
+    label: 'Dag 2 · 14:30',
+    title: 'Wat doe je nu?'
   },
   st_d1_avond: {
     seed: 'cold-dark-kitchen-evening',
-    label: 'Dag 1 · 18:00',
+    label: 'Dag 2 · 18:00',
     title: 'Koken zonder stroom'
   },
   st_11: {
     seed: 'car-fire-night-dramatic',
-    label: 'Dag 2 · 01:30',
+    label: 'Dag 3 · 01:30',
     title: 'Explosie op straat'
   },
   st_d2_morgen: {
     seed: 'burnt-car-cold-morning',
-    label: 'Dag 2 · 08:00',
+    label: 'Dag 3 · 08:00',
     title: 'Tweede crisisochtend'
   },
   st_12: {
     seed: 'neighborhood-flyer-door',
-    label: 'Dag 2 · 11:30',
+    label: 'Dag 3 · 11:30',
     title: 'Gemeente deelt flyers uit'
   },
 
   st_d2_avond: {
     seed: 'candle-sparse-meal-dark',
-    label: 'Dag 2 · 18:00',
+    label: 'Dag 3 · 18:00',
     title: 'Derde avond'
   },
   st_d3_morgen: {
     seed: 'hopeful-winter-morning',
-    label: 'Dag 3 · 08:00',
+    label: 'Dag 4 · 08:00',
     title: 'Derde ochtend vol hoop'
   },
   st_13: {
     seed: 'food-distribution-queue',
-    label: 'Dag 3 · 10:15',
+    label: 'Dag 4 · 10:15',
     title: 'Voedseluitdeling'
   },
   st_14: {
     seed: 'lights-on-relief-home',
-    label: 'Dag 3 · 12:45',
+    label: 'Dag 4 · 12:45',
     title: 'Stroom terug!'
   },
   // Bosbrand
@@ -487,23 +492,24 @@ function renderSceneVisual(scene) {
     st_pre_d1: 'afbeelding/stroomstoring/huis_winter0.png',
     st_d0_morgen: 'afbeelding/stroomstoring/huis_winter0.png',
     st_2: 'afbeelding/stroomstoring/huis_winter0.png',
-    // Stroomstoring — Dag 0 (storing gestart)
+    // Stroomstoring — Dag 1 (storing gestart)
     st_1: 'afbeelding/stroomstoring/Huis_winter1.png',
     st_3: 'afbeelding/stroomstoring/Huis_winter1.png',
     st_4: 'afbeelding/stroomstoring/Huis_winter1.png',
     st_5: 'afbeelding/stroomstoring/Huis_winter1.png',
     st_6: 'afbeelding/stroomstoring/Huis_winter1.png',
     st_6b: 'afbeelding/stroomstoring/Huis_winter1.png',
-    // Stroomstoring — Dag 1 (meer sneeuw)
+    // Stroomstoring — Dag 2 (meer sneeuw)
     st_7: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_8: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_8b: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_d1_morgen: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_9: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_watertruck: 'afbeelding/stroomstoring/Huis_winter2.png',
+    st_10a: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_10: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_d1_avond: 'afbeelding/stroomstoring/Huis_winter2.png',
-    // Stroomstoring — Dag 2/3 (meeste sneeuw)
+    // Stroomstoring — Dag 3/4 (meeste sneeuw)
     st_d2_morgen: 'afbeelding/stroomstoring/Huis_winter3.png',
     st_12: 'afbeelding/stroomstoring/Huis_winter3.png',
     st_d2_avond: 'afbeelding/stroomstoring/Huis_winter3.png',
@@ -1272,6 +1278,17 @@ function renderChoices(scene) {
   wrap.innerHTML = html;
 }
 
+// ─── CHOICE ICON MAP ──────────────────────────────────────────────────────────
+// Koppelt het emoji-icoon aan het begin van een keuzeTekst aan:
+//   • icon  — naam van het SVG-icoon (zie icons-data.js)
+//   • cat   — kleurcategorie van de keuzeknop:
+//       cat-action  (blauw)  — actie of maatregel die de speler neemt
+//       cat-supply  (oranje) — iets verzamelen, inslaan of bevoorraden
+//       cat-social  (groen)  — sociale keuze, buren/familie helpen of overleggen
+//       cat-info    (grijs)  — nieuws volgen, afwachten of niets doen
+//       cat-risk    (rood)   — risicovolle of gevaarlijke actie
+//       cat-neutral (grijs)  — neutraal / past niet in andere categorieën
+// Let op: multi-emoji sleutels moeten vóór enkelvoudige staan (longest-first).
 const CHOICE_ICON_MAP = {
   // Multi-emoji (longest first to avoid partial match)
   '💬👴🎒': {
@@ -1415,7 +1432,7 @@ const CHOICE_ICON_MAP = {
   },
   '🥄': {
     icon: 'utensils',
-    cat: 'cat-action'
+    cat: 'cat-supply'
   },
   '🛒': {
     icon: 'shopping-cart',
@@ -1488,7 +1505,7 @@ const CHOICE_ICON_MAP = {
   },
   '🔌': {
     icon: 'plug',
-    cat: 'cat-supply'
+    cat: 'cat-action'
   },
   '🔋': {
     icon: 'battery-medium',

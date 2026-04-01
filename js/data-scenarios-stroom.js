@@ -25,7 +25,7 @@ const scenes_stroom = [
       }],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. Het nieuws van twaalf uur. Energie-experts waarschuwen voor kwetsbaarheden in het Europese hoogspanningsnet. Het kabinet trekt extra geld uit voor beveiliging van vitale infrastructuur. En verder: zacht winterweer dit weekend, met kans op natte sneeuw in Friesland.'
     },
     narrative: 'Het is een gewone vrijdagmiddag. Je hebt lunchpauze. Buiten waait een koude januariewind en op kantoor is het druk. Zelf ben je met heel andere dingen bezig.',
     choices: [{
@@ -68,7 +68,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. De NCTV bevestigt dat er sporen van sabotage zijn aangetroffen bij twee hoogspanningskabels op de Noordzee. Het Nationaal Crisiscentrum volgt de situatie. De minister van Economische Zaken zegt dat er geen acuut gevaar is voor de stroomlevering. Houd onze berichtgeving in de gaten voor updates.'
     },
     narrative: 'Op het werk hangt vandaag een onrustige sfeer. Mensen praten in groepjes en in de lunchruimte staat de tv harder dan normaal. Buiten lijkt alles gewoon, maar de stemming voelt anders.',
     choices: [{
@@ -89,7 +89,7 @@ const scenes_stroom = [
       consequence: 'Rob antwoordt: "Ja, vast wel. Okay, ff kijken. Fijne avond!" Je gaat verder met je dag.',
       stateChange: {}
     }, {
-      text: '🙈 Ik maak me geen zorgen, de minister heeft het al gezegd',
+      text: '🙈 Ik maak me geen zorgen, het waait wel over',
       consequence: 'Je sluit het nieuwsartikel weer. Vast niet voor niets dat ze zeggen dat er geen direct probleem is.',
       stateChange: {}
     }]
@@ -99,13 +99,13 @@ const scenes_stroom = [
     id: 'st_d0_morgen',
     time: '08:00',
     date: 'Zondag 31 januari 2027',
-    dayBadge: 'Dag 0',
+    dayBadge: 'Dag 1',
     dayBadgeClass: '',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Goedemorgen, u luistert naar Omrop Fryslân, 92.2 en 95.5 FM. Het is acht uur. Vandaag wisselend bewolkt met kans op natte sneeuw. Het wordt koud: maximaal −1°C. Straks in het nieuws van negen uur meer over de situatie rondom de beschadigde zeekabels.'
     },
     narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#22c55e">18°C</b> &nbsp;|&nbsp; 🌨️ Buiten: <b style="color:#93c5fd">−1°C</b> </div>Zondagochtend. De CV tikt, de koelkast zoemt, de waterkoker fluit. Gewone geluiden. Buiten ligt een dun laagje rijp op de daken. Bewolkt, stil. Je drinkt je koffie bij het raam. Een gewone zondag, zo voelt het tenminste.',
     choices: [{
@@ -127,7 +127,7 @@ const scenes_stroom = [
     id: 'st_1',
     time: '11:30',
     date: 'Zondag 31 januari 2027',
-    dayBadge: 'Dag 0',
+    dayBadge: 'Dag 1',
     dayBadgeClass: '',
     channels: {
       news: [{
@@ -147,11 +147,11 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. We ontvangen meldingen van een stroomstoring in meerdere provincies. Netbeheerder Liander doet onderzoek. Houd uw batterijradio of autoradio bij de hand voor verdere updates. We melden meer zodra we het weten.'
     },
     get narrative() {
       const lift = profile.houseType === 'appartement' ? ' De lift doet het niet meer. Je loopt de trap.' : '';
-      const mob = profile.hasMobilityImpaired ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : '';
+      const mob = profile.hasMobilityImpaired ? (profile.houseType === 'appartement' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
       return 'Midden op de ochtend valt ineens de stroom uit. Alles wordt stil: de koelkast, de verwarming en het wifi-lampje. Alleen je telefoon doet het nog via mobiel bereik. Buiten zie je buren naar buiten komen om te kijken wat er aan de hand is. De stilte voelt vreemd, alsof iemand in één keer al het geluid heeft uitgezet.' + lift + mob;
     },
     choices: [{
@@ -184,7 +184,7 @@ const scenes_stroom = [
     id: 'st_2',
     time: '11:57',
     date: 'Zondag 31 januari 2027',
-    dayBadge: 'Dag 0',
+    dayBadge: 'Dag 1',
     dayBadgeClass: '',
     channels: {
       news: [{
@@ -199,11 +199,11 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. De stroomstoring lijkt in grote delen van Nederland opgelost. Netbeheerder Liander meldt dat de voorziening is hersteld. Er is nog een brand op een hoogspanningsstation in Dronten. We blijven de situatie volgen.'
     },
     narrative: 'De lichten flikkeren en springen weer aan. De koelkast begint te zoemen en de cv komt opnieuw op gang. Buiten hoor je mensen opgelucht lachen. Het lijkt voorbij. Toch heb je het gevoel dat je dit moment beter kunt gebruiken.',
     choices: [{
-      text: '📱 Telefoon snel opladen via het stopcontact',
+      text: '🔋 Telefoon snel opladen via het stopcontact',
       consequence: 'Je legt meteen je telefoon aan de lader. Tien minuten later, vlak voor de stroom weer uitvalt, heb je er 20% batterij bij.',
       stateChange: {
         phoneBattery: 20
@@ -227,7 +227,7 @@ const scenes_stroom = [
     id: 'st_3',
     time: '12:20',
     date: 'Zondag 31 januari 2027',
-    dayBadge: 'Dag 0',
+    dayBadge: 'Dag 1',
     dayBadgeClass: '',
     channels: {
       news: [{
@@ -250,7 +250,7 @@ const scenes_stroom = [
       radio: 'Hier Omrop Fryslân, 92.2 en 95.5 FM. We onderbreken onze uitzending voor een urgent noodbericht. Er is een grootschalige stroomstoring in heel Europa. Oorzaak: brand bij een energiecentrale in Duitsland, gevolgd door een kettingreactie in het Europese hoogspanningsnet. De overheid vraagt iedereen thuis te blijven, warm te blijven en voldoende drinkwater achter de hand te houden. Houd uw autoradio of batterijradio aan voor verdere updates. We houden u op de hoogte.'
     },
     get narrative() {
-      return 'De stroom valt opnieuw uit, dit keer harder dan net. Alles valt weer stil, maar nu voelt het ernstiger dan de eerste keer. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.';
+      return 'De stroom valt opnieuw uit. Alles wordt stil. Dit keer voelt het anders — geen gezoem van apparaten, geen standby-lampjes, niets. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.';
     },
     choices: [{
       text: '🍶 Lege flessen vullen met water, voor noodgebruik',
@@ -288,7 +288,7 @@ const scenes_stroom = [
     id: 'st_4',
     time: '13:30',
     date: 'Zondag 31 januari 2027',
-    dayBadge: 'Dag 0',
+    dayBadge: 'Dag 1',
     dayBadgeClass: '',
     get channels() {
       const supermarktMsg = profile.location.includes('city') ?
@@ -316,7 +316,7 @@ const scenes_stroom = [
           outgoing: false
         }],
         nlalert: null,
-        radio: null
+        radio: 'Omrop Fryslân, 92.2 en 95.5 FM. Het telefoonnetwerk is overbelast. Bel 112 alleen in levensbedreigende situaties. Supermarkten accepteren alleen contant geld. Blijf thuis, bewaar uw telefoonbatterij en houd uw radio aan voor updates.'
       };
     },
     get narrative() {
@@ -353,14 +353,14 @@ const scenes_stroom = [
     id: 'st_4b',
     time: '14:00',
     date: 'Zondag 31 januari 2027',
-    dayBadge: 'Dag 0',
+    dayBadge: 'Dag 1',
     dayBadgeClass: '',
     conditionalOn: () => state.wentToSupermarket === 'early',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. De stroomstoring houdt aan. Supermarkten zijn beperkt open maar accepteren alleen contant geld. Drinkwater uit de kraan is voorlopig veilig. Houd uw radio aan voor updates.'
     },
     narrative: 'Je staat in de rij bij de supermarkt. Er staan minstens 60 mensen voor je. Iedereen praat zachtjes of staart naar hun telefoon. Een vrouw vooraan begint hard te schreeuwen dat ze voordringt omdat ze kleine kinderen heeft. Er ontstaat een discussie. Een beveiliger doet zijn best maar is duidelijk nerveus. Als je eindelijk binnen bent: de schappen zijn al behoorlijk uitgedund. Drinkwater is uitverkocht. Hetzelfde geldt voor wc-papier, olie, benzine en lucifers. Honing en blikopeners zijn ook al weg.',
     choices: [{
@@ -392,7 +392,7 @@ const scenes_stroom = [
     id: 'st_5',
     time: '14:00',
     date: 'Zondag 31 januari 2027',
-    dayBadge: 'Dag 0',
+    dayBadge: 'Dag 1',
     dayBadgeClass: '',
     channels: {
       news: [{
@@ -406,7 +406,7 @@ const scenes_stroom = [
       }],
       whatsapp: [],
       nlalert: 'NL-Alert\n31 januari 2027 – 13:28\n\nDoor een kortsluiting bij de energiecentrale in Jänschwalde (Duitsland) zijn er grote stroomstoringen door heel Europa. De stroomstoring kan tot morgen duren.\n\nBlijf thuis. Blijf warm. Zorg voor voldoende water en voedsel. Denk aan uw (oudere) buren.',
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. De overheid bevestigt: de storing kan tot morgen duren. Zorg voor voldoende water, warmte en voedsel voor meerdere dagen. Denk aan uw buren, in het bijzonder ouderen. Blijf thuis.'
     },
     get narrative() {
       const supermarkt = profile.location.includes('city') ?
@@ -448,26 +448,16 @@ const scenes_stroom = [
     id: 'st_6',
     time: '18:00',
     date: 'Zondag 31 januari 2027',
-    dayBadge: 'Dag 0',
+    dayBadge: 'Dag 1',
     dayBadgeClass: '',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. Praktische tips voor vanavond: open uw vriezer zo min mogelijk, bevroren voedsel blijft 24 uur goed. Gebruik geen barbecue of campingkooktoestel binnenshuis vanwege koolmonoxide. Slaap warm: meerdere lagen kleding en bij voorkeur met meerdere personen in één kamer.'
     },
-    narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">13°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−2°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~6 uur zonder stroom</div>Het is al donker buiten, vroeg in februari. In huis is het merkbaar kouder geworden. De koelkast staat stil, de vriezer begint langzaam te ontdooien. Je maag rammelt. De supermarkten zijn al dicht. Hoe kook je vanavond?',
+    narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">13°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−2°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~6 uur zonder stroom</div>Het is al donker buiten, vroeg in februari. In huis is het merkbaar kouder geworden. De koelkast staat stil, de vriezer begint langzaam te ontdooien. Je maag rammelt. De supermarkten zijn al dicht. De stroom is al uren weg — en ondertussen doet ook het gasfornuis het niet meer. Hoe kook je vanavond?',
     choices: [{
-      text: '🍲 Koken op het gasfornuis',
-      consequence: 'Het gasfornuis werkt nog. Je steekt het handmatig aan met een aansteker. Het aardgasnet werkt nog omdat de druk in de leidingen mechanisch wordt geregeld. Je kookt rijst of soep uit blik. Warm eten doet het moreel goed én helpt je lichaam warm te blijven.',
-      stateChange: {
-        comfort: 1
-      }
-    }, {
-      text: '⚡ Proberen op de inductieplaat of elektrisch fornuis',
-      consequence: 'De inductieplaat reageert niet. Inductie werkt op elektriciteit. Geen stroom betekent dus geen koken. Hetzelfde geldt voor een elektrisch fornuis. Je hebt een alternatief nodig: gas, een campingkooktoestel of een koude maaltijd.',
-      stateChange: {}
-    }, {
       text: '🏕️ Campingkooktoestel of barbecue gebruiken',
       consequence: 'Je haalt het campingkooktoestel tevoorschijn. Belangrijk: gebruik het buiten of met veel ventilatie, want koolmonoxide is dodelijk in een besloten ruimte. Je kookt een warme maaltijd.',
       stateChange: {
@@ -485,7 +475,7 @@ const scenes_stroom = [
     id: 'st_6b',
     time: '19:30',
     date: 'Zondag 31 januari 2027',
-    dayBadge: 'Dag 0',
+    dayBadge: 'Dag 1',
     dayBadgeClass: '',
     channels: {
       news: [],
@@ -496,7 +486,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. Goedenavond. De politie vraagt iedereen zoveel mogelijk binnen te blijven. In meerdere wijken zijn incidenten gemeld. Sluit uw deuren en ramen goed af. Wij zenden de hele nacht door op batterijstroom.'
     },
     get narrative() {
       return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">12°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; 🌙 Nacht valt in</div>Je hebt gegeten. Nu begint de lange avond. Buiten is het pikzwart. Geen lantaarnpalen, geen lichtjes bij de buren. Alleen hier en daar het flakkerende schijnsel van een kaars achter een raam. Het huis koelt langzaam maar zeker af. Je telefoon staat op ' + state.phoneBattery + '%.';
@@ -528,19 +518,19 @@ const scenes_stroom = [
     id: 'st_7',
     time: '02:30',
     date: 'Maandag 1 februari 2027',
-    dayBadge: 'Dag 1',
+    dayBadge: 'Dag 2',
     dayBadgeClass: '',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, AM-frequentie. Het is half drie. De stroomstoring duurt voort. Politie en hulpdiensten zijn overbelast. In meerdere steden zijn incidenten gemeld. Blijf binnenshuis. De volgende update volgt om zes uur.'
     },
     get narrative() {
       const view = profile.houseType === 'appartement' ?
         'naar de gevel van het tegenoverliggende gebouw kijkt' :
         'naar de tuin van de overburen kijkt';
-      const mob = profile.hasMobilityImpaired ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : '';
+      const mob = profile.hasMobilityImpaired ? (profile.houseType === 'appartement' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
       return 'Je wordt wakker van een geluid. Glas dat breekt. Als je voorzichtig naar het raam van de slaapkamer sluipt en ' + view + ', zie je twee mensen via het achterraam naar binnen gaan. Even later hoor je ze er vandoor rennen, met een tas in hun handen. Het is donker op straat. IJskoud. Je hart bonkt.' + mob;
     },
     choices: [{
@@ -568,7 +558,7 @@ const scenes_stroom = [
     id: 'st_8',
     time: '05:30',
     date: 'Maandag 1 februari 2027',
-    dayBadge: 'Dag 1',
+    dayBadge: 'Dag 2',
     dayBadgeClass: '',
     channels: {
       news: [],
@@ -599,14 +589,14 @@ const scenes_stroom = [
     id: 'st_8b',
     time: '05:30',
     date: 'Maandag 1 februari 2027',
-    dayBadge: 'Dag 1',
+    dayBadge: 'Dag 2',
     dayBadgeClass: '',
     conditionalOn: () => state.contactedAnnie === true,
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, AM-frequentie. Vijf uur dertig. De stroomstoring houdt aan. Schakel over naar AM als uw FM-ontvangst wegvalt. Houd uw naasten op de hoogte. De overheid werkt aan herstel.'
     },
     narrative: 'Je staat voor de deur van Annie. Ze doet open, haar ogen zijn rood van het huilen. Achter haar zie je haar man Jan op de bank liggen. Je moet snel beslissen hoe je het best kunt helpen.',
     choices: [{
@@ -622,8 +612,8 @@ const scenes_stroom = [
         helpedNeighbor: true
       } : {}
     }, {
-      text: '🍞 Snel terug naar huis, eten halen, dan terugkomen',
-      consequence: 'Je zegt Annie dat je zo terug bent. Thuis pak je crackers en een blik soep uit je eigen voorraad. Als je terugkomt zijn Annie\'s ogen rood van het huilen. Je geeft haar het eten en kijkt dan naar haar man.',
+      text: '🍞 Wat eten uit je eigen voorraad aan hen geven',
+      consequence: 'Je haalt crackers en een blik soep uit je eigen voorraad en geeft dat aan Annie. Haar ogen zijn rood van het huilen. Ze kijkt je aan alsof ze niet weet wat ze moet zeggen.',
       stateChange: {
         helpedNeighbor: true
       }
@@ -640,13 +630,13 @@ const scenes_stroom = [
     id: 'st_d1_morgen',
     time: '08:00',
     date: 'Maandag 1 februari 2027',
-    dayBadge: 'Dag 1',
+    dayBadge: 'Dag 2',
     dayBadgeClass: '',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, AM-frequentie. Goedemorgen. De stroomstoring duurt nu meer dan twintig uur. Herstel wordt niet voor morgenavond verwacht. In meerdere steden is gisterennacht geplunderd. De politie vraagt iedereen thuis te blijven. Waterleidingbedrijven vragen het verbruik te beperken.'
     },
     get narrative() {
       const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">5°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~20 uur zonder stroom</div>';
@@ -676,16 +666,16 @@ const scenes_stroom = [
     id: 'st_9',
     time: '08:30',
     date: 'Maandag 1 februari 2027',
-    dayBadge: 'Dag 1',
+    dayBadge: 'Dag 2',
     dayBadgeClass: '',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, AM-frequentie. Rioolgemalen in meerdere gemeenten vallen uit door stroomgebrek. Bewoners kunnen last krijgen van terugstromend rioolwater. Sluit afvoeropeningen af en gebruik zo min mogelijk water. Kook kraanwater voor u het drinkt.'
     },
     get narrative() {
-      const mob = profile.hasMobilityImpaired ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : '';
+      const mob = profile.hasMobilityImpaired ? (profile.houseType === 'appartement' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
       return 'Als je de wc gebruikt en doortrekt, merk je dat het water nauwelijks wegstroomt. Even later borrelt de afvoer van de wasbak en stinkt het naar riool. De waterdruk van de kraan is ook sterk verminderd. In deze wijk zit een rioolgemaal dat het afvalwater wegpompt. Zonder stroom werkt dat niet meer goed.' + mob;
     },
     choices: [{
@@ -725,7 +715,7 @@ const scenes_stroom = [
     id: 'st_watertruck',
     time: '10:30',
     date: 'Maandag 1 februari 2027',
-    dayBadge: 'Dag 1',
+    dayBadge: 'Dag 2',
     dayBadgeClass: '',
     conditionalOn: () => (state.water === 0 || state.food === 0) && !state.day2Started,
     channels: {
@@ -737,7 +727,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, AM-frequentie. Gemeenten organiseren wateruitdeelpunten. In Opsterland is er water beschikbaar bij de supermarkt. Maximaal tien liter per persoon. Neem een eigen fles of jerrycan mee.'
     },
     get narrative() {
       const afstand = profile.location.includes('city') ?
@@ -780,25 +770,52 @@ const scenes_stroom = [
       stateChange: {}
     }]
   },
-  // SCENE 12 — Curfew + chaos
+  // SCENE 12a — Rob aan de deur
   {
-    id: 'st_10',
-    time: '14:30',
+    id: 'st_10a',
+    time: '14:15',
     date: 'Maandag 1 februari 2027',
-    dayBadge: 'Dag 1',
+    dayBadge: 'Dag 2',
     dayBadgeClass: '',
     channels: {
       news: [],
       whatsapp: [{
         from: 'Buurman Rob',
         msg: 'Heb je de radio gehoord? Avondklok. Shit man. Ik heb nog genoeg eten gelukkig. Hoe zitten jullie ervoor?',
-        time: '14:22',
+        time: '14:10',
         outgoing: false
       }],
       nlalert: null,
       radio: '"Vanaf heden is er een avondklok van kracht. Niemand mag na het donker buiten zijn. In meerdere steden hebben plunderingen plaatsgevonden. De politie heeft zijn handen vol. Het is nog steeds niet duidelijk wanneer de stroom hersteld is. Blijf thuis, blijf warm, help uw buren."'
     },
-    narrative: 'De dag vordert en het wordt steeds duidelijker dat dit niet morgen opgelost is. Buiten rijden af en toe politiewagens langs, langzamer dan normaal. Op straat zie je bijna niemand meer. Het is 9°C in huis. Dan een klopje op de deur. Rob, je buurman. Hij houdt een lege fles vast en kijkt je aan. "Heb jij nog wat water over?"',
+    narrative: 'Dan een klopje op de deur. Rob, je buurman. Hij houdt een lege fles vast en kijkt je aan. "Heb jij nog wat water over? Ik heb al een paar dagen niet veel meer in huis."',
+    choices: [{
+      text: '🤝 Water delen met buurman Rob',
+      consequence: 'Je loopt naar de deur. Rob staat buiten met een lege fles. Zijn gezicht zegt genoeg. Je kijkt naar je eigen voorraad, die ook niet eindeloos is. Toch geef je hem een fles. Dat voelt tegelijk goed en ongemakkelijk, want iedere liter telt.',
+      stateChange: {
+        water: -1,
+        knowsNeighbors: true
+      }
+    }, {
+      text: '💧 Niets geven — je hebt zelf ook niet genoeg',
+      consequence: 'Je legt uit dat je zelf ook weinig water meer hebt. Rob knikt, een beetje teleurgesteld, en loopt terug. Het voelt ongemakkelijk, maar je eigen voorraad is ook niet onbeperkt.',
+      stateChange: {}
+    }]
+  },
+  // SCENE 12b — Wat nu?
+  {
+    id: 'st_10',
+    time: '14:30',
+    date: 'Maandag 1 februari 2027',
+    dayBadge: 'Dag 2',
+    dayBadgeClass: '',
+    channels: {
+      news: [],
+      whatsapp: [],
+      nlalert: null,
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. De avondklok is van kracht. Niemand mag na het donker buiten zijn. De politie treedt op. Blijf thuis, help uw buren, en houd de radio aan voor de laatste updates.'
+    },
+    narrative: 'De dag vordert en het wordt steeds duidelijker dat dit niet morgen opgelost is. Buiten rijden af en toe politiewagens langs, langzamer dan normaal. Op straat zie je bijna niemand meer. Het is 9°C in huis. Wat doe je nu?',
     choices: [{
       text: '🏘️ De buren bij elkaar roepen, samen sta je sterker',
       consequence: 'Je klopt bij Rob, Annie en nog twee buren aan. Jullie spreken af om eten te delen, elkaar op de hoogte te houden en om beurten een oogje in het zeil te houden. Dat voelt een stuk beter dan ieder voor zich.',
@@ -817,13 +834,6 @@ const scenes_stroom = [
       stateChange: {
         comfort: 1
       }
-    }, {
-      text: '🤝 Water delen met buurman Rob',
-      consequence: 'Je loopt naar de deur. Rob staat buiten met een lege fles. Zijn gezicht zegt genoeg. Je kijkt naar je eigen voorraad, die ook niet eindeloos is. Toch geef je hem een fles. Dat voelt tegelijk goed en ongemakkelijk, want iedere liter telt.',
-      stateChange: {
-        water: -1,
-        knowsNeighbors: true
-      }
     }]
   },
   // SCENE COOK_D1 — Day 1 evening cooking, 18:00
@@ -831,31 +841,21 @@ const scenes_stroom = [
     id: 'st_d1_avond',
     time: '18:00',
     date: 'Maandag 1 februari 2027',
-    dayBadge: 'Dag 1',
+    dayBadge: 'Dag 2',
     dayBadgeClass: '',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. Goedenavond. De avondklok gaat vanavond in bij zonsondergang. Zorg dat u binnenshuis bent. Gebruik geen open vuur binnenshuis zonder ventilatie vanwege koolmonoxide. Morgen meer nieuws over het herstel.'
     },
     get narrative() {
       const foodNote = (state.supermarketItems.length > 0 || state.hasExtraFood) ?
         'Je hebt genoeg te eten.' :
         'Je voorraad begint krap te worden.';
-      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">7°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−4°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~30 uur zonder stroom</div>De tweede avond zonder stroom. ' + foodNote + ' In de woonkamer staat het kwik op 7°C. Magen rammelen. Er is een avondklok. Hoe kook je vanavond?';
+      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">7°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−4°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~30 uur zonder stroom</div>De tweede avond zonder stroom. ' + foodNote + ' In de woonkamer staat het kwik op 7°C. Magen rammelen. Er is een avondklok. De stroom is al meer dan een dag weg — en het gasfornuis doet het al een tijdje niet meer. Hoe kook je vanavond?';
     },
     choices: [{
-      text: '🍲 Koken op het gasfornuis',
-      consequence: 'Het gasfornuis werkt nog. Je steekt het handmatig aan met een aansteker. Het aardgasnet werkt nog omdat de druk in de leidingen mechanisch wordt geregeld. Soep of rijst met groenten uit blik. Warm eten bij 7°C in huis doet meer dan je denkt.',
-      stateChange: {
-        comfort: 1
-      }
-    }, {
-      text: '⚡ Proberen op de inductieplaat of elektrisch fornuis',
-      consequence: 'Geen stroom, geen inductie. De plaat reageert niet. Je hebt een alternatief nodig: gas, campingkooktoestel, of koude maaltijd.',
-      stateChange: {}
-    }, {
       text: '🏕️ Campingkooktoestel of barbecue gebruiken',
       consequence: 'Je zet het campingkooktoestel bij een open raam, maar niet volledig binnen. Koolmonoxide blijft gevaarlijk. Het werkt gelukkig wel, en je maakt een warme maaltijd.',
       stateChange: {
@@ -880,13 +880,13 @@ const scenes_stroom = [
     id: 'st_11',
     time: '01:30',
     date: 'Dinsdag 2 februari 2027',
-    dayBadge: 'Dag 2',
+    dayBadge: 'Dag 3',
     dayBadgeClass: '',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, AM-frequentie. Er zijn meldingen van onrust in meerdere wijken. Brandweer en politie zijn overbelast. Bel 112 alleen bij levensgevaar. De avondklok is van kracht. Blijf binnenshuis.'
     },
     narrative: 'Eerst hoor je geschreeuw in de verte. Dan volgt een doffe knal. De ramen trillen. Je hart staat even stil. Voorzichtig sluip je naar het raam. Buiten zie je een grote brand. Mensen staan eromheen. In het schaarse licht herken je een auto, die van de overburen. Sirenes hoor je niet.',
     choices: [{
@@ -908,7 +908,7 @@ const scenes_stroom = [
     id: 'st_d2_morgen',
     time: '08:00',
     date: 'Dinsdag 2 februari 2027',
-    dayBadge: 'Dag 2',
+    dayBadge: 'Dag 3',
     dayBadgeClass: '',
     get channels() {
       const wa = state.helpedNeighbor ?
@@ -928,7 +928,7 @@ const scenes_stroom = [
         news: [],
         whatsapp: wa,
         nlalert: null,
-        radio: null
+        radio: 'Omrop Fryslân, AM-frequentie. Goedemorgen. De stroomstoring duurt nu meer dan veertig uur. Delen van Duitsland en Oostenrijk hebben gisteravond kort stroom gehad. Herstel in Nederland wordt verwacht binnen 24 uur. Vandaag zijn er lokale voedseluitdeelpunten. Luister naar Omrop Fryslân voor de locaties bij u in de buurt.'
       };
     },
     get narrative() {
@@ -963,7 +963,7 @@ const scenes_stroom = [
     id: 'st_12',
     time: '11:30',
     date: 'Dinsdag 2 februari 2027',
-    dayBadge: 'Dag 2',
+    dayBadge: 'Dag 3',
     dayBadgeClass: '',
     channels: {
       news: [],
@@ -982,7 +982,7 @@ const scenes_stroom = [
         (state.hasExtraFood ?
           'Je hebt gelukkig wat extra voedsel in huis dat je eerder ingeslagen hebt.' :
           'Je voedselvoorraad is bijna op.');
-      return `De rioollucht is nu echt niet meer te harden. Uit het afvoerputje in de bijkeuken borrelt vuil water omhoog. ${foodSituation} Dan gaat de bel. Een man loopt door de straat en stopt bij elk huis om gemeenteflyers uit te delen. Op de flyer staat <b>hoe je warm blijft, een waarschuwing voor koolmonoxide, het advies om flessen en pannen met kraanwater te vullen, en de mededeling dat er morgen van 10 tot 15 uur voedsel wordt uitgedeeld bij de supermarkt. Ook staat er dat het dorpssteunpunt open is voor informatie, warmte en hulp.</b>`;
+      return `De rioollucht is nu echt niet meer te harden. Uit het afvoerputje in de bijkeuken borrelt vuil water omhoog. ${foodSituation} Dan gaat de bel. Een man loopt door de straat en stopt bij elk huis om gemeenteflyers uit te delen. Op de flyer staat hoe je warm blijft, een waarschuwing voor koolmonoxide, het advies om flessen en pannen met kraanwater te vullen, en de mededeling dat er morgen van 10 tot 15 uur voedsel wordt uitgedeeld bij de supermarkt. Ook staat er dat het dorpssteunpunt open is voor informatie, warmte en hulp.`;
     },
     choices: [{
       text: '📋 De flyer zorgvuldig lezen en de tips opvolgen',
@@ -1012,13 +1012,13 @@ const scenes_stroom = [
     id: 'st_d2_avond',
     time: '18:00',
     date: 'Dinsdag 2 februari 2027',
-    dayBadge: 'Dag 2',
+    dayBadge: 'Dag 3',
     dayBadgeClass: '',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. Het herstel van het stroomnet vordert. In grote delen van Duitsland en Oostenrijk is de stroom terug. Voor Nederland verwacht men herstel morgen in de loop van de dag. Hou het vol. Blijf warm.'
     },
     get narrative() {
       const foodNote = state.wentToFoodDist ?
@@ -1026,19 +1026,9 @@ const scenes_stroom = [
         (state.supermarketItems.length > 0 || state.hasExtraFood) ?
         'Je hebt nog voorraad uit je voorbereiding.' :
         'Je voedselvoorraad is bijna op.';
-      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">6°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~54 uur zonder stroom</div>Het is de derde avond. ' + foodNote + ' In huis is het nu echt koud. Je ziet je adem. Intussen weet je beter hoe je hiermee om moet gaan. Er moet vanavond opnieuw iets op tafel komen.';
+      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">6°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~54 uur zonder stroom</div>Het is de derde avond. ' + foodNote + ' In huis is het nu echt koud. Je ziet je adem. De stroom is al meer dan twee dagen weg. Het gasfornuis doet het ook niet meer. Intussen weet je beter hoe je hiermee om moet gaan. Er moet vanavond opnieuw iets op tafel komen.';
     },
     choices: [{
-      text: '🍲 Koken op het gasfornuis',
-      consequence: 'Het gasfornuis werkt nog. Je steekt het handmatig aan met een aansteker. Het aardgasnet werkt nog omdat de druk in de leidingen mechanisch wordt geregeld. Je kookt rijst of pasta met de laatste blikken groenten. Één warme maaltijd per dag maakt een groot verschil.',
-      stateChange: {
-        comfort: 1
-      }
-    }, {
-      text: '⚡ Proberen op de inductieplaat of elektrisch fornuis',
-      consequence: 'Nog steeds geen stroom, dus de inductieplaat werkt niet. Je weet het eigenlijk al.',
-      stateChange: {}
-    }, {
       text: '🏕️ Campingkooktoestel of barbecue gebruiken',
       consequence: 'Je gebruikt het campingkooktoestel buiten of vlak bij een open raam, maar nooit helemaal binnen vanwege koolmonoxide. De gasbus is bijna leeg, al zit er nog net genoeg in voor één maaltijd.',
       stateChange: {
@@ -1064,13 +1054,13 @@ const scenes_stroom = [
     id: 'st_d3_morgen',
     time: '08:00',
     date: 'Woensdag 3 februari 2027',
-    dayBadge: 'Dag 3',
+    dayBadge: 'Dag 4',
     dayBadgeClass: 'green',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. Goedemorgen. Goed nieuws: het stroomnet wordt vandaag stapsgewijs hersteld in Nederland. Houd alle grote apparaten uitgeschakeld bij herstel om stroompieken te voorkomen. Om tien uur is er een voedseluitdeling bij de supermarkt. Het einde is in zicht.'
     },
     get narrative() {
       const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">4°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~68 uur zonder stroom</div>';
@@ -1108,14 +1098,14 @@ const scenes_stroom = [
     id: 'st_13',
     time: '10:15',
     date: 'Woensdag 3 februari 2027',
-    dayBadge: 'Dag 3',
+    dayBadge: 'Dag 4',
     dayBadgeClass: 'green',
     conditionalOn: () => state.wentToFoodDist === true,
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. De voedseluitdeling is gestart op de aangekondigde locaties. Maximaal één portie per persoon. Bewaar geduld en wacht rustig uw beurt af. Het eerste stroomherstel in Friesland wordt verwacht vóór het middaguur.'
     },
     narrative: 'Bij de supermarkt staat een enorme rij. Honderden mensen. Het is rustig, maar gespannen. Om 10:00 precies gaan de deuren open en schuifelt de rij langzaam vooruit. Iedereen krijgt een tasje met voedsel en een inktkruisje op de rechterhand, zodat niemand twee keer aansluit. In jouw tasje zitten een kilo rijst, een blik tomaten, een paar appels en een brood. Terwijl je wacht, raken de mensen om je heen aan de praat.',
     choices: [{
@@ -1145,13 +1135,13 @@ const scenes_stroom = [
     id: 'st_14',
     time: '12:45',
     date: 'Woensdag 3 februari 2027',
-    dayBadge: 'Dag 3',
+    dayBadge: 'Dag 4',
     dayBadgeClass: 'green',
     channels: {
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: null
+      radio: 'Omrop Fryslân, 92.2 en 95.5 FM. Het is zover: de stroom is in grote delen van Nederland hersteld. Schakel grote apparaten één voor één in om overbelasting van het net te voorkomen. Laat kraanwater even doorstromen voordat u het drinkt. Nederland heeft het doorstaan.'
     },
     narrative: 'Dan flakkert het licht onverwacht aan. De koelkast begint te zoemen. De wasmachine, die je vergeten was uit te zetten, schiet ineens weer aan. Uit de televisie komt een branderige geur. Eén lamp knalt. Buiten hoor je de buren juichen. Het ergste lijkt voorbij. Toch is niet alles meteen normaal: de CV moet nog op gang komen en de rioollucht hangt nog in huis. Maar er is weer licht.',
     choices: [{
@@ -1171,7 +1161,7 @@ const scenes_stroom = [
       consequence: 'Je loopt de straat op. Rob staat al in de deuropening te zwaaien. Bij Annie is het stiller. Ze zijn blij dat de stroom terug is, maar Jan is nog steeds niet de oude en heeft medische aandacht nodig.',
       stateChange: {}
     }, {
-      text: '⚡🛁📱 Alles direct aanpakken: apparaten uit, leidingen doorspoelen, mama bellen',
+      text: '⚡ Alles direct aanpakken: apparaten uit, leidingen doorspoelen, mama bellen',
       consequence: 'Je werkt snel. Eerst schakel je alle apparaten handmatig uit, lamp voor lamp en stekker voor stekker. Daarna zet je de kraan open: eerst komt er bruin water, daarna helder. De leidingen zijn weer schoon. Dan bel je mama. Ze neemt direct op. "Ik heb me zo ongerust gemaakt." Jullie praten bij terwijl de koelkast zachtjes zoemt.',
       stateChange: {}
     }],
