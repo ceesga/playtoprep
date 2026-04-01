@@ -29,16 +29,18 @@
         <div class="phase-label">Noodscenario Simulator</div>
         <h1>Wat doe jij als het <span>echt misgaat?</span></h1>
         <p class="sub">Vier realistische crisisscenario's, gesitueerd in Nederland. Jij speelt jezelf, met jouw eigen huis, huishouden en voorbereiding als startpunt.</p>
-        <ol class="cards" aria-label="Stappen in de simulator" style="list-style:none;padding:0">
-          <li class="choice-card" style="cursor:default"><div class="icon" aria-hidden="true">📋</div><div><b>Stap 1</b><br/>Jouw situatie</div></li>
-          <li class="choice-card" style="cursor:default"><div class="icon" aria-hidden="true">⚡</div><div><b>Stap 2</b><br/>Kies je scenario</div></li>
-          <li class="choice-card" style="cursor:default"><div class="icon" aria-hidden="true">📊</div><div><b>Stap 3</b><br/>Persoonlijk rapport</div></li>
-        </ol>
     <button class="btn full" style="margin-top:8px" onclick="show('s-uitleg')">Nieuw spel →</button>
     <div id="continue-wrap" style="display:none;margin-top:12px">
       <button class="btn btn-secondary full" onclick="loadGame()">Doorgaan →</button>
       <p id="continue-info" class="save-info"></p>
       <button class="save-delete-btn" onclick="clearSave();checkSave()">Verwijder opgeslagen spel</button>
+    </div>
+    <div class="partner-wrap">
+      <span class="partner-label">in samenwerking met</span>
+      <div class="partner-logo-wrap">
+        <img src="afbeelding/algemeen/logo-opsterland.svg" alt="Gemeente Opsterland" class="partner-logo">
+        <span class="partner-qmark">?</span>
+      </div>
     </div>
   </div>
 
@@ -51,9 +53,9 @@
 <div class="progress-wrap"><div class="progress-fill" style="width:5%"></div></div>
 <div class="phase-label" style="margin-top:8px">Stap 0: Introductie</div>
 <div class="narrative-text" style="margin-top:12px">
-  Jij speelt een bewoner die midden in een noodsituatie terechtkomt. Dat kan een stroomstoring zijn, een natuurbrand, een overstroming of een moeilijke tocht naar huis.<br><br>
-  Je doel is om jezelf en je huishouden zo goed mogelijk door de crisis heen te helpen. De keuzes die je maakt hebben echte gevolgen. <b>Hoe eerlijker je jouw situatie invult, hoe realistischer de ervaring wordt.</b><br><br>
-  Na afloop krijg je een persoonlijk rapport. Daarin zie je wat goed ging, wat beter kan en welke tips passen bij jouw situatie.
+  Jij speelt een bewoner die midden in een noodsituatie terechtkomt. Dat kan een grote storing zijn, een natuurbrand, een overstroming of een moeilijke tocht naar huis.<br><br>
+  Je doel is om jezelf en je huishouden zo goed mogelijk door de calamiteit heen te helpen. De keuzes die je maakt hebben echte gevolgen. <b>Hoe eerlijker je jouw situatie invult, hoe realistischer de ervaring wordt.</b><br><br>
+  Na afloop krijg je een persoonlijk rapport met tips over zelfredzaamheid. Daarin zie je wat goed ging, wat beter kan en hoe je je voorbereidt met een noodpakket en noodplan.
 </div>
 <div class="btn-row">
   <button class="btn-ghost" onclick="show('s-start')">← Terug</button>

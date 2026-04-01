@@ -178,12 +178,12 @@ const sceneVisuals = {
   bf_5: {
     seed: '',
     label: 'Dag 1 · 13:30',
-    title: 'Opvanglocatie'
+    title: 'Noodopvang'
   },
   bf_5a: {
     seed: '',
     label: 'Dag 1 · 14:00',
-    title: 'Kinderen zoeken op de opvang'
+    title: 'Kinderen zoeken bij de noodopvang'
   },
   bf_5b: {
     seed: '',
@@ -269,12 +269,12 @@ const sceneVisuals = {
   ov_6c: {
     seed: '',
     label: 'Dag 1 · 17:00',
-    title: 'Opvanglocatie'
+    title: 'Noodopvang'
   },
   ov_6d: {
     seed: '',
     label: 'Dag 1 · 22:00',
-    title: 'Nacht op de opvang'
+    title: 'Nacht bij de noodopvang'
   },
   ov_6b: {
     seed: '',

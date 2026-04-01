@@ -448,7 +448,7 @@ function showReport() {
     });
     if (!state.wentToSupermarket && !state.hasExtraFood) improveItems.push({
       icon: '🛒',
-      text: '<b>Voedselvoorraad</b>. Je ging niet vroeg naar de supermarkt en had geen extra voorraad thuis. Na 24 uur waren alle supermarkten leeg of gesloten. Een basisvoorraad voor 72 uur maakt je minder afhankelijk.'
+      text: '<b>Noodvoorraad</b>. Je ging niet vroeg naar de supermarkt en had geen noodvoorraad thuis. Na 24 uur waren alle supermarkten leeg of gesloten. Een noodvoorraad voor 72 uur maakt je minder afhankelijk — dat is de eerste stap uit elk noodplan.'
     });
   } // end else (stroom)
 
@@ -517,7 +517,7 @@ function showReport() {
   if (!profile.hasCar) {
     personalTips.push({
       icon: '🚲',
-      text: '<b>Geen auto</b>. Zonder auto ben je afhankelijk van je fiets of van lopen. Zorg dat je weet waar de dichtstbijzijnde voedseluitdelingspunten, crisisopvang en hulpposten zijn.'
+      text: '<b>Geen auto</b>. Zonder auto ben je afhankelijk van je fiets of van lopen. Zorg dat je weet waar de dichtstbijzijnde voedseluitdelingspunten, noodopvang en hulpposten zijn.'
     });
   }
 
@@ -541,7 +541,7 @@ function showReport() {
   if (!profile.hasKit) {
     personalTips.push({
       icon: '🎒',
-      text: '<b>Geen noodpakket</b>. Je hebt geen noodpakket thuis. Dat hoeft niet duur of ingewikkeld te zijn: water, voedsel voor 3 dagen, een zaklamp, batterijen, een EHBO-doos, contant geld en een radio. Je kunt dit in ongeveer een uur bij elkaar leggen in één rugzak.'
+      text: '<b>Geen noodpakket</b>. Je hebt geen noodpakket thuis. Denk Vooruit adviseert: water (3 liter per persoon per dag), noodvoorraad voor 3 dagen, zaklamp, batterijen, EHBO-doos, contant geld en een batterij-radio. In één rugzak bij elkaar in een uur. Meer info: <b>denkvooruit.nl</b>'
     });
   }
 
@@ -556,7 +556,7 @@ function showReport() {
   // Generic tip always shown
   personalTips.push({
     icon: '⚡',
-    text: '<b>Stroomstoring langer dan 72 uur</b>. De overheid adviseert om je in ieder geval op de eerste 72 uur voor te bereiden met een noodpakket. Dit scenario duurde enkele dagen. Bij een grote infrastructuurcrisis is het verstandig om, als dat kan, op 5 tot 7 dagen zelfredzaamheid te mikken.'
+    text: '<b>Grote storing langer dan 72 uur</b>. Denk Vooruit en Fryslân Veilig adviseren je voor te bereiden op de eerste 72 uur: noodpakket, noodvoorraad en een noodplan. Dit scenario duurde langer. Bij een grote calamiteit — stroomuitval, overstroming, extreem weer — is zelfredzaamheid voor 5 tot 7 dagen het doel.'
   });
 
   let personalHtml = '';

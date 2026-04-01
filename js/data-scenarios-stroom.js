@@ -247,7 +247,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: 'NL-Alert\n31 januari 2027 – 12:32\n\nDoor een kortsluiting bij de energiecentrale in Jänschwalde (Duitsland) zijn er grote stroomstoringen door heel Europa. De stroomstoring kan enkele uren duren. Update volgt.',
-      radio: 'Hier Radio 1. We onderbreken onze uitzending voor een urgent noodbericht. Er is een grootschalige stroomstoring in heel Europa. Oorzaak: brand bij een energiecentrale in Duitsland, gevolgd door een kettingreactie in het Europese hoogspanningsnet. De overheid vraagt iedereen thuis te blijven, warm te blijven en voldoende drinkwater achter de hand te houden. Houd uw autoradio of batterijradio aan voor verdere updates. We houden u op de hoogte.'
+      radio: 'Hier Omrop Fryslân, 92.2 en 92.5 MHz. We onderbreken onze uitzending voor een urgent noodbericht. Er is een grootschalige stroomstoring in heel Europa. Oorzaak: brand bij een energiecentrale in Duitsland, gevolgd door een kettingreactie in het Europese hoogspanningsnet. De overheid vraagt iedereen thuis te blijven, warm te blijven en voldoende drinkwater achter de hand te houden. Houd uw autoradio of batterijradio aan voor verdere updates. We houden u op de hoogte.'
     },
     get narrative() {
       return 'De stroom valt opnieuw uit, dit keer harder dan net. Alles valt weer stil, maar nu voelt het ernstiger dan de eerste keer. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.';
@@ -262,14 +262,14 @@ const scenes_stroom = [
     }, {
       conditionalOn: () => profile.hasRadio === 'ja',
       text: '📻 Batterijradio aanzetten voor nieuws',
-      consequence: 'Je zet de radio aan. Radio 1 zendt nog uit en vertelt dat de storing groot is en lang kan duren. Vanaf nu is de radio je belangrijkste bron van informatie.',
+      consequence: 'Je zet de radio aan. Omrop Fryslân (92.2 / 92.5 MHz) zendt nog uit en vertelt dat de storing groot is en lang kan duren. Vanaf nu is de radio je belangrijkste bron van informatie.',
       stateChange: {
         hasCarRadio: true
       }
     }, {
       conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
       text: '🚗 Naar de auto en de autoradio aanzetten',
-      consequence: 'Je loopt naar de auto en zet de radio aan. Radio 1 is nog in de lucht en vertelt dat de storing groot is en lang kan duren. De autoradio wordt nu je belangrijkste bron van informatie.',
+      consequence: 'Je loopt naar de auto en zet de radio aan. Omrop Fryslân (92.2 / 92.5 MHz) is nog in de lucht en vertelt dat de storing groot is en lang kan duren. De autoradio wordt nu je belangrijkste bron van informatie.',
       stateChange: {
         hasCarRadio: true
       }
@@ -982,7 +982,7 @@ const scenes_stroom = [
         (state.hasExtraFood ?
           'Je hebt gelukkig wat extra voedsel in huis dat je eerder ingeslagen hebt.' :
           'Je voedselvoorraad is bijna op.');
-      return `De rioollucht is nu echt niet meer te harden. Uit het afvoerputje in de bijkeuken borrelt vuil water omhoog. ${foodSituation} Dan gaat de bel. Een man loopt door de straat en stopt bij elk huis om gemeenteflyers uit te delen. Op de flyer staat <b>hoe je warm blijft, een waarschuwing voor koolmonoxide, het advies om flessen en pannen met kraanwater te vullen, en de mededeling dat er morgen van 10 tot 15 uur voedsel wordt uitgedeeld bij de supermarkt.</b>`;
+      return `De rioollucht is nu echt niet meer te harden. Uit het afvoerputje in de bijkeuken borrelt vuil water omhoog. ${foodSituation} Dan gaat de bel. Een man loopt door de straat en stopt bij elk huis om gemeenteflyers uit te delen. Op de flyer staat <b>hoe je warm blijft, een waarschuwing voor koolmonoxide, het advies om flessen en pannen met kraanwater te vullen, en de mededeling dat er morgen van 10 tot 15 uur voedsel wordt uitgedeeld bij de supermarkt. Ook staat er dat het dorpssteunpunt open is voor informatie, warmte en hulp.</b>`;
     },
     choices: [{
       text: '📋 De flyer zorgvuldig lezen en de tips opvolgen',
@@ -994,6 +994,13 @@ const scenes_stroom = [
       text: '🤝 De flyer ook bij buren brengen die hem misschien niet hebben',
       consequence: 'Je loopt de straat in en stopt de flyer bij drie huizen in de bus waarvan je weet dat er ouderen wonen. Buurvrouw Annie geef je hem persoonlijk. Meteen vertel je haar ook over de voedseluitdeling.',
       stateChange: {}
+    }, {
+      text: '🏘️ Naar het dorpssteunpunt gaan voor informatie en warmte',
+      consequence: 'Je loopt naar het dorpssteunpunt in het dorp. Er zitten al een stuk of tien buurtbewoners. Een vrijwilliger deelt warme thee uit en heeft een batterijradio aan staan. Op een whiteboard staat de laatste informatie van de gemeente: waterpunten, wanneer stroom verwacht wordt, wie hulp nodig heeft. Je bent blij dat je gegaan bent.',
+      stateChange: {
+        comfort: 1,
+        knowsNeighbors: true
+      }
     }, {
       text: '📄 De flyer weggooien, ik weet het al wel',
       consequence: 'Je legt de flyer opzij. Misschien stond er toch iets nuttigs in, maar dat zul je nu niet meer weten.',

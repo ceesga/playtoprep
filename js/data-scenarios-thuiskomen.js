@@ -488,7 +488,7 @@ const scenes_thuis_komen = [{
       }
     }, {
       text: '🆘 112 bellen en vragen om hulp',
-      consequence: () => state.phoneBattery > 0 ? 'Je belt 112. Ze sturen je naar een crisisopvang in een buurthuis op 500 meter. Je slaapt er op een slaapmat. Warm en veilig.' : 'Je telefoon is leeg. Je kunt 112 niet bereiken. Je loopt op goed geluk naar de dichtstbijzijnde plek met licht.',
+      consequence: () => state.phoneBattery > 0 ? 'Je belt 112. Ze sturen je naar een noodopvang in een dorpshuis op 500 meter. Je slaapt er op een slaapmat. Warm en veilig.' : 'Je telefoon is leeg. Je kunt 112 niet bereiken. Je loopt op goed geluk naar de dichtstbijzijnde plek met licht.',
       stateChange: () => state.phoneBattery > 0 ? {
         foundAlternative: true,
         calledRescue: true
