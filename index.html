@@ -3,22 +3,23 @@
   <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-    <meta name="description" content="Test hoe jij reageert op een stroomstoring, bosbrand of overstroming. Vier realistische crisisscenario's gesitueerd in Nederland — met een persoonlijk rapport achteraf.">
+    <meta name="description" content="Test hoe jij reageert op een stroomstoring, bosbrand of overstroming. Vier herkenbare noodscenario's in Nederland, met een persoonlijk rapport achteraf.">
     <meta name="theme-color" content="#003d7a">
     <meta property="og:title" content="Noodscenario Simulator | PlayToPrep.nl">
-    <meta property="og:description" content="Test hoe jij reageert op een stroomstoring, bosbrand of overstroming. Vier realistische crisisscenario's gesitueerd in Nederland.">
+    <meta property="og:description" content="Test hoe jij reageert op een stroomstoring, bosbrand of overstroming. Vier herkenbare noodscenario's in Nederland.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="afbeelding/algemeen/huis_normaal.png">
     <title>Noodscenario Simulator | PlayToPrep.nl</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <body>
+  </head>
+  <body>
     <a class="skip-link" href="#main-content">Naar hoofdinhoud</a>
     <div id="bg-darkness"></div>
-    <video id="rain-overlay" src="rain-overlay.mp4" autoplay loop muted playsinline></video>
-    <video id="fire-overlay" src="fire-overlay.mp4" autoplay loop muted playsinline></video>
+    <video id="rain-overlay" src="rain-overlay.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
+    <video id="fire-overlay" src="fire-overlay.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
     <main class="card" id="main-content">
 
       <!-- START SCREEN -->
@@ -28,12 +29,12 @@
         </div>
         <div class="phase-label">Noodscenario Simulator</div>
         <h1>Wat doe jij als het <span>echt misgaat?</span></h1>
-        <p class="sub">Vier realistische crisisscenario's, gesitueerd in Nederland. Jij speelt jezelf, met jouw eigen huis, huishouden en voorbereiding als startpunt.</p>
-    <button class="btn full" style="margin-top:8px" onclick="show('s-uitleg')">Nieuw spel →</button>
+        <p class="sub">Vier herkenbare noodscenario's in Nederland. Jij speelt jezelf, met jouw eigen huis, huishouden en voorbereiding als startpunt.</p>
+    <button type="button" class="btn full" style="margin-top:8px" onclick="show('s-uitleg')">Nieuw spel →</button>
     <div id="continue-wrap" style="display:none;margin-top:12px">
-      <button class="btn btn-secondary full" onclick="loadGame()">Doorgaan →</button>
+      <button type="button" class="btn btn-secondary full" onclick="loadGame()">Doorgaan →</button>
       <p id="continue-info" class="save-info"></p>
-      <button class="save-delete-btn" onclick="clearSave();checkSave()">Verwijder opgeslagen spel</button>
+      <button type="button" class="save-delete-btn" onclick="clearSave();checkSave()">Verwijder opgeslagen spel</button>
     </div>
     <div class="partner-wrap">
       <span class="partner-label">in samenwerking met</span>
@@ -46,27 +47,28 @@
 
 <!-- UITLEG SCREEN -->
 <div id="s-uitleg" class="screen">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
+  <div class="screen-header">
+    <button type="button" class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <h2 style="margin:0">Wat doe jij als het echt misgaat?</h2>
   </div>
 <div class="progress-wrap"><div class="progress-fill" style="width:5%"></div></div>
 <div class="phase-label" style="margin-top:8px">Stap 0: Introductie</div>
 <div class="narrative-text" style="margin-top:12px">
-  Jij speelt een bewoner die midden in een noodsituatie terechtkomt. Dat kan een grote storing zijn, een natuurbrand, een overstroming of een moeilijke tocht naar huis.<br><br>
-  Je doel is om jezelf en je huishouden zo goed mogelijk door de calamiteit heen te helpen. De keuzes die je maakt hebben echte gevolgen. <b>Hoe eerlijker je jouw situatie invult, hoe realistischer de ervaring wordt.</b><br><br>
-  Na afloop krijg je een persoonlijk rapport met tips over zelfredzaamheid. Daarin zie je wat goed ging, wat beter kan en hoe je je voorbereidt met een noodpakket en noodplan.
+  Je speelt een bewoner die te maken krijgt met een noodsituatie. Dat kan een grote stroomstoring zijn, een natuurbrand, een overstroming of een moeilijke reis naar huis.<br><br>
+  Tijdens het spel maak je keuzes voor jezelf en je huishouden. Die keuzes hebben gevolgen voor hoe de situatie verloopt.<br><br>
+  Na afloop krijg je een persoonlijk rapport. Daarin zie je wat goed ging, wat beter kon en hoe je je beter kunt voorbereiden, met een noodpakket en een noodplan.<br><br>
+  Vul je gegevens in zoals ze echt voor jou gelden. Hoe eerlijker je dat doet, hoe beter het spel past bij jouw situatie. Zo leer je er meer van en krijg je advies dat beter bij jou past.
 </div>
 <div class="btn-row">
-  <button class="btn-ghost" onclick="show('s-start')">← Terug</button>
-  <button class="btn" onclick="gotoIntake()">Begin →</button>
+  <button type="button" class="btn-ghost" onclick="show('s-start')">← Terug</button>
+  <button type="button" class="btn" onclick="gotoIntake()">Begin →</button>
 </div>
 </div>
 
 <!-- INTAKE SCREEN -->
 <div id="s-intake" class="screen">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
+  <div class="screen-header">
+    <button type="button" class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <h2 id="intake-title" style="margin:0">Wie wonen er bij je?</h2>
   </div>
 <div class="progress-wrap"><div class="progress-fill" id="intake-prog"></div></div>
@@ -80,68 +82,68 @@
 <div id="intake-body"></div>
 </div>
 <div class="btn-row">
-  <button class="btn-ghost" id="intake-prev" onclick="intakePrev()" style="display:none">← Vorige</button>
-  <button class="btn" id="intake-next" onclick="intakeNext()" disabled>Volgende →</button>
+  <button type="button" class="btn-ghost" id="intake-prev" onclick="intakePrev()" style="display:none">← Vorige</button>
+  <button type="button" class="btn" id="intake-next" onclick="intakeNext()" disabled>Volgende →</button>
 </div>
 </div>
 
 <!-- PREP SCREEN -->
 <div id="s-prep" class="screen">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
+  <div class="screen-header">
+    <button type="button" class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <h2 style="margin:0">Wat heb je al in huis en bij je?</h2>
   </div>
 <div class="progress-wrap"><div class="progress-fill" id="prep-prog"></div></div>
 <div class="phase-label" style="margin-top:8px">Stap 1: Jouw situatie</div>
-<p class="sub">Beantwoord de vragen eerlijk, dan wordt het rapport nauwkeuriger.</p>
+<p class="sub">Beantwoord de vragen eerlijk. Dan past het rapport beter bij jou.</p>
 <div id="prep-body"></div>
-<div class="btn-row"><button class="btn" onclick="gotoScenariokeuze()">Kies je scenario →</button></div>
+<div class="btn-row"><button type="button" class="btn" onclick="gotoScenariokeuze()">Kies je scenario →</button></div>
 </div>
 
 <!-- SCENARIOKEUZE SCREEN -->
 <div id="s-scenariokeuze" class="screen">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
+  <div class="screen-header">
+    <button type="button" class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <h2 style="margin:0">Kies een scenario</h2>
   </div>
 <div class="progress-wrap"><div class="progress-fill" style="width:85%"></div></div>
 <div class="phase-label" style="margin-top:8px">Stap 2: Kies je scenario</div>
-<p class="sub">Vier scenario's, elk gesitueerd in Nederland. Kies wat jou aanspreekt of het best bij jouw omgeving past.</p>
+<p class="sub">Vier scenario's in Nederland. Kies wat bij jou of jouw omgeving past.</p>
 <div style="display:flex;flex-direction:column;gap:12px" id="scenario-cards-wrap">
-  <button class="scenario-pick-card" onclick="startScenario('stroom')">
+  <button type="button" class="scenario-pick-card" onclick="startScenario('stroom')">
   <div class="spk-top"><span class="spk-title">Een gewone winterdag</span><span class="spk-badge spk-long">Lang (~35 min)</span></div>
-  <div class="spk-desc">Het is winter. Je bent thuis, de verwarming staat aan en je hebt geen bijzondere plannen voor vandaag. Buiten is het koud en grijs — een dag om binnen te blijven.</div>
-  <div class="spk-rel-label">Relevant voor alle omgevingen</div>
+  <div class="spk-desc">Het is winter. Je bent thuis, de verwarming staat aan en je hebt geen bijzondere plannen voor vandaag. Buiten is het koud en grijs. Echt weer om binnen te blijven.</div>
+  <div class="spk-rel-label">Past bij elke omgeving</div>
   </button>
-  <button class="scenario-pick-card" onclick="startScenario('natuurbrand')">
+  <button type="button" class="scenario-pick-card" onclick="startScenario('natuurbrand')">
   <div class="spk-top"><span class="spk-title">Een warme droge zomer</span><span class="spk-badge spk-medium">Medium (~20 min)</span></div>
   <div class="spk-desc">Het is al weken droog en warm. De tuin staat er dor bij en het nieuws heeft het over de aanhoudende hitte. Je bent thuis en de dag begint zoals gewoonlijk.</div>
-  <div class="spk-rel-label">Relevant voor jouw omgeving</div>
+  <div class="spk-rel-label">Past bij jouw omgeving</div>
   </button>
-  <button class="scenario-pick-card" onclick="startScenario('overstroming')">
+  <button type="button" class="scenario-pick-card" onclick="startScenario('overstroming')">
   <div class="spk-top"><span class="spk-title">Het water staat hoog</span><span class="spk-badge spk-medium">Medium (~20 min)</span></div>
   <div class="spk-desc">Het heeft de afgelopen dagen veel geregend. De rivieren staan hoog en in de buurt praten mensen over het waterpeil. Voorlopig lijkt het mee te vallen, maar de regen houdt aan.</div>
-  <div class="spk-rel-label">Relevant voor jouw omgeving</div>
+  <div class="spk-rel-label">Past bij jouw omgeving</div>
   </button>
-  <button class="scenario-pick-card" onclick="startScenario('thuis_komen')">
+  <button type="button" class="scenario-pick-card" onclick="startScenario('thuis_komen')">
   <div class="spk-top"><span class="spk-title">Onderweg naar huis</span><span class="spk-badge spk-short">Kort (~15 min)</span></div>
-  <div class="spk-desc">Je bent op het werk of op school. Een gewone doordeweekse dag — je hebt je spullen bij je en over een paar uur ga je naar huis.</div>
-  <div class="spk-rel-label">Relevant voor jouw omgeving</div>
+  <div class="spk-desc">Je bent op het werk of op school. Een gewone doordeweekse dag. Je hebt je spullen bij je en over een paar uur ga je naar huis.</div>
+  <div class="spk-rel-label">Past bij jouw omgeving</div>
   </button>
 </div>
 </div>
 
 <!-- COMMUTE QUESTIONS (thuis komen) -->
 <div id="s-commute" class="screen">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-    <button class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
+  <div class="screen-header">
+    <button type="button" class="gear-toggle-btn setup-gear-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
   </div>
   <div class="progress-wrap"><div class="progress-fill" id="commute-prog"></div></div>
   <div class="phase-label">Thuis komen: voorbereiding</div>
   <div id="commute-body"></div>
   <div class="btn-row">
-    <button class="btn-ghost" id="commute-prev" onclick="commutePrev()">← Vorige</button>
-    <button class="btn" id="commute-next" onclick="commuteNext()" disabled>Volgende →</button>
+    <button type="button" class="btn-ghost" id="commute-prev" onclick="commutePrev()">← Vorige</button>
+    <button type="button" class="btn" id="commute-next" onclick="commuteNext()" disabled>Volgende →</button>
   </div>
 </div>
 
@@ -150,7 +152,7 @@
   <div class="progress-wrap"><div class="progress-fill" id="sc-prog"></div></div>
   <!-- Topbar: dag en tijd -->
   <div class="sc-topbar">
-    <button class="gear-toggle-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
+    <button type="button" class="gear-toggle-btn" onclick="openGearMenu()" aria-label="Menu openen" aria-haspopup="dialog">☰</button>
     <div class="sc-topbar-left">
       <div class="day-badge-wrap">
         <div class="sc-dayofweek" id="sc-dayofweek"></div>
@@ -160,55 +162,6 @@
     </div>
   </div>
 
-  <!-- GEAR MENU OVERLAY -->
-  <div id="gear-menu" class="gear-menu" role="dialog" aria-modal="true" aria-labelledby="gear-title">
-    <div class="gear-backdrop" onclick="closeGearMenu()"></div>
-    <div class="gear-box">
-      <div class="gear-header">
-        <button class="gear-back" id="gear-back" onclick="gearPage(0)" style="visibility:hidden">← Terug</button>
-        <span id="gear-title">Menu</span>
-        <button class="help-close-x" onclick="closeGearMenu()" aria-label="Sluiten">✕</button>
-      </div>
-
-      <!-- Pagina 0: Hoofdmenu -->
-      <div id="gear-p0" class="gear-page">
-        <button class="gear-row" onclick="gearPage(1)">
-          <span class="gear-row-icon">💾</span><span class="gear-row-label">Opslaan</span><span class="gear-arrow">›</span>
-        </button>
-        <button class="gear-row" onclick="gearPage(2)">
-          <span class="gear-row-icon">📂</span><span class="gear-row-label">Laden</span><span class="gear-arrow">›</span>
-        </button>
-        <button class="gear-row" id="gear-audio-item" onclick="toggleAudio()">
-          <span class="gear-row-icon" id="gear-audio-icon">🔊</span><span class="gear-row-label" id="gear-audio-label">Geluid aan</span>
-        </button>
-        <button class="gear-row" onclick="openHelp('scenario');closeGearMenu()">
-          <span class="gear-row-icon">❓</span><span class="gear-row-label">Uitleg</span>
-        </button>
-      </div>
-
-      <!-- Pagina 1: Opslaan -->
-      <div id="gear-p1" class="gear-page" style="display:none">
-        <div id="gear-feedback" class="gear-feedback" style="display:none"></div>
-        <button class="gear-row" onclick="saveProfile()">
-          <span class="gear-row-icon">👤</span><span class="gear-row-label">Thuissituatie opslaan</span>
-        </button>
-        <button class="gear-row" onclick="saveGame()">
-          <span class="gear-row-icon">💾</span><span class="gear-row-label">Voortgang opslaan</span>
-        </button>
-      </div>
-
-      <!-- Pagina 2: Laden -->
-      <div id="gear-p2" class="gear-page" style="display:none">
-        <button class="gear-row" onclick="gotoScenariokeuze();closeGearMenu()">
-          <span class="gear-row-icon">🎮</span><span class="gear-row-label">Scenario opnieuw kiezen</span>
-        </button>
-        <button class="gear-row" id="gear-load-btn" onclick="loadGame();closeGearMenu()">
-          <span class="gear-row-icon">📂</span><span class="gear-row-label">Vorige opslag laden</span>
-        </button>
-      </div>
-    </div>
-  </div>
-<div id="scene-id-corner"></div>
 <!-- MOBILE STATUS BAR — visible only on small screens, replaces fixed sidebars -->
 <div class="mobile-status-bar" id="mobile-status-bar" aria-label="Jouw status" role="status">
   <div class="msb-stat" id="msb-food"><div class="msb-segs" id="msb-seg-food"><span class="msb-icon-unit">🥫</span><span class="msb-icon-unit">🥫</span><span class="msb-icon-unit">🥫</span><span class="msb-icon-unit">🥫</span><span class="msb-icon-unit">🥫</span></div></div>
@@ -222,29 +175,29 @@
   <!-- TOP ZONE: channels -->
   <div class="zone-top">
     <div class="channel-tabs" role="tablist" aria-label="Informatiebronnen">
-      <button class="ch-tab active" id="tab-buiten" role="tab" aria-selected="true" aria-controls="panel-buiten" onclick="switchTab('buiten')"><span aria-hidden="true">📖</span> Wat je ervaart</button>
-      <button class="ch-tab" id="tab-news" role="tab" aria-selected="false" aria-controls="panel-news" onclick="switchTab('news')"><span aria-hidden="true">📰</span> Nieuws</button>
-      <button class="ch-tab" id="tab-whatsapp" role="tab" aria-selected="false" aria-controls="panel-whatsapp" onclick="switchTab('whatsapp')"><span aria-hidden="true">💬</span> Berichten</button>
+      <button type="button" class="ch-tab active" id="tab-buiten" role="tab" aria-selected="true" aria-controls="panel-buiten" onclick="switchTab('buiten')"><span aria-hidden="true">📖</span> Wat je ervaart</button>
+      <button type="button" class="ch-tab" id="tab-news" role="tab" aria-selected="false" aria-controls="panel-news" onclick="switchTab('news')"><span aria-hidden="true">📰</span> Nieuws</button>
+      <button type="button" class="ch-tab" id="tab-whatsapp" role="tab" aria-selected="false" aria-controls="panel-whatsapp" onclick="switchTab('whatsapp')"><span aria-hidden="true">💬</span> Berichten</button>
 
-      <button class="ch-tab hidden-tab" id="radio-tab" role="tab" aria-selected="false" aria-controls="panel-radio" onclick="switchTab('radio')"><span aria-hidden="true">📻</span> Radio</button>
+      <button type="button" class="ch-tab hidden-tab" id="radio-tab" role="tab" aria-selected="false" aria-controls="panel-radio" onclick="switchTab('radio')"><span aria-hidden="true">📻</span> Radio</button>
     </div>
 <div id="panel-buiten" class="channel-panel active" role="tabpanel" aria-labelledby="tab-buiten">
   <div class="narrative-text" id="sc-narrative" aria-live="polite" aria-atomic="false"></div>
 </div>
 <div id="panel-news" class="channel-panel" role="tabpanel" aria-labelledby="tab-news">
   <div id="news-nav" class="ch-nav" style="display:none">
-    <button class="ch-nav-btn" id="news-nav-older" onclick="navChannel('news',true)" aria-label="Ouder nieuws">‹</button>
+    <button type="button" class="ch-nav-btn" id="news-nav-older" onclick="navChannel('news',true)" aria-label="Ouder nieuws">‹</button>
     <span class="ch-nav-label" id="news-nav-label"></span>
-    <button class="ch-nav-btn" id="news-nav-newer" onclick="navChannel('news',false)" aria-label="Nieuwer nieuws">›</button>
+    <button type="button" class="ch-nav-btn" id="news-nav-newer" onclick="navChannel('news',false)" aria-label="Nieuwer nieuws">›</button>
   </div>
 <div class="nos-header">Nieuws: liveblog</div>
 <div id="news-content"></div>
 </div>
 <div id="panel-whatsapp" class="channel-panel" role="tabpanel" aria-labelledby="tab-whatsapp">
   <div id="wa-nav" class="ch-nav" style="display:none">
-    <button class="ch-nav-btn" id="wa-nav-older" onclick="navChannel('wa',true)" aria-label="Oudere berichten">‹</button>
+    <button type="button" class="ch-nav-btn" id="wa-nav-older" onclick="navChannel('wa',true)" aria-label="Oudere berichten">‹</button>
     <span class="ch-nav-label" id="wa-nav-label"></span>
-    <button class="ch-nav-btn" id="wa-nav-newer" onclick="navChannel('wa',false)" aria-label="Nieuwere berichten">›</button>
+    <button type="button" class="ch-nav-btn" id="wa-nav-newer" onclick="navChannel('wa',false)" aria-label="Nieuwere berichten">›</button>
   </div>
 <div class="wa-bg">
   <div id="wa-content"></div>
@@ -260,7 +213,7 @@
       <div class="radio-knob">VOL</div>
       <div class="radio-knob">SCAN</div>
     </div>
-<button class="radio-play-btn" id="radio-play-btn" onclick="speakRadio()">▶ Speel radiobericht</button>
+<button type="button" class="radio-play-btn" id="radio-play-btn" onclick="speakRadio()">▶ Speel radiobericht</button>
 </div>
 </div>
 </div>
@@ -271,8 +224,8 @@
     <div class="consequence-box" id="sc-consequence"></div>
     <div id="sc-afterword" style="display:none;margin-top:4px"></div>
     <div id="sc-next-row" style="margin-top:12px">
-      <button class="btn-ghost" id="btn-back" onclick="goBack()" style="display:none">← Terug</button>
-      <button class="btn" onclick="advanceScene()">Verder →</button>
+      <button type="button" class="btn-ghost" id="btn-back" onclick="goBack()" style="display:none">← Terug</button>
+      <button type="button" class="btn" onclick="advanceScene()">Verder →</button>
     </div>
 </div>
 </div>
@@ -299,15 +252,66 @@
   <div class="report-section-title">Persoonlijke tips voor jouw situatie</div>
   <div id="rep-personal"></div>
   <div class="btn-row">
-    <button class="btn" onclick="show('s-scenariokeuze')">Ander scenario kiezen</button>
-    <button class="btn-ghost" onclick="location.reload()">Helemaal opnieuw</button>
+    <button type="button" class="btn" onclick="show('s-scenariokeuze')">Ander scenario kiezen</button>
+    <button type="button" class="btn-ghost" onclick="location.reload()">Helemaal opnieuw</button>
   </div>
   <div class="ptp-logo-footer">
     <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="ptp-logo-sm">
   </div>
 </div>
 
+<!-- GEAR MENU OVERLAY — buiten alle schermen zodat het altijd zichtbaar is -->
+<div id="gear-menu" class="gear-menu" role="dialog" aria-modal="true" aria-labelledby="gear-title">
+  <div class="gear-backdrop" onclick="closeGearMenu()"></div>
+  <div class="gear-box">
+    <div class="gear-header">
+      <button type="button" class="gear-back" id="gear-back" onclick="gearPage(0)" style="visibility:hidden">← Terug</button>
+      <span id="gear-title">Menu</span>
+      <button type="button" class="help-close-x" onclick="closeGearMenu()" aria-label="Sluiten">✕</button>
+    </div>
+
+    <!-- Pagina 0: Hoofdmenu -->
+    <div id="gear-p0" class="gear-page">
+      <button type="button" class="gear-row" onclick="gearPage(1)">
+        <span class="gear-row-icon">💾</span><span class="gear-row-label">Opslaan</span><span class="gear-arrow">›</span>
+      </button>
+      <button type="button" class="gear-row" onclick="gearPage(2)">
+        <span class="gear-row-icon">📂</span><span class="gear-row-label">Laden</span><span class="gear-arrow">›</span>
+      </button>
+      <button type="button" class="gear-row" id="gear-audio-item" onclick="toggleAudio()">
+        <span class="gear-row-icon" id="gear-audio-icon">🔊</span><span class="gear-row-label" id="gear-audio-label">Geluid aan</span>
+      </button>
+      <button type="button" class="gear-row" onclick="openHelp('scenario');closeGearMenu()">
+        <span class="gear-row-icon">❓</span><span class="gear-row-label">Uitleg</span>
+      </button>
+    </div>
+
+    <!-- Pagina 1: Opslaan -->
+    <div id="gear-p1" class="gear-page" style="display:none">
+      <div id="gear-feedback" class="gear-feedback" style="display:none"></div>
+      <button type="button" class="gear-row" onclick="saveProfile()">
+        <span class="gear-row-icon">👤</span><span class="gear-row-label">Thuissituatie opslaan</span>
+      </button>
+      <button type="button" class="gear-row" onclick="saveGame()">
+        <span class="gear-row-icon">💾</span><span class="gear-row-label">Voortgang opslaan</span>
+      </button>
+    </div>
+
+    <!-- Pagina 2: Laden -->
+    <div id="gear-p2" class="gear-page" style="display:none">
+      <button type="button" class="gear-row" onclick="gotoScenariokeuze();closeGearMenu()">
+        <span class="gear-row-icon">🎮</span><span class="gear-row-label">Scenario opnieuw kiezen</span>
+      </button>
+      <button type="button" class="gear-row" id="gear-load-btn" onclick="loadGame();closeGearMenu()">
+        <span class="gear-row-icon">📂</span><span class="gear-row-label">Vorige opslag laden</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 </main><!-- end main -->
+
+<div id="scene-id-corner"></div>
 
 
 <!-- STATUS SIDEBAR -->
@@ -366,13 +370,13 @@
   <div class="help-box">
     <div class="help-header">
       <span id="help-title">Speluitleg</span>
-      <button class="help-close-x" onclick="closeHelp()" aria-label="Sluiten">✕</button>
+      <button type="button" class="help-close-x" onclick="closeHelp()" aria-label="Sluiten">✕</button>
     </div>
 <div class="help-page" id="help-p1">
   <h3>🎯 Doel van het spel</h3>
-  <p>Jij speelt een bewoner die midden in een noodsituatie terechtkomt, zoals een stroomstoring, natuurbrand, overstroming of een moeilijke weg naar huis.</p>
+  <p>Jij speelt een bewoner die in een noodsituatie terechtkomt, zoals een stroomstoring, natuurbrand, overstroming of een lastige weg naar huis.</p>
   <p>Je probeert jezelf en je huishouden zo goed mogelijk door de crisis heen te helpen. De keuzes die je maakt hebben echte gevolgen.</p>
-  <p>Na afloop krijg je een persoonlijk rapport met wat goed ging, wat beter kan en welke tips passen bij jouw situatie.</p>
+  <p>Na afloop krijg je een persoonlijk rapport. Daarin zie je wat goed ging, wat beter kan en welke tips bij jou passen.</p>
 </div>
 <div class="help-page" id="help-p2" style="display:none">
   <h3>🧭 Wat kun je doen in een scenario</h3>
@@ -396,9 +400,9 @@
 <p>Hoe eerlijker je antwoordt, hoe persoonlijker en realistischer het rapport achteraf wordt.</p>
 </div>
 <div class="help-footer">
-  <button class="help-prev" id="help-prev" onclick="helpPage(1)" disabled aria-label="Vorige pagina">← Vorige</button>
+  <button type="button" class="help-prev" id="help-prev" onclick="helpPage(1)" disabled aria-label="Vorige pagina">← Vorige</button>
   <span class="help-pager" id="help-pager" aria-live="polite">1 van 2</span>
-  <button class="help-next" id="help-next" onclick="helpPage(2)" aria-label="Volgende pagina">Volgende →</button>
+  <button type="button" class="help-next" id="help-next" onclick="helpPage(2)" aria-label="Volgende pagina">Volgende →</button>
 </div>
 </div>
 </div>
@@ -408,7 +412,7 @@
   <div class="hh-popup-box">
     <div class="hh-popup-header">
       <span>Jouw huishouden</span>
-      <button class="help-close-x" onclick="closeHouseholdPortrait()" aria-label="Sluiten">✕</button>
+      <button type="button" class="help-close-x" onclick="closeHouseholdPortrait()" aria-label="Sluiten">✕</button>
     </div>
 <div id="hh-portrait-stage"></div>
 </div>
@@ -426,7 +430,7 @@
   <div class="nl-alert-text" id="overlay-text"></div>
 </div>
 <div class="nl-alert-footer">
-  <button class="nl-alert-close" id="nl-alert-close-btn" onclick="closeAlert()">Sluiten</button>
+  <button type="button" class="nl-alert-close" id="nl-alert-close-btn" onclick="closeAlert()">Sluiten</button>
 </div>
 </div>
 </div>
