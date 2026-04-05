@@ -6,7 +6,11 @@
 //        commuteNext/Prev
 // ═══════════════════════════════════════════════════════════════
 
-// ─── SCENE VISUALS ───────────────────────────────────────────────────────────
+/* ─── SCENE VISUALS ────────────────────────────────────────────────────────────
+   Metadata per scène-ID: een seed-string (vroeger gebruikt voor afbeelding-
+   generatie), een leesbaar tijdlabel en een scènetitel die boven in de UI
+   verschijnt.
+*/
 const sceneVisuals = {
   st_d0_morgen: {
     seed: 'suburb-morning-calm',
@@ -129,7 +133,7 @@ const sceneVisuals = {
     label: 'Dag 4 · 12:45',
     title: 'Stroom terug!'
   },
-  // Bosbrand
+  // Bosbrand — scènes voor het bosbrандscenario
   bf_0: {
     seed: '',
     label: 'Dag 0 · 22:00',
@@ -215,7 +219,7 @@ const sceneVisuals = {
     label: 'Dag 2 · 11:00',
     title: 'Schade beoordelen'
   },
-  // Overstroming
+  // Overstroming — scènes voor het overstromingsscenario
   ov_0: {
     seed: '',
     label: 'Dag 0 · 20:00',
@@ -301,7 +305,7 @@ const sceneVisuals = {
     label: 'Dag 2 · 10:30',
     title: 'Huis betreden'
   },
-  // Thuis komen
+  // Thuis komen — scènes voor het scenario waarbij de speler onderweg naar huis is
   tk_1: {
     seed: '',
     label: 'Werk · 11:57',
@@ -369,22 +373,31 @@ const sceneVisuals = {
   },
 };
 
+/* ─── STATUSBALKEN WEERGAVE ────────────────────────────────────────────────────
+   Werkt de visuele statusbalken bij in zowel de zijbalk als de mobiele balk
+   onderaan het scherm. Verwerkt water, voedsel, comfort, telefoonbatterij,
+   contant geld en voertuigen.
+*/
 function renderStatusBars() {
-  // Helper: update a set of segments in both sidebar and mobile bar
+  // Helper: update een reeks segmenten in zowel de zijbalk als de mobiele balk
   function updateSegs(segId, msbSegId, wrapId, msbStatId, val) {
     // Sidebar icon units
     const icons = document.querySelectorAll('#' + segId + ' .ss-icon-unit');
     icons.forEach((icon, i) => {
       icon.classList.remove('empty', 'warn', 'danger');
       if (i >= val) {
+        // Dit segment is leeg (boven de huidige waarde)
         icon.classList.add('empty');
       } else if (val <= 1) {
+        // Kritiek laag: rood
         icon.classList.add('danger');
       } else if (val <= 2) {
+        // Laag: oranje/geel
         icon.classList.add('warn');
       }
     });
     const wrap = document.getElementById(wrapId);
+    // Voeg klasse 'zero' toe als de waarde nul is (voor extra visuele nadruk)
     if (wrap) wrap.classList.toggle('zero', val === 0);
     // Mobile icon units
     const micons = document.querySelectorAll('#' + msbSegId + ' .msb-icon-unit');
@@ -401,6 +414,7 @@ function renderStatusBars() {
     const mwrap = document.getElementById(msbStatId);
     if (mwrap) mwrap.classList.toggle('zero', val === 0);
   }
+  // Werk de drie hoofdstatistieken bij: water, voedsel, comfort
   updateSegs('stat-water', 'msb-seg-water', 'ss-water', 'msb-water', state.water);
   updateSegs('stat-food', 'msb-seg-food', 'ss-food', 'msb-food', state.food);
   updateSegs('stat-comfort', 'msb-seg-comfort', 'ss-comfort', 'msb-comfort', state.comfort);
@@ -415,34 +429,48 @@ function renderStatusBars() {
   if (mBatt) mBatt.textContent = state.phoneBattery + '%';
   const mCash = document.getElementById('msb-cash');
   if (mCash) mCash.textContent = '€' + state.cash;
-  // Vehicles
+  // Voertuigen — toon of dim auto/fiets afhankelijk van het scenario en profiel
   const carEl = document.getElementById('veh-car');
   const bikeEl = document.getElementById('veh-bike');
   let showCar, showBike;
   if (currentScenario === 'thuis_komen') {
+    // In het thuis_komen-scenario: gebruik het gekozen reisvervoer
     showCar = profile.commuteMode === 'car';
     showBike = profile.commuteMode === 'bike';
   } else {
+    // Overige scenario's: gebruik het profiel (heeft de speler een auto/fiets?)
     showCar = profile.hasCar;
     showBike = profile.hasBike;
   }
+  // Dim het voertuig-icoon als het voertuig niet beschikbaar is
   if (carEl) carEl.classList.toggle('ss-veh-dim', !showCar);
   if (bikeEl) bikeEl.classList.toggle('ss-veh-dim', !showBike);
 }
 
+// Werkt de batterij-widget bij op basis van het opgegeven percentage.
+// Toont 0–5 gekleurde balken en een procentlabel; kleur gaat van groen naar rood.
 function updateBattery(fillId, pctId, emptyId, val) {
   const body = document.getElementById(fillId);
   const pctEl = document.getElementById(pctId);
   if (!body) return;
+  // Rond af op een veelvoud van 10 voor een cleaner weergave
   const pct = Math.round(val / 10) * 10;
+  // Bereken het aantal gevulde batterijbalken (max. 5)
   const filledBars = Math.round(pct / 20); // 0–5 bars
+  // Kies de kleur op basis van het resterende percentage
   const color = pct >= 80 ? 'var(--c-battery-full)' : pct >= 60 ? 'var(--c-battery-mid)' : pct >= 40 ? 'var(--c-battery-low)' : 'var(--c-battery-empty)';
   body.querySelectorAll('.batt-bar').forEach((bar, i) => {
+    // Gevulde balken krijgen de statuskleur; lege balken worden gereset
     bar.style.backgroundColor = i < filledBars ? color : '';
   });
   if (pctEl) pctEl.textContent = pct + '%';
 }
 
+/* ─── ACHTERGRONDAFBEELDING & OVERLAYS PER SCÈNE ──────────────────────────────
+   Stelt de achtergrondafbeelding van de pagina in op basis van de huidige scène.
+   Past ook vuur-, regen- en duisternis-overlays aan om het tijdstip en de
+   ernst van de situatie te weerspiegelen.
+*/
 function renderSceneVisual(scene) {
   // Update page background per scene
   const bodyBgMap = {
@@ -505,6 +533,7 @@ function renderSceneVisual(scene) {
     st_8b: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_d1_morgen: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_9: 'afbeelding/stroomstoring/Huis_winter2.png',
+    st_autolaad: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_watertruck: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_10a: 'afbeelding/stroomstoring/Huis_winter2.png',
     st_10: 'afbeelding/stroomstoring/Huis_winter2.png',
@@ -531,10 +560,12 @@ function renderSceneVisual(scene) {
     tk_5: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
     tk_5b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
   };
+  // Gebruik de standaard achtergrond als er geen specifieke afbeelding is voor deze scène
   const bgImg = bodyBgMap[scene.id] || 'afbeelding/algemeen/huis_normaal.png';
   document.body.style.backgroundImage = `url('${bgImg}')`;
 
   // Situatie-overlays — opacity per scène (0 = uit)
+  // Hoe verder de brand/overstroming vordert, hoe hoger de opacity van de overlay
   const fireOpacity = {
     bf_1: 0.20,
     bf_2: 0.30,
@@ -560,18 +591,22 @@ function renderSceneVisual(scene) {
     ov_6b: 0.25,
   };
 
+  // Toont of verbergt een overlay-element met een vloeiende CSS-overgang.
+  // Bij opacity > 0 wordt het element eerst zichtbaar gemaakt (display:block),
+  // dan na een korte vertraging gefaded in. Bij 0 wordt het gefaded out en
+  // daarna verborgen.
   function applyOverlay(el, opacity) {
     if (!el) return;
     if (opacity > 0) {
       el.style.display = 'block';
       setTimeout(() => {
         el.style.opacity = String(opacity);
-      }, 50);
+      }, 50); // korte vertraging zodat de CSS-transitie op display:block kan starten
     } else {
       el.style.opacity = '0';
       setTimeout(() => {
         el.style.display = 'none';
-      }, 1200);
+      }, 1200); // wacht tot de fade-out klaar is voordat het element verborgen wordt
     }
   }
 
@@ -584,18 +619,23 @@ function renderSceneVisual(scene) {
   };
   const darkness = document.getElementById('bg-darkness');
   if (darkness) {
+    // Haal het uur op uit het tijdstip van de scène (standaard: 12:00 = overdag)
     const [h] = (scene.time || '12:00').split(':').map(Number);
     let bg, opacity;
     if (scene.id in darknessOverride) {
+      // Handmatige overschrijving voor specifieke scènes
       bg = '#000';
       opacity = darknessOverride[scene.id];
     } else if (h >= 22 || h < 6) {
+      // Nacht: bijna volledig donker
       bg = '#000';
       opacity = 0.88;
     } else if (h < 9 || h >= 18) {
+      // Schemering (ochtend of avond): gedeeltelijk donker
       bg = '#000';
       opacity = 0.68;
     } else {
+      // Overdag: geen duisternis-overlay
       bg = '#000';
       opacity = 0;
     }
@@ -604,30 +644,40 @@ function renderSceneVisual(scene) {
   }
 }
 
-// ─── SCENARIO ENGINE ──────────────────────────────────────────────────────────
-let currentSceneIdx = 0;
-let activeTab = 'buiten';
-let radioUnlocked = false;
-const stateSnapshots = [];
-const historySnapshots = [];
+/* ─── SCENARIO ENGINE ─────────────────────────────────────────────────────────
+   Globale toestandsvariabelen die de voortgang van het actieve scenario bijhouden.
+*/
+let currentSceneIdx = 0; // index van de huidige zichtbare scène
+let activeTab = 'buiten'; // actief tabblad in de kanalen-sectie
+let radioUnlocked = false; // wordt true zodra een scène radio-inhoud heeft
+const stateSnapshots = []; // opgeslagen staat per scène-index (voor terugnavigatie)
+const historySnapshots = []; // opgeslagen keuzegeschiedenislengte per scène-index
 
 // Channel history logs for < > scrollback
 const newsLog = []; // [{sceneIdx, time, dayBadge, items:[...]}]
 const waLog = []; // [{sceneIdx, time, dayBadge, items:[...], nlalert}]
 let newsPage = 0; // 0 = most recent batch
 let waPage = 0;
-const newsLoggedIdxs = new Set();
-const waLoggedIdxs = new Set();
+const newsLoggedIdxs = new Set(); // bijgehouden scène-indexes die al naar newsLog zijn geschreven
+const waLoggedIdxs = new Set(); // bijgehouden scène-indexes die al naar waLog zijn geschreven
 
+/* ─── TYPEWRITER ──────────────────────────────────────────────────────────────
+   Toont tekst karakter voor karakter met een instelbaar interval.
+   Biedt ook een skip()-methode om de animatie meteen te voltooien,
+   en een ingebouwde timer voor automatisch doorgaan na het typen.
+*/
 const Typewriter = {
-  _interval: null,
-  _skipFn: null,
-  _advance: null, // pending auto-advance timer after typing is done
+  _interval: null,  // setInterval-referentie voor het typeanimatie-interval
+  _skipFn: null,    // functie om de animatie direct te voltooien
+  _advance: null,   // pending auto-advance timer after typing is done
 
+  // Start de typewriter-animatie: schrijft 'text' karakter voor karakter
+  // naar 'targetEl' en roept 'onDone' aan zodra de tekst volledig is.
   run(text, targetEl, onDone) {
     this.cancel();
     let i = 0;
     const panel = document.getElementById('panel-buiten');
+    // Sla de skip-functie op zodat de gebruiker de animatie kan overslaan
     this._skipFn = () => {
       this.cancel();
       targetEl.textContent = text;
@@ -635,21 +685,26 @@ const Typewriter = {
     };
     this._interval = setInterval(() => {
       targetEl.textContent += text[i++];
+      // Scroll het paneel mee zodat de nieuwste tekst altijd zichtbaar is
       if (panel) panel.scrollTop = panel.scrollHeight;
       if (i >= text.length) {
+        // Alle karakters zijn getypt: stop het interval en roep de callback aan
         this.cancel();
         if (onDone) onDone();
       }
-    }, 20);
+    }, 20); // 20ms per karakter ≈ 50 tekens per seconde
   },
 
+  // Sla de typewriter-animatie over en toon de volledige tekst direct
   skip() {
     if (this._skipFn) this._skipFn();
   },
+  // Geeft true terug als de animatie momenteel actief is
   isRunning() {
     return this._interval !== null;
   },
 
+  // Stopt de typewriter-animatie en annuleert elke wachtende auto-advance timer
   cancel() {
     if (this._interval) {
       clearInterval(this._interval);
@@ -663,6 +718,8 @@ const Typewriter = {
   }
 };
 
+// Navigeert naar het woon-werkverkeer-vragenformulier voor het thuis_komen-scenario.
+// Reset de eerder gekozen reisopties voordat het formulier opnieuw wordt gerenderd.
 function gotoCommuteQs() {
   profile.commuteMode = '';
   profile.commuteDistance = '';
@@ -670,8 +727,13 @@ function gotoCommuteQs() {
   show('s-commute');
 }
 
+// Bouwt het woon-werkverkeer-vragenformulier op op basis van de commuteQs-array.
+// Genereert kaartknoppen voor elk antwoord en markeert de huidige selectie.
 function renderCommuteQ() {
   document.getElementById('commute-prog').style.transform = 'scaleX(0.50)';
+  const corner = document.getElementById('scene-id-corner');
+  if (corner) corner.textContent = 'commute';
+  // Schakel de 'Volgende'-knop pas in als beide vragen beantwoord zijn
   const checkNext = () => document.getElementById('commute-next').disabled = !(profile.commuteMode && profile.commuteDistance);
   let html = '';
   commuteQs.forEach(q => {
@@ -687,24 +749,37 @@ function renderCommuteQ() {
   document.getElementById('commute-next').disabled = !(profile.commuteMode && profile.commuteDistance);
 }
 
+// Slaat de keuze van de speler op voor een woon-werkverkeervraag en
+// werkt de visuele selectiestatus van de knoppen bij.
 function commutePick(id, val) {
   profile[id] = val;
+  // Markeer de geselecteerde kaart en deseleer de rest voor hetzelfde vraag-ID
   document.querySelectorAll(`#commute-body .choice-card[data-qid="${id}"]`).forEach(c =>
     c.classList.toggle('selected', c.dataset.val === val)
   );
   document.getElementById('commute-next').disabled = !(profile.commuteMode && profile.commuteDistance);
 }
 
+// Start het thuis_komen-scenario zodra de woon-werkverkeersvragen zijn beantwoord.
 function commuteNext() {
   startScenario('thuis_komen');
 }
 
+// Gaat terug naar het scenariokeuze-scherm vanuit het woon-werkverkeer-formulier.
 function commutePrev() {
   show('s-scenariokeuze');
 }
 
+/* ─── SCENARIO STARTEN ────────────────────────────────────────────────────────
+   Initialiseert een nieuw scenario: kiest de juiste scène-array en decay-tabel,
+   reset alle spelstatus-vlaggen, verwerkt de profielinstellingen van de speler
+   (water/eten/cash/powerbank) en rendert de eerste scène.
+*/
 function startScenario(scenarioId) {
+  // Verwijder eventuele lopende tick-timers van een eerder scenario
   if (typeof clearAllTicks === 'function') clearAllTicks();
+  // Als thuis_komen wordt gekozen maar de reismodus nog niet is ingevuld,
+  // stuur de speler eerst naar het woon-werkverkeer-formulier
   if (scenarioId === 'thuis_komen' && !profile.commuteMode) {
     currentScenario = 'thuis_komen';
     gotoCommuteQs();
@@ -725,6 +800,9 @@ function startScenario(scenarioId) {
   } else if (currentScenario === 'thuis_komen') {
     scenes = scenes_thuis_komen;
     sceneDecay = sceneDecay_thuis_komen;
+  } else if (currentScenario === 'drinkwater') {
+    scenes = scenes_drinkwater;
+    sceneDecay = sceneDecay_drinkwater;
   }
 
   // Reset all scenario-specific state flags
@@ -757,15 +835,16 @@ function startScenario(scenarioId) {
   if (profile.hasWater === 'ja') state.hasWater = true;
 
   // Initialize survival stats from profile
-  state.water = profile.hasWater === 'ja' ? 5 : 1;
-  state.food = (profile.hasKit === 'ja' || profile.hasExtraFood) ? 5 : 2;
+  state.water = profile.hasWater === 'ja' ? 5 : 1; // speler met watervoorraad start met vol water
+  state.food = (profile.hasKit === 'ja' || profile.hasExtraFood) ? 5 : 2; // noodpakket geeft vol voedsel
   state.comfort = 5;
   state.health = 5;
   // Bij thuis_komen ben je onderweg: alleen zakgeld + reistasje, noodpakket is thuis
   const homeCash = currentScenario === 'thuis_komen' ? 0 : (profile.hasCash === 'ja' ? 100 : 0);
+  // Startbedrag: basisbedrag + eventueel contant geld thuis + EDC-tas bonusgeld
   state.cash = 20 + homeCash + (profile.hasEDCBag === 'ja' ? 100 : 0);
   state.powerbank = profile.hasPowerbank === 'ja' ? 5 : 0;
-  state.phoneBattery = 80;
+  state.phoneBattery = 80; // telefoon start op 80% batterij
   state.hasCampingStove = false;
   state.knowsNeighbors = false;
   state.evacuatedEarly = false;
@@ -775,6 +854,7 @@ function startScenario(scenarioId) {
   state.takingAns = false;
   state.day2Started = false;
 
+  // Reset scène-index en alle kanaal- en geschiedenisbuffers
   currentSceneIdx = 0;
   channels.news = [];
   channels.whatsapp = [];
@@ -794,8 +874,14 @@ function startScenario(scenarioId) {
   renderScene();
 }
 
-// ─── SAVE / LOAD ─────────────────────────────────────────────────────────────
+/* ─── OPSLAAN / LADEN ─────────────────────────────────────────────────────────
+   Slaat de volledige spelstatus op in localStorage en laadt deze terug.
+   Bij laden wordt de correcte scène-array hersteld en worden alle kanaallogboeken
+   opnieuw opgebouwd zodat renderScene geen dubbele vermeldingen toevoegt.
+*/
 
+// Slaat de huidige spelstatus op in localStorage onder de SAVE_KEY-sleutel.
+// Geeft feedback aan de speler via showGearFeedback().
 function saveGame() {
   const data = {
     version: 1,
@@ -826,6 +912,8 @@ function saveGame() {
   }
 }
 
+// Laadt een eerder opgeslagen spelstatus uit localStorage.
+// Als er geen opgeslagen spel is, doet de functie niets.
 function loadGame() {
   const raw = localStorage.getItem(SAVE_KEY);
   if (!raw) return;
@@ -855,6 +943,7 @@ function loadGame() {
   historySnapshots.length = 0;
   newsLoggedIdxs.clear();
   waLoggedIdxs.clear();
+  // Vul de Set met alle scène-indexes die al zijn opgeslagen in de logs
   newsLog.forEach(e => newsLoggedIdxs.add(e.sceneIdx));
   waLog.forEach(e => waLoggedIdxs.add(e.sceneIdx));
   channels.news = [];
@@ -881,10 +970,15 @@ function loadGame() {
   if (d.activeTab && typeof switchTab === 'function') switchTab(d.activeTab);
 }
 
+// Geeft een gefilterde lijst van scènes terug waarbij alle scènes met een
+// niet-voldane conditie (conditionalOn) worden weggelaten.
 function getActiveScenes() {
   return scenes.filter(s => !s.conditionalOn || s.conditionalOn());
 }
 
+// Voegt de 'has-unread'-klasse toe aan een kanaaltab om een ongelezen-indicator
+// te tonen. Synchroniseert de animatiefase zodat alle tabs gelijk knipperen.
+// Doet niets als de tab al actief is.
 function markUnread(name) {
   const tab = document.getElementById('tab-' + name) || (name === 'radio' ? document.getElementById('radio-tab') : null);
   if (!tab || tab.classList.contains('active')) return;
@@ -894,6 +988,13 @@ function markUnread(name) {
   tab.classList.add('has-unread');
 }
 
+/* ─── SCÈNE RENDEREN ──────────────────────────────────────────────────────────
+   Hoofdfunctie die de volledige UI bijwerkt voor de huidige scène:
+   - Annuleert de typewriter en wist ongelezen-indicatoren
+   - Past scène-verval (decay) toe op statistieken
+   - Rendert achtergrond, verhaaltekst, kanaalinhoud en keuzeknopen
+   - Triggert NL-Alert-overlay en omgevingsgeluid
+*/
 function renderScene() {
   Typewriter.cancel();
   // Wis alle unread-stipjes van de vorige scene
@@ -907,6 +1008,7 @@ function renderScene() {
   const visibleScenes = getActiveScenes();
   const scene = visibleScenes[currentSceneIdx];
   if (!scene) {
+    // Geen scènes meer: toon het eindrapport
     showReport();
     return;
   }
@@ -919,11 +1021,14 @@ function renderScene() {
   const decay = sceneDecay[scene.id];
   if (decay) {
     Object.keys(decay).forEach(k => {
+      // Vliegtuigmodus: telefoonbatterij daalt niet door verval
       if (k === 'phoneBattery' && state.airplaneMode) return;
       const max = k === 'phoneBattery' ? 100 : 5;
+      // Pas de vervalwaarde toe maar houd de stat binnen het geldige bereik
       state[k] = Math.max(0, Math.min(max, state[k] + decay[k]));
     });
   }
+  // Markeer dag 2 als gestart zodra de ochtend van dag 3 begint
   if (scene.id === 'st_d2_morgen') state.day2Started = true;
   // Penalty: no water or food causes health and comfort to drop
   if (state.water === 0) {
@@ -949,6 +1054,7 @@ function renderScene() {
 
   // Progress
   const _progEl = document.getElementById('sc-prog');
+  // Breedte van de voortgangsbalk als breuk van het totaal aantal zichtbare scènes
   if (_progEl) _progEl.style.transform = 'scaleX(' + (currentSceneIdx / visibleScenes.length) + ')';
 
   // Scene indicator
@@ -960,6 +1066,7 @@ function renderScene() {
   // Typewriter tick — dag eerst, daarna tijd
   const timeEl = document.getElementById('sc-time');
   if (timeEl) timeEl.textContent = '';
+  // Eerst het dagbadge animeren, daarna de tijd — opeenvolgend via callback
   if (badge && timeEl) tickTime(badge, scene.dayBadge, 'badge', () => tickTime(timeEl, scene.time, 'time'));
 
   // Stop any playing speech when navigating
@@ -992,11 +1099,13 @@ function renderScene() {
   if (scene.channels.whatsapp && scene.channels.whatsapp.length) {
     scene.channels.whatsapp.forEach(m => channels.whatsapp.push(m));
   }
+  // Radio-inhoud alleen toevoegen als de speler een radio heeft
   if (scene.channels.radio && (profile.hasRadio || state.hasCarRadio)) {
     channels.radio.push({
       time: scene.time,
       text: scene.channels.radio
     });
+    // Maak de radio-tab zichtbaar de eerste keer dat er radio-inhoud is
     if (!radioUnlocked) {
       radioUnlocked = true;
       document.getElementById('radio-tab').classList.remove('hidden-tab');
@@ -1014,12 +1123,12 @@ function renderScene() {
     if (scene.channels.news && scene.channels.news.length) markUnread('news');
     if (scene.channels.nlalert) {
       markUnread('whatsapp');
-      playMessagePing();
+      playMessagePing(); // geluidssignaal voor binnenkomend NL-Alert
     }
     if (scene.channels.radio && (profile.hasRadio || state.hasCarRadio)) markUnread('radio');
     // Active tab never needs a dot
     document.getElementById('tab-' + activeTab)?.classList.remove('has-unread');
-  }, 200);
+  }, 200); // kleine vertraging zodat de tab zeker al actief is
 
   // Reset next-row animation so it re-fires each scene
   const nextRow = document.getElementById('sc-next-row');
@@ -1032,7 +1141,7 @@ function renderScene() {
   if (scene.channels.nlalert) {
     setTimeout(() => {
       triggerAlert(scene.channels.nlalert);
-    }, 400);
+    }, 400); // korte vertraging zodat de scène-transitie eerst afgerond is
   }
 
   // Ambient audio
@@ -1045,15 +1154,23 @@ function renderScene() {
   });
 }
 
-// ─── CHANNEL HISTORY NAVIGATION ───────────────────────────────────────────────
+/* ─── KANAALGESCHIEDENISNAVIGATIE ─────────────────────────────────────────────
+   Functies voor het bladeren door eerdere nieuws- en WhatsApp-berichten via
+   de < > knoppen in de kanaalheader. Elk scenario-moment wordt als één 'pagina'
+   in het log opgeslagen.
+*/
 
+// Rendert de huidige nieuwspagina op basis van newsPage (0 = meest recent).
+// Berichten worden omgekeerd weergegeven (nieuwste bovenaan).
 function renderNewsPage() {
+  // Bereken de logindex: pagina 0 = laatste item, pagina 1 = één na laatste, enz.
   const pageIdx = newsLog.length - 1 - newsPage;
   const page = newsLog[Math.max(0, pageIdx)];
   let html = '';
   if (!page || page.items.length === 0) {
     html = '<p style="color:var(--c-muted-ui);font-size:.85rem;padding-top:4px">Geen nieuws.</p>';
   } else {
+    // Keer de volgorde om zodat het meest recente bericht bovenaan staat
     [...page.items].reverse().forEach(n => {
       html += `<div class="news-item">
         <div class="news-time">${n.time}</div>
@@ -1068,9 +1185,13 @@ function renderNewsPage() {
   updateChannelNav('news');
 }
 
+// Rendert een WhatsApp-pagina: toont eerst een eventueel NL-Alert,
+// daarna de berichten (nieuwste bovenaan). Maakt onderscheid tussen
+// inkomende en uitgaande berichten.
 function renderWaPage(page) {
   const waEl = document.getElementById('wa-content');
   let html = '';
+  // Toon NL-Alert bovenaan als deze aan de pagina is gekoppeld
   if (page && page.nlalert) {
     const alertLines = page.nlalert.split('\n');
     const alertTime = alertLines[1] || '';
@@ -1082,7 +1203,7 @@ function renderWaPage(page) {
   }
   if (page && page.items.length > 0) {
     [...page.items].reverse().forEach(m => {
-      const isOut = m.outgoing;
+      const isOut = m.outgoing; // uitgaand bericht van de speler zelf
       html += `<div class="wa-msg ${isOut ? 'outgoing' : 'incoming'}">
         ${!isOut ? `<div class="wa-from">${m.from}</div>` : ''}
         <div class="wa-bubble">${m.msg}</div>
@@ -1094,6 +1215,9 @@ function renderWaPage(page) {
   waEl.innerHTML = html;
 }
 
+// Werkt de navigatiecontroles (ouder/nieuwer knoppen + paginaLabel) bij
+// voor het opgegeven kanaaltype ('news' of 'wa').
+// Verbergt de navigatie als er slechts één pagina is of als de telefoon leeg is.
 function updateChannelNav(type) {
   const log = type === 'news' ? newsLog : waLog;
   const page = type === 'news' ? newsPage : waPage;
@@ -1103,22 +1227,27 @@ function updateChannelNav(type) {
   const label = document.getElementById(type + '-nav-label');
   if (!nav) return;
   const phoneDead = state.phoneBattery === 0;
+  // Geen navigatie nodig als er maar één pagina is of de telefoon leeg is
   if (log.length <= 1 || phoneDead) {
     nav.style.display = 'none';
     return;
   }
   nav.style.display = 'flex';
-  olderBtn.disabled = page >= log.length - 1;
-  newerBtn.disabled = page === 0;
+  olderBtn.disabled = page >= log.length - 1; // al op de oudste pagina
+  newerBtn.disabled = page === 0; // al op de meest recente pagina
   const entry = log[log.length - 1 - page];
+  // Label toont 'Actueel' voor de nieuwste pagina, anders datum+tijd
   label.textContent = page === 0 ?
     `Actueel · ${entry.time}` :
     `${entry.dayBadge ? entry.dayBadge + ' · ' : ''}${entry.time}`;
 }
 
+// Navigeert naar een oudere of nieuwere pagina in het nieuws- of WhatsApp-kanaal.
+// Doet niets als de telefoonbatterij leeg is.
 function navChannel(type, goOlder) {
   if (state.phoneBattery === 0) return;
   if (type === 'news') {
+    // Verhoog de paginateller voor ouder, verlaag voor nieuwer (begrensd)
     newsPage = goOlder ?
       Math.min(newsLog.length - 1, newsPage + 1) :
       Math.max(0, newsPage - 1);
@@ -1134,6 +1263,11 @@ function navChannel(type, goOlder) {
 
 // ──────────────────────────────────────────────────────────────────────────────
 
+/* ─── KANALEN RENDEREN ────────────────────────────────────────────────────────
+   Werkt alle drie de kanalen (nieuws, WhatsApp/NL-Alert en radio) bij voor de
+   huidige scène. Berichten worden direct getoond zonder stagger-animatie.
+   Nieuwe inhoud wordt ook gelogd voor scrollback-navigatie, maar nooit dubbel.
+*/
 function renderChannels(scene) {
   const sc = scene ? scene.channels : {
     news: [],
@@ -1144,8 +1278,9 @@ function renderChannels(scene) {
 
   // NEWS — log and render via page system
   const newNews = sc.news || [];
-  newsPage = 0;
+  newsPage = 0; // reset naar meest recente pagina bij elke nieuwe scène
   if (newNews.length > 0 && !newsLoggedIdxs.has(currentSceneIdx)) {
+    // Log de nieuwsberichten van deze scène slechts één keer
     newsLoggedIdxs.add(currentSceneIdx);
     newsLog.push({
       sceneIdx: currentSceneIdx,
@@ -1161,9 +1296,10 @@ function renderChannels(scene) {
   const curNlalert = sc.nlalert || null;
 
   // Log voor scrollback (volledige lijst, ongeacht stagger)
-  waPage = 0;
+  waPage = 0; // reset naar meest recente pagina
   if (!waLoggedIdxs.has(currentSceneIdx)) {
     waLoggedIdxs.add(currentSceneIdx);
+    // Sla alleen op als er daadwerkelijk inhoud is
     if (newWa.length > 0 || curNlalert) {
       waLog.push({
         sceneIdx: currentSceneIdx,
@@ -1178,6 +1314,7 @@ function renderChannels(scene) {
   // Initial wa-content: NL-Alert meteen tonen (of lege placeholder)
   let waInitHtml = '';
   if (curNlalert) {
+    // Splits het NL-Alert-bericht op regels: regel 0 = type, regel 1 = tijdstip, rest = inhoud
     const alertLines = curNlalert.split('\n');
     const alertTime = alertLines[1] || '';
     const alertBody = alertLines.slice(2).join('\n').trim();
@@ -1194,6 +1331,7 @@ function renderChannels(scene) {
   // Berichten direct tonen, gelijk met nieuws en radio
   if (newWa.length > 0) {
     const waContainer = document.getElementById('wa-content');
+    // Keer de volgorde om zodat het nieuwste bericht onderaan staat (chat-stijl)
     [...newWa].reverse().forEach(m => {
       const isOut = m.outgoing;
       const div = document.createElement('div');
@@ -1201,6 +1339,7 @@ function renderChannels(scene) {
       div.innerHTML = `${!isOut ? `<div class="wa-from">${m.from}</div>` : ''}
         <div class="wa-bubble">${m.msg}</div>
         <div class="wa-time">${m.time}</div>`;
+      // Verwijder de 'geen berichten'-placeholder als die er nog staat
       const placeholder = waContainer.querySelector('p');
       if (placeholder) placeholder.remove();
       waContainer.appendChild(div);
@@ -1208,6 +1347,7 @@ function renderChannels(scene) {
     markUnread('whatsapp');
     playMessagePing();
     if (activeTab === 'whatsapp') {
+      // Als de WhatsApp-tab al actief is, hoeft er geen ongelezen-indicator te zijn
       document.getElementById('tab-whatsapp')?.classList.remove('has-unread');
     }
   }
@@ -1217,6 +1357,7 @@ function renderChannels(scene) {
   // RADIO — show only this scene's new radio message
   const radioBtn = document.getElementById('radio-play-btn');
   if ((profile.hasRadio || state.hasCarRadio) && sc.radio) {
+    // Toon de frequentie afhankelijk van het type radio dat de speler heeft
     document.getElementById('radio-freq').textContent = state.hasCarRadio && !profile.hasRadio ? 'Autoradio FM/AM' : '693 kHz AM ontvangst';
     document.getElementById('radio-content').style.color = '#cbd5e1';
     document.getElementById('radio-content').innerHTML =
@@ -1224,21 +1365,29 @@ function renderChannels(scene) {
     currentRadioText = sc.radio;
     if (radioBtn) radioBtn.style.display = 'block';
   } else if (radioUnlocked) {
+    // Radio is ooit vrijgespeeld maar heeft in deze scène geen nieuwe uitzending
     document.getElementById('radio-content').innerHTML = '<p style="color:var(--c-muted-ui);font-size:.85rem">Geen nieuwe uitzending.</p>';
     currentRadioText = '';
     if (radioBtn) radioBtn.style.display = 'none';
   }
 }
 
+/* ─── KEUZES RENDEREN ─────────────────────────────────────────────────────────
+   Bouwt de keuzeknopen op voor de huidige scène. Filtert conditionele keuzes
+   en sorteert op categorie (actie → sociaal → voorraden → info/neutraal).
+   Voegt ook animatievertraging per knop toe voor een stagger-effect.
+*/
 function renderChoices(scene) {
   const wrap = document.getElementById('sc-choices');
   const _conseqEl = document.getElementById('sc-consequence');
   if (_conseqEl) _conseqEl.classList.remove('show');
   if (!scene.choices) {
+    // Geen keuzes: leeg de container (scène heeft alleen een 'Verder'-knop)
     if (wrap) wrap.innerHTML = '';
     return;
   }
   if (!wrap) return;
+  // Volgorde van keuze-categorieën: lagere waarde = eerder getoond
   const catOrder = {
     'cat-action': 0,
     'cat-risk': 0,
@@ -1254,12 +1403,14 @@ function renderChoices(scene) {
       c,
       i
     }))
+    // Filter weg keuzes waarvan de conditie niet vervuld is
     .filter(({
       c
     }) => !c.conditionalOn || c.conditionalOn())
+    // Sorteer op categorie zodat de meest urgente keuzes bovenaan staan
     .sort((a, b) => {
-      const ta = parseChoiceIcon(typeof a.c.text === 'function' ? a.c.text() : a.c.text).cat;
-      const tb = parseChoiceIcon(typeof b.c.text === 'function' ? b.c.text() : b.c.text).cat;
+      const ta = a.c.cat || parseChoiceIcon(typeof a.c.text === 'function' ? a.c.text() : a.c.text).cat;
+      const tb = b.c.cat || parseChoiceIcon(typeof b.c.text === 'function' ? b.c.text() : b.c.text).cat;
       return (catOrder[ta] ?? 3) - (catOrder[tb] ?? 3);
     });
   visibleChoices.forEach(({
@@ -1267,12 +1418,13 @@ function renderChoices(scene) {
     i
   }) => {
     const txt = typeof c.text === 'function' ? c.text() : c.text;
-    const {
-      icon,
-      cat,
-      label
-    } = parseChoiceIcon(txt);
+    const parsed = parseChoiceIcon(txt);
+    const icon = parsed.icon;
+    const cat = c.cat || parsed.cat;
+    const label = parsed.label;
+    // Stagger de animatie per knop: elke knop 55ms later zichtbaar
     const delay = btnIdx * 55;
+    // Gebruik het SVG-icoon als het beschikbaar is, anders lege string
     const iconSvg = (typeof ICON_SVG !== 'undefined' && ICON_SVG[icon]) ? ICON_SVG[icon] : '';
     html += `<button class="choice-btn ${cat}" id="cbtn-${i}" onclick="pickChoice(${i})" style="animation:contentFade 260ms var(--ease-out) ${delay}ms both"><span class="choice-icon" aria-hidden="true">${iconSvg}</span><span>${label}</span></button>`;
     btnIdx++;
@@ -1280,17 +1432,18 @@ function renderChoices(scene) {
   wrap.innerHTML = html;
 }
 
-// ─── CHOICE ICON MAP ──────────────────────────────────────────────────────────
-// Koppelt het emoji-icoon aan het begin van een keuzeTekst aan:
-//   • icon  — naam van het SVG-icoon (zie icons-data.js)
-//   • cat   — kleurcategorie van de keuzeknop:
-//       cat-action  (blauw)  — actie of maatregel die de speler neemt
-//       cat-supply  (oranje) — iets verzamelen, inslaan of bevoorraden
-//       cat-social  (groen)  — sociale keuze, buren/familie helpen of overleggen
-//       cat-info    (grijs)  — nieuws volgen, afwachten of niets doen
-//       cat-risk    (rood)   — risicovolle of gevaarlijke actie
-//       cat-neutral (grijs)  — neutraal / past niet in andere categorieën
-// Let op: multi-emoji sleutels moeten vóór enkelvoudige staan (longest-first).
+/* ─── CHOICE ICON MAP ──────────────────────────────────────────────────────────
+   Koppelt het emoji-icoon aan het begin van een keuzeTekst aan:
+     • icon  — naam van het SVG-icoon (zie icons-data.js)
+     • cat   — kleurcategorie van de keuzeknop:
+         cat-action  (blauw)  — actie of maatregel die de speler neemt
+         cat-supply  (oranje) — iets verzamelen, inslaan of bevoorraden
+         cat-social  (groen)  — sociale keuze, buren/familie helpen of overleggen
+         cat-info    (grijs)  — nieuws volgen, afwachten of niets doen
+         cat-risk    (rood)   — risicovolle of gevaarlijke actie
+         cat-neutral (grijs)  — neutraal / past niet in andere categorieën
+   Let op: multi-emoji sleutels moeten vóór enkelvoudige staan (longest-first).
+*/
 const CHOICE_ICON_MAP = {
   // Multi-emoji (longest first to avoid partial match)
   '💬👴🎒': {
@@ -1694,6 +1847,10 @@ const CHOICE_ICON_MAP = {
   },
 };
 
+// Zoekt het emoji-icoon aan het begin van een keuzeTekst op in CHOICE_ICON_MAP
+// en geeft het bijbehorende icoon, de categorie en de resterende labeltekst terug.
+// Multi-emoji sleutels worden eerst gecontroleerd (langste eerst) om gedeeltelijke
+// overeenkomsten te voorkomen.
 function parseChoiceIcon(text) {
   // Check multi-char emoji keys first (longest first)
   const keys = Object.keys(CHOICE_ICON_MAP).sort((a, b) => b.length - a.length);
@@ -1706,10 +1863,11 @@ function parseChoiceIcon(text) {
       return {
         icon,
         cat,
-        label: text.slice(key.length).trimStart()
+        label: text.slice(key.length).trimStart() // verwijder het emoji-prefix uit het label
       };
     }
   }
+  // Geen overeenkomst gevonden: gebruik het neutrale standaardicoon
   return {
     icon: 'circle',
     cat: 'cat-neutral',
@@ -1717,6 +1875,12 @@ function parseChoiceIcon(text) {
   };
 }
 
+/* ─── KEUZE VERWERKEN ─────────────────────────────────────────────────────────
+   Verwerkt de keuze van de speler: past de spelstatus aan, toont zwevende
+   delta-indicators bij de statistieken, schrijft de keuze naar de geschiedenis
+   en toont de consequentietekst via de typewriter. Daarna wordt automatisch
+   naar de volgende scène gegaan.
+*/
 function pickChoice(idx) {
   const btn = document.getElementById('cbtn-' + idx);
   if (btn.classList.contains('picked')) return; // prevent double-picking same choice
@@ -1742,16 +1906,21 @@ function pickChoice(idx) {
   const rawSc = typeof choice.stateChange === 'function' ? choice.stateChange() : choice.stateChange;
   const sc = rawSc || {};
   const STAT_KEYS = new Set(['water', 'food', 'comfort', 'health']);
+  // Sleutels waarvoor de waarde als delta (verschil) wordt toegepast
   const DELTA_KEYS = new Set(['water', 'food', 'comfort', 'health', 'cash', 'phoneBattery']);
   Object.keys(sc).forEach(k => {
     if (k === 'awarenessLevel') {
+      // awarenessLevel kan alleen omhoog gaan, nooit omlaag
       state[k] = Math.max(state[k], sc[k]);
     } else if (DELTA_KEYS.has(k)) {
+      // Begrens de statwaarde tot het geldige bereik [0, max]
       const max = k === 'cash' ? 9999 : k === 'phoneBattery' ? 100 : 5;
       state[k] = Math.max(0, Math.min(max, state[k] + sc[k]));
     } else if (Array.isArray(sc[k])) {
+      // Kopieer arrays om referentieproblemen te vermijden
       state[k] = sc[k].slice();
     } else {
+      // Directe toewijzing voor booleaanse vlaggen en overige waarden
       state[k] = sc[k];
     }
   });
@@ -1768,14 +1937,15 @@ function pickChoice(idx) {
     cash: 'ss-cash-amount'
   };
   // Batch reads before writes to avoid layout thrashing
+  // Bereken alle delta's en hun schermposities voordat er iets naar de DOM wordt geschreven
   const deltaItems = Object.keys(statsBefore).map(k => {
     const delta = state[k] - statsBefore[k];
-    if (delta === 0) return null;
+    if (delta === 0) return null; // geen wijziging: geen indicator nodig
     const anchor = document.getElementById(statAnchorMap[k]);
     if (!anchor) return null;
     return {
       delta,
-      rect: anchor.getBoundingClientRect()
+      rect: anchor.getBoundingClientRect() // lees positie eenmalig (batch read)
     };
   }).filter(Boolean);
   deltaItems.forEach(({
@@ -1784,11 +1954,14 @@ function pickChoice(idx) {
   }) => {
     const span = document.createElement('span');
     span.className = 'stat-delta';
+    // Toon '+' voor positieve delta, '−' voor negatieve (gebruik min-teken, geen koppelteken)
     span.textContent = (delta > 0 ? '+' : '−') + Math.abs(delta);
-    span.style.color = delta > 0 ? '#22c55e' : '#ef4444';
+    span.style.color = delta > 0 ? '#22c55e' : '#ef4444'; // groen voor winst, rood voor verlies
+    // Centreer de indicator boven het ankerelement
     span.style.left = (rect.left + rect.width / 2 - 12) + 'px';
     span.style.top = (rect.top - 4) + 'px';
     document.body.appendChild(span);
+    // Verwijder de indicator na de CSS-animatieduur (1,1 seconde)
     setTimeout(() => span.remove(), 1100);
   });
 
@@ -1812,6 +1985,7 @@ function pickChoice(idx) {
   narrativeEl.appendChild(twSpan);
 
   // Na het typen: leesverlof (40ms per karakter, min. 2s), dan auto-advance
+  // Geef de speler voldoende tijd om de consequentie te lezen voordat de volgende scène begint
   const readDelay = Math.max(1200, consequenceText.length * 20);
   Typewriter.run(consequenceText, twSpan, () => {
     Typewriter._advance = setTimeout(() => advanceScene(), readDelay);
@@ -1825,6 +1999,10 @@ function pickChoice(idx) {
   }
 }
 
+/* ─── SCÈNE VOORUITGAAN ───────────────────────────────────────────────────────
+   Gaat naar de volgende scène. Als de typewriter nog bezig is, wordt hij
+   eerst overgeslagen. De overgang bevat een korte fade-out van de scène-zones.
+*/
 function advanceScene() {
   if (Typewriter.isRunning()) {
     Typewriter.skip(); // toon tekst direct, wacht op volgende klik
@@ -1833,23 +2011,27 @@ function advanceScene() {
   Typewriter.cancel();
   const _zones = document.querySelector('.scenario-zones');
   if (_zones) {
+    // Fade-out voor de overgang naar de volgende scène
     _zones.style.opacity = '0';
     setTimeout(() => {
       currentSceneIdx++;
       renderScene();
-    }, 320);
+    }, 320); // wacht tot de fade-out afgerond is
   } else {
     currentSceneIdx++;
     renderScene();
   }
 }
 
+// Navigeert één scène terug en herstelt de spelstatus en keuzegeschiedenis
+// naar de toestand vóór die scène.
 function goBack() {
   if (currentSceneIdx === 0) return;
   currentSceneIdx--;
   // Restore state and history to before this scene was entered
   const snap = stateSnapshots[currentSceneIdx];
   if (snap) Object.keys(snap).forEach(k => {
+    // Kopieer arrays om gedeelde referenties te vermijden
     state[k] = Array.isArray(snap[k]) ? snap[k].slice() : snap[k];
   });
   const histLen = historySnapshots[currentSceneIdx];
@@ -1857,6 +2039,11 @@ function goBack() {
   renderScene();
 }
 
+/* ─── TAB WISSELEN ────────────────────────────────────────────────────────────
+   Activeert het opgegeven kanaaltabblad en het bijbehorende paneel.
+   Verwijdert de ongelezen-indicator van het geactiveerde tabblad.
+   Start of stopt de radiospeler afhankelijk van welk tabblad actief wordt.
+*/
 function switchTab(tab) {
   activeTab = tab;
   // Clear unread dot for this tab
@@ -1864,12 +2051,14 @@ function switchTab(tab) {
   const resolvedTabEl = document.getElementById('tab-' + tab) || (tab === 'radio' ? document.getElementById('radio-tab') : null);
   if (resolvedTabEl) resolvedTabEl.classList.remove('has-unread');
 
+  // Deactiveer alle tabs en panelen
   document.querySelectorAll('.ch-tab').forEach(t => {
     t.classList.remove('active');
     t.setAttribute('aria-selected', 'false');
   });
   document.querySelectorAll('.channel-panel').forEach(p => p.classList.remove('active'));
 
+  // Koppelt tabnamen aan paneel-ID's
   const panelMap = {
     buiten: 'panel-buiten',
     news: 'panel-news',
@@ -1883,10 +2072,12 @@ function switchTab(tab) {
   document.getElementById(panelMap[tab]).classList.add('active');
 
   if (tab === 'radio') {
+    // Start het afspelen van de radiostream als de radiotab wordt geopend
     const visibleScenes = getActiveScenes();
     const scene = visibleScenes[currentSceneIdx];
     if (scene && scene.channels && scene.channels.radio) RadioPlayer.playForScene(scene.id);
   } else {
+    // Stop de radiospeler zodra een ander tabblad wordt geopend
     RadioPlayer.stop();
   }
 }

@@ -96,10 +96,25 @@ Elke scenario heeft een eigen `sceneDecay_stroom` etc. object. In `startScenario
   choices: [{
     text: '🔦 Keuzetekst',
     consequence: 'Gevolg...',
+    cat: 'cat-social',          // optioneel: overschrijft de emoji-gebaseerde categorie
     stateChange: { food: -1, awarenessLevel: 1 }
   }]
 }
 ```
+
+### Keuze-categorieën (kleuren)
+
+De kleur van een keuzeknop wordt bepaald door het emoji-prefix in `text`, via `CHOICE_ICON_MAP` in `engine.js`. Volgorde in de UI is: action → social → supply → info/risk.
+
+| Klasse | Kleur | Gebruik |
+|---|---|---|
+| `cat-action` | blauw | Actie of maatregel die de speler neemt |
+| `cat-social` | groen | Sociale keuze: buren/familie helpen of overleggen |
+| `cat-supply` | oranje | Iets verzamelen, inslaan of bevoorraden |
+| `cat-info` | grijs | Nieuws volgen, afwachten of niets doen |
+| `cat-risk` | rood | Risicovolle of gevaarlijke actie |
+
+**Override:** voeg `cat: 'cat-social'` (of andere klasse) toe aan een keuze-object om de emoji-mapping te overschrijven. Gebruik dit wanneer de inhoud van een keuze een andere categorie heeft dan het emoji-prefix suggereert (bijv. brood delen als sociale daad).
 
 ### Icons
 Icons worden geladen uit `icons-data.js` als inline SVG. Wil je een nieuw icon toevoegen? Voeg het SVG-bestand toe aan `/icons/` én voeg de data-entry toe aan `icons-data.js`. Gebruik geen Lucide CDN.

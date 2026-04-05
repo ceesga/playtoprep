@@ -122,6 +122,7 @@ const sceneDecay_stroom = {
   st_9: {
     phoneBattery: -5
   }, // +0.5h
+  st_autolaad: {}, // +0.75h — auto opladen, geen verval
   st_watertruck: {
     phoneBattery: -10
   }, // +2h
@@ -263,6 +264,16 @@ const sceneDecay_thuis_komen = {
   tk_7: {
     phoneBattery: -15
   } // +3h avond
+};
+const sceneDecay_drinkwater = {
+  // phoneBattery: start 13:10, scenario duurt ~7 uur
+  wd_1: { phoneBattery: -5  }, // +0.5h
+  wd_2: { phoneBattery: -5  }, // +0.5h
+  wd_3: { phoneBattery: -10 }, // +1h
+  wd_4: { phoneBattery: -10 }, // +1h
+  wd_5: { phoneBattery: -5  }, // +0.75h (conditioneel)
+  wd_6: { phoneBattery: -5  }, // +0.5h
+  wd_7: { phoneBattery: -10 }  // +3h avond
 };
 
 // ─── PERSISTENT CHANNEL CONTENT ───────────────────────────────────────────────

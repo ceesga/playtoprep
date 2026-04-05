@@ -27,23 +27,27 @@
         <div class="ptp-logo-wrap">
           <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="ptp-logo">
         </div>
-        <div class="phase-label">Noodscenario Simulator</div>
-        <h1>Wat doe jij als het <span>echt misgaat?</span></h1>
-        <p class="sub">Vier herkenbare noodscenario's in Nederland. Jij speelt jezelf, met jouw eigen huis, huishouden en voorbereiding als startpunt.</p>
-    <button type="button" class="btn full" style="margin-top:8px" onclick="show('s-uitleg')">Nieuw spel →</button>
-    <div id="continue-wrap" style="display:none;margin-top:12px">
-      <button type="button" class="btn btn-secondary full" onclick="loadGame()">Doorgaan →</button>
-      <p id="continue-info" class="save-info"></p>
-      <button type="button" class="save-delete-btn" onclick="clearSave();checkSave()">Verwijder opgeslagen spel</button>
-    </div>
-    <div class="partner-wrap">
-      <span class="partner-label">in samenwerking met</span>
-      <div class="partner-logo-wrap">
-        <img src="afbeelding/algemeen/logo-opsterland.png" alt="Gemeente Opsterland" class="partner-logo">
-        <span class="partner-demo">DEMO</span>
+        <h1 class="start-title">Goed Voorbereid</h1>
+        <p class="start-subtitle">oefenen met keuzes in een crisissituatie</p>
+        <nav class="start-menu" aria-label="Hoofdmenu">
+          <div class="start-menu-topbar">Menu</div>
+          <button type="button" class="start-menu-btn" onclick="show('s-uitleg')">Nieuw spel</button>
+          <button type="button" class="start-menu-btn" id="start-load-btn" onclick="loadGame()">
+            <span>Spel laden</span>
+            <span class="start-menu-sub" id="start-load-info"></span>
+          </button>
+          <button type="button" class="start-menu-btn" id="start-audio-btn" onclick="toggleAudio()">Geluid aan</button>
+          <button type="button" class="start-menu-btn" onclick="openHelp('setup')">Uitleg</button>
+          <button type="button" class="start-menu-btn" onclick="openOver()">Over Goed Voorbereid</button>
+        </nav>
+        <div class="start-logos">
+          <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="start-logo-ptp">
+          <div class="partner-logo-wrap">
+            <img src="afbeelding/algemeen/logo-opsterland.png" alt="Gemeente Opsterland" class="partner-logo">
+            <span class="partner-demo">DEMO</span>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
 <!-- UITLEG SCREEN -->
 <div id="s-uitleg" class="screen">
@@ -108,7 +112,7 @@
   </div>
 <div class="progress-wrap"><div class="progress-fill" style="width:85%"></div></div>
 <div class="phase-label" style="margin-top:8px">Stap 2: Kies je scenario</div>
-<p class="sub">Vier scenario's in Nederland. Kies wat bij jou of jouw omgeving past.</p>
+<p class="sub">Vijf scenario's in Nederland. Kies wat bij jou of jouw omgeving past.</p>
 <div style="display:flex;flex-direction:column;gap:12px" id="scenario-cards-wrap">
   <button type="button" class="scenario-pick-card" onclick="startScenario('stroom')">
   <div class="spk-top"><span class="spk-title">Een gewone winterdag</span><span class="spk-badge spk-long">Lang (~35 min)</span></div>
@@ -129,6 +133,11 @@
   <div class="spk-top"><span class="spk-title">Onderweg naar huis</span><span class="spk-badge spk-short">Kort (~15 min)</span></div>
   <div class="spk-desc">Je bent op het werk of op school. Een gewone doordeweekse dag. Je hebt je spullen bij je en over een paar uur ga je naar huis.</div>
   <div class="spk-rel-label">Past bij jouw omgeving</div>
+  </button>
+  <button type="button" class="scenario-pick-card" onclick="startScenario('drinkwater')">
+  <div class="spk-top"><span class="spk-title">Bruin water uit de kraan</span><span class="spk-badge spk-short">Kort (~15 min)</span></div>
+  <div class="spk-desc">Je bent thuis op een gewone dinsdagmiddag. Als je de kraan opendraait, zie je dat het water troebel en lichtbruin is. Iets is er niet goed met het drinkwater.</div>
+  <div class="spk-rel-label">Past bij elke omgeving</div>
   </button>
 </div>
 </div>
@@ -436,6 +445,26 @@
 </div>
 
 
+<!-- OVER GOED VOORBEREID OVERLAY -->
+<div id="over-overlay" role="dialog" aria-modal="true" aria-labelledby="over-title">
+  <div class="over-box">
+    <div class="over-header">
+      <span id="over-title">Over Goed Voorbereid</span>
+      <button type="button" class="help-close-x" onclick="closeOver()" aria-label="Sluiten">✕</button>
+    </div>
+    <div class="over-body">
+      <p>Goed Voorbereid is een interactief spel van Play to Prep, in samenwerking met onder andere [volgt later], over voorbereiding op een crisis. In het spel maken spelers in een veilige omgeving kennis met noodsituaties. Zo leren zij beter wat ze kunnen doen als er echt iets gebeurt, en hoe ze zich daar vooraf op kunnen voorbereiden.</p>
+      <div class="over-logos">
+        <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="over-logo-ptp">
+        <div class="partner-logo-wrap">
+          <img src="afbeelding/algemeen/logo-opsterland.png" alt="Gemeente Opsterland" class="partner-logo">
+          <span class="partner-demo">DEMO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
 <script src="js/icons-data.js"></script>
 <script src="js/data-state.js"></script>
@@ -443,6 +472,7 @@
 <script src="js/data-scenarios-bosbrand.js"></script>
 <script src="js/data-scenarios-overstroming.js"></script>
 <script src="js/data-scenarios-thuiskomen.js"></script>
+<script src="js/data-scenarios-drinkwater.js"></script>
 <script src="js/intake.js"></script>
 <script src="js/prep.js"></script>
 <script src="js/audio.js"></script>
