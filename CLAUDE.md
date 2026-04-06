@@ -124,6 +124,100 @@ LocalStorage, sleutel: `ptp_savegame`. Functies: `saveGame()`, `loadGame()`, `cl
 
 ---
 
+## Werkinstructies voor Claude
+
+- Maak nooit een nieuwe file aan als het ook in een bestaande file kan.
+- Gebruik altijd B1-Nederlands in alle teksten en keuzes (zie STIJLGIDS.md).
+- Verander nooit de script-laadvolgorde zonder expliciete toestemming.
+- Voeg geen dark-mode CSS toe (zie gotcha #1).
+
+---
+
+## State-flags (per scenario gezet via `stateChange`)
+
+Naast de stat-keys (`water`, `food`, `comfort`, `health`, `cash`, `phoneBattery`) gebruikt `state` ook boolean/integer flags die badges en rapport-uitkomsten bepalen:
+
+| Flag | Type | Gebruik |
+|---|---|---|
+| `awarenessLevel` | integer 0–3 | Bewustzijnsniveau speler; hoger = beter gealarmeerd |
+| `helpedNeighbor` | boolean | Buren actief geholpen (sociaal badge) |
+| `knowsNeighbors` | boolean | Buren aangesproken of gewaarschuwd |
+| `hasCash` | boolean | Contant geld in huis of bij je |
+| `hasWater` | boolean | Noodwater opgeslagen |
+| `hasFlashlight` | boolean | Zaklamp of kaarsen in huis |
+| `houseLocked` | boolean | Deuren en ramen afgesloten |
+| `hasCampingStove` | boolean | Campingkooktoestel gebruikt |
+| `handledSewage` | boolean | Afvoeren afgesloten bij riolering |
+| `wentToFoodDist` | boolean | Voedseluitdeling bezocht |
+| `hasExtraFood` | boolean | Voedsel vooraf ingeslagen |
+| `ranOutOfWater` | boolean | Speler is zonder water geraakt |
+| `ranOutOfFood` | boolean | Speler is zonder voedsel geraakt |
+| `packedBag` | boolean | Noodtas ingepakt (bosbrand/overstroming) |
+| `evacuated` | boolean | Op tijd geëvacueerd (bosbrand) |
+| `evacuatedFlood` | boolean | Op tijd geëvacueerd (overstroming) |
+| `wentUpstairs` | boolean | Naar hogere verdieping gegaan (overstroming) |
+| `cutElectricity` | boolean | Meterkast afgesloten (overstroming) |
+| `savedItems` | boolean | Essentials meegenomen (overstroming) |
+| `calledRescue` | boolean | Hulpdiensten gebeld (overstroming) |
+| `returnedHome` | boolean | Veilig teruggekeerd (bosbrand/overstroming) |
+| `tookPets` | boolean | Huisdier meegenomen (bosbrand) |
+| `kidsEvacuated` | boolean | Kinderen veilig gesteld (bosbrand) |
+| `reachedHome` | boolean | Thuis aangekomen (thuis_komen) |
+| `foundAlternative` | boolean | Alternatief vervoer gevonden (thuis_komen) |
+| `hadEDCBag` | boolean | Noodtas bij je gehad (thuis_komen) |
+| `kidsPickedUp` | boolean | Kinderen opgehaald of geregeld (thuis_komen) |
+| `helpedStranger` | boolean | Iemand onderweg geholpen (thuis_komen) |
+
+---
+
+## Rapport-logica
+
+`showReport()` in `report.js` bepaalt de uitkomst op basis van drie onderdelen:
+
+1. **Uitkomstscore** — gemiddelde van: `ranOutOfWater` (0 of 1), `ranOutOfFood` (0 of 1), en `comfort / MAX_STAT_COMFORT`.
+   - ≥ 0.7 → `outcome-good` (groen)
+   - ≥ 0.4 → `outcome-mid` (geel)
+   - < 0.4 → `outcome-bad` (rood)
+
+2. **Statusbadges** — per scenario een eigen set flags uit `state` (zie tabel hierboven). Badge is groen als `state[key]` truthy is, rood als falsy. Voeg je een nieuw scenario toe? Definieer de bijbehorende `statusItems` in het `if/else`-blok in `showReport()`.
+
+3. **Tijdlijn** — alle entries in `choiceHistory` op volgorde. Elke keuze die via `pickChoice()` wordt gemaakt wordt automatisch toegevoegd.
+
+---
+
+## Nieuw scenario toevoegen — checklist
+
+1. Maak `data-scenarios-{naam}.js` aan met scenes-array en `sceneDecay_{naam}`-object.
+2. Voeg `sceneDecay_{naam}` toe aan `data-state.js`.
+3. Koppel in `engine.js` → `startScenario()`: voeg `else if`-tak toe die `scenes` en `sceneDecay` toewijst.
+4. Koppel in `engine.js` → `loadGame()`: zelfde `else if`-tak toevoegen.
+5. Voeg `<script src="js/data-scenarios-{naam}.js">` toe aan `index.html` vóór `engine.js`.
+6. Voeg scenario-optie toe aan het scenariokeuze-scherm in `index.html` (`s-scenariokeuze`).
+7. Voeg intro-tekst toe in `showReport()` in `report.js`.
+8. Definieer `statusItems` voor het nieuwe scenario in `showReport()`.
+9. Scene-ID prefix kiezen en vastleggen in de naamgeving-sectie hierboven.
+
+---
+
+## Opslaan/laden — `ptp_savegame` structuur
+
+`saveGame()` slaat op in localStorage als JSON met deze velden:
+```js
+{
+  version: 1,
+  savedAt: <timestamp>,
+  currentScenario, currentSceneIdx,
+  state, profile, choiceHistory,
+  newsLog, waLog,
+  radioUnlocked, activeTab,
+  adultsCount, childrenCount, slechtTerBeenCount, petsCount,
+  selectedHouseType, selectedVehicles, selectedEnvironment,
+  avatarSelections
+}
+```
+
+---
+
 ## Common commands
 
 **Geen build-stap.** Bestanden direct bewerken en browser herladen.

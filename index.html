@@ -29,16 +29,28 @@
         </div>
         <h1 class="start-title">Goed Voorbereid</h1>
         <p class="start-subtitle">oefenen met keuzes in een crisissituatie</p>
-        <nav class="start-menu" aria-label="Hoofdmenu">
-          <div class="start-menu-topbar">Menu</div>
-          <button type="button" class="start-menu-btn" onclick="show('s-uitleg')">Nieuw spel</button>
-          <button type="button" class="start-menu-btn" id="start-load-btn" onclick="loadGame()">
-            <span>Spel laden</span>
-            <span class="start-menu-sub" id="start-load-info"></span>
-          </button>
-          <button type="button" class="start-menu-btn" id="start-audio-btn" onclick="toggleAudio()">Geluid aan</button>
-          <button type="button" class="start-menu-btn" onclick="openHelp('setup')">Uitleg</button>
-          <button type="button" class="start-menu-btn" onclick="openOver()">Over Goed Voorbereid</button>
+        <nav class="start-menu" aria-label="Hoofdmenu" id="start-menu">
+          <div class="start-menu-topbar" id="start-menu-title">Menu</div>
+          <!-- Pagina 0: Hoofdmenu -->
+          <div id="start-p0">
+            <button type="button" class="start-menu-btn" onclick="show('s-uitleg')">Nieuw spel</button>
+            <button type="button" class="start-menu-btn" id="start-load-btn" onclick="startMenuPage(1)">Spel laden</button>
+            <button type="button" class="start-menu-btn" id="start-audio-btn" onclick="toggleAudio()">Geluid aan</button>
+            <button type="button" class="start-menu-btn" onclick="openHelp('setup')">Uitleg</button>
+            <button type="button" class="start-menu-btn" onclick="openOver()">Over Goed Voorbereid</button>
+          </div>
+          <!-- Pagina 1: Laden -->
+          <div id="start-p1" style="display:none">
+            <button type="button" class="start-menu-btn" onclick="startMenuPage(0)">← Terug</button>
+            <button type="button" class="start-menu-btn" id="start-savegame-btn" onclick="loadGame()">
+              <span>Vorige opslag laden</span>
+              <span class="start-menu-sub" id="start-load-info"></span>
+            </button>
+            <button type="button" class="start-menu-btn" id="start-profile-btn" onclick="loadProfileAndGo()">
+              <span>Huishouden laden</span>
+              <span class="start-menu-sub" id="start-profile-info"></span>
+            </button>
+          </div>
         </nav>
         <div class="start-logos">
           <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="start-logo-ptp">
@@ -86,7 +98,7 @@
 <div id="intake-body"></div>
 </div>
 <div class="btn-row">
-  <button type="button" class="btn-ghost" id="intake-prev" onclick="intakePrev()" style="display:none">← Vorige</button>
+  <button type="button" class="btn-ghost" id="intake-prev" onclick="intakePrev()" style="display:none">← Terug</button>
   <button type="button" class="btn" id="intake-next" onclick="intakeNext()" disabled>Volgende →</button>
 </div>
 </div>
@@ -101,7 +113,10 @@
 <div class="phase-label" style="margin-top:8px">Stap 1: Jouw situatie</div>
 <p class="sub">Beantwoord de vragen eerlijk. Dan past het rapport beter bij jou.</p>
 <div id="prep-body"></div>
-<div class="btn-row"><button type="button" class="btn" onclick="gotoScenariokeuze()">Kies je scenario →</button></div>
+<div class="btn-row">
+  <button type="button" class="btn-ghost" onclick="show('s-intake')">← Terug</button>
+  <button type="button" class="btn" onclick="gotoScenariokeuze()">Kies je scenario →</button>
+</div>
 </div>
 
 <!-- SCENARIOKEUZE SCREEN -->
@@ -151,7 +166,7 @@
   <div class="phase-label">Thuis komen: voorbereiding</div>
   <div id="commute-body"></div>
   <div class="btn-row">
-    <button type="button" class="btn-ghost" id="commute-prev" onclick="commutePrev()">← Vorige</button>
+    <button type="button" class="btn-ghost" id="commute-prev" onclick="commutePrev()">← Terug</button>
     <button type="button" class="btn" id="commute-next" onclick="commuteNext()" disabled>Volgende →</button>
   </div>
 </div>
@@ -215,13 +230,8 @@
 
 <div id="panel-radio" class="channel-panel" role="tabpanel" aria-labelledby="radio-tab">
   <div class="radio-panel-bg" id="radio-bg">
-    <div class="radio-display" id="radio-freq">88.6 MHz, zoeken</div>
-    <div id="radio-content" class="radio-text" style="margin-top:10px;color:var(--c-text-faint);font-size:.85rem">Draai aan de knop om een zender te zoeken.</div>
-    <div class="radio-knobs">
-      <div class="radio-knob">AM/FM</div>
-      <div class="radio-knob">VOL</div>
-      <div class="radio-knob">SCAN</div>
-    </div>
+    <div class="radio-display" id="radio-freq">98.9 FM • Radio 1</div>
+    <div id="radio-content" class="radio-text" style="margin-top:10px;color:var(--c-text-faint);font-size:.85rem">Nog geen uitzending ontvangen.</div>
 <button type="button" class="radio-play-btn" id="radio-play-btn" onclick="speakRadio()">▶ Speel radiobericht</button>
 </div>
 </div>
@@ -325,44 +335,35 @@
 
 <!-- STATUS SIDEBAR -->
 <div class="status-sidebar" id="status-sidebar">
-  <div class="ss-stat-row">
-    <div class="ss-stat" id="ss-food">
-      <span class="ss-stat-label">Voedselvoorraad</span>
-      <div class="ss-icon-row" id="stat-food"><span class="ss-icon-unit">🥫</span><span class="ss-icon-unit">🥫</span><span class="ss-icon-unit">🥫</span><span class="ss-icon-unit">🥫</span><span class="ss-icon-unit">🥫</span></div>
-    </div>
-<div class="ss-stat-sep"></div>
-<div class="ss-stat" id="ss-water">
-  <span class="ss-stat-label">Watervoorraad</span>
-  <div class="ss-icon-row" id="stat-water"><span class="ss-icon-unit">💧</span><span class="ss-icon-unit">💧</span><span class="ss-icon-unit">💧</span><span class="ss-icon-unit">💧</span><span class="ss-icon-unit">💧</span></div>
-</div>
-</div>
-<div class="ss-divider"></div>
-<div class="ss-stat-row">
+  <div class="ss-stat" id="ss-food">
+    <div class="ss-icon-row" id="stat-food"><span class="ss-icon-unit">🥫</span><span class="ss-icon-unit">🥫</span><span class="ss-icon-unit">🥫</span><span class="ss-icon-unit">🥫</span><span class="ss-icon-unit">🥫</span></div>
+  </div>
+  <div class="ss-divider"></div>
+  <div class="ss-stat" id="ss-water">
+    <div class="ss-icon-row" id="stat-water"><span class="ss-icon-unit">💧</span><span class="ss-icon-unit">💧</span><span class="ss-icon-unit">💧</span><span class="ss-icon-unit">💧</span><span class="ss-icon-unit">💧</span></div>
+  </div>
+  <div class="ss-divider"></div>
   <div class="ss-stat" id="ss-comfort">
-    <span class="ss-stat-label">Comfort</span>
     <div class="ss-icon-row" id="stat-comfort"><span class="ss-icon-unit">🧸</span><span class="ss-icon-unit">🧸</span><span class="ss-icon-unit">🧸</span><span class="ss-icon-unit">🧸</span><span class="ss-icon-unit">🧸</span></div>
   </div>
-</div>
-<div class="ss-divider"></div>
-<div class="ss-left-item">
-  <span class="ss-stat-label">Telefoon</span>
-  <div class="batt-widget">
-    <div class="batt-body" id="batt-phone-fill">
-      <div class="batt-bar"></div>
-      <div class="batt-bar"></div>
-      <div class="batt-bar"></div>
-      <div class="batt-bar"></div>
-      <div class="batt-bar"></div>
+  <div class="ss-divider"></div>
+  <div class="ss-left-item">
+    <div class="batt-widget">
+      <div class="batt-body" id="batt-phone-fill">
+        <div class="batt-bar"></div>
+        <div class="batt-bar"></div>
+        <div class="batt-bar"></div>
+        <div class="batt-bar"></div>
+        <div class="batt-bar"></div>
+      </div>
+      <div class="batt-nub"></div>
     </div>
-    <div class="batt-nub"></div>
+    <div class="batt-pct" id="batt-phone-pct">100%</div>
   </div>
-  <div class="batt-pct" id="batt-phone-pct">100%</div>
-</div>
-<div class="ss-divider"></div>
-<div class="ss-left-item">
-  <span class="ss-stat-label">Cash</span>
-  <span class="ss-cash-amount" id="ss-cash-amount">€20</span>
-</div>
+  <div class="ss-divider"></div>
+  <div class="ss-left-item">
+    <span class="ss-cash-amount" id="ss-cash-amount">💵 €20</span>
+  </div>
 </div>
 
 <!-- LEFT STATUS SIDEBAR -->

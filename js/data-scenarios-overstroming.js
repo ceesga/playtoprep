@@ -14,17 +14,17 @@ const scenes_overstroming = [{
   channels: {
     news: [{
       time: '19:30',
-      headline: 'KNMI: code oranje voor rivierengebied, extreme wateraanvoer verwacht',
-      body: 'Door aanhoudende regen in het Rijngebied en smeltwater uit de Alpen verwacht KNMI morgen extreem hoge waterstanden. Rijkswaterstaat waarschuwt bewoners van laaggelegen poldergebieden alert te zijn.'
+      headline: 'KNMI: code oranje, hoge waterstand verwacht in delen van de regio',
+      body: 'Door aanhoudende regen en extra aanvoer van water verwacht het KNMI morgen zeer hoge waterstanden. Het waterschap waarschuwt bewoners in kwetsbare gebieden alert te zijn.'
     }],
     whatsapp: [{
       from: 'Buurvrouw Ans',
-      msg: 'Heb jij het nieuwsbericht gezien? Zal toch niet zo erg worden zeker?',
+      msg: 'Heb jij het nieuws gezien? Het zal toch niet zo erg worden?',
       time: '20:05',
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het KNMI heeft code oranje afgegeven voor het rivierengebied. De waterstanden stijgen snel door zware regenval bovenstrooms. Rijkswaterstaat vraagt bewoners in kwetsbare gebieden voorbereidingen te treffen.'
+    radio: 'Radio 1: Het KNMI heeft code oranje afgegeven. De waterstand stijgt snel. Het waterschap vraagt bewoners in kwetsbare gebieden zich voor te bereiden.'
   },
   narrative: 'Het is maandagavond. Je woont op loopafstand van de rivier. Het uitzicht is er mooi en op zonnige dagen kan je er echt van genieten. Buiten regent het gestaag. De lucht voelt zwaar en vochtig, drukkend. In de verte klinkt de regen harder op de daken dan normaal. De rivier stond deze week al hoog.',
   choices: [{
@@ -36,7 +36,7 @@ const scenes_overstroming = [{
     }
   }, {
     text: '📰 Hoogwaterbericht extra in de gaten houden',
-    consequence: 'Je zet meldingen aan voor het rivierengebied en leest het KNMI-bericht goed door. Als het morgen escaleert, ben je alert.',
+    consequence: 'Je zet meldingen aan voor jouw omgeving en leest het KNMI-bericht goed door. Als het morgen erger wordt, ben je alert.',
     stateChange: {
       awarenessLevel: 1
     }
@@ -54,12 +54,12 @@ const scenes_overstroming = [{
   channels: {
     news: [{
       time: '06:30',
-      headline: 'Hoogwaterwaarschuwing voor rivierengebied, verwacht peil stijgt',
-      body: 'Het KNMI waarschuwt voor hoge waterstanden in het rivierengebied. Door zware regenval en smeltwater uit Duitsland verwacht Rijkswaterstaat dat het peil de komende uren snel zal stijgen.'
+      headline: 'Hoogwaterwaarschuwing: waterpeil stijgt snel',
+      body: 'Het KNMI waarschuwt voor hoge waterstanden in delen van de regio. Door aanhoudende regen en extra aanvoer van water verwacht het waterschap dat het peil de komende uren snel zal stijgen.'
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Hoogwaterwaarschuwing voor het rivierengebied. Het verwachte waterpeil stijgt en nadert kritische niveaus. Rijkswaterstaat heeft stuwen en gemalen op maximale capaciteit. Bewoners in laaggelegen gebieden worden geadviseerd alert te zijn.'
+    radio: 'Radio 1: Hoogwaterwaarschuwing. Het water stijgt en nadert een kritiek niveau. Bewoners in laaggelegen gebieden moeten alert zijn en zich voorbereiden op vertrek.'
   },
   get narrative() {
     return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. Het klinkt zwaarder dan normaal, aanhoudender.' + (state.awarenessLevel > 0 ? ' Die code oranje van gisteren zat nog vers in je hoofd.' : '');
@@ -87,7 +87,7 @@ const scenes_overstroming = [{
     news: [],
     whatsapp: [{
       from: 'School De Klimop',
-      msg: 'Goedemorgen, we volgen het hoog waterpeil. School is vandaag open. Wel vragen we u om uw kind snel op te halen bij een eventueel evacuatiebevel. We houden u op de hoogte.',
+      msg: 'Goedemorgen, we volgen het hoge waterpeil. School is vandaag nog open, in overleg met de gemeente. Wel vragen we u om uw kind direct op te halen als de situatie verslechtert. We houden u op de hoogte.',
       time: '07:25',
       outgoing: false
     }],
@@ -106,7 +106,7 @@ const scenes_overstroming = [{
     }
   }, {
     text: '🏠 Thuis houden uit voorzorg',
-    consequence: () => profile.childrenCount === 1 ? 'Je houdt je kind thuis. Je kind is bij je als het escaleert. School begrijpt het.' : 'Je houdt de kinderen thuis. Ze zijn bij je als het escaleert. School begrijpt het.',
+    consequence: () => profile.childrenCount === 1 ? 'Je houdt je kind thuis. Zo is je kind bij je als de situatie erger wordt. School begrijpt het.' : 'Je houdt de kinderen thuis. Zo zijn ze bij je als de situatie erger wordt. School begrijpt het.',
     stateChange: {
       kidsWithYou: true,
       kidsKeptHome: true
@@ -166,16 +166,16 @@ const scenes_overstroming = [{
     news: [{
       time: '09:15',
       headline: 'Water stijgt snel, meerdere straten ondergelopen',
-      body: 'In het rivierengebied staan meerdere straten blank. Het waterpeil stijgt sneller dan verwacht. Rijkswaterstaat meldt dat pompen de aanvoer niet meer kunnen bijhouden.'
+      body: 'In meerdere delen van de regio staan straten blank. Het waterpeil stijgt sneller dan verwacht. Het waterschap meldt dat pompen de aanvoer niet meer kunnen bijhouden.'
     }],
     whatsapp: [{
       from: 'Buurvrouw Ans',
-      msg: 'Heb je het gezien? De Molendijk staat al blank. Onze straat staat morgen ook zo denk ik',
+      msg: 'Heb je het gezien? De Molendijk staat al blank. Ik ben bang dat onze straat straks ook aan de beurt is.',
       time: '09:22',
       outgoing: false
     }],
-    nlalert: 'NL-Alert\n11 november 2027 – 09:20\n\nHoogwater in uw omgeving. Verwachte waterstand neemt snel toe. Wees alert. Bereid u voor op mogelijk evacuatiebevel. Houd deuren en ramen gesloten.',
-    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het waterpeil stijgt sneller dan verwacht. Op meerdere plaatsen langs de rivier begint water over de kaden te lopen. Bewoners in laaggelegen gebieden: zorg dat u kunt vertrekken op korte termijn.'
+    nlalert: 'NL-Alert\n11 november 2027 – 09:20\n\nHoogwater in uw omgeving. De waterstand stijgt snel. Let goed op. Bereid u voor op een mogelijk evacuatiebevel. Houd deuren en ramen gesloten.',
+    radio: 'Radio 1: Het water stijgt sneller dan verwacht. Op meerdere plekken loopt het water over de kade. Woont u laag, zorg dan dat u snel weg kunt.'
   },
   narrative: 'Je kijkt naar buiten. De straat staat al 5 centimeter blank. Het water stijgt zichtbaar. Een buurman loopt haastig met laarzen door de straat. Er is haast geboden.',
   choices: [{
@@ -293,8 +293,8 @@ const scenes_overstroming = [{
   channels: {
     news: [{
       time: '10:20',
-      headline: 'Evacuatiebevel laaggelegen wijken rivierengebied',
-      body: 'De burgemeester heeft een evacuatiebevel uitgevaardigd voor laaggelegen wijken in het rivierengebied. Bewoners moeten direct vertrekken of naar de bovenste verdieping gaan als vertrekken niet meer mogelijk is.'
+      headline: 'Evacuatiebevel voor laaggelegen wijken',
+      body: 'De burgemeester heeft een evacuatiebevel uitgevaardigd voor laaggelegen wijken. Bewoners moeten direct vertrekken of naar de bovenste verdieping gaan als vertrekken niet meer mogelijk is.'
     }],
     get whatsapp() {
       return (state.contactedAns && !profile.hasChildren) ? [{
@@ -304,8 +304,8 @@ const scenes_overstroming = [{
         outgoing: false
       }] : [];
     },
-    nlalert: 'NL-Alert\n11 november 2027 – 10:22\n\nEVACUATIEBEVEL laaggelegen wijken rivierengebied. VERLAAT DIRECT UW WONING of ga naar een hogere verdieping. Gebruik aangewezen evacuatieroutes.',
-    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Evacuatiebevel voor laaggelegen wijken. Als vertrekken niet meer mogelijk is: ga naar de bovenste verdieping. Sluit de meterkast af. Bel 112 alleen in levensbedreigende situaties.'
+    nlalert: 'NL-Alert\n11 november 2027 – 10:22\n\nEVACUATIEBEVEL voor laaggelegen wijken. VERLAAT DIRECT UW WONING of ga naar een hogere verdieping. Gebruik aangewezen evacuatieroutes.',
+    radio: 'Radio 1: Evacuatiebevel voor laaggelegen wijken. Als vertrekken niet meer mogelijk is: ga naar de bovenste verdieping. Sluit de meterkast af. Bel 112 alleen in levensbedreigende situaties.'
   },
   narrative: 'De straat staat nu kniehoog blank. Je auto is omringd door water, dus weggrijden is riskant. Het water stijgt nog steeds. Wat doe je?',
   choices: [{
@@ -522,7 +522,7 @@ const scenes_overstroming = [{
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het water in het rivierengebied stijgt tot historische niveaus. Reddingsoperaties zijn gaande. Bel 112 als u hulp nodig heeft. Sluit de meterkast AF. Er zijn al meldingen van kortsluitingen.'
+    radio: 'Radio 1: Het water stijgt op meerdere plekken tot een uitzonderlijk hoog niveau. Reddingsoperaties zijn gaande. Bel 112 als u hulp nodig heeft. Sluit de meterkast af. Er zijn al meldingen van kortsluiting.'
   },
   narrative: 'Beneden hoor je het water kabbelen. De onderkant van de trapleuning staat al onder water. Je bent boven en voorlopig veilig, maar het stijgt nog steeds.',
   choices: [{
@@ -683,7 +683,7 @@ const scenes_overstroming = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Geëvacueerden worden opgevangen in sportcomplexen en buurthuizen in de regio. Er is warm eten, water en slaapgelegenheid beschikbaar. Meld u aan bij de registratiebalie bij binnenkomst.'
+    radio: 'Radio 1: Geëvacueerden worden opgevangen in sportcomplexen en buurthuizen in de regio. Er is warm eten, water en slaapgelegenheid beschikbaar. Meld u aan bij de registratiebalie bij binnenkomst.'
   },
   get narrative() {
     const aankomst = state.wentUpstairs ?
@@ -739,7 +739,7 @@ const scenes_overstroming = [{
     }
   },
   choices: [{
-    text: () => profile.childrenCount === 1 ? '🫂 Het vastklampen laten gebeuren en samen blijven' : '🫂 De jongste gewoon dicht bij je houden',
+    text: () => profile.childrenCount === 1 ? '🫂 Je kind dicht bij je houden en samen blijven' : '🫂 De jongste dicht bij je houden en samen blijven',
     consequence: () => profile.childrenCount === 1 ? 'Je laat het toe. Je kind blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.' : 'Je laat het toe. De jongste blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.',
     stateChange: {
       comfort: 1
@@ -853,7 +853,7 @@ const scenes_overstroming = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het water in het rivierengebied stabiliseert. Daling verwacht in de vroege ochtend. Mensen die boven zijn gebleven: blijf kalm, bel 112 alleen bij directe nood. Reddingsdiensten werken de hele nacht door.'
+    radio: 'Radio 1: Het water stabiliseert in delen van de regio. In de vroege ochtend wordt een daling verwacht. Mensen die boven zijn gebleven: blijf kalm, bel 112 alleen bij directe nood. Reddingsdiensten werken de hele nacht door.'
   },
   narrative: 'Het is donker. Buiten is het veel stiller geworden. Het water stroomt niet meer langs het huis, maar het is ook nog niet weg. Je zit op de vloer van de slaapkamer. De verwarming is uit en het ruikt koud en muf. Beneden hoor je af en toe nog water druppen. In de verte vaart soms een motorboot langzaam door de straat.',
   choices: [{
@@ -892,7 +892,7 @@ const scenes_overstroming = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Omrop Fryslân (92.2 en 95.5 FM): Het waterpeil stabiliseert. Daling verwacht in de vroege ochtend. Geëvacueerden kunnen naar verwachting morgenochtend terug voor een eerste inspectie.'
+    radio: 'Radio 1: Het waterpeil stabiliseert. In de vroege ochtend wordt een daling verwacht. De gemeente en hulpdiensten bekijken morgenochtend eerst welke gebieden veilig genoeg zijn voor een eerste inspectie.'
   },
   narrative: 'Het is avond. In de sporthal is het rustiger geworden en het licht is gedimd. Overal liggen mensen op slaapmatten en opgerolde jassen. Je telefoon laadt op. Buiten regent het nog steeds, maar het ergste lijkt achter de rug.',
   choices: [{

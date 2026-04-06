@@ -423,7 +423,7 @@ function renderStatusBars() {
   updateBattery('batt-phone-fill', 'batt-phone-pct', 'batt-phone-empty', state.phoneBattery);
   // Cash
   const cashEl = document.getElementById('ss-cash-amount');
-  if (cashEl) cashEl.textContent = '€' + state.cash;
+  if (cashEl) cashEl.textContent = '💵 €' + state.cash;
   // Mobile bar — battery + cash
   const mBatt = document.getElementById('msb-battery');
   if (mBatt) mBatt.textContent = state.phoneBattery + '%';
@@ -463,7 +463,14 @@ function updateBattery(fillId, pctId, emptyId, val) {
     // Gevulde balken krijgen de statuskleur; lege balken worden gereset
     bar.style.backgroundColor = i < filledBars ? color : '';
   });
-  if (pctEl) pctEl.textContent = pct + '%';
+  // Kritiek (≤20%): rand en tekst rood + knipperanimatie
+  const critical = pct <= 20;
+  body.style.borderColor = critical ? 'var(--c-battery-empty)' : '';
+  if (pctEl) {
+    pctEl.textContent = pct + '%';
+    pctEl.style.color = critical ? 'var(--c-battery-empty)' : '';
+    pctEl.classList.toggle('blink-alert', critical);
+  }
 }
 
 /* ─── ACHTERGRONDAFBEELDING & OVERLAYS PER SCÈNE ──────────────────────────────
@@ -1168,7 +1175,7 @@ function renderNewsPage() {
   const page = newsLog[Math.max(0, pageIdx)];
   let html = '';
   if (!page || page.items.length === 0) {
-    html = '<p style="color:var(--c-muted-ui);font-size:.85rem;padding-top:4px">Geen nieuws.</p>';
+    html = '<p class="ch-empty">Nog geen nieuwsberichten.</p>';
   } else {
     // Keer de volgorde om zodat het meest recente bericht bovenaan staat
     [...page.items].reverse().forEach(n => {
@@ -1211,7 +1218,7 @@ function renderWaPage(page) {
       </div>`;
     });
   }
-  if (!html) html = '<p style="color:var(--c-muted-ui);font-size:.85rem">Geen berichten.</p>';
+  if (!html) html = '<p class="ch-empty">Nog geen berichten.</p>';
   waEl.innerHTML = html;
 }
 
@@ -1324,7 +1331,7 @@ function renderChannels(scene) {
     </div>`;
   }
   if (newWa.length === 0 && !curNlalert) {
-    waInitHtml = '<p style="color:var(--c-muted-ui);font-size:.85rem">Geen nieuwe berichten.</p>';
+    waInitHtml = '<p class="ch-empty">Nog geen berichten.</p>';
   }
   document.getElementById('wa-content').innerHTML = waInitHtml;
 
@@ -1358,15 +1365,14 @@ function renderChannels(scene) {
   const radioBtn = document.getElementById('radio-play-btn');
   if ((profile.hasRadio || state.hasCarRadio) && sc.radio) {
     // Toon de frequentie afhankelijk van het type radio dat de speler heeft
-    document.getElementById('radio-freq').textContent = state.hasCarRadio && !profile.hasRadio ? 'Autoradio FM/AM' : '693 kHz AM ontvangst';
+    document.getElementById('radio-freq').textContent = '98.9 FM • Radio 1';
     document.getElementById('radio-content').style.color = '#cbd5e1';
-    document.getElementById('radio-content').innerHTML =
-      `<div style="font-size:.7rem;color:#4ade80;margin-bottom:6px">[${scene.time}]</div>${sc.radio}`;
+    document.getElementById('radio-content').innerHTML = sc.radio;
     currentRadioText = sc.radio;
     if (radioBtn) radioBtn.style.display = 'block';
   } else if (radioUnlocked) {
     // Radio is ooit vrijgespeeld maar heeft in deze scène geen nieuwe uitzending
-    document.getElementById('radio-content').innerHTML = '<p style="color:var(--c-muted-ui);font-size:.85rem">Geen nieuwe uitzending.</p>';
+    document.getElementById('radio-content').innerHTML = '<p class="ch-empty">Geen uitzending ontvangen.</p>';
     currentRadioText = '';
     if (radioBtn) radioBtn.style.display = 'none';
   }

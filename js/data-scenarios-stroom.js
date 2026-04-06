@@ -25,7 +25,7 @@ const scenes_stroom = [
       }],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep. Het nieuws van twaalf uur. Experts waarschuwen voor zwakke plekken in delen van het Europese stroomnet. De precieze oorzaak is nog niet duidelijk. Verder: zacht winterweer dit weekend, met kans op natte sneeuw in de regio.'
+      radio: 'Radio 1. Het nieuws van twaalf uur. Experts waarschuwen voor zwakke plekken in delen van het Europese stroomnet. De precieze oorzaak is nog niet duidelijk. Verder: zacht winterweer dit weekend, met kans op natte sneeuw in de regio.'
     },
     narrative: 'Het is een gewone vrijdagmiddag. Je hebt lunchpauze. Buiten waait een koude januariewind en op kantoor is het druk. Zelf ben je met heel andere dingen bezig.',
     choices: [{
@@ -68,7 +68,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: 'De regionale omroep. Experts melden onrustige signalen op delen van het Europese stroomnet. De precieze oorzaak is nog niet duidelijk. De minister van Economische Zaken zegt dat er geen acuut gevaar is voor de stroomlevering. Houd onze berichtgeving in de gaten voor updates.'
+      radio: 'Radio 1. Experts melden onrustige signalen op delen van het Europese stroomnet. De precieze oorzaak is nog niet duidelijk. De minister van Economische Zaken zegt dat er geen acuut gevaar is voor de stroomlevering. Houd onze berichtgeving in de gaten voor updates.'
     },
     narrative: 'Op het werk hangt vandaag een onrustige sfeer. Mensen praten in groepjes en in de lunchruimte staat de tv harder dan normaal. Buiten lijkt alles gewoon, maar de stemming voelt anders.',
     choices: [{
@@ -105,7 +105,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'Goedemorgen, u luistert naar de regionale omroep. Het is acht uur. Vandaag wisselend bewolkt met kans op natte sneeuw. Het wordt koud: maximaal −1°C. Straks in het nieuws van negen uur meer over de situatie rond de beschadigde zeekabels.'
+      radio: 'Goedemorgen, u luistert naar Radio 1. Het is acht uur. Vandaag wisselend bewolkt met kans op natte sneeuw. Het wordt koud: maximaal −1°C. Straks in het nieuws van negen uur meer over de situatie rond de beschadigde zeekabels.'
     },
     narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#22c55e">18°C</b> &nbsp;|&nbsp; 🌨️ Buiten: <b style="color:#93c5fd">−1°C</b> </div>Zondagochtend. De CV tikt, de koelkast zoemt, de waterkoker fluit. Gewone geluiden. Buiten ligt een dun laagje rijp op de daken. Bewolkt, stil. Je drinkt je koffie bij het raam. Een gewone zondag, zo voelt het tenminste.',
     choices: [{
@@ -147,7 +147,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: 'De regionale omroep. We ontvangen meldingen van een stroomstoring in meerdere provincies. Netbeheerder Liander doet onderzoek. Houd uw batterijradio of autoradio bij de hand voor verdere updates. We melden meer zodra we het weten.'
+      radio: 'Radio 1. We ontvangen meldingen van een stroomstoring in meerdere provincies. Netbeheerder Liander doet onderzoek. Houd uw radio bij de hand voor verdere updates. We melden meer zodra we het weten.'
     },
     get narrative() {
       const lift = profile.houseType === 'appartement' ? ' De lift doet het niet meer. Je loopt de trap.' : '';
@@ -198,7 +198,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: 'De regionale omroep. De stroomstoring lijkt in grote delen van Nederland opgelost. Netbeheerder Liander meldt dat de voorziening is hersteld. Er is nog een brand op een hoogspanningsstation in Dronten. We blijven de situatie volgen.'
+      radio: 'Radio 1. De stroomstoring lijkt in grote delen van Nederland opgelost. Netbeheerder Liander meldt dat de voorziening is hersteld. Er is nog een brand op een hoogspanningsstation in Dronten. We blijven de situatie volgen.'
     },
     narrative: 'De lichten flikkeren en springen weer aan. De koelkast begint te zoemen en de cv komt opnieuw op gang. Buiten hoor je mensen opgelucht lachen. Het lijkt voorbij. Toch heb je het gevoel dat je dit moment beter kunt gebruiken.',
     choices: [{
@@ -246,7 +246,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: 'NL-Alert\n31 januari 2027 – 12:32\n\nNa een grote brand bij een energie-installatie in Dronten zijn er op meerdere plekken ernstige stroomstoringen. Mogelijk breidt de storing zich verder uit. De oorzaak wordt onderzocht. Update volgt.',
-      radio: 'Hier de regionale omroep. We onderbreken onze uitzending voor een urgent noodbericht. Er is een grootschalige stroomstoring in Nederland en andere delen van Europa. Na de brand in Dronten lijken problemen zich door het gekoppelde stroomnet te verspreiden. De precieze oorzaak wordt nog onderzocht. De overheid vraagt iedereen thuis te blijven, warm te blijven en voldoende drinkwater achter de hand te houden. Houd uw autoradio of batterijradio aan voor verdere updates. We houden u op de hoogte.'
+      radio: 'Hier Radio 1. We onderbreken onze uitzending voor een urgent noodbericht. Er is een grootschalige stroomstoring in Nederland en andere delen van Europa. Na de brand in Dronten lijken problemen zich door het gekoppelde stroomnet te verspreiden. De precieze oorzaak wordt nog onderzocht. De overheid vraagt iedereen thuis te blijven, warm te blijven en voldoende drinkwater achter de hand te houden. Houd uw radio aan voor verdere updates. We houden u op de hoogte.'
     },
     get narrative() {
       return 'De stroom valt opnieuw uit. Alles wordt stil. Dit keer voelt het anders — geen gezoem van apparaten, geen standby-lampjes, niets. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.';
@@ -261,14 +261,14 @@ const scenes_stroom = [
     }, {
       conditionalOn: () => profile.hasRadio === 'ja',
       text: '📻 Batterijradio aanzetten voor nieuws',
-      consequence: 'Je zet de radio aan. De regionale omroep zendt nog uit en vertelt dat de storing groot is en lang kan duren. Vanaf nu is de radio je belangrijkste bron van informatie.',
+      consequence: 'Je zet de radio aan. Radio 1 zendt nog uit en vertelt dat de storing groot is en lang kan duren. Vanaf nu is de radio je belangrijkste bron van informatie.',
       stateChange: {
         hasCarRadio: true
       }
     }, {
       conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
-      text: '🚗 Naar de auto en de autoradio aanzetten',
-      consequence: 'Je loopt naar de auto en zet de radio aan. De regionale omroep is nog in de lucht en vertelt dat de storing groot is en lang kan duren. De autoradio wordt nu je belangrijkste bron van informatie.',
+      text: '🚗 Naar de auto en de radio aanzetten',
+      consequence: 'Je loopt naar de auto en zet de radio aan. Radio 1 is nog in de lucht en vertelt dat de storing groot is en lang kan duren. De radio wordt nu je belangrijkste bron van informatie.',
       stateChange: {
         hasCarRadio: true
       }
@@ -315,7 +315,7 @@ const scenes_stroom = [
           outgoing: false
         }],
         nlalert: null,
-        radio: 'De regionale omroep. Het telefoonnetwerk is overbelast. Bel 112 alleen bij levensgevaar. Sommige supermarkten accepteren alleen contant geld. Blijf thuis, spaar uw telefoon en houd uw radio aan voor updates.'
+        radio: 'Radio 1. Het telefoonnetwerk is overbelast. Bel 112 alleen bij levensgevaar. Sommige supermarkten accepteren alleen contant geld. Blijf thuis, spaar uw telefoon en houd uw radio aan voor updates.'
       };
     },
     get narrative() {
@@ -359,7 +359,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep. De stroomstoring houdt aan. Supermarkten zijn beperkt open maar accepteren alleen contant geld. Drinkwater uit de kraan is voorlopig veilig. Houd uw radio aan voor updates.'
+      radio: 'Radio 1. De stroomstoring houdt aan. Supermarkten zijn beperkt open maar accepteren alleen contant geld. Drinkwater uit de kraan is voorlopig veilig. Houd uw radio aan voor updates.'
     },
     narrative: 'Je staat in de rij bij de supermarkt. Er staan minstens 60 mensen voor je. Iedereen praat zachtjes of staart naar hun telefoon. Een vrouw vooraan begint hard te schreeuwen dat ze voordringt omdat ze kleine kinderen heeft. Er ontstaat een discussie. Een beveiliger doet zijn best maar is duidelijk nerveus. Als je eindelijk binnen bent: de schappen zijn al behoorlijk uitgedund. Drinkwater is uitverkocht. Hetzelfde geldt voor wc-papier, olie, benzine en lucifers. Honing en blikopeners zijn ook al weg.',
     choices: [{
@@ -405,7 +405,7 @@ const scenes_stroom = [
       }],
       whatsapp: [],
       nlalert: 'NL-Alert\n31 januari 2027 – 13:28\n\nNa de brand in Dronten zijn op veel plekken ernstige stroomstoringen ontstaan. De storing kan tot morgen duren of langer.\n\nBlijf thuis. Blijf warm. Zorg voor voldoende water en voedsel. Denk aan uw (oudere) buren.',
-      radio: 'De regionale omroep. De overheid zegt dat de storing tot morgen of langer kan duren. Zorg voor water, warmte en genoeg eten. Denk ook aan uw buren, vooral ouderen. Blijf thuis als dat kan.'
+      radio: 'Radio 1. De overheid zegt dat de storing tot morgen of langer kan duren. Zorg voor water, warmte en genoeg eten. Denk ook aan uw buren, vooral ouderen. Blijf thuis als dat kan.'
     },
     get narrative() {
       const supermarkt = profile.location.includes('city') ?
@@ -453,7 +453,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep. Praktische tips voor vanavond: open uw vriezer zo min mogelijk, bevroren voedsel blijft 24 uur goed. Gebruik geen barbecue of campingkooktoestel binnenshuis vanwege koolmonoxide. Slaap warm: meerdere lagen kleding en bij voorkeur met meerdere personen in één kamer.'
+      radio: 'Radio 1. Praktische tips voor vanavond: open uw vriezer zo min mogelijk, bevroren voedsel blijft 24 uur goed. Gebruik geen barbecue of campingkooktoestel binnenshuis vanwege koolmonoxide. Slaap warm: meerdere lagen kleding en bij voorkeur met meerdere personen in één kamer.'
     },
     narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">13°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−2°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~6 uur zonder stroom</div>Het is al donker buiten, vroeg in februari. In huis is het merkbaar kouder geworden. De koelkast staat stil, de vriezer begint langzaam te ontdooien. Je maag rammelt. De supermarkten zijn al dicht. De stroom is al uren weg — en ondertussen doet ook het gasfornuis het niet meer. Hoe kook je vanavond?',
     choices: [{
@@ -485,7 +485,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: 'De regionale omroep. Goedenavond. De politie vraagt iedereen zoveel mogelijk binnen te blijven. In meerdere wijken zijn incidenten gemeld. Sluit uw deuren en ramen goed af. Wij zenden de hele nacht door op batterijstroom.'
+      radio: 'Radio 1. Goedenavond. De politie vraagt iedereen zoveel mogelijk binnen te blijven. In meerdere wijken zijn incidenten gemeld. Sluit uw deuren en ramen goed af. Wij zenden de hele nacht door op batterijstroom.'
     },
     get narrative() {
       return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">12°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; 🌙 Nacht valt in</div>Je hebt gegeten. Nu begint de lange avond. Buiten is het pikzwart. Geen lantaarnpalen, geen lichtjes bij de buren. Alleen hier en daar het flakkerende schijnsel van een kaars achter een raam. Het huis koelt langzaam maar zeker af. Je telefoon staat op ' + state.phoneBattery + '%.';
@@ -523,7 +523,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep op AM. Het is half drie. De stroomstoring duurt voort. Politie en hulpdiensten zijn overbelast. In meerdere steden zijn incidenten gemeld. Blijf binnenshuis. De volgende update volgt om zes uur.'
+      radio: 'Radio 1. Het is half drie. De stroomstoring duurt voort. Politie en hulpdiensten zijn overbelast. In meerdere steden zijn incidenten gemeld. Blijf binnenshuis. De volgende update volgt om zes uur.'
     },
     get narrative() {
       const view = profile.houseType === 'appartement' ?
@@ -568,7 +568,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: 'Je zoekt een tijdje door de frequenties. De meeste zenders zijn stil. Dan vind je een lokale zender: "Na de brand in Dronten zitten grote delen van het stroomnet in de problemen. We weten niet hoe lang we nog kunnen uitzenden. Schakel over naar AM radio."\n\nOp de AM frequentie hoor je een rustiger stem: "Het herstellen van de stroomstoring blijkt ingewikkelder dan gedacht. De oorzaak is nog onduidelijk. We roepen iedereen op tot kalmte en vragen mensen hun buren te helpen."'
+      radio: 'Je zoekt een tijdje door de frequenties. De meeste zenders zijn stil. Dan vind je een lokale zender: "Na de brand in Dronten zitten grote delen van het stroomnet in de problemen. We weten niet hoe lang we nog kunnen uitzenden. Houd uw radio aan."\n\nOp de AM frequentie hoor je een rustiger stem: "Het herstellen van de stroomstoring blijkt ingewikkelder dan gedacht. De oorzaak is nog onduidelijk. We roepen iedereen op tot kalmte en vragen mensen hun buren te helpen."'
     },
     narrative: 'Het begint net licht te worden. Buiten is het bitterkoud en in huis staat de thermometer nu op 5°C, net boven het vriespunt. Je adem vormt kleine wolkjes. Dan trilt je telefoon.',
     choices: [{
@@ -595,7 +595,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep op AM. Vijf uur dertig. De stroomstoring houdt aan. Schakel over naar AM als uw FM-ontvangst wegvalt. Houd uw naasten op de hoogte. De overheid werkt aan herstel.'
+      radio: 'Radio 1. Vijf uur dertig. De stroomstoring houdt aan. Houd uw radio aan. Houd uw naasten op de hoogte. De overheid werkt aan herstel.'
     },
     narrative: 'Je staat voor de deur van Annie. Ze doet open, haar ogen zijn rood van het huilen. Achter haar zie je haar man Jan op de bank liggen. Je moet snel beslissen hoe je het best kunt helpen.',
     choices: [{
@@ -638,7 +638,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep op AM. Goedemorgen. De stroomstoring duurt nu meer dan twintig uur. Herstel wordt niet voor morgenavond verwacht. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Waterleidingbedrijven vragen het verbruik te beperken.'
+      radio: 'Radio 1. Goedemorgen. De stroomstoring duurt nu meer dan twintig uur. Herstel wordt niet voor morgenavond verwacht. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Waterleidingbedrijven vragen het verbruik te beperken.'
     },
     get narrative() {
       const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">5°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~20 uur zonder stroom</div>';
@@ -660,12 +660,12 @@ const scenes_stroom = [
     }, {
       conditionalOn: () => profile.hasRadio === 'ja',
       text: '📻 De radio aanzetten voor nieuws',
-      consequence: 'Op de AM-frequentie hoor je een rustige stem: "De stroomstoring duurt voort. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Herstel wordt niet voor morgennacht verwacht." Morgennacht dus.',
+      consequence: 'Op de radio hoor je: "De stroomstoring duurt voort. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Herstel wordt niet voor morgennacht verwacht." Morgennacht dus.',
       stateChange: {}
     }, {
       conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
-      text: '🚗 Zet de autoradio aan voor nieuws',
-      consequence: 'Je loopt naar de auto en zet de radio aan. Op de AM-frequentie hoor je een rustige stem: "De stroomstoring duurt voort. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Herstel wordt niet voor morgennacht verwacht." Morgennacht dus.',
+      text: '🚗 Zet de radio aan voor nieuws',
+      consequence: 'Je loopt naar de auto en zet de radio aan. Op de radio hoor je: "De stroomstoring duurt voort. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Herstel wordt niet voor morgennacht verwacht." Morgennacht dus.',
       stateChange: {}
     }]
   },
@@ -680,7 +680,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep op AM. Rioolgemalen in meerdere gemeenten vallen uit door stroomgebrek. Bewoners kunnen last krijgen van terugstromend rioolwater. Sluit afvoeropeningen af en gebruik zo min mogelijk water. Kook kraanwater voor u het drinkt.'
+      radio: 'Radio 1. Rioolgemalen in meerdere gemeenten vallen uit door stroomgebrek. Bewoners kunnen last krijgen van terugstromend rioolwater. Sluit afvoeropeningen af en gebruik zo min mogelijk water. Kook kraanwater voor u het drinkt.'
     },
     get narrative() {
       const mob = profile.hasMobilityImpaired ? (profile.houseType === 'appartement' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
@@ -767,7 +767,7 @@ const scenes_stroom = [
         outgoing: false
       }],
       nlalert: null,
-      radio: 'De regionale omroep op AM. Gemeenten organiseren wateruitdeelpunten. In uw gemeente is water beschikbaar bij een lokaal uitgiftepunt. Maximaal tien liter per persoon. Neem een eigen fles of jerrycan mee.'
+      radio: 'Radio 1. Gemeenten organiseren wateruitdeelpunten. In uw gemeente is water beschikbaar bij een lokaal uitgiftepunt. Maximaal tien liter per persoon. Neem een eigen fles of jerrycan mee.'
     },
     get narrative() {
       const afstand = profile.location.includes('city') ?
@@ -853,7 +853,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep. Het dringende advies is om vanavond en vannacht binnen te blijven. In meerdere plaatsen is onrust gemeld. Blijf thuis, help uw buren en houd uw radio aan voor de laatste updates.'
+      radio: 'Radio 1. Het dringende advies is om vanavond en vannacht binnen te blijven. In meerdere plaatsen is onrust gemeld. Blijf thuis, help uw buren en houd uw radio aan voor de laatste updates.'
     },
     narrative: 'De dag vordert en het wordt steeds duidelijker dat dit niet morgen opgelost is. Buiten rijden af en toe politiewagens langs, langzamer dan normaal. Op straat zie je bijna niemand meer. Het is 9°C in huis. Wat doe je nu?',
     choices: [{
@@ -887,7 +887,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep. Goedenavond. Het dringende advies blijft om vanavond binnen te blijven. Gebruik geen open vuur binnenshuis zonder ventilatie vanwege koolmonoxide. Morgen meer nieuws over het herstel.'
+      radio: 'Radio 1. Goedenavond. Het dringende advies blijft om vanavond binnen te blijven. Gebruik geen open vuur binnenshuis zonder ventilatie vanwege koolmonoxide. Morgen meer nieuws over het herstel.'
     },
     get narrative() {
       const foodNote = (state.supermarketItems.length > 0 || state.hasExtraFood) ?
@@ -926,7 +926,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep op AM. Er zijn meldingen van onrust in meerdere wijken. Brandweer en politie zijn overbelast. Bel 112 alleen bij levensgevaar. Het dringende advies is om binnen te blijven. Blijf binnenshuis.'
+      radio: 'Radio 1. Er zijn meldingen van onrust in meerdere wijken. Brandweer en politie zijn overbelast. Bel 112 alleen bij levensgevaar. Het dringende advies is om binnen te blijven. Blijf binnenshuis.'
     },
     narrative: 'Eerst hoor je geschreeuw in de verte. Dan volgt een doffe knal. De ramen trillen. Je hart staat even stil. Voorzichtig sluip je naar het raam. Buiten zie je een grote brand. Mensen staan eromheen. In het schaarse licht herken je een auto, die van de overburen. Sirenes hoor je niet.',
     choices: [{
@@ -968,7 +968,7 @@ const scenes_stroom = [
         news: [],
         whatsapp: wa,
         nlalert: null,
-        radio: 'De regionale omroep op AM. Goedemorgen. De stroomstoring duurt nu meer dan veertig uur. Delen van Duitsland en Oostenrijk hebben gisteravond kort stroom gehad. Herstel in Nederland wordt verwacht binnen 24 uur. Vandaag zijn er lokale voedseluitdeelpunten. Luister naar de regionale omroep voor de locaties bij u in de buurt.'
+        radio: 'Radio 1. Goedemorgen. De stroomstoring duurt nu meer dan veertig uur. Delen van Duitsland en Oostenrijk hebben gisteravond kort stroom gehad. Herstel in Nederland wordt verwacht binnen 24 uur. Vandaag zijn er lokale voedseluitdeelpunten. Luister naar Radio 1 voor de locaties bij u in de buurt.'
       };
     },
     get narrative() {
@@ -987,12 +987,12 @@ const scenes_stroom = [
     }, {
       conditionalOn: () => profile.hasRadio === 'ja',
       text: '📻 De radio aanzetten voor nieuws',
-      consequence: 'Op de AM-frequentie: "Delen van Duitsland en Oostenrijk hebben stroom gekregen. Herstel in Nederland wordt verwacht binnen 24 uur." 24 uur. Dat is lang. Maar het is iets.',
+      consequence: 'Op de radio: "Delen van Duitsland en Oostenrijk hebben stroom gekregen. Herstel in Nederland wordt verwacht binnen 24 uur." 24 uur. Dat is lang. Maar het is iets.',
       stateChange: {}
     }, {
       conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
-      text: '🚗 Zet de autoradio aan voor nieuws',
-      consequence: 'Je loopt naar de auto en zet de radio aan. Op de AM-frequentie: "Delen van Duitsland en Oostenrijk hebben stroom gekregen. Herstel in Nederland wordt verwacht binnen 24 uur." 24 uur. Dat is lang. Maar het is iets.',
+      text: '🚗 Zet de radio aan voor nieuws',
+      consequence: 'Je loopt naar de auto en zet de radio aan. Op de radio: "Delen van Duitsland en Oostenrijk hebben stroom gekregen. Herstel in Nederland wordt verwacht binnen 24 uur." 24 uur. Dat is lang. Maar het is iets.',
       stateChange: {}
     }, {
       text: '🤝 Naar Rob of Annie gaan voor informatie',
@@ -1044,7 +1044,7 @@ const scenes_stroom = [
       stateChange: {}
     }, {
       text: '🏘️ Naar het dorpssteunpunt gaan voor informatie en warmte',
-      consequence: 'Je loopt naar het dorpssteunpunt in het dorp. Er zitten al een stuk of tien buurtbewoners. Een vrijwilliger deelt warme thee uit en heeft een batterijradio aan staan. Op een whiteboard staat de laatste informatie van de gemeente: waterpunten, wanneer stroom verwacht wordt, wie hulp nodig heeft. Je bent blij dat je gegaan bent.',
+      consequence: 'Je loopt naar het dorpssteunpunt in het dorp. Er zitten al een stuk of tien buurtbewoners. Een vrijwilliger deelt warme thee uit en heeft een radio aan staan. Op een whiteboard staat de laatste informatie van de gemeente: waterpunten, wanneer stroom verwacht wordt, wie hulp nodig heeft. Je bent blij dat je gegaan bent.',
       stateChange: {
         comfort: 1,
         knowsNeighbors: true
@@ -1066,7 +1066,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep. Het herstel van het stroomnet vordert. In grote delen van Duitsland en Oostenrijk is de stroom terug. Voor Nederland verwacht men herstel morgen in de loop van de dag. Hou het vol. Blijf warm.'
+      radio: 'Radio 1. Het herstel van het stroomnet vordert. In grote delen van Duitsland en Oostenrijk is de stroom terug. Voor Nederland verwacht men herstel morgen in de loop van de dag. Hou het vol. Blijf warm.'
     },
     get narrative() {
       const foodNote = state.wentToFoodDist ?
@@ -1108,7 +1108,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep. Goedemorgen. Goed nieuws: het stroomnet wordt vandaag stapsgewijs hersteld in Nederland. Houd alle grote apparaten uitgeschakeld bij herstel om stroompieken te voorkomen. Om tien uur is er een voedseluitdeling bij de supermarkt. Het einde is in zicht.'
+      radio: 'Radio 1. Goedemorgen. Goed nieuws: het stroomnet wordt vandaag stapsgewijs hersteld in Nederland. Houd alle grote apparaten uitgeschakeld bij herstel om stroompieken te voorkomen. Om tien uur is er een voedseluitdeling bij de supermarkt. Het einde is in zicht.'
     },
     get narrative() {
       const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">4°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~68 uur zonder stroom</div>';
@@ -1128,7 +1128,7 @@ const scenes_stroom = [
       stateChange: {}
     }, {
       conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
-      text: '🚗 Zet de autoradio aan voor het laatste nieuws',
+      text: '🚗 Zet de radio aan voor het laatste nieuws',
       consequence: 'Je loopt naar de auto en zet de radio aan. Op de AM-radio: "De herstelwerkzaamheden zijn in de afrondende fase. We verwachten dat het stroomnet stapsgewijs wordt hersteld vandaag. Houd apparaten uitgeschakeld bij herstel om stroompieken te voorkomen." Je houdt je adem in.',
       stateChange: {}
     }, {
@@ -1159,7 +1159,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep. De voedseluitdeling is gestart op de aangekondigde locaties. Maximaal één portie per persoon. Bewaar geduld en wacht rustig uw beurt af. Het eerste stroomherstel in delen van de regio wordt verwacht vóór het middaguur.'
+      radio: 'Radio 1. De voedseluitdeling is gestart op de aangekondigde locaties. Maximaal één portie per persoon. Bewaar geduld en wacht rustig uw beurt af. Het eerste stroomherstel in delen van de regio wordt verwacht vóór het middaguur.'
     },
     narrative: 'Bij het uitgiftepunt is het druk. Medewerkers delen per huishouden een beperkte hoeveelheid water en eten uit, zodat iedereen iets mee kan krijgen. De rij schuifelt langzaam maar geordend op. In jouw pakket zitten een kilo rijst, een blik tomaten, een paar appels en een brood. Terwijl je wacht, raken de mensen om je heen aan de praat.',
     choices: [{
@@ -1195,7 +1195,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'De regionale omroep. Het is zover: de stroom is in grote delen van Nederland hersteld. Schakel grote apparaten één voor één in om overbelasting van het net te voorkomen. Laat kraanwater even doorstromen voordat u het drinkt. Nederland heeft het doorstaan.'
+      radio: 'Radio 1. Het is zover: de stroom is in grote delen van Nederland hersteld. Schakel grote apparaten één voor één in om overbelasting van het net te voorkomen. Laat kraanwater even doorstromen voordat u het drinkt. Nederland heeft het doorstaan.'
     },
     narrative: 'Dan flakkert het licht onverwacht aan. De koelkast begint te zoemen. De wasmachine, die je vergeten was uit te zetten, schiet ineens weer aan. Uit de televisie komt een branderige geur. Eén lamp knalt. Buiten hoor je de buren juichen. Het ergste lijkt voorbij. Toch is niet alles meteen normaal: de CV moet nog op gang komen en de rioollucht hangt nog in huis. Maar er is weer licht.',
     choices: [{

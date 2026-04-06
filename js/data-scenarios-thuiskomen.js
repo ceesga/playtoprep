@@ -15,7 +15,7 @@ const scenes_thuis_komen = [{
     news: [],
     whatsapp: [{
       from: 'Collega Martijn',
-      msg: 'Ligt jouw scherm ook plat? Wifi ook weg hier',
+      msg: 'Is jouw scherm ook zwart? De wifi ligt er hier ook uit.',
       time: '11:58',
       outgoing: false
     }],
@@ -54,12 +54,12 @@ const scenes_thuis_komen = [{
     }],
     whatsapp: [{
       from: 'Partner',
-      msg: 'Stroom hier ook weg. Wanneer kom je thuis?',
+      msg: 'Hier is de stroom ook weg. Weet je al wanneer je thuis bent?',
       time: '12:18',
       outgoing: false
     }, {
       from: 'Baas',
-      msg: 'Iedereen mag naar huis als ze kunnen vertrekken. Wij sluiten het gebouw. Vergeet uw spullen niet.',
+      msg: 'Iedereen mag naar huis als dat lukt. Wij sluiten het gebouw. Vergeet uw spullen niet.',
       time: '12:55',
       outgoing: false
     }],
@@ -93,7 +93,7 @@ const scenes_thuis_komen = [{
     news: [],
     whatsapp: [{
       from: 'School De Ster',
-      msg: 'Stroom uitgevallen op school. Wij vangen kinderen op maar vragen u uw kind zo snel mogelijk op te komen halen. Wij blijven open tot 18:00.',
+      msg: 'De stroom is op school uitgevallen. Wij vangen kinderen op, maar vragen u uw kind zo snel mogelijk op te halen. We blijven open tot 18:00.',
       time: '12:28',
       outgoing: false
     }],
@@ -140,7 +140,7 @@ const scenes_thuis_komen = [{
   },
   get narrative() {
     const vehicle = profile.commuteMode === 'car' ? 'Je auto staat op de parkeerplaats.' : profile.commuteMode === 'bike' ? 'Je fiets staat bij de ingang.' : 'Je bent zonder auto of fiets.';
-    return `Je staat buiten. Treinen en trams liggen stil, want die hebben stroom nodig. Maar de bus rijdt gewoon op diesel. ${vehicle}`;
+    return `Je staat buiten. Treinen en trams liggen stil, want die hebben stroom nodig. Sommige bussen rijden nog, maar het is onzeker. ${vehicle}`;
   },
   choices: [{
     conditionalOn: () => profile.commuteMode === 'car',
@@ -158,7 +158,7 @@ const scenes_thuis_komen = [{
   }, {
     text: '🚌 Met de bus',
     consequence: () => profile.commuteDistance === 'near' ?
-      'Je loopt naar de bushalte. De bus rijdt gewoon. Die rijdt op diesel en heeft geen stroom nodig. Je betaalt €10 contant en stapt in.' :
+      'Je loopt naar de bushalte. Er rijdt nog een bus, maar de dienstregeling klopt niet meer. Je kunt contant betalen en stapt in zodra er plek is.' :
       'Je loopt naar de bushalte. De bus rijdt nog, maar het is druk. Je betaalt €10 contant en hoopt op het beste.',
     stateChange: {
       travelMode: 'ov',
@@ -190,7 +190,7 @@ const scenes_thuis_komen = [{
     news: [{
       time: '13:05',
       headline: 'Chaos op de wegen, gps-systemen uit en verkeerslichten uitgevallen',
-      body: 'GPS-systemen en verkeerslichten werken niet meer. Op veel kruispunten regelen mensen zelf het verkeer. Files van meerdere uren op hoofdwegen.'
+      body: 'Verkeerslichten werken niet meer en navigatie valt op veel plekken weg. Op sommige kruispunten regelen mensen zelf het verkeer. Op hoofdwegen staan lange files.'
     }],
     whatsapp: [],
     nlalert: null,
@@ -287,7 +287,7 @@ const scenes_thuis_komen = [{
   },
   get narrative() {
     return profile.commuteDistance === 'near' ?
-      'De bus rijdt gewoon. De chauffeur knikt je toe. "Diesel, geen stroom nodig." Je stapt in. Er zijn meer mensen dan normaal, maar je komt vooruit.' :
+      'Er rijdt nog een bus. De chauffeur zegt dat de route kan veranderen als wegen vastlopen. Je stapt in. Er zijn meer mensen dan normaal, maar je komt vooruit.' :
       'De bus rijdt, maar de halte is overvol. De route loopt vertraging op. Het is druk en de chauffeur weet niet zeker of alle stops gehaald worden.';
   },
   choices: [{
@@ -487,8 +487,8 @@ const scenes_thuis_komen = [{
         comfort: 1
       }
     }, {
-      text: '🆘 112 bellen en vragen om hulp',
-      consequence: () => state.phoneBattery > 0 ? 'Je belt 112. Ze sturen je naar een noodopvang in een dorpshuis op 500 meter. Je slaapt er op een slaapmat. Warm en veilig.' : 'Je telefoon is leeg. Je kunt 112 niet bereiken. Je loopt op goed geluk naar de dichtstbijzijnde plek met licht.',
+      text: '📞 Het gemeentelijke noodnummer bellen',
+      consequence: () => state.phoneBattery > 0 ? 'Je belt het gemeentelijke noodnummer. Ze verwijzen je naar een tijdelijke opvang in een dorpshuis op 500 meter. Je slaapt er op een slaapmat. Warm en veilig.' : 'Je telefoon is leeg. Je kunt niemand bereiken. Je loopt op goed geluk naar de dichtstbijzijnde plek met licht.',
       stateChange: () => state.phoneBattery > 0 ? {
         foundAlternative: true,
         calledRescue: true

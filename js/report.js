@@ -5,11 +5,16 @@
 // ═══════════════════════════════════════════════════════════════
 
 // ─── REPORT ───────────────────────────────────────────────────────────────────
+// Bouwt het volledige rapportscherm op op basis van de keuzes en het profiel
+// van de speler. Vult alle HTML-elementen in het rapport-scherm dynamisch.
 function showReport() {
+  // Zet de voortgangsbalk bovenaan volledig gevuld (100%)
   document.getElementById('sc-prog').style.transform = 'scaleX(1)';
+  // Toon het rapport-scherm
   show('s-report');
 
   // Titel
+  // Gebruik de naam van de speler als die bekend is, anders een generieke tekst
   const titleEl = document.getElementById('rep-title');
   if (titleEl) {
     titleEl.textContent = profile.playerName
@@ -18,31 +23,35 @@ function showReport() {
   }
 
   // Intro (met naam)
+  // Pas de aanspreekvorm aan op basis van of de naam bekend is
   const naam = profile.playerName;
   const jij = naam ? `${naam}, je` : 'Je';
   let intro = '';
+  // Kies de introductietekst op basis van het actieve scenario
   if (currentScenario === 'stroom') {
-    intro = `${jij} hebt het stroomuitvalscenario van enkele dagen doorlopen. Hieronder zie je een overzicht van wat je koos, wat je goed deed en waar ruimte voor verbetering zit.`;
+    intro = `${jij} hebt het stroomstoringsscenario van een paar dagen gespeeld. Hieronder zie je wat je koos, wat goed ging en wat beter kan.`;
   } else if (currentScenario === 'natuurbrand') {
-    intro = `${jij} hebt het natuurbrandscenario doorlopen. Een brand die snel dichterbij komt, dwingt tot snelle beslissingen. Hieronder zie je hoe jij reageerde.`;
+    intro = `${jij} hebt het natuurbrandscenario gespeeld. Als een brand snel dichterbij komt, moet je snel kiezen. Hieronder zie je hoe jij reageerde.`;
   } else if (currentScenario === 'overstroming') {
-    intro = `${jij} hebt het overstromingsscenario doorlopen. Stijgend water geeft weinig tijd en vergeeft weinig fouten. Hieronder zie je hoe jij keuzes maakte.`;
+    intro = `${jij} hebt het overstromingsscenario gespeeld. Stijgend water geeft weinig tijd. Hieronder zie je welke keuzes jij maakte.`;
   } else if (currentScenario === 'thuis_komen') {
-    intro = `${jij} hebt het scenario thuiskomen doorlopen. Hoe kom je thuis als alle infrastructuur uitvalt? Hieronder zie je jouw route en keuzes.`;
+    intro = `${jij} hebt het scenario Thuiskomen gespeeld. Hoe kom je thuis als alles uitvalt? Hieronder zie je jouw route en keuzes.`;
   }
   document.getElementById('rep-intro').textContent = intro;
 
   // Uitkomstheadline
-  const scoreW = state.ranOutOfWater ? 0 : 1;
-  const scoreF = state.ranOutOfFood  ? 0 : 1;
-  const scoreC = state.comfort / MAX_STAT_COMFORT;
-  const avgScore = (scoreW + scoreF + scoreC) / 3;
+  // Bereken een gemiddelde eindscore op basis van water, voedsel en comfort
+  const scoreW = state.ranOutOfWater ? 0 : 1;          // 0 als water op was, anders 1
+  const scoreF = state.ranOutOfFood  ? 0 : 1;          // 0 als voedsel op was, anders 1
+  const scoreC = state.comfort / MAX_STAT_COMFORT;     // Comfort als fractie van het maximum
+  const avgScore = (scoreW + scoreF + scoreC) / 3;     // Gemiddelde van de drie scores (0–1)
   let outcomeText, outcomeClass;
+  // Bepaal de uitkomsttekst en bijbehorende CSS-klasse op basis van de gemiddelde score
   if (avgScore >= 0.7) {
-    outcomeText = naam ? `${naam} doorstond de crisis goed.` : 'Je doorstond de crisis goed.';
+    outcomeText = naam ? `${naam} kwam goed door deze situatie heen.` : 'Je kwam goed door deze situatie heen.';
     outcomeClass = 'outcome-good';
   } else if (avgScore >= 0.4) {
-    outcomeText = naam ? `${naam} overleefde de crisis, maar niet zonder moeite.` : 'Je overleefde de crisis, maar niet zonder moeite.';
+    outcomeText = naam ? `${naam} kwam hier doorheen, maar het kostte moeite.` : 'Je kwam hier doorheen, maar het kostte moeite.';
     outcomeClass = 'outcome-mid';
   } else {
     outcomeText = naam ? `De crisis liet zijn sporen na bij ${naam}.` : 'De crisis liet zijn sporen na.';
@@ -51,9 +60,12 @@ function showReport() {
   document.getElementById('rep-outcome').innerHTML = `<div class="rep-outcome-banner ${outcomeClass}">${outcomeText}</div>`;
 
   // Context-samenvatting
+  // Vertaaltabellen van interne sleutels naar leesbare labels
   const houseLabels = { 'appartement': 'Appartement', 'rijtjeshuis': 'Rijtjeshuis', 'vrijstaande-woning': 'Vrijstaande woning', 'boerderij': 'Boerderij' };
   const envLabels = { 'water': 'Nabij water', 'forest': 'Bos of natuur', 'rural_area': 'Buitengebied', 'city': 'Stedelijk' };
+  // Totaal aantal personen in het huishouden
   const persons = adultsCount + childrenCount + slechtTerBeenCount;
+  // Bouw een array van contextlabels op; filter null-waarden eruit
   const ctxItems = [
     profile.houseType ? `🏠 ${houseLabels[profile.houseType] || profile.houseType}` : null,
     `👥 ${persons === 1 ? '1 persoon' : persons + ' personen'}`,
@@ -61,11 +73,13 @@ function showReport() {
     profile.hasPets ? '🐾 Huisdieren' : null,
     profile.hasCar ? '🚗 Auto' : null,
     profile.hasBike ? '🚲 Fiets' : null,
+    // Voeg omgevingslabels toe voor elke locatiewaarde in het profiel
     ...((profile.location || []).map(l => envLabels[l] ? `📍 ${envLabels[l]}` : null)),
-  ].filter(Boolean);
+  ].filter(Boolean); // Verwijder alle null/undefined-items
   document.getElementById('rep-context').innerHTML = `<div class="rep-context-bar">${ctxItems.map(i => `<span class="rep-ctx-item">${i}</span>`).join('')}</div>`;
 
   // Timeline
+  // Bouw de tijdlijn op uit de opgeslagen keuzegeschiedenis
   let tlHtml = '';
   choiceHistory.forEach(ch => {
     tlHtml += `<div class="timeline-entry">
@@ -73,12 +87,15 @@ function showReport() {
       <div class="tl-text">${ch.choiceText}</div>
     </div>`;
   });
+  // Toon een fallback-tekst als er geen keuzes zijn geregistreerd
   if (!tlHtml) tlHtml = '<p style="color:var(--c-muted-ui);font-size:.85rem">Geen keuzes geregistreerd.</p>';
   document.getElementById('rep-timeline').innerHTML = tlHtml;
 
   // Status badges
+  // Definieer welke statusitems getoond worden per scenario
   let statusItems = [];
   if (currentScenario === 'natuurbrand') {
+    // Statusbadges specifiek voor het natuurbrandscenario
     statusItems = [{
         key: 'packedBag',
         label: 'Noodtas ingepakt',
@@ -95,12 +112,14 @@ function showReport() {
         labelMissing: 'Niet veilig teruggekeerd',
         icon: '🏠'
       },
+      // Voeg huisdierenbadge alleen toe als het profiel huisdieren bevat
       ...(profile.hasPets ? [{
         key: 'tookPets',
         label: 'Huisdier meegenomen',
         labelMissing: 'Huisdier niet meegenomen',
         icon: '🐾'
       }] : []),
+      // Voeg kinderenbadge alleen toe als het profiel kinderen bevat
       ...(profile.hasChildren ? [{
         key: 'kidsEvacuated',
         label: 'Kinderen veilig gesteld',
@@ -124,6 +143,7 @@ function showReport() {
       }
     ];
   } else if (currentScenario === 'overstroming') {
+    // Statusbadges specifiek voor het overstromingsscenario
     statusItems = [{
       key: 'evacuatedFlood',
       label: 'Op tijd geëvacueerd',
@@ -142,7 +162,7 @@ function showReport() {
     }, {
       key: 'savedItems',
       label: 'Essentials meegenomen',
-      labelMissing: 'Geen essentials meegenomen',
+      labelMissing: 'Geen belangrijke spullen meegenomen',
       icon: '📦'
     }, {
       key: 'calledRescue',
@@ -166,6 +186,7 @@ function showReport() {
       icon: '🎒'
     }];
   } else if (currentScenario === 'thuis_komen') {
+    // Statusbadges specifiek voor het scenario 'thuis komen'
     statusItems = [{
       key: 'reachedHome',
       label: 'Thuis aangekomen',
@@ -198,6 +219,7 @@ function showReport() {
       icon: '💵'
     }];
   } else {
+    // Statusbadges voor het standaard stroomuitvalscenario
     statusItems = [{
       key: 'hasCash',
       label: 'Contant geld in huis',
@@ -250,18 +272,25 @@ function showReport() {
       icon: '🛒'
     }];
   } // end else (stroom)
+
+  // Bouw de HTML voor de statusbadges op
+  // Elke badge krijgt klasse 'has' (groen) of 'missing' (rood) afhankelijk van de spelerstatus
   let statusHtml = '<div class="status-row">';
   statusItems.forEach(item => {
-    const has = state[item.key];
-    const badgeLabel = has ? item.label : (item.labelMissing || item.label);
+    const has = state[item.key]; // Controleer of de speler dit item heeft bereikt
+    const badgeLabel = has ? item.label : (item.labelMissing || item.label); // Kies de juiste labeltekst
     statusHtml += `<div class="status-badge ${has ? 'has' : 'missing'}">${item.icon} ${badgeLabel}</div>`;
   });
   statusHtml += '</div>';
   document.getElementById('rep-status').innerHTML = statusHtml;
 
   // Eindstats
+  /* Hulpfuncties voor het renderen van de eindstatistieken als gekleurde voortgangsbalken */
+
+  // Genereert HTML voor een enkelvoudige statistiekbalk met kleurcodering op basis van percentage
   function statBar(val, max, icon, label) {
-    const pct = Math.max(0, Math.min(100, (val / max) * 100));
+    const pct = Math.max(0, Math.min(100, (val / max) * 100)); // Klamp het percentage tussen 0 en 100
+    // Kies balkkleur: groen boven 60%, oranje boven 30%, rood daaronder
     const color = pct >= 60 ? 'var(--c-success)' : pct >= 30 ? '#f59e0b' : 'var(--c-danger)';
     return `<div class="rep-stat-item">
       <span class="rep-stat-label">${icon} ${label}</span>
@@ -269,9 +298,12 @@ function showReport() {
       <span class="rep-stat-val">${val}/${max}</span>
     </div>`;
   }
+
+  // Genereert HTML voor een binaire indicator (tekort gehad / geen tekort)
+  // Toont een volle balk bij geen tekort, een kleine balk bij tekort
   function shortageIndicator(ranOut, icon, labelOk, labelShortage) {
-    const ok = !ranOut;
-    const color = ok ? 'var(--c-success)' : 'var(--c-danger)';
+    const ok = !ranOut; // Geen tekort = positief
+    const color = ok ? 'var(--c-success)' : 'var(--c-danger)'; // Groen of rood
     const text  = ok ? labelOk : labelShortage;
     return `<div class="rep-stat-item">
       <span class="rep-stat-label">${icon} ${text}</span>
@@ -279,6 +311,8 @@ function showReport() {
       <span class="rep-stat-val" style="color:${color}">${ok ? '✓' : '✗'}</span>
     </div>`;
   }
+
+  // Render de eindstatistieken: water, voedsel en comfortniveau
   document.getElementById('rep-endstats').innerHTML = `<div class="rep-endstats">
     ${shortageIndicator(state.ranOutOfWater, '💧', 'Geen watertekort', 'Watertekort gehad')}
     ${shortageIndicator(state.ranOutOfFood,  '🥫', 'Geen voedseltekort', 'Voedseltekort gehad')}
@@ -286,11 +320,13 @@ function showReport() {
   </div>`;
 
   // GOOD
+  // Verzamel positieve feedbackitems op basis van de keuzes van de speler per scenario
   const goodItems = [];
   if (currentScenario === 'natuurbrand') {
+    // Positieve acties voor het natuurbrandscenario
     if (state.packedBag) goodItems.push({
       icon: '🎒',
-      text: '<b>Tas ingepakt</b>. Je pakte al vroeg een tas met essentials. Bij evacuatie had je direct alles bij de hand.'
+      text: '<b>Tas ingepakt</b>. Je pakte al vroeg een tas met belangrijke spullen. Zo kon je bij een evacuatie meteen weg.'
     });
     if (state.evacuated) goodItems.push({
       icon: '🚗',
@@ -304,11 +340,13 @@ function showReport() {
       icon: '👋',
       text: '<b>Buren gewaarschuwd</b>. Je informeerde buren voordat je vertrok. Solidariteit helpt in een crisis.'
     });
+    // awarenessLevel > 0 betekent dat de speler actief informatie volgde
     if (state.awarenessLevel > 0) goodItems.push({
       icon: '📻',
       text: '<b>Vroeg gealarmeerd</b>. Je volgde het nieuws en was al alert voordat het bevel officieel werd gegeven.'
     });
   } else if (currentScenario === 'overstroming') {
+    // Positieve acties voor het overstromingsscenario
     if (state.cutElectricity) goodItems.push({
       icon: '⚡',
       text: '<b>Elektriciteit afgesloten</b>. Je sloot de meterkast af. Water en stroom vormen samen een dodelijke combinatie. Dit was een cruciale veiligheidsmaatregel.'
@@ -319,7 +357,7 @@ function showReport() {
     });
     if (state.calledRescue) goodItems.push({
       icon: '🆘',
-      text: '<b>Hulpdiensten ingeschakeld</b>. Je meldde je locatie of riep hulp. Daardoor konden reddingswerkers je sneller bereiken.'
+      text: '<b>Hulpdiensten ingeschakeld</b>. Je meldde je locatie of riep hulp. Zo konden reddingswerkers je sneller bereiken.'
     });
     if (state.savedItems) goodItems.push({
       icon: '📦',
@@ -330,6 +368,7 @@ function showReport() {
       text: '<b>Buren geholpen</b>. Je waarschuwde buren of hielp bij evacuatie. Bij een overstroming kunnen buren elkaars reddingslijn zijn.'
     });
   } else if (currentScenario === 'thuis_komen') {
+    // Positieve acties voor het scenario 'thuis komen'
     if (state.reachedHome) goodItems.push({
       icon: '🏠',
       text: '<b>Thuis gekomen</b>. Je vond een weg naar huis, ondanks uitgevallen infrastructuur.'
@@ -346,11 +385,13 @@ function showReport() {
       icon: '🤝',
       text: '<b>Iemand geholpen onderweg</b>. Je hielp een medemens tijdens een moeilijke situatie. Dat verdient erkenning.'
     });
+    // Controleer beide mogelijke kinderstatussleutels
     if (state.kidsPickedUp || state.kidsArranged) goodItems.push({
       icon: '👶',
       text: '<b>Kinderen geregeld</b>. Je zorgde dat de kinderen veilig waren, ook op afstand.'
     });
   } else {
+    // Positieve acties voor het standaard stroomuitvalscenario
     if (state.hasCash) goodItems.push({
       icon: '💵',
       text: '<b>Contant geld</b>. Je had contant geld beschikbaar. In een stroomstoring werken pinautomaten niet. Dat maakte direct verschil bij de supermarkt.'
@@ -365,7 +406,7 @@ function showReport() {
     });
     if (state.knowsNeighbors) goodItems.push({
       icon: '👋',
-      text: '<b>Buren leren kennen</b>. Je ging al vroeg bij Annie langs. Daardoor wist je wie er woonde en kon je sneller helpen toen het misging.'
+      text: '<b>Buren leren kennen</b>. Je ging al vroeg bij Annie langs. Zo wist je wie er woonde en kon je sneller helpen toen het misging.'
     });
     if (state.helpedNeighbor) goodItems.push({
       icon: '🤝',
@@ -387,12 +428,14 @@ function showReport() {
       icon: '🔦',
       text: '<b>Verlichting geregeld</b>. Je zorgde voor een zaklamp of kaarsen. In het donker, bij -3 graden buiten, was dat essentieel.'
     });
+    // awarenessLevel > 0 geeft aan dat de speler nieuwsberichten las over kwetsbaar energienet
     if (state.awarenessLevel > 0) goodItems.push({
       icon: '💡',
       text: '<b>Bewustzijn voor risico\'s</b>. Je las de nieuwsberichten over kwetsbare energienetwerken. Dat bewustzijn is de eerste stap in voorbereiding.'
     });
   } // end else (stroom)
 
+  // Render de 'goed gedaan'-sectie; toon een neutrale tekst als er geen positieve acties zijn
   let goodHtml = '';
   if (goodItems.length === 0) {
     goodHtml = '<div class="tip-card neutral"><div class="tip-icon">📋</div><div class="tip-text">In dit scenario maakte je geen keuzes die direct bijdroegen aan veiligheid of voorbereiding. Dat is oké. Dit scenario is juist bedoeld om te ontdekken waar de blinde vlekken zitten.</div></div>';
@@ -404,8 +447,10 @@ function showReport() {
   document.getElementById('rep-good').innerHTML = goodHtml;
 
   // IMPROVE
+  // Verzamel verbeterpunten op basis van gemiste acties van de speler per scenario
   const improveItems = [];
   if (currentScenario === 'natuurbrand') {
+    // Verbeterpunten voor het natuurbrandscenario — alleen als de actie NIET is genomen
     if (!state.packedBag) improveItems.push({
       icon: '🎒',
       text: '<b>Geen tas ingepakt</b>. Bij evacuatie had je geen voorbereide tas. Leg alvast een noodtas klaar met paspoort, medicijnen, oplader en kleding voor twee dagen.'
@@ -414,6 +459,7 @@ function showReport() {
       icon: '🚗',
       text: '<b>Te laat vertrokken</b>. Je vertrok niet vroeg genoeg. Bij natuurbranden kan het vuurfront snel oprukken. Vertrouw niet alleen op het officiële bevel, maar ook op je eigen waarneming.'
     });
+    // awarenessLevel === 0 betekent dat de speler geen informatie volgde
     if (state.awarenessLevel === 0) improveItems.push({
       icon: '📻',
       text: '<b>Informatie gemist</b>. Je volgde het nieuws niet goed. Een batterijradio of NL-Alert-app had je eerder kunnen waarschuwen.'
@@ -423,23 +469,27 @@ function showReport() {
       text: '<b>Terugkeer niet georganiseerd</b>. Na de crisis is een geordende terugkeer belangrijk. Wacht altijd op het officiële sein veilig.'
     });
   } else if (currentScenario === 'overstroming') {
+    // Verbeterpunten voor het overstromingsscenario
     if (!state.cutElectricity) improveItems.push({
       icon: '⚡',
       text: '<b>Elektriciteit niet afgesloten</b>. Water en stroom samen zijn levensgevaarlijk. Bij hoog water moet je altijd de meterkast uitzetten voordat het water de elektra bereikt.'
     });
+    // Toon dit verbeterpunt alleen als de speler NOCH geëvacueerd is, NOR naar boven gegaan is
     if (!state.evacuatedFlood && !state.wentUpstairs) improveItems.push({
       icon: '🌊',
       text: '<b>Te laat gereageerd</b>. Je reageerde niet op tijd op de hoogwaterwaarschuwing. Bij wateroverlast telt elke minuut.'
     });
     if (!state.savedItems) improveItems.push({
       icon: '📦',
-      text: '<b>Niets gered</b>. Je nam geen essentials mee naar boven. Medicijnen, documenten en een oplader zijn het minimum bij overstromingsdreiging.'
+      text: '<b>Niets meegenomen</b>. Je nam geen belangrijke spullen mee naar boven. Medicijnen, documenten en een oplader zijn het minimum bij kans op overstroming.'
     });
+    // Toon dit verbeterpunt alleen als de speler boven zat maar geen hulp vroeg
     if (!state.calledRescue && state.wentUpstairs) improveItems.push({
       icon: '🆘',
       text: '<b>Geen hulp gevraagd</b>. Toen je boven zat, had je je locatie kunnen melden bij 112. Laat hulpdiensten altijd weten waar je bent.'
     });
   } else if (currentScenario === 'thuis_komen') {
+    // Verbeterpunten voor het scenario 'thuis komen'
     if (!state.hadEDCBag) improveItems.push({
       icon: '🎒',
       text: '<b>Geen EDC-tas</b>. Je had geen dagelijkse noodtas bij je. Contant geld, powerbank en OV-kaart hadden onderweg een direct verschil gemaakt. Neem op werkdagen een kleine tas mee.'
@@ -448,19 +498,23 @@ function showReport() {
       icon: '🏠',
       text: '<b>Niet thuis gekomen</b>. Je vond geen manier om thuis te komen. Denk van tevoren na over alternatieven als het OV uitvalt.'
     });
+    // Sla dit verbeterpunt over als de speler vlakbij woont (commuteDistance === 'near')
     if (!state.foundAlternative && profile.commuteDistance !== 'near') improveItems.push({
       icon: '🔄',
       text: '<b>Geen alternatief gevonden</b>. Je bleef wachten op een vervoermiddel dat niet meer reed. Wees proactief: vraag een lift, leen een fiets of ga alvast lopen.'
     });
+    // Toon alleen als het profiel aangeeft dat er kinderen zijn
     if (profile.hasChildren && !state.kidsArranged) improveItems.push({
       icon: '👶',
       text: '<b>Kinderen niet geregeld</b>. Je had geen plan voor wie de kinderen ophaalt als jij niet thuis kunt komen. Spreek dit van tevoren af met school en partner.'
     });
+    // Controleer zowel profiel als spelerstatus voor contant geld
     if (!profile.hasCash && !state.hasCash) improveItems.push({
       icon: '💵',
       text: '<b>Geen contant geld</b>. Taxi\'s, liften en tankstations accepteerden alleen cash. Zorg altijd voor €50 in je tas.'
     });
   } else {
+    // Verbeterpunten voor het standaard stroomuitvalscenario
     if (!state.hasCash) improveItems.push({
       icon: '💵',
       text: '<b>Contant geld</b>. Je had geen contant geld bij de hand. Supermarkten en tankstations accepteerden tijdens de crisis alleen contant. Bewaar thuis altijd €100 tot €200 in een noodpakket.'
@@ -489,12 +543,14 @@ function showReport() {
       icon: '🚽',
       text: '<b>Riolering</b>. Je pakte het rioleringsprobleem niet goed aan. Rioolwater dat terugstroomt in huis is een ernstig hygiënerisico. Sluit afvoeren af bij het eerste teken van terugsijpeling.'
     });
+    // Toon dit punt alleen als de speler ook niet naar de supermarkt is geweest
     if (!state.wentToSupermarket && !state.hasExtraFood) improveItems.push({
       icon: '🛒',
-      text: '<b>Noodvoorraad</b>. Je ging niet vroeg naar de supermarkt en had geen noodvoorraad thuis. Na 24 uur waren alle supermarkten leeg of gesloten. Een noodvoorraad voor 72 uur maakt je minder afhankelijk — dat is de eerste stap uit elk noodplan.'
+      text: '<b>Noodvoorraad</b>. Je ging niet vroeg naar de supermarkt en had geen noodvoorraad thuis. Na 24 uur waren alle supermarkten leeg of gesloten. Een noodvoorraad voor 72 uur maakt je minder afhankelijk. Dat is een goede eerste stap.'
     });
   } // end else (stroom)
 
+  // Render de verbeterpuntensectie; toon een succesbericht als er niets te verbeteren valt
   let improveHtml = '';
   if (improveItems.length === 0) {
     improveHtml = '<div class="tip-card good"><div class="tip-icon">🌟</div><div class="tip-text">Je hebt in dit scenario alle cruciale acties ondernomen. Goed gedaan.</div></div>';
@@ -506,9 +562,11 @@ function showReport() {
   document.getElementById('rep-improve').innerHTML = improveHtml;
 
   // PERSONAL TIPS based on profile
+  // Bouw persoonlijke tips op die afgestemd zijn op het profiel van de speler
   const personalTips = [];
 
   // Water/flood risk
+  // Toon waarschuwing als de speler in een laaggelegen of waterrijke omgeving woont
   if (profile.region === 'lowland' || (profile.location && profile.location.includes('water'))) {
     personalTips.push({
       icon: '🌊',
@@ -517,6 +575,7 @@ function showReport() {
   }
 
   // House type
+  // Specifieke tip voor bewoners van een appartement (liften, wateropslag)
   if (profile.houseType === 'appartement') {
     personalTips.push({
       icon: '🏢',
@@ -525,6 +584,7 @@ function showReport() {
   }
 
   // Children
+  // Extra tip als er kinderen in het huishouden zijn
   if (profile.hasChildren) {
     personalTips.push({
       icon: '👶',
@@ -533,6 +593,7 @@ function showReport() {
   }
 
   // Elderly
+  // Extra tip als er ouderen in het huishouden zijn (hypothermierisico)
   if (profile.hasElderly) {
     personalTips.push({
       icon: '👴',
@@ -541,6 +602,7 @@ function showReport() {
   }
 
   // Medical needs
+  // Tip over gekoelde medicijnen en extra voorraad
   if (profile.hasMedNeeds) {
     personalTips.push({
       icon: '💊',
@@ -549,6 +611,7 @@ function showReport() {
   }
 
   // Pets
+  // Tip over noodvoorraden en stressignalen voor huisdieren
   if (profile.hasPets) {
     personalTips.push({
       icon: '🐾',
@@ -557,6 +620,7 @@ function showReport() {
   }
 
   // No car
+  // Waarschuwing voor spelers zonder auto: meer afhankelijkheid van fiets of eigen benen
   if (!profile.hasCar) {
     personalTips.push({
       icon: '🚲',
@@ -565,6 +629,7 @@ function showReport() {
   }
 
   // Radio
+  // Tip over de onmisbaarheid van een batterijradio bij stroomuitval
   if (!profile.hasRadio) {
     personalTips.push({
       icon: '📻',
@@ -573,6 +638,7 @@ function showReport() {
   }
 
   // Cash
+  // Tip alleen tonen als de speler zowel voor als tijdens de crisis geen contant geld had
   if (!profile.hasCash && !state.hasCash) {
     personalTips.push({
       icon: '💵',
@@ -581,6 +647,7 @@ function showReport() {
   }
 
   // Kit
+  // Tip over het aanleggen van een compleet noodpakket (denkvooruit.nl)
   if (!profile.hasKit) {
     personalTips.push({
       icon: '🎒',
@@ -589,6 +656,7 @@ function showReport() {
   }
 
   // Powerbank
+  // Tip over het belang van een opgeladen powerbank als communicatiemiddel
   if (!profile.hasPowerbank) {
     personalTips.push({
       icon: '🔋',
@@ -597,11 +665,13 @@ function showReport() {
   }
 
   // Generic tip always shown
+  // Algemene afsluitende tip die altijd getoond wordt, ongeacht het profiel
   personalTips.push({
     icon: '⚡',
     text: '<b>Bereid je voor op 72 uur</b>. Dit scenario laat zien hoe snel je afhankelijk wordt van dingen die normaal vanzelf gaan: stroom, water, verwarming, communicatie. Een noodpakket, noodvoorraad en een noodplan helpen je de eerste 72 uur zelfstandig door te komen.'
   });
 
+  // Render alle persoonlijke tips als kaarten
   let personalHtml = '';
   personalTips.forEach(t => {
     personalHtml += `<div class="tip-card"><div class="tip-icon">${t.icon}</div><div class="tip-text">${t.text}</div></div>`;
@@ -609,12 +679,14 @@ function showReport() {
   document.getElementById('rep-personal').innerHTML = personalHtml;
 
   // Stagger report sections in after screen entrance (screen takes 280ms)
+  // Laat elke sectie met een kleine vertraging infaden voor een vloeiend visueel effect
   const sections = ['rep-intro', 'rep-outcome', 'rep-context', 'rep-timeline', 'rep-status', 'rep-endstats', 'rep-good', 'rep-improve', 'rep-personal'];
   sections.forEach((id, i) => {
     const el = document.getElementById(id);
     if (el) {
-      el.style.animation = 'none';
-      el.style.opacity = '0';
+      el.style.animation = 'none';         // Reset eventuele lopende animatie
+      el.style.opacity = '0';              // Begin onzichtbaar
+      // Pas een infade-animatie toe met oplopende vertraging per sectie (elke 80ms later)
       el.style.animation = `contentFade 280ms var(--ease-out) ${200 + i * 80}ms both`;
     }
   });
