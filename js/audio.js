@@ -92,16 +92,15 @@ function toggleAudio() {
   }
 }
 
-// Howl-instantie voor het NL-Alert geluid (eenmalig afspelen).
-const _nlAlertSound = new Howl({
-  src: ['audio/NL-Alert.mp3'],
-  volume: 1.0,
-  html5: true // html5-modus voor grote of gestreamde bestanden
-});
+// Howl-instantie voor het NL-Alert geluid — lazy aangemaakt bij eerste gebruik.
+let _nlAlertSound = null;
 
 // Speelt het NL-Alert geluid af als geluid ingeschakeld is.
 function playNLAlertSound() {
   if (!audioEnabled) return;
+  if (!_nlAlertSound) {
+    _nlAlertSound = new Howl({ src: ['audio/NL-Alert.mp3'], volume: 1.0, html5: true });
+  }
   _nlAlertSound.play();
 }
 
@@ -113,20 +112,21 @@ function playNLAlertSound() {
 const Ambience = {
   _current: null, // naam van de momenteel spelende ambient track, of null
 
-  // Vooraf geladen Howl-instanties voor elke ambient track
-  _sounds: {
-    rain: new Howl({
-      src: ['audio/rain-loop.mp3'],
-      loop: true,   // loopt oneindig
-      volume: 0,    // begint stil; wordt ingevaagd via fade
-      html5: true
-    }),
-    fire: new Howl({
-      src: ['audio/fire-loop.mp3'],
-      loop: true,
-      volume: 0,
-      html5: true
-    }),
+  // Lazy-aangemaakte Howl-instanties per track (aangemaakt bij eerste gebruik).
+  _sounds: {},
+
+  // Configuraties voor elke ambient track
+  _configs: {
+    rain: { src: ['audio/rain-loop.mp3'], loop: true, volume: 0, html5: true },
+    fire: { src: ['audio/fire-loop.mp3'], loop: true, volume: 0, html5: true }
+  },
+
+  // Geeft de Howl-instantie voor de opgegeven track terug; maakt hem aan als hij nog niet bestaat.
+  _get(name) {
+    if (!this._sounds[name]) {
+      this._sounds[name] = new Howl(this._configs[name]);
+    }
+    return this._sounds[name];
   },
 
   TARGET_VOL: 0.22, // doelvolume na fade-in (22%)
@@ -139,18 +139,20 @@ const Ambience = {
     if (!audioEnabled || this._current === name) return;
 
     // Fade de huidige track uit en stop hem na de fade-duur
-    if (this._current && this._sounds[this._current] && this._sounds[this._current].playing()) {
+    if (this._current) {
       const prev = this._current;
-      this._sounds[prev].fade(this._sounds[prev].volume(), 0, this.FADE_OUT);
-      setTimeout(() => this._sounds[prev].stop(), this.FADE_OUT); // stop pas ná de fade
+      const prevSnd = this._sounds[prev]; // alleen stoppen als hij al aangemaakt is
+      if (prevSnd && prevSnd.playing()) {
+        prevSnd.fade(prevSnd.volume(), 0, this.FADE_OUT);
+        setTimeout(() => prevSnd.stop(), this.FADE_OUT);
+      }
     }
 
     this._current = name; // sla de nieuwe track op als actieve
 
-    if (name && this._sounds[name]) {
-      const snd = this._sounds[name];
-      snd.volume(0); // begin op volume 0 zodat de fade-in zacht begint
-      // Pas na het starten van de track de fade-in activeren (once = eenmalige listener)
+    if (name) {
+      const snd = this._get(name); // lazy-initialiseer bij eerste gebruik
+      snd.volume(0);
       snd.once('play', () => snd.fade(0, this.TARGET_VOL, this.FADE_IN));
       snd.play();
     }
@@ -158,12 +160,15 @@ const Ambience = {
 
   // Stopt de huidige ambient track met een fade-out.
   stop() {
-    if (this._current && this._sounds[this._current] && this._sounds[this._current].playing()) {
+    if (this._current) {
       const prev = this._current;
-      this._sounds[prev].fade(this._sounds[prev].volume(), 0, this.FADE_OUT);
-      setTimeout(() => this._sounds[prev].stop(), this.FADE_OUT);
+      const prevSnd = this._sounds[prev];
+      if (prevSnd && prevSnd.playing()) {
+        prevSnd.fade(prevSnd.volume(), 0, this.FADE_OUT);
+        setTimeout(() => prevSnd.stop(), this.FADE_OUT);
+      }
     }
-    this._current = null; // markeer dat er geen actieve track meer is
+    this._current = null;
   },
 
   // Bepaalt op basis van het scène-ID welke ambient track geschikt is

@@ -52,17 +52,31 @@ const scenes_thuis_komen = [{
       headline: 'Grote stroomstoring treft heel Nederland, duur onbekend',
       body: 'Er is een grote stroomstoring in vrijwel heel Nederland. De oorzaak wordt onderzocht. Treinen rijden niet meer. Verkeerslichten zijn uit. De overheid vraagt iedereen kalm te blijven.'
     }],
-    whatsapp: [{
-      from: 'Partner',
-      msg: 'Hier is de stroom ook weg. Weet je al wanneer je thuis bent?',
-      time: '12:18',
-      outgoing: false
-    }, {
-      from: 'Baas',
-      msg: 'Iedereen mag naar huis als dat lukt. Wij sluiten het gebouw. Vergeet uw spullen niet.',
-      time: '12:55',
-      outgoing: false
-    }],
+    get whatsapp() {
+      const msgs = [];
+      if (profile.adults > 1) {
+        msgs.push({
+          from: 'Partner',
+          msg: 'Hier ook geen stroom. Laat je even weten waar je bent? Ik maak me een beetje zorgen.',
+          time: '12:18',
+          outgoing: false
+        });
+      } else {
+        msgs.push({
+          from: 'Buurvrouw Ans',
+          msg: 'Hoi, stroom is hier ook weg. Alles goed met jou? Laat even iets weten.',
+          time: '12:20',
+          outgoing: false
+        });
+      }
+      msgs.push({
+        from: 'Baas',
+        msg: 'Iedereen mag naar huis als dat lukt. Wij sluiten het gebouw. Vergeet uw spullen niet.',
+        time: '12:55',
+        outgoing: false
+      });
+      return msgs;
+    },
     nlalert: 'NL-Alert\n15 januari 2027 – 12:15\n\nGrote stroomstoring in heel Nederland. Duur onbekend. Verkeerslichten zijn uit. Treinen rijden niet. Blijf kalm en ga veilig naar huis. Update volgt.',
     radio: null
   },
@@ -134,7 +148,12 @@ const scenes_thuis_komen = [{
   dayBadgeClass: '',
   channels: {
     news: [],
-    whatsapp: [],
+    whatsapp: [{
+      from: 'Collega Martijn',
+      msg: 'Jij gaat toch ook naar huis? Ik ook. Zullen we samen optrekken? Dan zijn we in ieder geval niet alleen.',
+      time: '13:03',
+      outgoing: false
+    }],
     nlalert: null,
     radio: null
   },
@@ -178,6 +197,14 @@ const scenes_thuis_komen = [{
     stateChange: {
       travelMode: 'bike'
     }
+  }, {
+    text: '🤝 Samen optrekken met collega Martijn',
+    consequence: 'Martijn gaat dezelfde kant op. Jullie vertrekken samen. Het is rustgevend om niet alleen te zijn in al die drukte. Onderweg wisselen jullie van gedachten over wat jullie thuis te wachten staat.',
+    stateChange: () => ({
+      helpedStranger: true,
+      foundAlternative: true,
+      travelMode: profile.commuteMode === 'car' ? 'car' : 'bike'
+    })
   }]
 }, {
   id: 'tk_4a',
@@ -426,12 +453,24 @@ const scenes_thuis_komen = [{
   conditionalOn: () => !state.reachedHome,
   channels: {
     news: [],
-    whatsapp: [{
-      from: 'Partner',
-      msg: 'Ben je al onderweg? Alles ok thuis. Kaarsje aan. Wacht op je.',
-      time: '15:45',
-      outgoing: false
-    }],
+    get whatsapp() {
+      const msgs = [];
+      if (profile.adults > 1) {
+        msgs.push({
+          from: 'Partner',
+          msg: 'Ben je al onderweg? Alles ok thuis, kaarsje aan. Wacht op je.',
+          time: '15:45',
+          outgoing: false
+        });
+      }
+      msgs.push({
+        from: 'Broer/Zus',
+        msg: 'Hé, wij horen dat het overal chaos is. Ben je onderweg? Laat even iets weten, wij zitten te wachten.',
+        time: '15:52',
+        outgoing: false
+      });
+      return msgs;
+    },
     nlalert: null,
     radio: null
   },

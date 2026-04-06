@@ -5,7 +5,7 @@
 ## Project overzicht
 
 Vanilla HTML/CSS/JS single-page app — geen framework, geen build-stap, geen npm.
-Nederlandstalige crisistraining-simulator voor gemeente Opsterland (demo).
+Nederlandstalige crisistraining-simulator.
 Spelers doorlopen een intake, kiezen een noodscenario, maken keuzes en krijgen een persoonlijk rapport.
 
 ---

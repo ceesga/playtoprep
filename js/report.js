@@ -36,6 +36,8 @@ function showReport() {
     intro = `${jij} hebt het overstromingsscenario gespeeld. Stijgend water geeft weinig tijd. Hieronder zie je welke keuzes jij maakte.`;
   } else if (currentScenario === 'thuis_komen') {
     intro = `${jij} hebt het scenario Thuiskomen gespeeld. Hoe kom je thuis als alles uitvalt? Hieronder zie je jouw route en keuzes.`;
+  } else if (currentScenario === 'nachtalarm') {
+    intro = `${jij} hebt het scenario Brandalarm in de nacht gespeeld. De eerste minuten bij brand zijn bepalend. Hieronder zie je hoe jij reageerde.`;
   }
   document.getElementById('rep-intro').textContent = intro;
 
@@ -218,6 +220,52 @@ function showReport() {
       labelMissing: 'Geen contant geld bij je gehad',
       icon: '💵'
     }];
+  } else if (currentScenario === 'nachtalarm') {
+    // Statusbadges specifiek voor het nachtalarm-scenario
+    statusItems = [
+      {
+        key: 'tookAlarmSeriously',
+        label: 'Alarm direct serieus genomen',
+        labelMissing: 'Alarm niet meteen serieus genomen',
+        icon: '🔔'
+      },
+      {
+        key: 'warnedHousemates',
+        label: 'Huisgenoten gewaarschuwd',
+        labelMissing: 'Huisgenoten niet gewaarschuwd',
+        icon: '🗣️'
+      },
+      {
+        key: 'didntUseWaterOnFire',
+        label: 'Geen water op elektrische brand gegooid',
+        labelMissing: 'Water op elektrische brand gegooid',
+        icon: '⚡'
+      },
+      {
+        key: 'evacuatedFire',
+        label: 'Op tijd naar buiten gegaan',
+        labelMissing: 'Niet op tijd naar buiten gegaan',
+        icon: '🚪'
+      },
+      {
+        key: 'called112',
+        label: '112 gebeld',
+        labelMissing: '112 niet gebeld',
+        icon: '📱'
+      },
+      {
+        key: 'stayedOutside',
+        label: 'Buiten gebleven tot brandweer klaar was',
+        labelMissing: 'Toch terug naar binnen gegaan',
+        icon: '🌙'
+      },
+      ...(profile.hasChildren || profile.hasMobilityImpaired ? [{
+        key: 'kidsEvacuated',
+        label: 'Kwetsbare huisgenoten geholpen',
+        labelMissing: 'Kwetsbare huisgenoten niet geholpen',
+        icon: '🤝'
+      }] : [])
+    ];
   } else {
     // Statusbadges voor het standaard stroomuitvalscenario
     statusItems = [{

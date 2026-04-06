@@ -83,7 +83,13 @@ const state = {
   health:       START_HEALTH,
   cash:         START_CASH,
   powerbank:    0,
-  phoneBattery: START_PHONE_BATTERY
+  phoneBattery: START_PHONE_BATTERY,
+  tookAlarmSeriously: false,
+  warnedHousemates: false,
+  didntUseWaterOnFire: false,
+  evacuatedFire: false,
+  called112: false,
+  stayedOutside: false
 };
 
 // Scene decay — automatic stat reductions when a scene is entered
@@ -274,6 +280,13 @@ const sceneDecay_drinkwater = {
   wd_5: { phoneBattery: -5  }, // +0.75h (conditioneel)
   wd_6: { phoneBattery: -5  }, // +0.5h
   wd_7: { phoneBattery: -10 }  // +3h avond
+};
+const sceneDecay_nachtalarm = {
+  // phoneBattery: start 02:17, scenario duurt ~30 min
+  na_1: { comfort: -1, phoneBattery: -5 }, // rook geroken, stress
+  na_2: { comfort: -1, phoneBattery: -5 }, // woonkamer, rook dicht
+  na_3: { comfort: -1, phoneBattery: -5 }, // rook dikker, haast
+  na_4: { phoneBattery: -5 }               // buiten, wachten op brandweer
 };
 
 // ─── PERSISTENT CHANNEL CONTENT ───────────────────────────────────────────────

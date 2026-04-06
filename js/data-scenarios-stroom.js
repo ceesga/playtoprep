@@ -512,7 +512,7 @@ const scenes_stroom = [
       stateChange: {}
     }]
   },
-  // SCENE 9 — Night robbery
+  // SCENE 9 — Night suspicion
   {
     id: 'st_7',
     time: '02:30',
@@ -523,14 +523,14 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'Radio 1. Het is half drie. De stroomstoring duurt voort. Politie en hulpdiensten zijn overbelast. In meerdere steden zijn incidenten gemeld. Blijf binnenshuis. De volgende update volgt om zes uur.'
+      radio: 'Radio 1. Het is half drie. De stroomstoring duurt voort. Winkels en tankstations blijven op veel plekken dicht. Hulpdiensten hebben het druk. Blijf binnenshuis en bel 112 alleen bij levensgevaar.'
     },
     get narrative() {
       const view = profile.houseType === 'appartement' ?
         'naar de gevel van het tegenoverliggende gebouw kijkt' :
         'naar de tuin van de overburen kijkt';
       const mob = profile.hasMobilityImpaired ? (profile.houseType === 'appartement' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
-      return 'Je wordt wakker van een geluid. Glas dat breekt. Als je voorzichtig naar het raam van de slaapkamer sluipt en ' + view + ', zie je twee mensen via het achterraam naar binnen gaan. Even later hoor je ze er vandoor rennen, met een tas in hun handen. Het is donker op straat. IJskoud. Je hart bonkt.' + mob;
+      return 'Je wordt wakker van glasgerinkel buiten. Als je voorzichtig naar het raam loopt en ' + view + ', zie je twee mensen met zaklampen langs auto\'s en tuinen lopen. Ze voelen aan een paar deurklinken en lopen dan weer door. Het is donker, stil en ijskoud. Je hart bonkt.' + mob;
     },
     choices: [{
       text: '📱 112 bellen',
@@ -543,8 +543,8 @@ const scenes_stroom = [
         houseLocked: true
       }
     }, {
-      text: '👊 Naar buiten gaan om te confronteren',
-      consequence: 'Je doet de voordeur open. De straat is verlaten. De inbrekers zijn allang weg. Je staat in de vrieskou in je pyjamabroek. Je gaat snel weer naar binnen.',
+      text: '🚪 Naar buiten gaan om te kijken wat er aan de hand is',
+      consequence: 'Je zet de deur op een kier, maar buiten is het te donker en onoverzichtelijk. Je sluit snel weer af. Binnen ben je veiliger.',
       stateChange: {}
     }, {
       text: '🙈 Niets doen, het gaat niet om ons huis',
@@ -563,7 +563,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [{
         from: 'Buurvrouw Annie',
-        msg: 'Help. Mijn man is bewusteloos geslagen. Ze hebben al ons eten gestolen. Mijn telefoon werkt bijna niet meer. Kunnen jullie komen?',
+        msg: 'Help. Jan is gevallen toen hij in het donker opstond. Hij bloedt aan zijn hoofd en ik krijg bijna niemand te pakken. Kunnen jullie komen?',
         time: '05:28',
         outgoing: false
       }],
@@ -597,10 +597,10 @@ const scenes_stroom = [
       nlalert: null,
       radio: 'Radio 1. Vijf uur dertig. De stroomstoring houdt aan. Houd uw radio aan. Houd uw naasten op de hoogte. De overheid werkt aan herstel.'
     },
-    narrative: 'Je staat voor de deur van Annie. Ze doet open, haar ogen zijn rood van het huilen. Achter haar zie je haar man Jan op de bank liggen. Je moet snel beslissen hoe je het best kunt helpen.',
+    narrative: 'Je staat voor de deur van Annie. Ze doet open, wit weggetrokken van schrik. Achter haar ligt Jan op de bank met een wond op zijn hoofd. Je moet snel beslissen hoe je het best kunt helpen.',
     choices: [{
       text: '🩺 Direct naar Jan kijken en zijn toestand beoordelen',
-      consequence: 'Je loopt naar binnen. Jan (81) ligt op de bank. Hij reageert wel, maar is verward en heeft een grote wond op zijn hoofd. Je controleert zijn ademhaling; die is stabiel. Je reinigt de wond zo goed als je kunt en zorgt dat hij warm blijft.',
+      consequence: 'Je loopt naar binnen. Jan reageert wel, maar is duizelig en in de war. Hij is waarschijnlijk gevallen in het donker. Je controleert zijn ademhaling, maakt de wond zo goed mogelijk schoon en zorgt dat hij warm blijft.',
       stateChange: {
         helpedNeighbor: true
       }
@@ -638,7 +638,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'Radio 1. Goedemorgen. De stroomstoring duurt nu meer dan twintig uur. Herstel wordt niet voor morgenavond verwacht. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Waterleidingbedrijven vragen het verbruik te beperken.'
+      radio: 'Radio 1. Goedemorgen. De stroomstoring duurt nu meer dan twintig uur. Herstel wordt niet voor morgenavond verwacht. In sommige plaatsen verliep de avond onrustig. Sommige winkels sloten eerder en hulpdiensten hebben het druk. Waterleidingbedrijven vragen het verbruik te beperken.'
     },
     get narrative() {
       const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">5°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~20 uur zonder stroom</div>';
@@ -739,11 +739,9 @@ const scenes_stroom = [
       text: '🚗 Naar de auto om de telefoon op te laden',
       consequence: () => {
         const koud = profile.location.includes('city') ? 'Op straat is het ijskoud.' : 'Buiten waait een scherpe wind.';
-        return koud + ' Je loopt naar de auto, stapt in en sluit de deur. Je sluit de telefoon aan op de oplader in de middenconsole. De display springt aan. Je laat hem een half uur opladen terwijl je luistert naar het geluid van de straat. Als je terugkomt, staat hij op ' + Math.min(state.phoneBattery + 30, 100) + '%.';
+        return koud + ' Je loopt naar de auto, stapt in en sluit de deur. Je sluit de telefoon aan op de oplader in de middenconsole. De display springt aan. Je laat hem een half uur opladen terwijl je luistert naar het geluid van de straat. Als je terugkomt, staat hij op 60%.';
       },
-      stateChange: {
-        phoneBattery: 30
-      }
+      stateChange: () => ({ phoneBattery: 60 - state.phoneBattery })
     }, {
       text: '⏭️ Nu even niet, later als het echt nodig is',
       consequence: 'Je legt de telefoon neer en spaart de laatste procenten voor als het echt nodig is. Je weet nu tenminste dat je die optie hebt.',
@@ -777,7 +775,7 @@ const scenes_stroom = [
     },
     choices: [{
       text: '💧 In de rij gaan voor water',
-      consequence: 'Je staat 25 minuten in de rij. Als je aan de beurt bent, vul je twee grote flessen. De medewerker stempelt je hand. Eén keer per persoon.',
+      consequence: 'Je staat 25 minuten in de rij. Als je aan de beurt bent, vul je twee grote flessen. De medewerker noteert hoeveel water je meeneemt. Eén keer per persoon.',
       stateChange: {
         water: 2,
         hasWater: true
@@ -853,7 +851,7 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'Radio 1. Het dringende advies is om vanavond en vannacht binnen te blijven. In meerdere plaatsen is onrust gemeld. Blijf thuis, help uw buren en houd uw radio aan voor de laatste updates.'
+      radio: 'Radio 1. Het dringende advies blijft om vanavond en vannacht binnen te blijven. Het is donker op straat en hulpdiensten hebben het druk. Blijf thuis, help uw buren en houd uw radio aan voor updates.'
     },
     narrative: 'De dag vordert en het wordt steeds duidelijker dat dit niet morgen opgelost is. Buiten rijden af en toe politiewagens langs, langzamer dan normaal. Op straat zie je bijna niemand meer. Het is 9°C in huis. Wat doe je nu?',
     choices: [{
@@ -866,7 +864,7 @@ const scenes_stroom = [
       stateChange: {}
     }, {
       text: '🚗 Je besluit de auto te pakken en de stad te gaan verkennen',
-      consequence: "Je rijdt voorzichtig de straat uit. Bij het centrum zie je politiewagens en mensen die snel lopen. Bij een supermarkt zijn de ramen ingeslagen. Je draait snel terug. Dit is niet het moment om rond te rijden.",
+      consequence: 'Je rijdt voorzichtig richting het centrum. Bij enkele winkels en tankstations is het druk en onoverzichtelijk. Op een paar kruispunten regelt de politie het verkeer met zaklampen. Je draait om. Dit kost nu vooral brandstof en levert weinig op.',
       stateChange: {}
     }, {
       text: '🎲 Een bordspel pakken met het huishouden',
@@ -915,7 +913,7 @@ const scenes_stroom = [
       }
     }]
   },
-  // SCENE 13 — Explosion
+  // SCENE 13 — Fire from improvised cooking or heating
   {
     id: 'st_11',
     time: '01:30',
@@ -926,21 +924,23 @@ const scenes_stroom = [
       news: [],
       whatsapp: [],
       nlalert: null,
-      radio: 'Radio 1. Er zijn meldingen van onrust in meerdere wijken. Brandweer en politie zijn overbelast. Bel 112 alleen bij levensgevaar. Het dringende advies is om binnen te blijven. Blijf binnenshuis.'
+      radio: 'Radio 1. Er zijn meldingen van kleine branden door kaarsen en kooktoestellen. Brandweer en politie hebben het druk. Bel 112 alleen bij levensgevaar. Het dringende advies is om binnen te blijven.'
     },
-    narrative: 'Eerst hoor je geschreeuw in de verte. Dan volgt een doffe knal. De ramen trillen. Je hart staat even stil. Voorzichtig sluip je naar het raam. Buiten zie je een grote brand. Mensen staan eromheen. In het schaarse licht herken je een auto, die van de overburen. Sirenes hoor je niet.',
+    narrative: 'Eerst hoor je stemmen buiten. Dan ruik je rook. Als je naar het raam loopt, zie je dat er bij de overburen iets brandt bij de schuur of een container. Waarschijnlijk is er iets misgegaan met open vuur of een kooktoestel.',
     choices: [{
-      text: '🏠 Binnenblijven, het is gevaarlijk en het advies is om binnen te blijven',
-      consequence: 'Je blijft binnen. Dat is verstandig. Buiten is het onrustig en binnen ben je veiliger. Je kijkt door het raam, maar gaat niet naar buiten.',
+      text: '🏠 Binnenblijven en door het raam in de gaten houden',
+      consequence: 'Je blijft binnen en kijkt toe vanuit het raam. De brand lijkt beperkt te blijven tot de schuur. Na een tijdje dooft het vanzelf. Verstandig om niet naar buiten te gaan.',
       stateChange: {}
     }, {
-      text: '👥 Controleren of de overburen veilig zijn via de achterdeur',
-      consequence: 'Je sluipt via de achterdeur naar de overburen. Ze staan buiten te kijken, geschrokken maar ongedeerd. "Gelukkig stond hij op straat", fluistert de man. Je gaat snel weer naar binnen.',
+      text: '📱 112 bellen',
+      consequence: () => state.phoneBattery > 0
+        ? 'Je belt 112. Na een tijdje krijg je iemand aan de lijn. Ze zijn al op de hoogte van meerdere kleine branden in de buurt. "Houd het in de gaten en blijf binnen. Als het overslaat, bel dan opnieuw." Je doet het raam dicht tegen de rook.'
+        : 'Je telefoon is leeg. Je kunt 112 niet bereiken. Je houdt de brand vanuit het raam in de gaten.',
       stateChange: {}
     }, {
-      text: '🔥 Naar buiten om te helpen blussen',
-      consequence: 'Je loopt naar buiten. De brand is hevig en je hebt geen brandblusser. Er is niets wat je kunt doen. Je staat nutteloos te kijken in de vrieskou en staat buiten terwijl juist is geadviseerd om binnen te blijven.',
-      stateChange: {}
+      text: '🚪 Naar buiten om te kijken of de overburen hulp nodig hebben',
+      consequence: 'Je loopt naar buiten. De overburen staan al in de tuin. Ze hebben zelf water gegooid en de brand is bijna uit. "Stomme fout met de gasfles", zegt de man. "Niemand gewond." Je gaat snel weer naar binnen.',
+      stateChange: { helpedNeighbor: true }
     }]
   },
   // SCENE MORN_D2 — Day 2 morning, 08:00
@@ -978,7 +978,7 @@ const scenes_stroom = [
         state.comfort >= 2 ?
         'Je hebt slecht geslapen. Je ogen branden, je lichaam is stijf van de kou.' :
         'Je bent op. Twee nachten van stress en kou hakken erin. Voor je opstaat trek je de dekens nog even over je hoofd.';
-      return statusBar + mood + ' Op straat staat de uitgebrande auto van de overburen nog steeds. Zwartgeblakerd, met gebarsten ruiten. Niemand haalt hem weg. Er is geen normale hulpverlening meer op gang. Dit is dag twee.';
+      return statusBar + mood + ' Op straat zie je nog de verbrande plek bij de overburen. Veel gewone werkzaamheden liggen stil. Dit is dag twee.';
     },
     choices: [{
       text: '👁️ De straat bekijken door het raam',
@@ -1032,7 +1032,7 @@ const scenes_stroom = [
     },
     choices: [{
       text: '🥫 Naar de voedseluitdeling bij de supermarkt',
-      consequence: 'De rij voor de supermarkt is lang maar beweegt gestaag. Na twintig minuten wachten ontvang je een noodpakket: twee blikken soep, crackers en een flesje water. Een vrijwilliger stempelt je hand. Één pakket per persoon.',
+      consequence: 'De rij voor de supermarkt is lang maar beweegt gestaag. Na twintig minuten wachten ontvang je een noodpakket: twee blikken soep, crackers en een flesje water. Een vrijwilliger streept je huishouden af op een lijst. Eén pakket per huishouden.',
       stateChange: {
         food: 2,
         water: 1,

@@ -98,9 +98,9 @@ const sceneVisuals = {
     title: 'Koken zonder stroom'
   },
   st_11: {
-    seed: 'car-fire-night-dramatic',
+    seed: 'cold-dark-kitchen-evening',
     label: 'Dag 3 · 01:30',
-    title: 'Explosie op straat'
+    title: 'Brand bij de overburen'
   },
   st_d2_morgen: {
     seed: 'burnt-car-cold-morning',
@@ -371,6 +371,13 @@ const sceneVisuals = {
     label: 'Thuis · 21:00',
     title: 'Eerste nacht thuis'
   },
+  // Nachtalarm — scènes voor het nachtalarm-scenario
+  na_0: { seed: '', label: 'Nacht · 02:17', title: 'Het brandalarm gaat af' },
+  na_1: { seed: '', label: 'Nacht · 02:18', title: 'Rook op de gang' },
+  na_2: { seed: '', label: 'Nacht · 02:19', title: 'Brand in de woonkamer' },
+  na_3: { seed: '', label: 'Nacht · 02:20', title: 'Naar buiten' },
+  na_4: { seed: '', label: 'Nacht · 02:22', title: 'Buiten, wacht op brandweer' },
+  na_5: { seed: '', label: 'Nacht · 02:45', title: 'Brandweer heeft controle' }
 };
 
 /* ─── STATUSBALKEN WEERGAVE ────────────────────────────────────────────────────
@@ -554,7 +561,7 @@ function renderSceneVisual(scene) {
     st_14: 'afbeelding/stroomstoring/Huis_winter3.png',
     // Stroomstoring — speciale locaties
     st_4b: 'afbeelding/algemeen/supermarkt.jpg',
-    st_11: 'afbeelding/stroomstoring/brandende_auto.jpg',
+    st_11: 'afbeelding/stroomstoring/Huis_winter2.png',
     tk_1: 'afbeelding/stroomstoring_onderweg/kantoor.png',
     tk_2: 'afbeelding/stroomstoring_onderweg/kantoor.png',
     tk_2b: 'afbeelding/stroomstoring_onderweg/kantoor.png',
@@ -810,6 +817,9 @@ function startScenario(scenarioId) {
   } else if (currentScenario === 'drinkwater') {
     scenes = scenes_drinkwater;
     sceneDecay = sceneDecay_drinkwater;
+  } else if (currentScenario === 'nachtalarm') {
+    scenes = scenes_nachtalarm;
+    sceneDecay = sceneDecay_nachtalarm;
   }
 
   // Reset all scenario-specific state flags
@@ -860,6 +870,12 @@ function startScenario(scenarioId) {
   state.contactedAns = false;
   state.takingAns = false;
   state.day2Started = false;
+  state.tookAlarmSeriously = false;
+  state.warnedHousemates = false;
+  state.didntUseWaterOnFire = false;
+  state.evacuatedFire = false;
+  state.called112 = false;
+  state.stayedOutside = false;
 
   // Reset scène-index en alle kanaal- en geschiedenisbuffers
   currentSceneIdx = 0;
@@ -936,6 +952,7 @@ function loadGame() {
   else if (currentScenario === 'natuurbrand') { scenes = scenes_natuurbrand;   sceneDecay = sceneDecay_natuurbrand; }
   else if (currentScenario === 'overstroming'){ scenes = scenes_overstroming;  sceneDecay = sceneDecay_overstroming; }
   else if (currentScenario === 'thuis_komen') { scenes = scenes_thuis_komen;   sceneDecay = sceneDecay_thuis_komen; }
+  else if (currentScenario === 'nachtalarm')  { scenes = scenes_nachtalarm;    sceneDecay = sceneDecay_nachtalarm; }
   currentSceneIdx = d.currentSceneIdx;
 
   // Herstel geschiedenis
@@ -1895,8 +1912,9 @@ function pickChoice(idx) {
   const scene = visibleScenes[currentSceneIdx];
   const choice = scene.choices[idx];
 
+  // Vergrendel alle keuzes zodra er één is gekozen
+  document.querySelectorAll('#sc-choices .choice-btn').forEach(b => { b.disabled = true; });
   btn.classList.add('picked');
-  btn.disabled = true;
 
   // Snapshot state before changes for delta calculation
   const statsBefore = {
@@ -1990,12 +2008,8 @@ function pickChoice(idx) {
   twSpan.className = 'consequence-inline';
   narrativeEl.appendChild(twSpan);
 
-  // Na het typen: leesverlof (40ms per karakter, min. 2s), dan auto-advance
-  // Geef de speler voldoende tijd om de consequentie te lezen voordat de volgende scène begint
-  const readDelay = Math.max(1200, consequenceText.length * 20);
-  Typewriter.run(consequenceText, twSpan, () => {
-    Typewriter._advance = setTimeout(() => advanceScene(), readDelay);
-  });
+  // Toon de consequentie met typewriter-effect; speler klikt zelf op "Verder →" om door te gaan
+  Typewriter.run(consequenceText, twSpan, null);
 
   // Show afterword if this scene has one (e.g. st_14 epilogue)
   if (scene.afterword) {
