@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// Scenario: Nachtalarm — "Het brandalarm gaat af in de nacht"
+// Scenario: Nachtalarm — "De rookmelder gaat af in de nacht"
 // 6 scenes — van na_0 (02:17) tot na_5 (02:45)
 // Tijdspanne: ~30 minuten
 // Geen nieuws- of radiokanaal
@@ -25,13 +25,13 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
-      return 'Midden in de nacht schrik je wakker van een hard, schel piepend geluid. Het brandalarm. Het huis is donker en even weet je niet waar je bent.' +
+      return 'Midden in de nacht schrik je wakker van een hard, schel piepend geluid. De rookmelder gaat af. Alles is donker en even weet je niet waar je bent.' +
         (hasHousemates() ? ' Naast je, of in de kamer ernaast, slaapt iemand gewoon door. Het alarm lijkt alleen jou wakker te maken.' : '');
     },
     choices: [
       {
         text: '⚡ Meteen opstaan en luisteren waar het geluid vandaan komt',
-        consequence: 'Je schiet overeind. Je hart bonst in je keel. Beneden klinkt het alarm harder. Je houdt even je adem in en snuift de lucht op, maar boven ruik je nog geen rook.',
+        consequence: 'Je schiet overeind. Je hart bonst in je keel. Beneden klinkt de rookmelder harder. Je houdt even je adem in en snuift de lucht op, maar boven ruik je nog geen rook.',
         cat: 'cat-action',
         stateChange: { awarenessLevel: 1, tookAlarmSeriously: true }
       },
@@ -62,7 +62,12 @@ const scenes_nachtalarm = [
       nlalert: null,
       radio: null
     },
-    narrative: 'Je doet de slaapkamerdeur open. Meteen ruik je rook. Vanaf de trap hangt een grauwe waas in de hal. Het is stil in huis, op het alarm na, en meteen duidelijk dat er iets mis is.',
+    get narrative() {
+      if (profile.houseType === 'appartement') {
+        return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. In de hal van het appartement hangt al een grauwe waas. Vanuit de woonkamer trekt rook richting voordeur. Het is stil, op de rookmelder na, en meteen duidelijk dat er iets mis is.';
+      }
+      return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. Vanaf de trap hangt een grauwe waas in de hal. Het is stil in huis, op de rookmelder na, en meteen duidelijk dat er iets mis is.';
+    },
     choices: [
       {
         text: '🗣️ Direct iedereen wakker maken',
@@ -176,6 +181,16 @@ const scenes_nachtalarm = [
         conditionalOn: () => profile.hasBOBBag === 'ja'
       },
       {
+        text: () => petsCount > 1
+          ? '🐾 Je huisdieren roepen en meenemen als ze direct bereikbaar zijn'
+          : '🐾 Je huisdier roepen en meenemen als het direct bereikbaar is',
+        consequence: () => petsCount > 1
+          ? 'Je roept je huisdieren. De dieren die vlak bij de deur zitten, neem je meteen mee naar buiten. Verder zoeken doe je niet.'
+          : 'Je roept je huisdier. Het komt verschrikt tevoorschijn vlak bij de deur. Je neemt het meteen mee naar buiten en gaat niet verder zoeken.',
+        stateChange: { evacuatedFire: true, tookPets: true },
+        conditionalOn: () => profile.hasPets
+      },
+      {
         text: () => {
           if (profile.hasMobilityImpaired && !profile.hasChildren) return '🦽 Iemand direct helpen om naar buiten te gaan';
           if (childrenCount === 1) return '🧒 Je kind mee naar buiten nemen';
@@ -203,7 +218,7 @@ const scenes_nachtalarm = [
       whatsapp: [
         {
           from: 'Buurman',
-          msg: 'Ik zie jullie buiten staan. Gaat het? Kan ik iets doen?',
+          msg: 'Ik zie jullie buiten staan. Ik heb dekens en jassen als jullie iets nodig hebben.',
           time: '02:23',
           outgoing: false
         }
@@ -212,6 +227,11 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
+      if (profile.houseType === 'appartement') {
+        return hasHousemates()
+          ? 'Je staat buiten voor het gebouw in de koude nacht. Achter een raam boven je hangt nog rook. Naast je staat iedereen half aangekleed en geschrokken op de stoep. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.'
+          : 'Je staat buiten voor het gebouw in de koude nacht. Achter een raam boven je hangt nog rook. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.';
+      }
       return hasHousemates()
         ? 'Je staat buiten in de koude nacht. Vanuit de voordeur ruik je nog steeds rook. Naast je staat iedereen half aangekleed en geschrokken op straat. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.'
         : 'Je staat buiten in de koude nacht. Vanuit de woning ruik je nog steeds rook. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.';
@@ -265,10 +285,11 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
-      return 'De blauwe lichten kleuren de straat terwijl de brandweer het doorgebrande stopcontact veilig maakt en de woning controleert. Een brandweerman zegt dat het acute gevaar voorbij is, maar dat de rook en de schade maken dat het niet verstandig is om vannacht nog thuis te slapen.' +
+      return 'De blauwe lichten kleuren de straat terwijl de brandweer het doorgebrande stopcontact veilig maakt en de woning controleert. Een brandweerman loopt de situatie rustig met je door. Hij vraagt of iedereen buiten is en of er nog medicijnen, sleutels of andere noodzakelijke spullen missen. Daarna zegt hij dat het acute gevaar voorbij is, maar dat het door de rook en de schade niet verstandig is om vannacht nog thuis te slapen.' +
         (state.savedItems
-          ? ' Je hebt je spullen al bij je. De brandweerman knikt goedkeurend.'
-          : ' Hij vraagt of je belangrijke papieren, medicijnen en andere noodzakelijke spullen bij je hebt.');
+          ? ' Je hebt je spullen al bij je. Dat scheelt meteen.'
+          : ' Hij adviseert om alleen nog onder begeleiding naar binnen te gaan voor echt noodzakelijke spullen.') +
+        (state.tookPets ? ' Je huisdier is gelukkig ook buiten.' : '');
     },
     choices: [
       {

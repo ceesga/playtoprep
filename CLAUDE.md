@@ -252,7 +252,7 @@ Naast de stat-keys (`water`, `food`, `comfort`, `health`, `cash`, `phoneBattery`
 
 ```bash
 # Lokaal draaien
-cd /Users/ceesgauw/claude_projecten/playtoprep
+cd /home/ceesgauw/projects/playtoprep
 python3 -m http.server 8080
 # Open: http://localhost:8080
 ```

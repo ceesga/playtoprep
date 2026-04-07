@@ -37,7 +37,7 @@ function showReport() {
   } else if (currentScenario === 'thuis_komen') {
     intro = `${jij} hebt het scenario Thuiskomen gespeeld. Hoe kom je thuis als alles uitvalt? Hieronder zie je jouw route en keuzes.`;
   } else if (currentScenario === 'nachtalarm') {
-    intro = `${jij} hebt het scenario Brandalarm in de nacht gespeeld. De eerste minuten bij brand zijn bepalend. Hieronder zie je hoe jij reageerde.`;
+    intro = `${jij} hebt het scenario Rookalarm in de nacht gespeeld. De eerste minuten bij brand zijn bepalend. Hieronder zie je hoe jij reageerde.`;
   }
   document.getElementById('rep-intro').textContent = intro;
 
@@ -225,8 +225,8 @@ function showReport() {
     statusItems = [
       {
         key: 'tookAlarmSeriously',
-        label: 'Alarm direct serieus genomen',
-        labelMissing: 'Alarm niet meteen serieus genomen',
+        label: 'Rookmelder direct serieus genomen',
+        labelMissing: 'Rookmelder niet meteen serieus genomen',
         icon: '🔔'
       },
       {

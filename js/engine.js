@@ -372,7 +372,7 @@ const sceneVisuals = {
     title: 'Eerste nacht thuis'
   },
   // Nachtalarm — scènes voor het nachtalarm-scenario
-  na_0: { seed: '', label: 'Nacht · 02:17', title: 'Het brandalarm gaat af' },
+  na_0: { seed: '', label: 'Nacht · 02:17', title: 'De rookmelder gaat af' },
   na_1: { seed: '', label: 'Nacht · 02:18', title: 'Rook op de gang' },
   na_2: { seed: '', label: 'Nacht · 02:19', title: 'Brand in de woonkamer' },
   na_3: { seed: '', label: 'Nacht · 02:20', title: 'Naar buiten' },
