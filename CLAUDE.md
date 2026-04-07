@@ -23,9 +23,11 @@ playtoprep/
 │   ├── data-scenarios-bosbrand.js    # Scenario 'natuurbrand'
 │   ├── data-scenarios-overstroming.js# Scenario 'overstroming'
 │   ├── data-scenarios-thuiskomen.js  # Scenario 'thuis_komen'
+│   ├── data-scenarios-drinkwater.js  # Scenario 'drinkwater'
+│   ├── data-scenarios-nachtalarm.js  # Scenario 'nachtalarm' (kort, ~10 min)
 │   ├── intake.js                     # Intake-flow: naam, huishouden, woning, voertuigen, omgeving
 │   ├── prep.js                       # Noodpakket-vragen (voorbereiding)
-│   ├── audio.js                      # Audio via Howler.js (CDN)
+│   ├── audio.js                      # Audio via Howler.js (CDN); Howl-instanties lazy aangemaakt
 │   ├── engine.js                     # Kern spellogica: startScenario, renderScene, pickChoice,
 │   │                                 # advanceScene, sceneDecay, sidebar-updates
 │   ├── report.js                     # Rapportscherm: tijdlijn, badges, tips
@@ -41,8 +43,7 @@ playtoprep/
 │   └── stroomstoring_onderweg/
 ├── Audio/                            # NL-Alert.mp3, fire-loop.mp3, rain-loop.mp3,
 │   └── radioberichten/               # MP3's voor radioscènes per scenario
-├── STIJLGIDS.md                      # Schrijfstijl: B1-niveau, toonregels per kanaal
-└── CHANGELOG.md                      # Versiehistorie
+└── STIJLGIDS.md                      # Schrijfstijl: B1-niveau, toonregels per kanaal
 ```
 
 ### Scherm-IDs (navigatie via `show(id)`)
@@ -62,9 +63,9 @@ playtoprep/
 ## Key conventions
 
 ### Naamgeving
-- **Scenario-keys**: `stroom`, `natuurbrand`, `overstroming`, `thuis_komen`
-- **Scene-IDs**: `{prefix}_{nummer}` — `st_1`, `bf_3`, `ov_5`, `tk_2`
-  - `st_` = stroomstoring, `bf_` = bosbrand/fire, `ov_` = overstroming, `tk_` = thuis komen
+- **Scenario-keys**: `stroom`, `natuurbrand`, `overstroming`, `thuis_komen`, `drinkwater`, `nachtalarm`
+- **Scene-IDs**: `{prefix}_{nummer}` — `st_1`, `bf_3`, `ov_5`, `tk_2`, `na_0`
+  - `st_` = stroomstoring, `bf_` = bosbrand/fire, `ov_` = overstroming, `tk_` = thuis komen, `na_` = nachtalarm
   - Dag-scenes: `st_d0_morgen`, `st_d1_avond` etc.
 - **Stat-keys in `state`**: `water`, `food`, `comfort`, `health`, `cash`, `phoneBattery`
 
@@ -74,9 +75,10 @@ playtoprep/
 - `channels` — actuele inhoud nieuws/whatsapp/radio per scene
 - `choiceHistory` — alle keuzes (voor rapport)
 - `sceneDecay` — automatische stat-wijzigingen per scene-ID (toegewezen in `startScenario()`)
+- `adultsCount`, `childrenCount`, `slechtTerBeenCount`, `petsCount` — globale tellers uit de intake
 
 ### SceneDecay patroon
-Elke scenario heeft een eigen `sceneDecay_stroom` etc. object. In `startScenario()` wordt dit toegewezen aan `sceneDecay`. Decay-entries bevatten delta's: `{ water: -1, phoneBattery: -15 }`. Positieve waarden = herstel.
+Elke scenario heeft een eigen `sceneDecay_stroom` etc. object in `data-state.js`. In `startScenario()` wordt dit toegewezen aan `sceneDecay`. Decay-entries bevatten delta's: `{ water: -1, phoneBattery: -15 }`. Positieve waarden = herstel.
 
 ### Scene-datastructuur
 ```js
@@ -88,19 +90,23 @@ Elke scenario heeft een eigen `sceneDecay_stroom` etc. object. In `startScenario
   dayBadgeClass: 'blue', // of 'orange', 'red'
   channels: {
     news: [{ time, headline, body }],
-    whatsapp: [{ from, text, time }],
+    whatsapp: [{ from, msg, time, outgoing }],  // let op: 'msg', niet 'text'
     nlalert: 'tekst of null',
     radio: 'tekst of null'
   },
-  narrative: 'Wat de speler ervaart...',
+  narrative: 'Wat de speler ervaart...',  // of: get narrative() { ... } voor dynamische tekst
   choices: [{
-    text: '🔦 Keuzetekst',
-    consequence: 'Gevolg...',
-    cat: 'cat-social',          // optioneel: overschrijft de emoji-gebaseerde categorie
-    stateChange: { food: -1, awarenessLevel: 1 }
-  }]
+    text: '🔦 Keuzetekst',               // mag ook een functie zijn: text: () => '...'
+    consequence: 'Gevolg...',             // mag ook een functie zijn: consequence: () => '...'
+    cat: 'cat-social',                    // optioneel: overschrijft de emoji-gebaseerde categorie
+    stateChange: { food: -1, awarenessLevel: 1 }, // mag ook een functie zijn: () => ({...})
+    conditionalOn: () => profile.hasChildren      // optioneel: verbergt keuze als false
+  }],
+  conditionalOn: () => state.someFlag    // optioneel: verbergt hele scene als false
 }
 ```
+
+`channels` mag ook een getter zijn (`get channels() { ... }`) voor dynamische WhatsApp-berichten op basis van profiel of state.
 
 ### Keuze-categorieën (kleuren)
 
@@ -114,7 +120,7 @@ De kleur van een keuzeknop wordt bepaald door het emoji-prefix in `text`, via `C
 | `cat-info` | grijs | Nieuws volgen, afwachten of niets doen |
 | `cat-risk` | rood | Risicovolle of gevaarlijke actie |
 
-**Override:** voeg `cat: 'cat-social'` (of andere klasse) toe aan een keuze-object om de emoji-mapping te overschrijven. Gebruik dit wanneer de inhoud van een keuze een andere categorie heeft dan het emoji-prefix suggereert (bijv. brood delen als sociale daad).
+**Override:** voeg `cat: 'cat-social'` (of andere klasse) toe aan een keuze-object om de emoji-mapping te overschrijven.
 
 ### Icons
 Icons worden geladen uit `icons-data.js` als inline SVG. Wil je een nieuw icon toevoegen? Voeg het SVG-bestand toe aan `/icons/` én voeg de data-entry toe aan `icons-data.js`. Gebruik geen Lucide CDN.
@@ -124,12 +130,26 @@ LocalStorage, sleutel: `ptp_savegame`. Functies: `saveGame()`, `loadGame()`, `cl
 
 ---
 
+## Spelflow — keuzes maken
+
+Na het klikken op een keuze:
+1. Alle keuzeknopppen worden **meteen vergrendeld** (ook niet-gekozen opties).
+2. De consequentie wordt getypt in het "wat je ervaart"-tabblad.
+3. De speler klikt zelf op **"Verder →"** om naar de volgende scene te gaan.
+   - Eerste klik tijdens typewriter → tekst verschijnt direct.
+   - Tweede klik → volgende scene.
+
+Er is geen auto-advance timer. Verwijder of voeg deze niet toe.
+
+---
+
 ## Werkinstructies voor Claude
 
 - Maak nooit een nieuwe file aan als het ook in een bestaande file kan.
 - Gebruik altijd B1-Nederlands in alle teksten en keuzes (zie STIJLGIDS.md).
 - Verander nooit de script-laadvolgorde zonder expliciete toestemming.
 - Voeg geen dark-mode CSS toe (zie gotcha #1).
+- Gebruik `conditionalOn` consequent voor keuzes die niet voor alle spelers relevant zijn (profiel én state).
 
 ---
 
@@ -156,17 +176,23 @@ Naast de stat-keys (`water`, `food`, `comfort`, `health`, `cash`, `phoneBattery`
 | `evacuated` | boolean | Op tijd geëvacueerd (bosbrand) |
 | `evacuatedFlood` | boolean | Op tijd geëvacueerd (overstroming) |
 | `wentUpstairs` | boolean | Naar hogere verdieping gegaan (overstroming) |
-| `cutElectricity` | boolean | Meterkast afgesloten (overstroming) |
-| `savedItems` | boolean | Essentials meegenomen (overstroming) |
+| `cutElectricity` | boolean | Meterkast afgesloten (overstroming/nachtalarm) |
+| `savedItems` | boolean | Essentials meegenomen (overstroming/nachtalarm) |
 | `calledRescue` | boolean | Hulpdiensten gebeld (overstroming) |
 | `returnedHome` | boolean | Veilig teruggekeerd (bosbrand/overstroming) |
 | `tookPets` | boolean | Huisdier meegenomen (bosbrand) |
-| `kidsEvacuated` | boolean | Kinderen veilig gesteld (bosbrand) |
+| `kidsEvacuated` | boolean | Kinderen/kwetsbare huisgenoten veilig gesteld (bosbrand/nachtalarm) |
 | `reachedHome` | boolean | Thuis aangekomen (thuis_komen) |
 | `foundAlternative` | boolean | Alternatief vervoer gevonden (thuis_komen) |
 | `hadEDCBag` | boolean | Noodtas bij je gehad (thuis_komen) |
 | `kidsPickedUp` | boolean | Kinderen opgehaald of geregeld (thuis_komen) |
 | `helpedStranger` | boolean | Iemand onderweg geholpen (thuis_komen) |
+| `tookAlarmSeriously` | boolean | Brandalarm direct serieus genomen (nachtalarm) |
+| `warnedHousemates` | boolean | Huisgenoten gewaarschuwd (nachtalarm) |
+| `didntUseWaterOnFire` | boolean | Geen water op elektrische brand gegooid (nachtalarm) |
+| `evacuatedFire` | boolean | Op tijd naar buiten gegaan (nachtalarm) |
+| `called112` | boolean | 112 gebeld (nachtalarm) |
+| `stayedOutside` | boolean | Buiten gebleven na evacuatie (nachtalarm) |
 
 ---
 
@@ -187,15 +213,17 @@ Naast de stat-keys (`water`, `food`, `comfort`, `health`, `cash`, `phoneBattery`
 
 ## Nieuw scenario toevoegen — checklist
 
-1. Maak `data-scenarios-{naam}.js` aan met scenes-array en `sceneDecay_{naam}`-object.
+1. Maak `data-scenarios-{naam}.js` aan met scenes-array. Geen sceneDecay in dit bestand.
 2. Voeg `sceneDecay_{naam}` toe aan `data-state.js`.
-3. Koppel in `engine.js` → `startScenario()`: voeg `else if`-tak toe die `scenes` en `sceneDecay` toewijst.
-4. Koppel in `engine.js` → `loadGame()`: zelfde `else if`-tak toevoegen.
-5. Voeg `<script src="js/data-scenarios-{naam}.js">` toe aan `index.html` vóór `engine.js`.
-6. Voeg scenario-optie toe aan het scenariokeuze-scherm in `index.html` (`s-scenariokeuze`).
-7. Voeg intro-tekst toe in `showReport()` in `report.js`.
-8. Definieer `statusItems` voor het nieuwe scenario in `showReport()`.
-9. Scene-ID prefix kiezen en vastleggen in de naamgeving-sectie hierboven.
+3. Voeg nieuwe state-flags toe aan het `state`-object in `data-state.js`.
+4. Koppel in `engine.js` → `startScenario()`: voeg `else if`-tak toe die `scenes` en `sceneDecay` toewijst, en reset de nieuwe flags.
+5. Koppel in `engine.js` → `loadGame()`: zelfde `else if`-tak toevoegen.
+6. Voeg sceneVisuals toe voor elke scene-ID in `engine.js`.
+7. Voeg `<script src="js/data-scenarios-{naam}.js">` toe aan `index.html` vóór `engine.js`.
+8. Voeg scenario-optie toe aan het scenariokeuze-scherm in `index.html` (`s-scenariokeuze`).
+9. Voeg intro-tekst toe in `showReport()` in `report.js`.
+10. Definieer `statusItems` voor het nieuwe scenario in `showReport()`.
+11. Scene-ID prefix kiezen en vastleggen in de naamgeving-sectie hierboven.
 
 ---
 
@@ -254,3 +282,11 @@ Of open `index.html` direct in de browser (let op: audio werkt beter via HTTP).
 8. **Taalregels** — Zie `STIJLGIDS.md`. Schrijf altijd B1-Nederlands. Gebruik vaste termen: "stroomstoring" (niet "black-out"), "dringend advies" (niet "noodverordening").
 
 9. **Script-laadvolgorde in index.html** — Scripts worden geladen in deze volgorde: `icons-data.js` → `data-state.js` → scenario-data → `intake.js` → `prep.js` → `audio.js` → `engine.js` → `report.js` → `ui.js`. Nieuwe scripts toevoegen? Respecteer de afhankelijkheden.
+
+10. **WhatsApp-berichten gebruiken `msg`, niet `text`** — Het veld in whatsapp-objecten heet `msg`. Gebruik `get channels()` als berichten conditioneel moeten zijn op profiel of state.
+
+11. **`phoneBattery` instellen op een vaste waarde** — `phoneBattery` wordt door de engine als delta toegepast. Om naar een exact percentage te zetten gebruik je een functie: `stateChange: () => ({ phoneBattery: 60 - state.phoneBattery })`.
+
+12. **Howl-instanties zijn lazy** — `_nlAlertSound`, `rain` en `fire` worden pas aangemaakt bij eerste gebruik, niet bij paginaladen. Zo worden AudioContext-waarschuwingen voorkomen. Houd dit patroon aan bij nieuwe geluiden.
+
+13. **`hasHousemates()` in nachtalarm** — De helperfunctie `hasHousemates()` is gedefinieerd in `data-scenarios-nachtalarm.js` en controleert of de speler meer dan één persoon in het huishouden heeft. Gebruik `conditionalOn: () => hasHousemates()` voor keuzes die niet relevant zijn voor solo-spelers.

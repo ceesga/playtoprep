@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // Prep — Noodpakket vragenlijst (Stap 1 vervolg)
-// 18 vragen in 3 secties: noodpakket, reistasje, aanvullingen
+// 4 secties: noodpakket, vluchttas, reistasje, aanvullingen
 // Bevat: prepQs data, renderPrep, setToggle, gotoScenariokeuze
 // ═══════════════════════════════════════════════════════════════
 
@@ -9,8 +9,9 @@
    Ze worden gebruikt bij automatisch in- of uitvinken van kinditems
    wanneer een sectie-header op 'ja' of 'nee' wordt gezet.
 */
-const KIT_ITEMS = ['hasWater', 'hasFood', 'hasFirstAid', 'hasFlashlight', 'hasRadio', 'hasCash'];
-const PERSONAL_ITEMS = ['hasGasStove', 'hasDocuments', 'hasPowerbank'];
+const KIT_ITEMS = ['hasWater', 'hasFood', 'hasFirstAid', 'hasRadio', 'hasPetFood'];
+const VLUCHTTAS_ITEMS = ['hasFlashlight', 'hasCash', 'hasDocuments', 'hasMeds', 'hasBOBWater'];
+const PERSONAL_ITEMS = ['hasGasStove', 'hasPowerbank'];
 const EDC_ITEMS = ['hasEDCBag', 'hasEDCCash', 'hasEDCSnacks', 'hasEDCCharger', 'hasEDCWater', 'hasEDCKnife'];
 
 /* ─── VRAGENLIJST DATA ────────────────────────────────────────────────────────
@@ -28,32 +29,13 @@ const EDC_ITEMS = ['hasEDCBag', 'hasEDCCash', 'hasEDCSnacks', 'hasEDCCharger', '
      onlyIf       — ID in profile dat 'truthy' moet zijn om de vraag te tonen
 */
 const prepQs = [{
-  id: 'hasKit',
-  q: 'Noodpakket aanwezig',
+  id: 'hasBOBBag',
   headerToggle: true,
   collapsible: true,
-  section: 'Noodpakket'
-}, {
-  id: 'hasWater',
-  q: 'Min. 6 liter drinkwater per persoon',
-  subItem: true
-}, {
-  id: 'hasFood',
-  q: 'Houdbaar eten voor minimaal 3 dagen',
-  subItem: true
-}, {
-  id: 'hasFirstAid',
-  q: 'EHBO-doos',
-  subItem: true
+  section: 'Vluchttas / Bug Out Bag'
 }, {
   id: 'hasFlashlight',
   q: 'Zaklamp',
-  opts: ['Niet opgeladen', 'Ja', 'Nee'],
-  def: 'nee',
-  subItem: true
-}, {
-  id: 'hasRadio',
-  q: 'Radio op batterijen',
   opts: ['Niet opgeladen', 'Ja', 'Nee'],
   def: 'nee',
   subItem: true
@@ -72,10 +54,43 @@ const prepQs = [{
   def: 'nvt',
   subItem: true
 }, {
+  id: 'hasBOBWater',
+  q: 'Fles water',
+  subItem: true
+}, {
+  id: 'hasKit',
+  q: 'Noodpakket aanwezig',
+  headerToggle: true,
+  collapsible: true,
+  section: 'Noodpakket'
+}, {
+  id: 'hasWater',
+  q: 'Min. 6 liter drinkwater per persoon',
+  subItem: true
+}, {
+  id: 'hasFood',
+  q: 'Houdbaar eten voor minimaal 3 dagen',
+  subItem: true
+}, {
+  id: 'hasFirstAid',
+  q: 'EHBO-doos',
+  subItem: true
+}, {
+  id: 'hasRadio',
+  q: 'Radio op batterijen',
+  opts: ['Niet opgeladen', 'Ja', 'Nee'],
+  def: 'nee',
+  subItem: true
+}, {
+  id: 'hasPetFood',
+  q: 'Dierenvoer voor minimaal 3 dagen',
+  onlyIf: 'hasPets',
+  subItem: true
+}, {
   id: 'hasEDCReady',
   headerToggle: true,
   collapsible: true,
-  section: 'Reistasje voor onderweg'
+  section: 'Reistas voor onderweg / Everyday Carry'
 }, {
   id: 'hasEDCCash',
   q: 'Contant geld',
@@ -100,11 +115,6 @@ const prepQs = [{
   id: 'hasPersonalSupplies',
   styledHeader: true,
   section: 'Persoonlijke aanvullingen'
-}, {
-  id: 'hasPetFood',
-  q: 'Dierenvoer voor minimaal 3 dagen',
-  onlyIf: 'hasPets', // Alleen tonen als de gebruiker huisdieren heeft
-  subItem: true
 }, {
   id: 'hasGasStove',
   q: 'Een gasfornuis, gasbrander of barbeque',
@@ -230,6 +240,7 @@ function setToggle(id, val) {
   // Koppeling van sectie-ID naar de bijbehorende kinditems
   const autoFill = {
     hasKit: KIT_ITEMS,
+    hasBOBBag: VLUCHTTAS_ITEMS,
     hasPersonalSupplies: PERSONAL_ITEMS,
     hasEDCReady: EDC_ITEMS,
   };

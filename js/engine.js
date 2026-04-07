@@ -1791,6 +1791,26 @@ const CHOICE_ICON_MAP = {
     icon: 'alert-circle',
     cat: 'cat-neutral'
   },
+  '🔍': {
+    icon: 'eye',
+    cat: 'cat-info'
+  },
+  '🔑': {
+    icon: 'lock',
+    cat: 'cat-action'
+  },
+  '🧒': {
+    icon: 'user',
+    cat: 'cat-social'
+  },
+  '🦽': {
+    icon: 'footprints',
+    cat: 'cat-social'
+  },
+  '✅': {
+    icon: 'award',
+    cat: 'cat-action'
+  },
   '🛌': {
     icon: 'moon',
     cat: 'cat-neutral'

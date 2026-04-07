@@ -32,6 +32,7 @@ const scenes_nachtalarm = [
       {
         text: '⚡ Meteen opstaan en luisteren waar het geluid vandaan komt',
         consequence: 'Je schiet overeind. Je hart bonst in je keel. Beneden klinkt het alarm harder. Je houdt even je adem in en snuift de lucht op, maar boven ruik je nog geen rook.',
+        cat: 'cat-action',
         stateChange: { awarenessLevel: 1, tookAlarmSeriously: true }
       },
       {
@@ -72,11 +73,12 @@ const scenes_nachtalarm = [
       {
         text: '🔍 Eerst zelf gaan kijken wat er aan de hand is',
         consequence: 'Je loopt voorzichtig richting de trap. De rooklucht wordt sterker en prikt in je keel. Je voelt hoe snel de situatie ernstiger wordt.',
-        stateChange: { comfort: -1 }
+        stateChange: { awarenessLevel: 1 }
       },
       {
         text: '📱 Meteen 112 bellen',
         consequence: 'De meldkamer neemt snel op. Ze vragen of iedereen al buiten is en zeggen dat je het huis direct moet verlaten. Er wordt meteen een ploeg gestuurd.',
+        cat: 'cat-action',
         stateChange: { called112: true }
       }
     ]
@@ -100,18 +102,18 @@ const scenes_nachtalarm = [
       {
         text: '🔍 Dichterbij gaan kijken',
         consequence: 'Je zet een stap dichterbij. Meteen beginnen je ogen te prikken en moet je hoesten. Hier blijven is gevaarlijk en je verliest kostbare tijd.',
-        cat: 'cat-risk',
-        stateChange: { health: -1, comfort: -1 }
+        cat: 'cat-info',
+        stateChange: { health: -1 }
       },
       {
         text: '💧 Een pan water over het stopcontact gooien',
         consequence: 'Je gooit water over het stopcontact. Er volgt een felle knal en een regen van vonken. Water en elektriciteit zijn een gevaarlijke combinatie. Dit maakt de situatie juist nog riskanter.',
         cat: 'cat-risk',
-        stateChange: { health: -2, comfort: -1 }
+        stateChange: { health: -2 }
       },
       {
-        text: '🚪 Meteen teruglopen en iedereen naar buiten sturen',
-        consequence: 'Je draait je om, roept iedereen wakker en stuurt hen meteen naar de voordeur. Onderweg trek je de woonkamerdeur dicht, zodat de rook zich minder snel verspreidt.',
+        text: '🚪 Teruglopen en iedereen naar buiten sturen',
+        consequence: 'Je draait je om, rent naar de slaapkamers, maakt iedereen wakker, en stuurt ze naar buiten. Onderweg trek je de woonkamerdeur dicht, zodat de rook zich minder snel verspreidt.',
         stateChange: { warnedHousemates: true, didntUseWaterOnFire: true },
         conditionalOn: () => hasHousemates() && !state.warnedHousemates
       },
@@ -138,7 +140,12 @@ const scenes_nachtalarm = [
       nlalert: null,
       radio: null
     },
-    narrative: 'De rook wordt dikker en kruipt nu ook de gang in. Het alarm blijft schel piepen. Je moet nu snel kiezen wat je nog doet voordat je naar buiten gaat.',
+    get narrative() {
+      if (state.didntUseWaterOnFire) {
+        return 'Op de drempel draai je je om. De rooklucht trekt mee de gang in en het alarm piept onverminderd. Je bent bijna buiten — maar je moet nog kiezen of je iets meeneemt.';
+      }
+      return 'De rook wordt dikker en kruipt nu ook de gang in. Het alarm blijft schel piepen. Je moet nu snel kiezen of je nog wat doet voordat je naar buiten gaat.';
+    },
     choices: [
       {
         text: '🚪 Meteen naar buiten gaan',
@@ -146,25 +153,32 @@ const scenes_nachtalarm = [
         stateChange: { evacuatedFire: true }
       },
       {
-        text: '🔑 Eerst sleutels en telefoon meenemen',
-        consequence: 'Je grijpt in een snelle beweging je telefoon en sleutels mee. Daarna ga je meteen naar buiten. Dat kost maar een paar seconden en geeft straks rust.',
-        stateChange: { evacuatedFire: true }
+        text: '🔑 Je sleutels en telefoon zoeken',
+        consequence: 'Je begint te zoeken, maar in de stress weet je niet meer waar je alles hebt neergelegd. Kostbare seconden tikken weg terwijl de rooklucht sterker wordt. Uiteindelijk vind je alles en ga je naar buiten, maar je had er langer over gedaan dan gedacht.',
+        stateChange: { evacuatedFire: true, comfort: -1 }
       },
       {
         text: '⚡ De stroom uitschakelen bij de meterkast en dan naar buiten',
         consequence: 'De meterkast zit gelukkig dicht bij de uitgang. Je zet snel de stroom uit en gaat daarna meteen naar buiten. Dat verkleint het risico dat het probleem verder doorslaat.',
+        cat: 'cat-action',
         stateChange: { evacuatedFire: true, cutElectricity: true }
       },
       {
         text: '🎒 De noodtas meenemen die klaarstaat bij de deur',
         consequence: 'Je grijpt de noodtas die al klaarstaat bij de deur. Papieren, medicijnen en oplader zitten erin. Daarna ga je meteen naar buiten.',
         stateChange: { evacuatedFire: true, savedItems: true },
-        conditionalOn: () => profile.hasDocuments === 'ja'
+        conditionalOn: () => profile.hasDocuments === 'ja' && profile.hasBOBBag !== 'ja'
+      },
+      {
+        text: '🎒 De vluchttas oppakken en naar buiten rennen',
+        consequence: 'Je grijpt de vluchttas die klaarstaat. Zaklamp, papieren, contant geld — alles zit erin. Je rent naar buiten. Goed dat je dit voorbereid had.',
+        stateChange: { evacuatedFire: true, savedItems: true },
+        conditionalOn: () => profile.hasBOBBag === 'ja'
       },
       {
         text: () => {
           if (profile.hasMobilityImpaired && !profile.hasChildren) return '🦽 Iemand direct helpen om naar buiten te gaan';
-          if (childrenCount === 1) return '🧒 Je kind direct helpen om naar buiten te gaan';
+          if (childrenCount === 1) return '🧒 Je kind mee naar buiten nemen';
           if (childrenCount > 1) return '🧒 De kinderen direct helpen om naar buiten te gaan';
           return '🗣️ Huisgenoten wakker maken en naar buiten sturen';
         },
@@ -189,7 +203,7 @@ const scenes_nachtalarm = [
       whatsapp: [
         {
           from: 'Buurman',
-          msg: 'Ik zie licht bij jullie. Is alles goed?',
+          msg: 'Ik zie jullie buiten staan. Gaat het? Kan ik iets doen?',
           time: '02:23',
           outgoing: false
         }
@@ -199,27 +213,33 @@ const scenes_nachtalarm = [
     },
     get narrative() {
       return hasHousemates()
-        ? 'Je staat buiten in de koude nacht. Vanuit de voordeur ruik je nog steeds rook. Naast je staat iedereen half aangekleed en geschrokken op straat. Nu moet je zorgen dat niemand terug naar binnen gaat en dat de hulpdiensten worden gewaarschuwd.'
-        : 'Je staat buiten in de koude nacht. Vanuit de woning ruik je nog steeds rook. Nu moet je buiten blijven en de hulpdiensten waarschuwen.';
+        ? 'Je staat buiten in de koude nacht. Vanuit de voordeur ruik je nog steeds rook. Naast je staat iedereen half aangekleed en geschrokken op straat. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.'
+        : 'Je staat buiten in de koude nacht. Vanuit de woning ruik je nog steeds rook. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.';
     },
     choices: [
       {
         text: '📱 112 bellen',
         consequence: 'De meldkamer neemt snel op en vraagt of iedereen buiten is. Even later hoor je in de verte sirenes. De brandweer komt eraan.',
+        cat: 'cat-action',
         stateChange: { called112: true, stayedOutside: true },
         conditionalOn: () => !state.called112
       },
       {
         text: '👥 Controleren of iedereen buiten is',
         consequence: 'Je telt alle huisgenoten en kijkt of niemand nog binnen is. Dat geeft rust terwijl je op de brandweer wacht.',
-        stateChange: { stayedOutside: true },
+        stateChange: { stayedOutside: true, comfort: -1 },
         conditionalOn: () => hasHousemates()
       },
       {
-        text: '🚪 Toch snel naar binnen gaan om iets te halen',
+        text: '⏳ Buiten wachten op de brandweer',
+        consequence: 'Je blijft buiten staan. De kou bijt in je handen en voeten. Even later hoor je in de verte sirenes aankomen.',
+        stateChange: { stayedOutside: true }
+      },
+      {
+        text: '🚪 Snel naar binnen gaan om iets te halen',
         consequence: 'Je stapt toch nog naar binnen, maar de rook is veel dikker dan net. Je moet meteen hoestend terug. Dit was te gevaarlijk.',
         cat: 'cat-risk',
-        stateChange: { health: -2, comfort: -1 }
+        stateChange: { health: -2 }
       }
     ]
   },
@@ -236,7 +256,7 @@ const scenes_nachtalarm = [
       whatsapp: [
         {
           from: 'Buurman',
-          msg: 'Jullie mogen bij ons slapen als dat helpt.',
+          msg: 'Hebben jullie een slaapplek nodig voor vannacht? Als je wil hebben we wel een bed over.',
           time: '02:50',
           outgoing: false
         }
@@ -245,7 +265,10 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
-      return 'De blauwe lichten kleuren de straat terwijl de brandweer het doorgebrande stopcontact veilig maakt en de woning controleert. Een brandweerman zegt dat het acute gevaar voorbij is, maar dat de rook en de schade maken dat het niet verstandig is om vannacht nog thuis te slapen. Hij vraagt of je belangrijke papieren, medicijnen en andere noodzakelijke spullen bij je hebt.';
+      return 'De blauwe lichten kleuren de straat terwijl de brandweer het doorgebrande stopcontact veilig maakt en de woning controleert. Een brandweerman zegt dat het acute gevaar voorbij is, maar dat de rook en de schade maken dat het niet verstandig is om vannacht nog thuis te slapen.' +
+        (state.savedItems
+          ? ' Je hebt je spullen al bij je. De brandweerman knikt goedkeurend.'
+          : ' Hij vraagt of je belangrijke papieren, medicijnen en andere noodzakelijke spullen bij je hebt.');
     },
     choices: [
       {

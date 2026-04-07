@@ -282,11 +282,7 @@ const sceneDecay_drinkwater = {
   wd_7: { phoneBattery: -10 }  // +3h avond
 };
 const sceneDecay_nachtalarm = {
-  // phoneBattery: start 02:17, scenario duurt ~30 min
-  na_1: { comfort: -1, phoneBattery: -5 }, // rook geroken, stress
-  na_2: { comfort: -1, phoneBattery: -5 }, // woonkamer, rook dicht
-  na_3: { comfort: -1, phoneBattery: -5 }, // rook dikker, haast
-  na_4: { phoneBattery: -5 }               // buiten, wachten op brandweer
+  // Scenario duurt ~30 min — batterijafname verwaarloosbaar (<5% per uur)
 };
 
 // ─── PERSISTENT CHANNEL CONTENT ───────────────────────────────────────────────
