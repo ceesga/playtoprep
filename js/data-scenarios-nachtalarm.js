@@ -82,7 +82,7 @@ const scenes_nachtalarm = [
       },
       {
         text: '📱 Meteen 112 bellen',
-        consequence: 'De meldkamer neemt snel op. Ze vragen of iedereen al buiten is en zeggen dat je het huis direct moet verlaten. Er wordt meteen een ploeg gestuurd.',
+        consequence: 'De meldkamer neemt snel op, maar zegt direct: "Verlaat eerst de woning. Bel ons opnieuw zodra u buiten staat en zeg of iedereen eruit is." Ze sturen wel meteen een ploeg, maar benadrukken dat je nu moet gaan.',
         cat: 'cat-action',
         stateChange: { called112: true }
       }
@@ -102,7 +102,12 @@ const scenes_nachtalarm = [
       nlalert: null,
       radio: null
     },
-    narrative: 'In de woonkamer hangt een dichte, grijze rooklaag. Bij de muur zie je een stopcontact met een zwarte kring eromheen. De lucht ruikt scherp naar verbrand plastic en ergens klinkt zacht geknetter. Grote vlammen zie je nog niet, maar de rook is dik en benauwend.',
+    get narrative() {
+      if (profile.houseType === 'appartement') {
+        return 'In de woonkamer hangt een dichte, grijze rooklaag. Bij de muur zie je een stopcontact met een zwarte kring eromheen. De lucht ruikt scherp naar verbrand plastic. Bij de voordeur hangt de rook al lager. Je beseft dat het trappenhuis je enige route naar buiten is, en dat elke seconde telt.';
+      }
+      return 'In de woonkamer hangt een dichte, grijze rooklaag. Bij de muur zie je een stopcontact met een zwarte kring eromheen. De lucht ruikt scherp naar verbrand plastic en ergens klinkt zacht geknetter. Grote vlammen zie je nog niet, maar de rook is dik en benauwend.';
+    },
     choices: [
       {
         text: '🔍 Dichterbij gaan kijken',
@@ -160,7 +165,7 @@ const scenes_nachtalarm = [
       {
         text: '🔑 Je sleutels en telefoon zoeken',
         consequence: 'Je begint te zoeken, maar in de stress weet je niet meer waar je alles hebt neergelegd. Kostbare seconden tikken weg terwijl de rooklucht sterker wordt. Uiteindelijk vind je alles en ga je naar buiten, maar je had er langer over gedaan dan gedacht.',
-        stateChange: { evacuatedFire: true, comfort: -1 }
+        stateChange: { evacuatedFire: true, comfort: -1, delayedEvacuation: true }
       },
       {
         text: '⚡ De stroom uitschakelen bij de meterkast en dan naar buiten',
@@ -227,14 +232,17 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
+      const delayedNote = state.delayedEvacuation
+        ? ' Als je buiten komt, slaat er nu duidelijk meer rook uit de woning. Je beseft dat die verloren halve minuut veel uitmaakt.'
+        : '';
       if (profile.houseType === 'appartement') {
         return hasHousemates()
-          ? 'Je staat buiten voor het gebouw in de koude nacht. Achter een raam boven je hangt nog rook. Naast je staat iedereen half aangekleed en geschrokken op de stoep. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.'
-          : 'Je staat buiten voor het gebouw in de koude nacht. Achter een raam boven je hangt nog rook. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.';
+          ? 'Je staat buiten voor het gebouw in de koude nacht. Achter een raam boven je hangt nog rook. Naast je staat iedereen half aangekleed en geschrokken op de stoep. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.' + delayedNote
+          : 'Je staat buiten voor het gebouw in de koude nacht. Achter een raam boven je hangt nog rook. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.' + delayedNote;
       }
       return hasHousemates()
-        ? 'Je staat buiten in de koude nacht. Vanuit de voordeur ruik je nog steeds rook. Naast je staat iedereen half aangekleed en geschrokken op straat. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.'
-        : 'Je staat buiten in de koude nacht. Vanuit de woning ruik je nog steeds rook. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.';
+        ? 'Je staat buiten in de koude nacht. Vanuit de voordeur ruik je nog steeds rook. Naast je staat iedereen half aangekleed en geschrokken op straat. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.' + delayedNote
+        : 'Je staat buiten in de koude nacht. Vanuit de woning ruik je nog steeds rook. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.' + delayedNote;
     },
     choices: [
       {
@@ -254,6 +262,14 @@ const scenes_nachtalarm = [
         text: '⏳ Buiten wachten op de brandweer',
         consequence: 'Je blijft buiten staan. De kou bijt in je handen en voeten. Even later hoor je in de verte sirenes aankomen.',
         stateChange: { stayedOutside: true }
+      },
+      {
+        text: '🏘️ Direct naar de buren gaan om te zeggen dat er brand is in jouw woning',
+        consequence: () => profile.houseType === 'appartement'
+          ? 'Je klopt hard aan bij de directe buren op de gang en roept dat er brand is in jouw appartement. Slaperige gezichten, dan geschrokken ogen. Ze gaan meteen naar buiten. Goed dat je dit deed — in een appartementsgebouw kan rook snel naar andere woningen trekken.'
+          : 'Je loopt snel naar de buren en klopt aan. Even later staan ze in de deuropening. Je legt kort uit wat er aan de hand is. Ze bellen 112 en houden een oogje in het zeil. Je bent blij dat je dit even gedaan hebt.',
+        cat: 'cat-social',
+        stateChange: { stayedOutside: true, knowsNeighbors: true }
       },
       {
         text: '🚪 Snel naar binnen gaan om iets te halen',

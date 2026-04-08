@@ -877,6 +877,8 @@ function startScenario(scenarioId) {
   state.evacuatedFire = false;
   state.called112 = false;
   state.stayedOutside = false;
+  state.delayedEvacuation = false;
+  state.travelingWithMartijn = false;
 
   // Reset scène-index en alle kanaal- en geschiedenisbuffers
   currentSceneIdx = 0;

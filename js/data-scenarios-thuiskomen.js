@@ -159,7 +159,7 @@ const scenes_thuis_komen = [{
   },
   get narrative() {
     const vehicle = profile.commuteMode === 'car' ? 'Je auto staat op de parkeerplaats.' : profile.commuteMode === 'bike' ? 'Je fiets staat bij de ingang.' : 'Je bent zonder auto of fiets.';
-    return `Je staat buiten. Treinen en trams liggen stil, want die hebben stroom nodig. Sommige bussen rijden nog, maar het is onzeker. ${vehicle}`;
+    return `Je staat buiten. Treinen en trams liggen stil, want die hebben stroom nodig. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Reken er niet op dat het openbaar vervoer je hele reis kan overnemen. ${vehicle}`;
   },
   choices: [{
     conditionalOn: () => profile.commuteMode === 'car',
@@ -177,8 +177,8 @@ const scenes_thuis_komen = [{
   }, {
     text: '🚌 Met de bus',
     consequence: () => profile.commuteDistance === 'near' ?
-      'Je loopt naar de bushalte. Er rijdt nog een bus, maar de dienstregeling klopt niet meer. Je kunt contant betalen en stapt in zodra er plek is.' :
-      'Je loopt naar de bushalte. De bus rijdt nog, maar het is druk. Je betaalt €10 contant en hoopt op het beste.',
+      'Je loopt naar de bushalte. Er rijdt nog een bus, maar de chauffeur geeft aan dat de route mogelijk tussentijds stopt. Als er nog vervoer rijdt, kan het druk zijn en kan de route tussentijds veranderen. Je betaalt contant en stapt in, maar zeker is het niet.' :
+      'Je loopt naar de bushalte. De halte staat vol. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Je betaalt €10 contant en hoopt dat de bus je ver genoeg brengt.',
     stateChange: {
       travelMode: 'ov',
       cash: -10
@@ -197,14 +197,38 @@ const scenes_thuis_komen = [{
     stateChange: {
       travelMode: 'bike'
     }
-  }, {
-    text: '🤝 Samen optrekken met collega Martijn',
-    consequence: 'Martijn gaat dezelfde kant op. Jullie vertrekken samen. Het is rustgevend om niet alleen te zijn in al die drukte. Onderweg wisselen jullie van gedachten over wat jullie thuis te wachten staat.',
+  }]
+}, {
+  id: 'tk_3b',
+  time: '13:05',
+  date: 'Donderdag 15 januari 2027',
+  dayBadge: 'Onderweg',
+  dayBadgeClass: '',
+  channels: {
+    news: [],
+    whatsapp: [{
+      from: 'Collega Martijn',
+      msg: 'Wacht even op mij! Ik zie je lopen.',
+      time: '13:05',
+      outgoing: false
+    }],
+    nlalert: null,
+    radio: null
+  },
+  narrative: 'Je bent net het kantoor uit als je Martijn hoort roepen. Hij komt aanrennen met zijn tas op zijn rug. "Hé, wacht even! Ik ga ook naar huis. Jij gaat toch die kant op? Zullen we samen gaan? Gezelschapper dan alleen."',
+  choices: [{
+    text: '🤝 Ja, samen op pad met Martijn',
+    consequence: 'Martijn valt naast je in stap. Hij kent een route die de drukste wegen omzeilt. Het is fijn om niet alleen te zijn in al die drukte.',
+    cat: 'cat-social',
     stateChange: () => ({
-      helpedStranger: true,
+      travelingWithMartijn: true,
       foundAlternative: true,
       travelMode: profile.commuteMode === 'car' ? 'car' : 'bike'
     })
+  }, {
+    text: '👋 Nee, ik ga liever mijn eigen tempo aan',
+    consequence: 'Je bedankt Martijn, maar geeft aan dat je liever alleen gaat. Hij knikt begrijpend. "Pas goed op jezelf." Jullie gaan elk een andere kant op.',
+    stateChange: {}
   }]
 }, {
   id: 'tk_4a',
@@ -314,8 +338,8 @@ const scenes_thuis_komen = [{
   },
   get narrative() {
     return profile.commuteDistance === 'near' ?
-      'Er rijdt nog een bus. De chauffeur zegt dat de route kan veranderen als wegen vastlopen. Je stapt in. Er zijn meer mensen dan normaal, maar je komt vooruit.' :
-      'De bus rijdt, maar de halte is overvol. De route loopt vertraging op. Het is druk en de chauffeur weet niet zeker of alle stops gehaald worden.';
+      'Er rijdt nog een bus, maar de chauffeur zegt meteen dat hij niet zeker weet hoe ver hij komt. Als er nog vervoer rijdt, kan het druk zijn en kan de route tussentijds veranderen. Je stapt in en hoopt dat hij je dichtbij genoeg brengt.' :
+      'De bus rijdt, maar de halte stroomt vol. De chauffeur geeft aan dat de route ingekort kan worden. Sommige bussen rijden al helemaal niet meer. Reken er niet op dat het openbaar vervoer je hele reis kan overnemen. Je stapt in en wacht af.';
   },
   choices: [{
     text: '🚶 Te voet verder',
@@ -450,7 +474,7 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 15 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
-  conditionalOn: () => !state.reachedHome,
+  conditionalOn: () => !state.reachedHome && !state.travelingWithMartijn,
   channels: {
     news: [],
     get whatsapp() {
@@ -476,9 +500,10 @@ const scenes_thuis_komen = [{
   },
   get narrative() {
     const dist = profile.commuteDistance;
-    if (dist === 'near') return 'Je bent bijna thuis. Een korte, ongemakkelijke rit maar niets dramatisch. De straten zijn vreemd leeg.';
-    if (dist === 'far') return 'Je bent al uren onderweg. Het begint donker te worden. Je bent moe, hongerig en nog steeds niet thuis. De winterkou trekt steeds verder door je kleren heen.';
-    return 'Je bent al een tijd onderweg. Je bent moe, maar je komt wel vooruit. Nog een uur of twee.';
+    const busStopNote = ' Bij een bushokje zit een oudere mevrouw met een tas op haar schoot. Ze kijkt af en toe naar de weg, maar er is al een tijdje geen bus meer langs gekomen.';
+    if (dist === 'near') return 'Je bent bijna thuis. Een korte, ongemakkelijke rit maar niets dramatisch. De straten zijn vreemd leeg.' + busStopNote;
+    if (dist === 'far') return 'Je bent al uren onderweg. Het begint donker te worden. Je bent moe, hongerig en nog steeds niet thuis. De winterkou trekt steeds verder door je kleren heen.' + busStopNote;
+    return 'Je bent al een tijd onderweg. Je bent moe, maar je komt wel vooruit. Nog een uur of twee.' + busStopNote;
   },
   choices: [{
     text: '💪 Doorgaan, ik kom er wel',
@@ -496,11 +521,51 @@ const scenes_thuis_komen = [{
       food: 1
     }
   }, {
-    text: '🤝 Iemand onderweg helpen die het moeilijker heeft',
-    consequence: 'Een oudere mevrouw staat verward bij een bushokje. Je helpt haar contact zoeken met haar familie. Ze kan bij hen overnachten. Je liep 20 minuten vertraging op, maar je voelde je beter.',
+    text: '🤝 De mevrouw bij het bushokje helpen',
+    consequence: 'Je loopt op haar af. Ze is al een uur aan het wachten en weet niet meer hoe ze thuis moet komen. Je helpt haar contact zoeken met haar dochter. Die komt haar ophalen. Je liep 20 minuten vertraging op, maar je voelde je beter.',
     stateChange: {
       helpedStranger: true
     }
+  }]
+}, {
+  id: 'tk_5m',
+  time: '15:30',
+  date: 'Donderdag 15 januari 2027',
+  dayBadge: 'Onderweg',
+  dayBadgeClass: '',
+  conditionalOn: () => state.travelingWithMartijn && !state.reachedHome,
+  channels: {
+    news: [],
+    get whatsapp() {
+      const msgs = [];
+      if (profile.adults > 1) {
+        msgs.push({
+          from: 'Partner',
+          msg: 'Ben je al onderweg? Alles ok thuis, kaarsje aan. Wacht op je.',
+          time: '15:45',
+          outgoing: false
+        });
+      }
+      msgs.push({
+        from: 'Broer/Zus',
+        msg: 'Hé, wij horen dat het overal chaos is. Ben je onderweg? Laat even iets weten, wij zitten te wachten.',
+        time: '15:52',
+        outgoing: false
+      });
+      return msgs;
+    },
+    nlalert: null,
+    radio: null
+  },
+  narrative: 'Onderweg passeer je Martijns huis. "Kom even mee naar binnen," zegt hij. "Even een boterham eten voordat je verder gaat." Zijn vrouw doet de deur open. Zodra ze Martijn ziet, omhelst ze hem stevig. "Gelukkig ben je thuis." Ze zet kaarsjes op tafel en snijdt brood.',
+  choices: [{
+    text: '🥪 Even binnen zitten en een boterham eten',
+    consequence: 'Je zit even aan de keukentafel. Martijns vrouw schenkt thee en vraagt hoe het was. Het is een klein moment van rust midden in een lange dag. Na twintig minuten sta je op en ga je verder.',
+    stateChange: { food: 1, comfort: 1 }
+  }, {
+    text: '👋 Bedanken en meteen doorlopen',
+    consequence: 'Je bedankt hen beiden en gaat meteen verder. Nog even en je bent thuis.',
+    stateChange: {}
   }]
 }, {
   id: 'tk_5b',
@@ -508,7 +573,7 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 15 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
-  conditionalOn: () => profile.commuteDistance === 'far' && !state.foundAlternative,
+  conditionalOn: () => profile.commuteDistance === 'far' && !state.foundAlternative && !state.travelingWithMartijn,
   channels: {
     news: [],
     whatsapp: [],

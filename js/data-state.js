@@ -90,7 +90,9 @@ const state = {
   didntUseWaterOnFire: false,
   evacuatedFire: false,
   called112: false,
-  stayedOutside: false
+  stayedOutside: false,
+  delayedEvacuation: false,
+  travelingWithMartijn: false
 };
 
 // Scene decay — automatic stat reductions when a scene is entered
