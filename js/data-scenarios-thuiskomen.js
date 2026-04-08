@@ -676,18 +676,25 @@ const scenes_thuis_komen = [{
       reachedHome: true
     }
   }, {
-    text: () => profile.hasChildren && !state.kidsPickedUp
-      ? (state.kidsArranged ? '👶 Snel de kinderen ophalen bij het vriendje' : '👶 Kinderen ophalen bij juf Marieke')
-      : '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
-    consequence: () => profile.hasChildren && !state.kidsPickedUp
-      ? (state.kidsArranged
-          ? 'Je zet je tas neer en gaat er direct op uit. De kinderen zitten bij een vriendje in de buurt. Ze zijn blij je te zien.'
-          : 'Je stuurt juf Marieke een berichtje en loopt naar haar huis. De kinderen zijn moe, maar veilig. Op de terugweg vallen ze bijna in slaap.')
-      : 'Je loopt door het huis. Alles is in orde. De kaarsjes staan veilig in houders en het gas is dicht.',
-    stateChange: () => profile.hasChildren && !state.kidsPickedUp ? {
+    text: '👶 Kinderen ophalen op de afgesproken plek',
+    consequence: 'Je zet je tas neer en gaat er direct weer op uit. De kinderen zijn veilig opgevangen en blij je te zien zodra je aankomt.',
+    stateChange: {
       kidsPickedUp: true
-    } : {
+    },
+    conditionalOn: () => profile.hasChildren && !state.kidsPickedUp && state.kidsArranged
+  }, {
+    text: '👶 Kinderen ophalen bij juf Marieke',
+    consequence: 'Je stuurt juf Marieke een berichtje en loopt naar haar huis. De kinderen zijn moe, maar veilig. Op de terugweg vallen ze bijna in slaap.',
+    stateChange: {
+      kidsPickedUp: true
+    },
+    conditionalOn: () => profile.hasChildren && !state.kidsPickedUp && !state.kidsArranged
+  }, {
+    text: '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
+    consequence: 'Je loopt door het huis. Alles is in orde. De kaarsjes staan veilig in houders en het gas is dicht.',
+    stateChange: {
       reachedHome: true
-    }
+    },
+    conditionalOn: () => !profile.hasChildren || state.kidsPickedUp
   }]
 }, ];
