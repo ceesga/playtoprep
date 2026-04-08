@@ -173,8 +173,8 @@ function showReport() {
       icon: '🆘'
     }, {
       key: 'returnedHome',
-      label: 'Veilig teruggekeerd',
-      labelMissing: 'Niet veilig teruggekeerd',
+      label: 'Eerste inspectie veilig uitgevoerd',
+      labelMissing: 'Inspectie niet gedaan of uitgesteld',
       icon: '🏡'
     }, {
       key: 'helpedNeighbor',
@@ -414,6 +414,10 @@ function showReport() {
     if (state.helpedNeighbor) goodItems.push({
       icon: '🤝',
       text: '<b>Buren geholpen</b>. Je waarschuwde buren of hielp bij evacuatie. Bij een overstroming kunnen buren elkaars reddingslijn zijn.'
+    });
+    if (state.returnedHome) goodItems.push({
+      icon: '🏡',
+      text: '<b>Gecontroleerde terugkeer</b>. Je ging pas terug toen de situatie het toeliet en werkte stap voor stap: schade vastleggen, spullen regelen, keuring inplannen. Dat is precies hoe gefaseerde terugkeer werkt.'
     });
   } else if (currentScenario === 'thuis_komen') {
     // Positieve acties voor het scenario 'thuis komen'

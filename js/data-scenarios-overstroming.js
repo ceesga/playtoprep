@@ -14,8 +14,8 @@ const scenes_overstroming = [{
   channels: {
     news: [{
       time: '19:30',
-      headline: 'KNMI: code oranje, hoge waterstand verwacht in delen van de regio',
-      body: 'Door aanhoudende regen en extra aanvoer van water verwacht het KNMI morgen zeer hoge waterstanden. Het waterschap waarschuwt bewoners in kwetsbare gebieden alert te zijn.'
+      headline: 'KNMI: code oranje — aanhoudende regen en hogere waterstand verwacht',
+      body: 'Door aanhoudende regenval en extra aanvoer van water kunnen de waterstanden in de regio morgen oplopen. Het waterschap vraagt bewoners in de buurt van rivieren en laaggelegen gebieden het nieuws goed te volgen.'
     }],
     whatsapp: [{
       from: 'Buurvrouw Ans',
@@ -24,7 +24,7 @@ const scenes_overstroming = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Radio 1: Het KNMI heeft code oranje afgegeven. De waterstand stijgt snel. Het waterschap vraagt bewoners in kwetsbare gebieden zich voor te bereiden.'
+    radio: 'Radio 1: Het KNMI heeft code oranje afgegeven voor de regio. Door aanhoudende regen wordt een verhoogde waterstand verwacht. Bewoners in laaggelegen gebieden wordt gevraagd de situatie te blijven volgen.'
   },
   narrative: 'Het is maandagavond. Je woont op loopafstand van de rivier. Het uitzicht is er mooi en op zonnige dagen kan je er echt van genieten. Buiten regent het gestaag. De lucht voelt zwaar en vochtig, drukkend. In de verte klinkt de regen harder op de daken dan normaal. De rivier stond deze week al hoog.',
   choices: [{
@@ -54,12 +54,12 @@ const scenes_overstroming = [{
   channels: {
     news: [{
       time: '06:30',
-      headline: 'Hoogwaterwaarschuwing: waterpeil stijgt snel',
-      body: 'Het KNMI waarschuwt voor hoge waterstanden in delen van de regio. Door aanhoudende regen en extra aanvoer van water verwacht het waterschap dat het peil de komende uren snel zal stijgen.'
+      headline: 'KNMI waarschuwt: waterpeil stijgt, code oranje van kracht',
+      body: 'Het KNMI handhaaft code oranje. Door aanhoudende regen en extra aanvoer van water neemt de waterstand in de regio toe. Het waterschap volgt de situatie op de voet en kan lokale maatregelen nemen.'
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Radio 1: Hoogwaterwaarschuwing. Het water stijgt en nadert een kritiek niveau. Bewoners in laaggelegen gebieden moeten alert zijn en zich voorbereiden op vertrek.'
+    radio: 'Radio 1: Code oranje blijft van kracht. De waterstand stijgt. Bewoners in laaggelegen gebieden wordt gevraagd de situatie te volgen en rekening te houden met lokale maatregelen of afsluitingen.'
   },
   get narrative() {
     return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. Het klinkt zwaarder dan normaal, aanhoudender.' + (state.awarenessLevel > 0 ? ' Die code oranje van gisteren zat nog vers in je hoofd.' : '');
@@ -165,8 +165,8 @@ const scenes_overstroming = [{
   channels: {
     news: [{
       time: '09:15',
-      headline: 'Water stijgt snel, meerdere straten ondergelopen',
-      body: 'In meerdere delen van de regio staan straten blank. Het waterpeil stijgt sneller dan verwacht. Het waterschap meldt dat pompen de aanvoer niet meer kunnen bijhouden.'
+      headline: 'Eerste wateroverlast in laaggelegen wijken',
+      body: 'In enkele laaggelegen straten staat water. Het waterschap vraagt bewoners hun drempelgebied in de gaten te houden en spullen van de begane grond te halen als voorzorgsmaatregel.'
     }],
     whatsapp: [{
       from: 'Buurvrouw Ans',
@@ -174,10 +174,10 @@ const scenes_overstroming = [{
       time: '09:22',
       outgoing: false
     }],
-    nlalert: 'NL-Alert\n11 november 2027 – 09:20\n\nHoogwater in uw omgeving. De waterstand stijgt snel. Let goed op. Bereid u voor op een mogelijk evacuatiebevel. Houd deuren en ramen gesloten.',
-    radio: 'Radio 1: Het water stijgt sneller dan verwacht. Op meerdere plekken loopt het water over de kade. Woont u laag, zorg dan dat u snel weg kunt.'
+    nlalert: 'NL-Alert\n11 november 2027 – 09:20\n\nHoogwater in uw omgeving. De waterstand stijgt. Let op de situatie. Bereid u voor op mogelijke maatregelen. Houd deuren en ramen gesloten.',
+    radio: 'Radio 1: Op enkele plekken in de regio staat water op straat. Gemeenten plaatsen zandzakken en sluiten wegen af waar nodig. Woont u in een laaggelegen gebied, houd de situatie goed in de gaten.'
   },
-  narrative: 'Je kijkt naar buiten. De straat staat al 5 centimeter blank. Het water stijgt zichtbaar. Een buurman loopt haastig met laarzen door de straat. Er is haast geboden.',
+  narrative: 'De straat staat nu een paar centimeter blank. Verderop leggen gemeentewerkers zandzakken neer en een busje van het waterschap zet een deel van de weg af. Buren lopen af en aan met laarzen en kratten.',
   choices: [{
     text: '🪟 Ramen dichten, deuren afdichten en zandzakken neerleggen',
     consequence: 'Je stopt handdoeken onder de deuren, sluit ramen en legt je zandzakken voor de drempel. Dit vertraagt het water, maar houdt het niet tegen. Geeft je extra tijd.',
@@ -185,15 +185,15 @@ const scenes_overstroming = [{
       sealedHome: true
     }
   }, {
-    text: '🚗 Nu meteen weg, vóór de wegen onderlopen',
-    consequence: 'Je pakt het essentiële en rijdt weg. Goede timing, want de weg is nog begaanbaar.',
+    text: '🚗 De auto alvast hoger wegzetten zolang de route nog open is',
+    consequence: 'Je rijdt de auto naar een hoger deel van de wijk en loopt terug. Dat kost tijd, maar als evacueren later nodig wordt, ben je je auto niet meteen kwijt.',
     stateChange: {
-      evacuatedFlood: true
+      carMovedHigher: true,
+      awarenessLevel: 1
     }
   }, {
-    conditionalOn: () => !profile.hasChildren,
-    text: '📱 Ans een berichtje terugsturen en vragen hoe het bij haar is',
-    consequence: 'Je stuurt Ans een appje terug. Ze maakt zich zorgen maar heeft geen auto. Jullie spreken af elkaar in de gaten te houden.',
+    text: '📱 Partner of familie laten weten dat het serieus wordt',
+    consequence: 'Je belt of stuurt een bericht. Dat geeft afstemming, maar terwijl jij contact zoekt stijgt het water buiten gewoon door.',
     stateChange: {
       contactedAns: true
     }
@@ -293,8 +293,8 @@ const scenes_overstroming = [{
   channels: {
     news: [{
       time: '10:20',
-      headline: 'Evacuatiebevel voor laaggelegen wijken',
-      body: 'De burgemeester heeft een evacuatiebevel uitgevaardigd voor laaggelegen wijken. Bewoners moeten direct vertrekken of naar de bovenste verdieping gaan als vertrekken niet meer mogelijk is.'
+      headline: 'Evacuatieadvies voor laaggelegen wijken',
+      body: 'De burgemeester heeft een evacuatieadvies afgegeven voor laaggelegen wijken. Bewoners wordt dringend geadviseerd nu te vertrekken zolang de route nog veilig is. Kan dat niet meer, ga dan naar de bovenste verdieping.'
     }],
     get whatsapp() {
       return (state.contactedAns && !profile.hasChildren) ? [{
@@ -304,10 +304,10 @@ const scenes_overstroming = [{
         outgoing: false
       }] : [];
     },
-    nlalert: 'NL-Alert\n11 november 2027 – 10:22\n\nEVACUATIEBEVEL voor laaggelegen wijken. VERLAAT DIRECT UW WONING of ga naar een hogere verdieping. Gebruik aangewezen evacuatieroutes.',
-    radio: 'Radio 1: Evacuatiebevel voor laaggelegen wijken. Als vertrekken niet meer mogelijk is: ga naar de bovenste verdieping. Sluit de meterkast af. Bel 112 alleen in levensbedreigende situaties.'
+    nlalert: 'NL-Alert\n11 november 2027 – 10:22\n\nEVACUATIEADVIES voor laaggelegen wijken. Vertrek nu als de route nog veilig is, of ga naar de bovenste verdieping. Gebruik aangewezen evacuatieroutes.',
+    radio: 'Radio 1: Evacuatieadvies voor laaggelegen wijken. Ga nu weg als de route nog open is. Kan dat niet meer, ga dan naar boven. Sluit de meterkast af. Bel 112 alleen in levensbedreigende situaties.'
   },
-  narrative: 'De straat staat nu kniehoog blank. Je auto is omringd door water, dus weggrijden is riskant. Het water stijgt nog steeds. Wat doe je?',
+  narrative: 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Het evacuatieadvies is duidelijk: ga nu weg als dat nog kan, of ga naar boven. Wat doe je?',
   choices: [{
     conditionalOn: () => !profile.hasMobilityImpaired,
     text: '🏠 Boven blijven en naar de eerste verdieping gaan',
@@ -334,8 +334,12 @@ const scenes_overstroming = [{
     }
   }, {
     text: '🚗 Toch proberen weg te rijden',
-    consequence: 'Je stapt in de auto. Het water staat al bijna aan de drempel. Rijden in 30 cm water is gevaarlijk, want auto\'s kunnen bij 60 cm al gaan drijven. Je rijdt voorzichtig, maar komt na 100 meter vast te staan.',
-    stateChange: {
+    consequence: () => state.carMovedHigher ?
+      'Je auto stond al hoger geparkeerd. Daardoor kom je nu nog weg via de omleiding. Je rijdt langzaam maar gestaag naar een droog deel van de stad.' :
+      'Je stapt in de auto. Het water staat al bijna aan de drempel. Rijden in 30 cm water is gevaarlijk, want auto\'s kunnen bij 60 cm al gaan drijven. Je rijdt voorzichtig, maar komt na 100 meter vast te staan.',
+    stateChange: () => state.carMovedHigher ? {
+      evacuatedFlood: true
+    } : {
       wentUpstairs: false,
       evacuatedFlood: false
     }
@@ -409,11 +413,11 @@ const scenes_overstroming = [{
       savedItems: true
     }
   }, {
-    text: '📱 112 bellen en je locatie doorgeven',
-    consequence: () => state.phoneBattery > 0 ? 'Je belt 112 en meldt je locatie. Ze registreren je. "Blijf boven, reddingsboot is onderweg." Nu weet de hulpdienst waar je bent.' : 'Je telefoon is leeg. Je kunt 112 niet bereiken. Niemand weet waar je bent.',
-    stateChange: () => state.phoneBattery > 0 ? {
-      calledRescue: true
-    } : {}
+    text: '📱 Partner of familie laten weten dat jullie boven zitten',
+    consequence: 'Je belt of stuurt een bericht: "We zitten boven, water staat in huis." Iemand weet nu waar jullie zijn. Als jouw telefoon straks leeg is, heeft iemand anders de situatie in de gaten.',
+    stateChange: {
+      knowsNeighbors: true
+    }
   }, {
     conditionalOn: () => !state.cutElectricity,
     text: '⚡💧 Meterkast afsluiten en eten naar boven brengen',
@@ -938,23 +942,24 @@ const scenes_overstroming = [{
   get choices() {
     if (state.evacuatedFlood) {
       return [{
-        text: '🏠 Terug voor inspectie, wat is de schade?',
-        consequence: 'Je wacht op een geschikt moment en rijdt terug. De woning staat vol modder tot 80 cm. Meubels verwoest, vloer eruit. Maar de muren staan nog.',
+        text: '👀 Eerst van buiten de schade opnemen',
+        consequence: 'Je loopt langzaam door de straat. De modderrand op de gevels is goed zichtbaar. Je maakt foto\'s van de buitenkant voordat je naar binnen gaat. Zo heb je een goed beeld van de omvang.',
         stateChange: {
           returnedHome: true
         }
       }, {
-        text: '⏳ Nog een dag wachten tot het veiliger is',
-        consequence: 'Je wacht nog een dag. Als je terugkomt is er meer opgedroogd, maar de schimmelvorming is al begonnen. Achteraf had je eerder moeten gaan ventileren.',
-        stateChange: {
-          returnedHome: true
-        }
-      }, {
-        text: '🤝 Terugkeer organiseren met buren',
-        consequence: 'Je organiseert met een paar buren een gezamenlijke terugkeer. Jullie helpen elkaar met spullen wegdragen en de schade opnemen. Sterk in crisis.',
+        text: '🤝 Met buren of gemeente afstemmen wanneer kort naar binnen mag',
+        consequence: 'Je spreekt met een paar buren en belt de gemeente. Er is een aanspreekpunt voor geëvacueerden. Zij geven aan wanneer het veilig is voor een korte inspectie en wat je moet controleren.',
         stateChange: {
           returnedHome: true,
           helpedNeighbor: true
+        }
+      }, {
+        text: '📸 Alleen kort terug voor foto\'s en noodzakelijke spullen',
+        consequence: 'Je gaat kort naar binnen met laarzen en handschoenen. Geen elektra aanzetten. Je documenteert de schade systematisch en pakt het hoognoodzakelijke mee. Dan meteen weer weg.',
+        stateChange: {
+          returnedHome: true,
+          savedItems: true
         }
       }];
     } else {
@@ -1068,29 +1073,23 @@ const scenes_overstroming = [{
     nlalert: null,
     radio: null
   },
-  narrative: 'Je staat weer in je woning. Het ruikt naar modder en riool. Alles is nat. Kasten zijn omgevallen en het behang laat los van de muur. Toch staat het huis er nog. Wat doe je als eerste?',
+  narrative: 'Je mag kort terug de woning in om schade vast te leggen en noodzakelijke spullen te halen. Het ruikt naar modder en riool. Alles is nat. Overnachten of alles opruimen is nog niet verstandig.',
   choices: [{
-    text: '⚡ Gas en elektra laten keuren voor je iets aanzet',
-    consequence: 'Verstandig. Je belt de netbeheerder. Ze sturen een monteur. Elektra wordt afgekeurd, gas is veilig. Goed dat je niet zomaar hebt aangezet.',
-    stateChange: {}
-  }, {
-    text: '🪟 Ramen open voor ventilatie en drogen',
-    consequence: 'Je zet alle ramen en deuren open. Luchtstroom is essentieel om schimmelvorming te voorkomen. De buurman helpt je meubels naar buiten te dragen.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    text: '📸 Alles fotograferen voor de verzekering',
-    consequence: 'Je documenteert alles: waterlijn op de muur, kapotte meubels, elektrische apparatuur. Cruciale stap voor de schadeclaim.',
+    text: '📸 Eerst schade vastleggen',
+    consequence: 'Je documenteert alles: de waterlijn op de muur, omgevallen kasten, kapotte apparaten. Cruciale stap voor de schadeclaim. Je verzekeraar zal je er later dankbaar voor zijn.',
     stateChange: {
       savedItems: true
     }
   }, {
-    text: '⚡📸🪟 Alles aanpakken: keuring regelen, foto\'s maken en ventileren',
-    consequence: 'Je werkt de lijst af. Eerst alles fotograferen: waterstand op de muur, omgevallen kasten, kapotte apparaten. Dan de netbeheerder bellen voor keuring. Daarna ramen en deuren open voor luchtcirculatie. De buurman helpt je meubels naar buiten. Je hebt alles gedaan wat je direct kon doen.',
+    text: '📦 Alleen noodzakelijke spullen meenemen',
+    consequence: 'Je pakt medicijnen, paspoorten en kleding voor een paar dagen. Alles wat je nu niet echt nodig hebt laat je staan. Het huis moet eerst gekeurd worden voor je echt terugkeert.',
     stateChange: {
       savedItems: true,
       comfort: 1
     }
+  }, {
+    text: '⚡ Keuring regelen voordat je echt terugkomt',
+    consequence: 'Je belt de netbeheerder en een installateur. Elektra en gas moeten professioneel gecontroleerd worden voor gebruik. Je noteert wat er moet gebeuren en verlaat daarna de woning weer.',
+    stateChange: {}
   }]
 }];

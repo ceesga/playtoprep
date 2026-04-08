@@ -228,7 +228,7 @@ const sceneVisuals = {
   ov_1: {
     seed: '',
     label: 'Dag 1 · 07:00',
-    title: 'Hoogwaterwaarschuwing'
+    title: 'Aanhoudende regen'
   },
   ov_1b: {
     seed: '',
@@ -238,7 +238,7 @@ const sceneVisuals = {
   ov_2: {
     seed: '',
     label: 'Dag 1 · 09:30',
-    title: 'Water stijgt'
+    title: 'Eerste water op straat'
   },
   ov_2b: {
     seed: '',
@@ -248,7 +248,7 @@ const sceneVisuals = {
   ov_3: {
     seed: '',
     label: 'Dag 1 · 10:30',
-    title: 'Evacuatiebevel'
+    title: 'Evacuatieadvies'
   },
   ov_4a: {
     seed: '',
@@ -293,7 +293,7 @@ const sceneVisuals = {
   ov_7: {
     seed: '',
     label: 'Dag 2 · 08:00',
-    title: 'Water zakt'
+    title: 'Eerste inspectie'
   },
   ov_7b: {
     seed: '',
@@ -303,7 +303,7 @@ const sceneVisuals = {
   ov_8: {
     seed: '',
     label: 'Dag 2 · 10:30',
-    title: 'Huis betreden'
+    title: 'Kort terug in huis'
   },
   // Thuis komen — scènes voor het scenario waarbij de speler onderweg naar huis is
   tk_1: {
@@ -831,6 +831,7 @@ function startScenario(scenarioId) {
   state.kidsEvacuated = false;
   state.wentUpstairs = null;
   state.evacuatedFlood = false;
+  state.carMovedHigher = false;
   state.savedItems = false;
   state.calledRescue = false;
   state.kidsWithYou = false;

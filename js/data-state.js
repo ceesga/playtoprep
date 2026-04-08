@@ -84,6 +84,7 @@ const state = {
   cash:         START_CASH,
   powerbank:    0,
   phoneBattery: START_PHONE_BATTERY,
+  carMovedHigher: false,
   tookAlarmSeriously: false,
   warnedHousemates: false,
   didntUseWaterOnFire: false,
