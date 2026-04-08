@@ -35,7 +35,7 @@ function showReport() {
   } else if (currentScenario === 'overstroming') {
     intro = `${jij} hebt het overstromingsscenario gespeeld. Stijgend water geeft weinig tijd. Hieronder zie je welke keuzes jij maakte.`;
   } else if (currentScenario === 'thuis_komen') {
-    intro = `${jij} hebt het scenario Thuiskomen gespeeld. Hoe kom je thuis als alles uitvalt? Hieronder zie je jouw route en keuzes.`;
+    intro = `${jij} hebt het scenario Onderweg naar huis gespeeld. Hoe kom je thuis als alles uitvalt? Hieronder zie je jouw route en keuzes.`;
   } else if (currentScenario === 'nachtalarm') {
     intro = `${jij} hebt het scenario Rookalarm in de nacht gespeeld. De eerste minuten bij brand zijn bepalend. Hieronder zie je hoe jij reageerde.`;
   }
@@ -229,12 +229,12 @@ function showReport() {
         labelMissing: 'Rookmelder niet meteen serieus genomen',
         icon: '🔔'
       },
-      {
+      ...(persons > 1 ? [{
         key: 'warnedHousemates',
         label: 'Huisgenoten gewaarschuwd',
         labelMissing: 'Huisgenoten niet gewaarschuwd',
         icon: '🗣️'
-      },
+      }] : []),
       {
         key: 'didntUseWaterOnFire',
         label: 'Geen water op elektrische brand gegooid',
@@ -249,8 +249,8 @@ function showReport() {
       },
       {
         key: 'called112',
-        label: '112 gebeld',
-        labelMissing: '112 niet gebeld',
+        label: '112 vanaf buiten gebeld',
+        labelMissing: '112 niet vanaf buiten gebeld',
         icon: '📱'
       },
       {
@@ -419,6 +419,44 @@ function showReport() {
       icon: '🏡',
       text: '<b>Gecontroleerde terugkeer</b>. Je ging pas terug toen de situatie het toeliet en werkte stap voor stap: schade vastleggen, spullen regelen, keuring inplannen. Dat is precies hoe gefaseerde terugkeer werkt.'
     });
+  } else if (currentScenario === 'nachtalarm') {
+    // Positieve acties voor het nachtalarm-scenario
+    if (state.tookAlarmSeriously) goodItems.push({
+      icon: '🔔',
+      text: '<b>Rookmelder serieus genomen</b>. Je reageerde direct toen het alarm afging. Juist in de eerste minuten maakt dat het verschil.'
+    });
+    if (persons > 1 && state.warnedHousemates) goodItems.push({
+      icon: '🗣️',
+      text: '<b>Huisgenoten gewaarschuwd</b>. Je zorgde dat niemand slapend achterbleef. Dat is cruciaal bij rook in de nacht.'
+    });
+    if (state.didntUseWaterOnFire) goodItems.push({
+      icon: '⚡',
+      text: '<b>Geen water op een elektrische brand</b>. Je maakte de situatie niet gevaarlijker. Bij een stopcontactbrand is dat een belangrijke keuze.'
+    });
+    if (state.evacuatedFire) goodItems.push({
+      icon: '🚪',
+      text: '<b>Snel naar buiten gegaan</b>. Je bleef niet onnodig lang binnen. Dat verkleint het risico op rookinhalatie.'
+    });
+    if (state.cutElectricity) goodItems.push({
+      icon: '🔌',
+      text: '<b>Stroom uitgeschakeld</b>. Je zette bij de uitgang snel de stroom uit. Dat verkleinde de kans dat het probleem verder doorsloeg.'
+    });
+    if (state.called112) goodItems.push({
+      icon: '📱',
+      text: '<b>112 vanaf buiten gebeld</b>. Je gaf de situatie door vanaf een veilige plek. Zo konden hulpdiensten gericht uitrukken.'
+    });
+    if (state.stayedOutside) goodItems.push({
+      icon: '🌙',
+      text: '<b>Buiten gebleven</b>. Je ging niet terug naar binnen zonder begeleiding. Dat is precies wat je moet doen bij rook en brandschade.'
+    });
+    if ((profile.hasChildren || profile.hasMobilityImpaired) && state.kidsEvacuated) goodItems.push({
+      icon: '🤝',
+      text: '<b>Kwetsbare huisgenoten geholpen</b>. Je zorgde dat kinderen of minder mobiele huisgenoten veilig buiten kwamen.'
+    });
+    if (profile.hasPets && state.tookPets) goodItems.push({
+      icon: '🐾',
+      text: '<b>Huisdier veilig mee</b>. Je nam je huisdier mee zonder lang te blijven zoeken. Dat is een veilige afweging.'
+    });
   } else if (currentScenario === 'thuis_komen') {
     // Positieve acties voor het scenario 'thuis komen'
     if (state.reachedHome) goodItems.push({
@@ -539,6 +577,32 @@ function showReport() {
     if (!state.calledRescue && state.wentUpstairs) improveItems.push({
       icon: '🆘',
       text: '<b>Geen hulp gevraagd</b>. Toen je boven zat, had je je locatie kunnen melden bij 112. Laat hulpdiensten altijd weten waar je bent.'
+    });
+  } else if (currentScenario === 'nachtalarm') {
+    // Verbeterpunten voor het nachtalarm-scenario
+    if (!state.tookAlarmSeriously) improveItems.push({
+      icon: '🔔',
+      text: '<b>Alarm te laat serieus genomen</b>. Een rookmelder midden in de nacht is nooit iets om weg te wuiven. Reageer direct en controleer meteen wat er aan de hand is.'
+    });
+    if (persons > 1 && !state.warnedHousemates) improveItems.push({
+      icon: '🗣️',
+      text: '<b>Huisgenoten niet gewaarschuwd</b>. Maak anderen direct wakker als er rook in huis is. In de nacht merkt niet iedereen het alarm even snel op.'
+    });
+    if (!state.didntUseWaterOnFire) improveItems.push({
+      icon: '⚡',
+      text: '<b>Verkeerd blusmiddel gebruikt</b>. Water op een elektrische brand maakt de situatie gevaarlijker. Kies eerst voor afsluiten, afstand nemen en evacueren.'
+    });
+    if (!state.evacuatedFire) improveItems.push({
+      icon: '🚪',
+      text: '<b>Te lang binnen gebleven</b>. Bij rook telt elke seconde. Ga zo snel mogelijk naar buiten en stel je veiligheid voorop.'
+    });
+    if (!state.called112) improveItems.push({
+      icon: '📱',
+      text: '<b>112 niet vanaf buiten gebeld</b>. Bel zodra je veilig buiten staat en geef door of iedereen eruit is. Dat helpt de brandweer direct bij aankomst.'
+    });
+    if (!state.stayedOutside) improveItems.push({
+      icon: '🌙',
+      text: '<b>Niet buiten gebleven</b>. Ga na evacuatie niet opnieuw naar binnen voor spullen of kleding. Wacht op de brandweer en ga alleen onder begeleiding terug.'
     });
   } else if (currentScenario === 'thuis_komen') {
     // Verbeterpunten voor het scenario 'thuis komen'

@@ -89,6 +89,7 @@ const state = {
   warnedHousemates: false,
   didntUseWaterOnFire: false,
   evacuatedFire: false,
+  called112PreExit: false,
   called112: false,
   stayedOutside: false,
   delayedEvacuation: false,

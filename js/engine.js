@@ -875,6 +875,7 @@ function startScenario(scenarioId) {
   state.warnedHousemates = false;
   state.didntUseWaterOnFire = false;
   state.evacuatedFire = false;
+  state.called112PreExit = false;
   state.called112 = false;
   state.stayedOutside = false;
   state.delayedEvacuation = false;

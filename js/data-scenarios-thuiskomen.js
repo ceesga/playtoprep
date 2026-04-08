@@ -1,10 +1,10 @@
 // ═══════════════════════════════════════════════════════════════
-// Scenario: Thuis Komen — "Onderweg naar huis"
-// 12 scenes — van tk_1 (kantoor) tot tk_7 (thuis)
+// Scenario: Onderweg naar huis
+// Meerdere routevarianten — van tk_1 (kantoor) tot tk_6 (thuis)
 // Tijdspanne: ~9 uur (werk → thuis)
 // ═══════════════════════════════════════════════════════════════
 
-// ─── THUIS KOMEN SCENARIO ────────────────────────────────────────────────────
+// ─── ONDERWEG NAAR HUIS SCENARIO ─────────────────────────────────────────────
 const scenes_thuis_komen = [{
   id: 'tk_1',
   time: '11:57',
@@ -13,29 +13,24 @@ const scenes_thuis_komen = [{
   dayBadgeClass: '',
   channels: {
     news: [],
-    whatsapp: [{
-      from: 'Collega Martijn',
-      msg: 'Is jouw scherm ook zwart? De wifi ligt er hier ook uit.',
-      time: '11:58',
-      outgoing: false
-    }],
+    whatsapp: [],
     nlalert: null,
     radio: null
   },
-  narrative: 'Midden op een gewone donderdagochtend worden alle beeldschermen op kantoor ineens zwart. Het licht valt uit. De ventilatie stopt. Opeens is het stil. Daarna hoor je alleen nog verbaasde stemmen en losse vragen. Je telefoon doet het nog op 4G, maar het signaal hapert.',
+  narrative: 'Op een gewone donderdagochtend worden de beeldschermen op kantoor ineens zwart. Het licht valt uit. De ventilatie stopt. Opeens is het stil. Daarna hoor je alleen verbaasde stemmen en korte vragen. Je telefoon doet het nog op 4G, maar het signaal hapert.',
   choices: [{
     text: '💻 Doorwerken op laptopbatterij',
-    consequence: 'Je klapt je laptop open. Batterij op 62%. Wifi is weg, dus je verbindt via je telefoon. Het werkt, maar traag. Het netwerk is overbelast. Na een kwartier geef je het op. Dit heeft geen zin.',
+    consequence: 'Je klapt je laptop open. Batterij op 62%. De wifi is weg, dus je verbindt via je telefoon. Het werkt, maar traag. Het netwerk raakt vol. Na een kwartier geef je het op. Dit schiet niet op.',
     stateChange: {}
   }, {
     text: '📱 Telefoon eerst opladen via de laptop',
-    consequence: 'Slimme prioriteit. Je sluit de telefoon aan op de laptop via USB. Terwijl je wacht op nieuws laadt de telefoon op. De laptop heeft genoeg accu om flink bij te dragen.',
-    stateChange: {
-      phoneBattery: 30
-    }
+    consequence: 'Slimme prioriteit. Je sluit je telefoon via USB aan op de laptop. Terwijl je op nieuws wacht, laadt hij rustig bij. De laptop heeft nog genoeg accu om daarbij te helpen.',
+    stateChange: () => ({
+      phoneBattery: Math.min(100, state.phoneBattery + 30) - state.phoneBattery
+    })
   }, {
-    text: '🚗 Meteen spullen pakken en vertrekken',
-    consequence: 'Je pakt direct je spullen en verlaat het gebouw. De straat staat al vol mensen. Jij bent er vroeg bij, dus de files zijn er nog niet.',
+    text: '🚗 Spullen bij elkaar zoeken zodat je weg kunt',
+    consequence: 'Je begint je spullen te verzamelen. Laptop in de tas, jas aan. Je weet nog niet wanneer je vertrekt, maar je wilt klaar zijn als het nodig is.',
     stateChange: {
       awarenessLevel: 1
     }
@@ -72,7 +67,7 @@ const scenes_thuis_komen = [{
       msgs.push({
         from: 'Baas',
         msg: 'Iedereen mag naar huis als dat lukt. Wij sluiten het gebouw. Vergeet uw spullen niet.',
-        time: '12:55',
+        time: '12:22',
         outgoing: false
       });
       return msgs;
@@ -80,20 +75,21 @@ const scenes_thuis_komen = [{
     nlalert: 'NL-Alert\n15 januari 2027 – 12:15\n\nGrote stroomstoring in heel Nederland. Duur onbekend. Verkeerslichten zijn uit. Treinen rijden niet. Blijf kalm en ga veilig naar huis. Update volgt.',
     radio: null
   },
-  narrative: 'Verkeerslichten zijn uit. Treinen staan stil. Op kantoor zegt je baas: "Iedereen naar huis, zo snel als het kan." Je kijkt naar je collega\'s. Sommigen vertrekken al. <span style="background:#fff8e1;border-radius:var(--r-sm);padding:2px 6px;font-size:.82rem;color:#92400e">⚠️ Netwerk overbelast, berichten kunnen vertraagd binnenkomen</span>',
+  narrative: 'Verkeerslichten zijn uit. Treinen staan stil. Je baas zegt: "Volgens mij kan iedereen beter naar huis gaan. Werken lukt vandaag toch niet meer." Om je heen pakken collega\'s hun spullen. <span style="background:#fff8e1;border-radius:var(--r-sm);padding:2px 6px;font-size:.82rem;color:#92400e">⚠️ Het netwerk raakt overbelast. Berichten kunnen vertraagd binnenkomen.</span>',
   choices: [{
     text: '🚗 Nu direct vertrekken, vóór de files',
-    consequence: 'Je pakt alles en vertrekt. De weg is nog redelijk vrij. Je hebt een voorsprong op de massa.',
+    consequence: 'Je trekt je jas aan, pakt je spullen en vertrekt meteen. Op de weg is het nog redelijk rustig. Je bent er vroeg bij.',
     stateChange: {
       leftEarly: true
     }
   }, {
-    text: '⏳ Wachten, baas vraagt iedereen tot 14:00 te blijven',
-    consequence: 'Je blijft. Je laadt je telefoon bij een collega op een powerbank. Om 13:00 vertrek je, maar tegen die tijd staat alles in de file.',
+    text: '⏳ Nog even op kantoor afwachten wat er gaat komen',
+    consequence: 'Je blijft nog even. Een collega heeft een powerbank, dus je laadt je telefoon bij. Om 13:00 vertrek je alsnog, maar dan staat alles vast.',
     stateChange: {}
   }, {
+    conditionalOn: () => profile.adults > 1,
     text: '📱 Partner bellen om af te stemmen',
-    consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, het netwerk zit vol. Je stuurt een WhatsApp: "Kom naar huis, duur onbekend." Een uur later krijg je een leesteken. Meer communicatie zit er niet in.' : 'Je telefoon is leeg. Je kunt je partner niet bereiken.',
+    consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, het netwerk zit vol. Je stuurt een bericht: "Ik kom naar huis, duur onbekend." Pas veel later zie je een leesteken. Meer contact lukt voorlopig niet.' : 'Je telefoon is leeg. Je kunt je partner niet bereiken.',
     stateChange: {}
   }]
 }, {
@@ -115,30 +111,63 @@ const scenes_thuis_komen = [{
     radio: null
   },
   get narrative() {
-    const context = state.leftEarly ?
-      'Je bent al onderweg als je telefoon trilt. School stuurt een bericht.' :
-      'Je telefoon trilt. Je bent nog op het werk.';
-    return context + ' Buiten op straat staat het al vast. Alle schermen zijn zwart.';
+    const context = state.leftEarly
+      ? 'Je bent al onderweg als je telefoon trilt. School stuurt een bericht. De school zit bij jullie in de buurt, maar teruggaan lukt nu niet.'
+      : 'Je telefoon trilt. School stuurt een bericht. Je bent nog op je werk en de school zit bij jullie thuis in de buurt. Even op en neer gaan lukt niet.';
+    return context + ' Buiten op straat loopt het verkeer nu al vast.';
   },
   choices: [{
-    text: '🚗 Nu direct ophalen, eerst de kinderen en dan naar huis',
-    consequence: 'Je rijdt direct naar school. De kinderen zijn blij je te zien. Je lost dit samen op.',
-    stateChange: {
-      kidsArranged: true,
-      kidsPickedUp: true
-    }
+    text: '📱 Vragen of de kinderen bij een vriendje kunnen blijven',
+    consequence: () => state.phoneBattery > 0 ?
+      'Je belt of stuurt snel een bericht naar een andere ouder. Na wat heen en weer is er iemand die ze wil opvangen. De kinderen zijn veilig. Je haalt ze later op.' :
+      'Je telefoon is leeg. Je kunt niemand bereiken. Je moet het later regelen.',
+    stateChange: () => state.phoneBattery > 0 ? {
+      kidsArranged: true
+    } : {}
   }, {
     text: () => profile.adults > 1 ? '📱 Partner vragen de kinderen op te halen' : '📱 Een kennis vragen de kinderen op te halen',
-    consequence: () => state.phoneBattery > 0 ? (profile.adults > 1 ? 'Je stuurt een WhatsApp naar je partner. Na 20 minuten een bevestiging: "Ik ga ze ophalen." Opgelost.' : 'Je belt een kennis die in de buurt woont. Na wat aarzeling: "Oké, ik ga ze halen." Opgelost.') : 'Je telefoon is leeg. Je kunt niemand bereiken om de kinderen op te halen.',
+    consequence: () => state.phoneBattery > 0 ? (profile.adults > 1 ? 'Je stuurt een bericht naar je partner. Na twintig minuten komt een reactie: "Ik ga ze ophalen." Dat geeft rust.' : 'Je belt een kennis in de buurt. Na wat aarzeling zegt die: "Oké, ik ga ze halen." Dat lucht op.') : 'Je telefoon is leeg. Je kunt niemand bereiken om de kinderen op te halen.',
     stateChange: () => state.phoneBattery > 0 ? {
       kidsArranged: true
     } : {}
   }, {
     text: '🏫 School kan ze opvangen tot 18:00, later regelen',
-    consequence: 'Je besluit school de kinderen te laten opvangen. Ze zijn veilig. Jij regelt eerst de thuisreis.',
+    consequence: 'Je laat school de opvang voorlopig doen. De kinderen zijn veilig. Eerst moet jij thuiskomen.',
     stateChange: {
       kidsArranged: false
     }
+  }]
+}, {
+  id: 'tk_3b',
+  time: '12:58',
+  date: 'Donderdag 15 januari 2027',
+  dayBadge: 'Onderweg',
+  dayBadgeClass: '',
+  conditionalOn: () => !state.leftEarly,
+  channels: {
+    news: [],
+    whatsapp: [{
+      from: 'Collega Martijn',
+      msg: 'Wacht even op mij! Ik zie je lopen.',
+      time: '12:58',
+      outgoing: false
+    }],
+    nlalert: null,
+    radio: null
+  },
+  narrative: 'Je bent net het kantoor uit als Martijn je roept. Hij komt aanrennen met zijn tas op zijn rug. "Hé, wacht even. Ik ga ook naar huis. Jij gaat toch die kant op? Zullen we samen gaan? Dat is fijner dan alleen."',
+  choices: [{
+    text: '🤝 Ja, samen op pad met Martijn',
+    consequence: 'Martijn loopt naast je mee. Hij kent een route die de drukste wegen omzeilt. Het is prettig om niet alleen te zijn in al die drukte.',
+    cat: 'cat-social',
+    stateChange: {
+      travelingWithMartijn: true,
+      foundAlternative: true
+    }
+  }, {
+    text: '👋 Nee, ik ga liever mijn eigen tempo aan',
+    consequence: 'Je bedankt Martijn, maar geeft aan dat je liever alleen gaat. Hij knikt begrijpend. "Pas goed op jezelf." Jullie gaan elk een andere kant op.',
+    stateChange: {}
   }]
 }, {
   id: 'tk_3',
@@ -148,37 +177,37 @@ const scenes_thuis_komen = [{
   dayBadgeClass: '',
   channels: {
     news: [],
-    whatsapp: [{
-      from: 'Collega Martijn',
-      msg: 'Jij gaat toch ook naar huis? Ik ook. Zullen we samen optrekken? Dan zijn we in ieder geval niet alleen.',
-      time: '13:03',
-      outgoing: false
-    }],
+    whatsapp: [],
     nlalert: null,
     radio: null
   },
   get narrative() {
     const vehicle = profile.commuteMode === 'car' ? 'Je auto staat op de parkeerplaats.' : profile.commuteMode === 'bike' ? 'Je fiets staat bij de ingang.' : 'Je bent zonder auto of fiets.';
-    return `Je staat buiten. Treinen en trams liggen stil, want die hebben stroom nodig. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Reken er niet op dat het openbaar vervoer je hele reis kan overnemen. ${vehicle}`;
+    const intro = state.leftEarly
+      ? 'Je bent al een tijdje onderweg. Treinen en trams liggen stil. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Reken er niet op dat het openbaar vervoer je hele reis kan overnemen.'
+      : 'Je staat buiten. Treinen en trams liggen stil, want die hebben stroom nodig. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Reken er niet op dat het openbaar vervoer je hele reis kan overnemen.';
+    return `${intro} ${vehicle}`;
   },
   choices: [{
     conditionalOn: () => profile.commuteMode === 'car',
     text: '🚗 Met de auto',
-    consequence: 'Je loopt naar de parkeerplaats. Files zijn al zichtbaar op de grote wegen. Maar je hebt een auto.',
+    consequence: () => state.leftEarly
+      ? 'Je zit al in de auto. Files zijn al zichtbaar op de grote wegen, maar je bent er vroeg bij.'
+      : 'Je loopt naar de parkeerplaats. De grote wegen lopen al vol, maar je hebt tenminste vervoer.',
     stateChange: {
       travelMode: 'car'
     }
   }, {
     text: '🚂 Met de trein',
-    consequence: 'Je loopt naar het station. Al van ver zie je dat het station vol staat met mensen. De borden zijn zwart.',
+    consequence: 'Je loopt naar het station. Al van ver zie je de hal vol mensen staan. De borden zijn zwart.',
     stateChange: {
       travelMode: 'train'
     }
   }, {
     text: '🚌 Met de bus',
     consequence: () => profile.commuteDistance === 'near' ?
-      'Je loopt naar de bushalte. Er rijdt nog een bus, maar de chauffeur geeft aan dat de route mogelijk tussentijds stopt. Als er nog vervoer rijdt, kan het druk zijn en kan de route tussentijds veranderen. Je betaalt contant en stapt in, maar zeker is het niet.' :
-      'Je loopt naar de bushalte. De halte staat vol. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Je betaalt €10 contant en hoopt dat de bus je ver genoeg brengt.',
+      'Je loopt naar de bushalte. Er rijdt nog een bus, maar de chauffeur waarschuwt dat de route elk moment kan veranderen. Het is druk. Je betaalt contant en stapt in. Hoe ver je komt, weet niemand.' :
+      'Je loopt naar de bushalte. De halte staat vol. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Je betaalt €10 contant en hoopt dat de bus je een flink stuk verder brengt.',
     stateChange: {
       travelMode: 'ov',
       cash: -10
@@ -186,49 +215,19 @@ const scenes_thuis_komen = [{
   }, {
     conditionalOn: () => profile.commuteMode === 'bike',
     text: '🚲 Met de fiets',
-    consequence: 'Je haalt je fiets bij de ingang. Geen files, geen infrastructuur nodig. Je begint te rijden.',
+    consequence: () => state.leftEarly
+      ? 'Je bent al op de fiets. Geen files, geen afhankelijkheid van systemen.'
+      : 'Je haalt je fiets bij de ingang. Geen files, geen afhankelijkheid van systemen. Je begint te rijden.',
     stateChange: {
       travelMode: 'bike'
     }
   }, {
     conditionalOn: () => profile.commuteMode !== 'bike',
     text: '🚶 Te voet vertrekken',
-    consequence: 'Je begint te lopen. Langzaam maar zeker, zonder afhankelijk te zijn van uitgevallen systemen.',
+    consequence: 'Je gaat lopen. Langzaam, maar je bent niet afhankelijk van systemen die uitvallen.',
     stateChange: {
-      travelMode: 'bike'
+      travelMode: 'walking'
     }
-  }]
-}, {
-  id: 'tk_3b',
-  time: '13:05',
-  date: 'Donderdag 15 januari 2027',
-  dayBadge: 'Onderweg',
-  dayBadgeClass: '',
-  channels: {
-    news: [],
-    whatsapp: [{
-      from: 'Collega Martijn',
-      msg: 'Wacht even op mij! Ik zie je lopen.',
-      time: '13:05',
-      outgoing: false
-    }],
-    nlalert: null,
-    radio: null
-  },
-  narrative: 'Je bent net het kantoor uit als je Martijn hoort roepen. Hij komt aanrennen met zijn tas op zijn rug. "Hé, wacht even! Ik ga ook naar huis. Jij gaat toch die kant op? Zullen we samen gaan? Gezelschapper dan alleen."',
-  choices: [{
-    text: '🤝 Ja, samen op pad met Martijn',
-    consequence: 'Martijn valt naast je in stap. Hij kent een route die de drukste wegen omzeilt. Het is fijn om niet alleen te zijn in al die drukte.',
-    cat: 'cat-social',
-    stateChange: () => ({
-      travelingWithMartijn: true,
-      foundAlternative: true,
-      travelMode: profile.commuteMode === 'car' ? 'car' : 'bike'
-    })
-  }, {
-    text: '👋 Nee, ik ga liever mijn eigen tempo aan',
-    consequence: 'Je bedankt Martijn, maar geeft aan dat je liever alleen gaat. Hij knikt begrijpend. "Pas goed op jezelf." Jullie gaan elk een andere kant op.',
-    stateChange: {}
   }]
 }, {
   id: 'tk_4a',
@@ -247,24 +246,28 @@ const scenes_thuis_komen = [{
     nlalert: null,
     radio: null
   },
-  narrative: 'Je rijdt de parkeerplaats af. Al na twee straten staat het muurvast. Verkeerslichten zijn zwart. Iemand regelt handmatig een kruispunt. GPS doet het niet.',
+  get narrative() {
+    return state.leftEarly
+      ? 'Je bent al een tijdje onderweg. Binnen een paar straten liep het al vast. Verkeerslichten zijn zwart. Iemand regelt met handgebaren een kruispunt. Je gps doet het niet.'
+      : 'Je rijdt de parkeerplaats af. Al na twee straten staat het muurvast. Verkeerslichten zijn zwart. Iemand regelt met handgebaren een kruispunt. Je gps doet het niet.';
+  },
   choices: [{
     text: '🛤️ Sluiproute nemen via kleinere wegen',
-    consequence: 'Je kent de buurt en neemt kleinere straten. Langzamer maar minder file. Na twee uur ben je thuis.',
+    consequence: 'Je kent de buurt en kiest kleinere straten. Het gaat langzamer, maar je blijft rijden. Na twee uur ben je thuis.',
     stateChange: {
       reachedHome: true
     }
   }, {
     text: '📱 Telefoon opladen via de auto terwijl je rijdt',
-    consequence: 'Je sluit de telefoon aan op de USB-poort van de auto. Terwijl je in de file staat laadt hij op. Elke procent telt.',
-    stateChange: {
-      phoneBattery: 30
-    }
+    consequence: 'Je sluit je telefoon aan op de USB-poort van de auto. Terwijl je stapvoets vooruitgaat, laadt hij langzaam op. Elke procent telt.',
+    stateChange: () => ({
+      phoneBattery: Math.min(100, state.phoneBattery + 30) - state.phoneBattery
+    })
   }, {
     text: '⛽ Tanken bij een tankstation',
     consequence: () => profile.hasEDCBag ?
-      'Je rijdt een tankstation op. "Alleen contant", zegt de pomp. Je hebt nog cash bij je en tankt vol voor €75.' :
-      'Je rijdt een tankstation op. "Alleen contant", zegt de pomp. Je voelt in je jaszak, maar daar zit niets. Je kunt niet tanken en rijdt verder op wat je nog hebt.',
+      'Je rijdt een tankstation op. Bij de kassa zegt iemand: "Alleen contant." Je hebt nog cash bij je en tankt vol voor €75.' :
+      'Je rijdt een tankstation op. Bij de kassa zegt iemand: "Alleen contant." Je voelt in je jaszak, maar daar zit niets. Je kunt niet tanken en rijdt verder op wat je nog hebt.',
     stateChange: () => profile.hasEDCBag ? {
       comfort: 1,
       cash: -75
@@ -273,9 +276,9 @@ const scenes_thuis_komen = [{
     }
   }, {
     text: '🚶 Auto achterlaten en te voet verder',
-    consequence: 'Je zet de auto in een parkeerzone en loopt. Zwaar, maar je komt vooruit.',
+    consequence: 'Je zet de auto aan de kant en gaat verder te voet. Zwaar, maar je maakt weer meters.',
     stateChange: {
-      travelMode: 'bike'
+      travelMode: 'walking'
     }
   }]
 }, {
@@ -295,7 +298,7 @@ const scenes_thuis_komen = [{
     nlalert: null,
     radio: null
   },
-  narrative: 'Het station staat vol met mensen. Honderden reizigers wachten voor de gesloten poortjes. Een NS-medewerker roept door een megafoon: "Er rijden vandaag geen treinen. Verlaat het station." Meteen ontstaat er onrust.',
+  narrative: 'Het station staat vol met mensen. Honderden reizigers wachten bij de gesloten poortjes. Een NS-medewerker roept door een megafoon: "Er rijden vandaag geen treinen. Verlaat het station." Meteen ontstaat er onrust.',
   choices: [{
     text: '⏳ Wachten, misschien gaan er later toch treinen rijden',
     consequence: 'Je wacht twee uur. Er gebeurt niets. Die tijd ben je kwijt. Daarna moet je alsnog een alternatief zoeken.',
@@ -304,7 +307,7 @@ const scenes_thuis_komen = [{
     }
   }, {
     text: '🚌 Alternatief zoeken met bus, taxi of lift',
-    consequence: 'Je loopt het station uit en kijkt rond. Er staan mensen die liften aanbieden. Je springt bij iemand die dezelfde richting op gaat.',
+    consequence: 'Je loopt het station uit en kijkt rond. Buiten vragen mensen wie welke kant op moet. Je kunt meerijden met iemand die dezelfde richting op gaat.',
     stateChange: {
       foundAlternative: true,
       travelMode: 'car'
@@ -314,12 +317,12 @@ const scenes_thuis_komen = [{
     consequence: () => profile.commuteDistance === 'near' ?
       'Je woont dichtbij. Je besluit te lopen. Na anderhalf uur ben je thuis, moe maar voldaan.' :
       profile.commuteDistance === 'far' ?
-      'Je woont ver weg. Lopen is eigenlijk geen optie, want het zijn tientallen kilometers. Toch begin je alvast terwijl je een alternatief zoekt.' :
+      'Je woont ver weg. Lopen gaat je vandaag niet thuis brengen, maar stilstaan helpt ook niet. Je begint alvast en kijkt onderweg verder.' :
       'Je woont op middellange afstand. Je besluit te lopen. Het is zwaar maar haalbaar.',
     stateChange: () => profile.commuteDistance === 'far' ? {
       travelMode: 'walking'
     } : {
-      travelMode: 'bike',
+      travelMode: 'walking',
       reachedHome: profile.commuteDistance === 'near'
     }
   }]
@@ -338,14 +341,25 @@ const scenes_thuis_komen = [{
   },
   get narrative() {
     return profile.commuteDistance === 'near' ?
-      'Er rijdt nog een bus, maar de chauffeur zegt meteen dat hij niet zeker weet hoe ver hij komt. Als er nog vervoer rijdt, kan het druk zijn en kan de route tussentijds veranderen. Je stapt in en hoopt dat hij je dichtbij genoeg brengt.' :
-      'De bus rijdt, maar de halte stroomt vol. De chauffeur geeft aan dat de route ingekort kan worden. Sommige bussen rijden al helemaal niet meer. Reken er niet op dat het openbaar vervoer je hele reis kan overnemen. Je stapt in en wacht af.';
+      'Er rijdt nog een bus, maar de chauffeur waarschuwt meteen dat hij niet weet hoe ver hij nog komt. Het is druk en de route kan tussendoor veranderen. Je stapt in en hoopt dat je dicht genoeg bij huis uitkomt.' :
+      'De bus rijdt nog, maar de halte stroomt vol. De chauffeur waarschuwt dat de rit kan worden ingekort. Sommige bussen rijden al niet meer. Je stapt in en kijkt hoe ver je komt.';
   },
   choices: [{
+    text: '🚌 In de bus blijven zitten',
+    consequence: () => profile.commuteDistance === 'near' ?
+      'Je blijft zitten. De bus rijdt zijn route af. Uiteindelijk stap je uit bij de eindhalte, nog een kwartier lopen van huis. Beter dan niets.' :
+      'Je blijft zitten. De bus brengt je een flink stuk dichter bij huis. De laatste tien kilometer loop je alsnog. Tegen de avond kom je thuis.',
+    stateChange: () => profile.commuteDistance === 'near' ? {
+      travelMode: 'walking',
+      reachedHome: false
+    } : {
+      reachedHome: true
+    }
+  }, {
     text: '🚶 Te voet verder',
     consequence: () => profile.commuteDistance === 'near' ?
       'Je woont dichtbij. Na een uur lopen ben je thuis.' :
-      'Je begint te lopen. Na een uur begin je te twijfelen of je dit thuis komt.',
+      'Je begint te lopen. Na een uur vraag je je af of je het thuis gaat halen.',
     stateChange: () => profile.commuteDistance === 'near' ? {
       reachedHome: true
     } : {
@@ -355,9 +369,9 @@ const scenes_thuis_komen = [{
     text: '🚕 Taxi of deelfiets zoeken',
     consequence: () => {
       const cost = profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110;
-      if (state.cash === 0) return 'Je zoekt een taxi maar niemand rijdt zonder contant geld en je hebt niets bij je. Je loopt toch.';
+      if (state.cash === 0) return 'Je zoekt een taxi of deelfiets, maar zonder contant geld kom je nergens. Je loopt verder.';
       if (state.cash >= cost) return `Je vindt een taxichauffeur die voor cash rijdt. Je betaalt €${cost} en rijdt naar huis.`;
-      return `Je vindt een taxichauffeur. Je hebt maar €${state.cash} bij je. Hij brengt je een stuk op weg, maar niet helemaal thuis. Je loopt de rest.`;
+      return `Je vraagt een taxichauffeur, maar je hebt maar €${state.cash} bij je en dat is niet genoeg. Hij weigert. Je loopt verder.`;
     },
     stateChange: () => {
       const cost = profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110;
@@ -370,14 +384,12 @@ const scenes_thuis_komen = [{
         cash: -cost
       };
       return {
-        foundAlternative: true,
-        travelMode: 'walking',
-        cash: -state.cash
+        travelMode: 'walking'
       };
     }
   }, {
     text: '🚘 Lift vragen aan voorbijrijdende auto\'s',
-    consequence: 'Je steekt je duim omhoog. Na tien minuten stopt er een auto. "Welke kant ga jij op?" Hij rijdt je een stuk verder.',
+    consequence: 'Je steekt je duim omhoog. Na tien minuten stopt er een auto. "Welke kant moet je op?" vraagt de bestuurder. Hij rijdt je een stuk verder.',
     stateChange: {
       foundAlternative: true,
       travelMode: 'car'
@@ -389,34 +401,42 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 15 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
-  conditionalOn: () => state.travelMode === 'bike',
+  conditionalOn: () => state.travelMode === 'bike' || state.travelMode === 'walking',
   channels: {
     news: [],
     whatsapp: [],
     nlalert: null,
     radio: null
   },
-  narrative: 'Je hebt je fiets bij je, of je bent alvast begonnen te lopen. Geen files en geen afhankelijkheid van uitgevallen systemen. De wegen zijn druk maar je kunt erlangs.',
+  get narrative() {
+    return state.travelMode === 'bike'
+      ? 'Je fiets staat klaar. Geen files en geen afhankelijkheid van uitgevallen systemen. De wegen zijn druk maar je kunt erlangs.'
+      : 'Je bent te voet vertrokken. Langzaam, maar je bent niet afhankelijk van systemen. De wegen zijn druk, toch kom je vooruit.';
+  },
   choices: [{
-    text: '🚲 Direct doorrijden, zonder omwegen',
-    consequence: () => profile.commuteDistance === 'far' ?
-      'Je fietst. Na twee uur begin je te twijfelen. Je hebt nog meer dan de helft te gaan.' :
-      'Je fietst stevig door. Na anderhalf uur ben je thuis. Moe maar voldaan.',
+    text: () => state.travelMode === 'bike' ? '🚲 Direct doorrijden, zonder omwegen' : '🚶 Stevig doorlopen, zonder omwegen',
+    consequence: () => profile.commuteDistance === 'far'
+      ? (state.travelMode === 'bike' ? 'Je fietst. Na twee uur begin je te twijfelen. Je hebt nog meer dan de helft te gaan.' : 'Je loopt. Na twee uur begin je te twijfelen. Je hebt nog meer dan de helft te gaan.')
+      : (state.travelMode === 'bike' ? 'Je fietst stevig door. Na anderhalf uur ben je thuis. Moe maar voldaan.' : 'Je loopt stevig door. Na twee uur ben je thuis. Moe maar voldaan.'),
     stateChange: () => profile.commuteDistance === 'far' ? {
-      travelMode: 'bike'
+      travelMode: state.travelMode
     } : {
       reachedHome: true
     }
   }, {
     text: '🛣️ Alternatieve route via rustige wegen',
-    consequence: 'Je neemt de rustige fietsroutes. Geen gedoe met auto\'s die de weg op rijden. Je bent na twee uur thuis.',
+    consequence: () => state.travelMode === 'bike'
+      ? 'Je neemt rustige fietsroutes. Minder gedoe met drukke kruispunten. Na twee uur ben je thuis.'
+      : 'Je kiest rustige straten en steegjes. Minder gedoe met drukke wegen en grote groepen mensen. Na twee uur ben je thuis.',
     stateChange: {
       reachedHome: true
     }
   }, {
     conditionalOn: () => profile.hasChildren && !state.kidsArranged,
     text: '🏘️ Omrijden om kinderen op te halen',
-    consequence: 'Je rijdt via school. De kinderen staan al buiten te wachten. Samen fietsen jullie naar huis.',
+    consequence: () => state.travelMode === 'bike'
+      ? 'Je rijdt via school. De kinderen worden erbij gehaald en mogen met je mee. Samen fietsen jullie naar huis.'
+      : 'Je loopt via school. De kinderen worden erbij gehaald en gaan met je mee. Samen lopen jullie naar huis.',
     stateChange: {
       reachedHome: true,
       kidsPickedUp: true,
@@ -436,10 +456,10 @@ const scenes_thuis_komen = [{
     nlalert: null,
     radio: null
   },
-  narrative: 'Je loopt al anderhalf uur. Je hebt nog meer dan 40 kilometer te gaan. Je voeten doen pijn. Het begint donker te worden. Dit gaat niet lukken vandaag.',
+  narrative: 'Je loopt al anderhalf uur. Je hebt nog meer dan 40 kilometer te gaan. Je voeten doen pijn. Het begint donker te worden. Zo kom je vandaag niet thuis.',
   choices: [{
     text: '🚘 Liften proberen langs de kant van de weg',
-    consequence: 'Je gaat aan de kant van de weg staan met je duim omhoog. Na twintig minuten stopt een busje. De bestuurder rijdt je een stuk mee.',
+    consequence: 'Je gaat aan de kant van de weg staan met je duim omhoog. Na twintig minuten stopt een busje. De bestuurder neemt je een flink stuk mee.',
     stateChange: {
       foundAlternative: true,
       travelMode: 'car'
@@ -448,12 +468,13 @@ const scenes_thuis_komen = [{
     text: '🏠 Aankloppen bij iemand voor onderdak of hulp',
     consequence: 'Je loopt naar een huis en klopt aan. Een vrouw doet open en luistert naar je verhaal. "Kom binnen, we regelen wat." Ze biedt je een plek aan voor de nacht.',
     stateChange: {
-      foundAlternative: true,
-      helpedStranger: true
+      foundAlternative: true
     }
   }, {
     text: '🚲 Een fiets lenen of kopen van een voorbijganger',
-    consequence: 'Je vraagt een fietser die naar huis rijdt of hij een reservefiets heeft of een plek weet. Hij kent iemand die een oude fiets verkoopt voor €50 cash.',
+    consequence: () => profile.hasEDCBag
+      ? 'Je spreekt een fietser aan. Hij kent iemand verderop die een oude fiets verkoopt voor €50 cash. Een kwartier later ben je weer onderweg.'
+      : 'Je spreekt een fietser aan. Er is wel een oude fiets te koop, maar alleen voor €50 cash. Dat heb je niet bij je, dus je moet verder lopen.',
     stateChange: () => profile.hasEDCBag ? {
       foundAlternative: true,
       travelMode: 'bike',
@@ -463,7 +484,7 @@ const scenes_thuis_komen = [{
     }
   }, {
     text: '😤 Toch doorgaan, ik kom er wel',
-    consequence: 'Je bijt door. Maar je lichaam protesteert. Na nog twee uur lopen in het donker ben je uitgeput en nog lang niet thuis.',
+    consequence: 'Je blijft doorlopen, maar je lichaam protesteert. Na nog twee uur in het donker ben je uitgeput en nog lang niet thuis.',
     stateChange: {
       comfort: -2
     }
@@ -474,7 +495,7 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 15 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
-  conditionalOn: () => !state.reachedHome && !state.travelingWithMartijn,
+  conditionalOn: () => !state.reachedHome && !state.travelingWithMartijn && !(state.travelMode === 'walking' && profile.commuteDistance === 'far'),
   channels: {
     news: [],
     get whatsapp() {
@@ -501,28 +522,28 @@ const scenes_thuis_komen = [{
   get narrative() {
     const dist = profile.commuteDistance;
     const busStopNote = ' Bij een bushokje zit een oudere mevrouw met een tas op haar schoot. Ze kijkt af en toe naar de weg, maar er is al een tijdje geen bus meer langs gekomen.';
-    if (dist === 'near') return 'Je bent bijna thuis. Een korte, ongemakkelijke rit maar niets dramatisch. De straten zijn vreemd leeg.' + busStopNote;
-    if (dist === 'far') return 'Je bent al uren onderweg. Het begint donker te worden. Je bent moe, hongerig en nog steeds niet thuis. De winterkou trekt steeds verder door je kleren heen.' + busStopNote;
+    if (dist === 'near') return 'Je bent bijna thuis. Een korte, ongemakkelijke tocht, maar nog te overzien. De straten zijn vreemd leeg.' + busStopNote;
+    if (dist === 'far') return 'Je bent al uren onderweg. Het begint donker te worden. Je bent moe, hongerig en nog steeds niet thuis. De winterkou kruipt steeds verder in je kleren.' + busStopNote;
     return 'Je bent al een tijd onderweg. Je bent moe, maar je komt wel vooruit. Nog een uur of twee.' + busStopNote;
   },
   choices: [{
     text: '💪 Doorgaan, ik kom er wel',
-    consequence: 'Je bijt door. Het is zwaar, maar je maakt wel voortgang. Stap voor stap.',
+    consequence: 'Je blijft doorgaan. Het kost energie, maar je komt wel vooruit. Stap voor stap.',
     stateChange: {}
   }, {
     text: '🍎 Ergens stoppen voor eten',
     consequence: () => profile.hasEDCBag ?
-      'Je stapt een bakker binnen. "Alleen contant." Je legt een tientje neer en krijgt een broodje en een fles water terug. Energie terug.' :
-      'Je probeert iets te kopen maar zonder cash lukt het niet overal. Je vraagt een bakker om een broodje. Hij geeft het je.',
+      'Je stapt een bakker binnen. "Alleen contant." Je legt een tientje neer en krijgt een broodje en een fles water. Dat helpt meteen.' :
+      'Je probeert iets te kopen, maar zonder cash lukt dat niet overal. Uiteindelijk krijg je bij een bakker toch een broodje mee.',
     stateChange: () => profile.hasEDCBag ? {
       food: 1,
-      cash: -20
+      cash: -10
     } : {
       food: 1
     }
   }, {
     text: '🤝 De mevrouw bij het bushokje helpen',
-    consequence: 'Je loopt op haar af. Ze is al een uur aan het wachten en weet niet meer hoe ze thuis moet komen. Je helpt haar contact zoeken met haar dochter. Die komt haar ophalen. Je liep 20 minuten vertraging op, maar je voelde je beter.',
+    consequence: 'Je loopt naar haar toe. Ze zit er al een uur en weet niet meer hoe ze thuis moet komen. Je helpt haar haar dochter te bereiken. Die komt haar ophalen. Het kost je twintig minuten, maar het voelt goed.',
     stateChange: {
       helpedStranger: true
     }
@@ -557,10 +578,10 @@ const scenes_thuis_komen = [{
     nlalert: null,
     radio: null
   },
-  narrative: 'Onderweg passeer je Martijns huis. "Kom even mee naar binnen," zegt hij. "Even een boterham eten voordat je verder gaat." Zijn vrouw doet de deur open. Zodra ze Martijn ziet, omhelst ze hem stevig. "Gelukkig ben je thuis." Ze zet kaarsjes op tafel en snijdt brood.',
+  narrative: 'Onderweg kom je langs Martijns huis. "Loop even mee naar binnen," zegt hij. "Eerst een boterham, dan ga je weer verder." Zijn vrouw doet open. Zodra ze Martijn ziet, omhelst ze hem stevig. "Gelukkig ben je thuis." Ze zet kaarsjes op tafel en snijdt brood.',
   choices: [{
     text: '🥪 Even binnen zitten en een boterham eten',
-    consequence: 'Je zit even aan de keukentafel. Martijns vrouw schenkt thee en vraagt hoe het was. Het is een klein moment van rust midden in een lange dag. Na twintig minuten sta je op en ga je verder.',
+    consequence: 'Je zit even aan de keukentafel. Martijns vrouw schenkt thee en vraagt hoe het was. Midden in deze lange dag voelt dat als echte rust. Na twintig minuten sta je op en ga je verder.',
     stateChange: { food: 1, comfort: 1 }
   }, {
     text: '👋 Bedanken en meteen doorlopen',
@@ -573,26 +594,25 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 15 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
-  conditionalOn: () => profile.commuteDistance === 'far' && !state.foundAlternative && !state.travelingWithMartijn,
+  conditionalOn: () => profile.commuteDistance === 'far' && !state.reachedHome && !state.foundAlternative && !state.travelingWithMartijn,
   channels: {
     news: [],
     whatsapp: [],
     nlalert: null,
     radio: null
   },
-  narrative: 'Het is donker en koud. Je bent uitgeput. Je bent nog niet thuis. Je kunt niet verder vandaag. Wat doe je?',
+  narrative: 'Het is donker en koud. Je bent uitgeput en nog niet thuis. Verder gaan lukt vandaag niet meer. Wat doe je?',
   get choices() {
     const opts = [{
       text: '🏠 Aankloppen bij een willekeurig huis',
-      consequence: 'Je klopt aan bij een verlicht huis. Een man doet open. "Stroomstoring toch, kom binnen." Je slaapt op de bank. De volgende ochtend vertrek je fris verder.',
+      consequence: 'Je klopt aan bij een verlicht huis. Een man doet open. "Wat een dag met die stroomstoring. Kom binnen." Je slaapt op de bank. De volgende ochtend vertrek je fris verder.',
       stateChange: {
         foundAlternative: true,
-        helpedStranger: true,
         comfort: 1
       }
     }, {
       text: '📞 Het gemeentelijke noodnummer bellen',
-      consequence: () => state.phoneBattery > 0 ? 'Je belt het gemeentelijke noodnummer. Ze verwijzen je naar een tijdelijke opvang in een dorpshuis op 500 meter. Je slaapt er op een slaapmat. Warm en veilig.' : 'Je telefoon is leeg. Je kunt niemand bereiken. Je loopt op goed geluk naar de dichtstbijzijnde plek met licht.',
+      consequence: () => state.phoneBattery > 0 ? 'Je belt het gemeentelijke noodnummer. Ze verwijzen je naar tijdelijke opvang in een dorpshuis 500 meter verderop. Je slaapt er op een slaapmat. Warm en veilig.' : 'Je telefoon is leeg. Je kunt niemand bereiken. Je loopt op goed geluk naar de dichtstbijzijnde plek waar nog licht brandt.',
       stateChange: () => state.phoneBattery > 0 ? {
         foundAlternative: true,
         calledRescue: true
@@ -609,18 +629,28 @@ const scenes_thuis_komen = [{
   }
 }, {
   id: 'tk_6',
-  time: '18:00',
+  time: '21:00',
   date: 'Donderdag 15 januari 2027',
   dayBadge: 'Thuis',
   dayBadgeClass: 'green',
   channels: {
     news: [],
-    whatsapp: [{
-      from: 'Partner',
-      msg: 'Waar ben je?? Ik maak me zorgen. Meld je even',
-      time: '18:10',
-      outgoing: false
-    }],
+    get whatsapp() {
+      const msgs = [];
+      if (profile.adults > 1) msgs.push({
+        from: 'Partner',
+        msg: 'Waar ben je? Ik maak me zorgen. Meld je even.',
+        time: '18:10',
+        outgoing: false
+      });
+      if (profile.hasChildren && !state.kidsArranged && !state.kidsPickedUp) msgs.push({
+        from: 'School De Ster',
+        msg: 'Goedenavond. We hebben uw kind tot 18:00 opgevangen, maar u was nog niet bereikbaar. Juf Marieke heeft uw kind mee naar huis genomen. U kunt uw kind daar ophalen. Stuur een berichtje als u er bijna bent.',
+        time: '18:45',
+        outgoing: false
+      });
+      return msgs;
+    },
     nlalert: null,
     radio: null
   },
@@ -632,22 +662,28 @@ const scenes_thuis_komen = [{
     return 'Je bent thuisgekomen, later dan verwacht en uitgeput, maar wel veilig. De kaarsen branden. Thuis voelt zelden zo goed als na een dag als deze.';
   },
   choices: [{
-    text: '🕯️ Thuis is goed, eerst even uitrusten',
-    consequence: 'Je ploft neer. Je telefoon staat bijna leeg. Je hebt het gered.',
+    text: '🕯️ Eerst even zitten en op adem komen',
+    consequence: () => state.phoneBattery < 20
+      ? 'Je ploft neer. Je telefoon staat bijna leeg. Je bent veilig thuis.'
+      : 'Je ploft neer. Je bent veilig thuis.',
     stateChange: {
       reachedHome: true
     }
   }, {
     text: () => profile.adults > 1 ? '📱 Partner en familie laten weten dat je veilig bent' : '📱 Familie laten weten dat je veilig bent',
-    consequence: () => state.phoneBattery > 0 ? 'Je stuurt berichten. Iedereen was ongerust. Nu weten ze het.' : 'Je telefoon is leeg. Je kunt niemand bereiken.',
-    stateChange: () => state.phoneBattery > 0 ? {
+    consequence: () => state.phoneBattery > 0 ? 'Je stuurt berichten. Iedereen was ongerust. Nu weten ze dat je veilig thuis bent.' : 'Je telefoon is leeg. Je kunt niemand bereiken.',
+    stateChange: {
       reachedHome: true
-    } : {}
+    }
   }, {
-    text: () => profile.hasChildren && !state.kidsPickedUp ? '👶 Eerst kijken hoe het met de kinderen gaat' : '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
-    consequence: () => profile.hasChildren && !state.kidsPickedUp ?
-      'De kinderen zijn nog bij school of ergens anders. Je regelt direct dat ze worden opgehaald.' :
-      'Je loopt door het huis. Alles in orde. Kaarsjes veilig in houders. Gas dicht gedraaid.',
+    text: () => profile.hasChildren && !state.kidsPickedUp
+      ? (state.kidsArranged ? '👶 Snel de kinderen ophalen bij het vriendje' : '👶 Kinderen ophalen bij juf Marieke')
+      : '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
+    consequence: () => profile.hasChildren && !state.kidsPickedUp
+      ? (state.kidsArranged
+          ? 'Je zet je tas neer en gaat er direct op uit. De kinderen zitten bij een vriendje in de buurt. Ze zijn blij je te zien.'
+          : 'Je stuurt juf Marieke een berichtje en loopt naar haar huis. De kinderen zijn moe, maar veilig. Op de terugweg vallen ze bijna in slaap.')
+      : 'Je loopt door het huis. Alles is in orde. De kaarsjes staan veilig in houders en het gas is dicht.',
     stateChange: () => profile.hasChildren && !state.kidsPickedUp ? {
       kidsPickedUp: true
     } : {

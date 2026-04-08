@@ -25,7 +25,7 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
-      return 'Midden in de nacht schrik je wakker van een hard, schel piepend geluid. De rookmelder gaat af. Alles is donker en even weet je niet waar je bent.' +
+      return 'Midden in de nacht schrik je wakker van hard, schel gepiep. De rookmelder gaat af. Alles is donker. Even weet je niet waar je bent.' +
         (hasHousemates() ? ' Naast je, of in de kamer ernaast, slaapt iemand gewoon door. Het alarm lijkt alleen jou wakker te maken.' : '');
     },
     choices: [
@@ -64,7 +64,7 @@ const scenes_nachtalarm = [
     },
     get narrative() {
       if (profile.houseType === 'appartement') {
-        return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. In de hal van het appartement hangt al een grauwe waas. Vanuit de woonkamer trekt rook richting voordeur. Het is stil, op de rookmelder na, en meteen duidelijk dat er iets mis is.';
+        return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. In de hal van het appartement hangt al een grauwe waas. Vanuit de woonkamer trekt rook richting voordeur. Verder is het stil. Alleen de rookmelder piept. Meteen is duidelijk dat er iets mis is.';
       }
       return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. Vanaf de trap hangt een grauwe waas in de hal. Het is stil in huis, op de rookmelder na, en meteen duidelijk dat er iets mis is.';
     },
@@ -84,7 +84,7 @@ const scenes_nachtalarm = [
         text: '📱 Meteen 112 bellen',
         consequence: 'De meldkamer neemt snel op, maar zegt direct: "Verlaat eerst de woning. Bel ons opnieuw zodra u buiten staat en zeg of iedereen eruit is." Ze sturen wel meteen een ploeg, maar benadrukken dat je nu moet gaan.',
         cat: 'cat-action',
-        stateChange: { called112: true }
+        stateChange: { called112PreExit: true }
       }
     ]
   },
@@ -128,7 +128,9 @@ const scenes_nachtalarm = [
         conditionalOn: () => hasHousemates() && !state.warnedHousemates
       },
       {
-        text: '🚪 De woonkamerdeur dichtdoen en meteen naar buiten gaan',
+        text: () => hasHousemates()
+          ? '🚪 De woonkamerdeur dichtdoen en de anderen naar buiten krijgen'
+          : '🚪 De woonkamerdeur dichtdoen en meteen naar buiten gaan',
         consequence: () => hasHousemates()
           ? 'Je trekt de deur dicht om de rook te remmen en gaat snel terug om de anderen naar buiten te krijgen.'
           : 'Je trekt de deur dicht om de rook te remmen en loopt direct naar buiten.',
@@ -237,8 +239,8 @@ const scenes_nachtalarm = [
         : '';
       if (profile.houseType === 'appartement') {
         return hasHousemates()
-          ? 'Je staat buiten voor het gebouw in de koude nacht. Achter een raam boven je hangt nog rook. Naast je staat iedereen half aangekleed en geschrokken op de stoep. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.' + delayedNote
-          : 'Je staat buiten voor het gebouw in de koude nacht. Achter een raam boven je hangt nog rook. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.' + delayedNote;
+          ? 'Je staat buiten je appartement, op de galerij of in het portiek. Vanuit de woning komt nog rook. Naast je staat iedereen half aangekleed en geschrokken bij elkaar. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.' + delayedNote
+          : 'Je staat buiten je appartement, op de galerij of in het portiek. Vanuit de woning komt nog rook. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.' + delayedNote;
       }
       return hasHousemates()
         ? 'Je staat buiten in de koude nacht. Vanuit de voordeur ruik je nog steeds rook. Naast je staat iedereen half aangekleed en geschrokken op straat. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.' + delayedNote
@@ -246,8 +248,10 @@ const scenes_nachtalarm = [
     },
     choices: [
       {
-        text: '📱 112 bellen',
-        consequence: 'De meldkamer neemt snel op en vraagt of iedereen buiten is. Even later hoor je in de verte sirenes. De brandweer komt eraan.',
+        text: () => state.called112PreExit ? '📱 112 opnieuw bellen zodra je buiten staat' : '📱 112 bellen',
+        consequence: () => state.called112PreExit
+          ? 'Je belt opnieuw nu je buiten staat. De meldkamer vraagt of iedereen buiten is en noteert je adres. Even later hoor je in de verte sirenes. De brandweer komt eraan.'
+          : 'De meldkamer neemt snel op, vraagt of iedereen buiten is en noteert je adres. Even later hoor je in de verte sirenes. De brandweer komt eraan.',
         cat: 'cat-action',
         stateChange: { called112: true, stayedOutside: true },
         conditionalOn: () => !state.called112
@@ -301,7 +305,7 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
-      return 'De blauwe lichten kleuren de straat terwijl de brandweer het doorgebrande stopcontact veilig maakt en de woning controleert. Een brandweerman loopt de situatie rustig met je door. Hij vraagt of iedereen buiten is en of er nog medicijnen, sleutels of andere noodzakelijke spullen missen. Daarna zegt hij dat het acute gevaar voorbij is, maar dat het door de rook en de schade niet verstandig is om vannacht nog thuis te slapen.' +
+      return 'De blauwe lichten kleuren de straat. De brandweer maakt het doorgebrande stopcontact veilig en controleert de woning. Een brandweerman loopt de situatie rustig met je door. Hij vraagt of iedereen buiten is en of er nog medicijnen, sleutels of andere noodzakelijke spullen missen. Het acute gevaar is voorbij, zegt hij, maar door de rook en de schade is het niet verstandig om vannacht nog thuis te slapen.' +
         (state.savedItems
           ? ' Je hebt je spullen al bij je. Dat scheelt meteen.'
           : ' Hij adviseert om alleen nog onder begeleiding naar binnen te gaan voor echt noodzakelijke spullen.') +
