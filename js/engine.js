@@ -1183,7 +1183,7 @@ function renderScene() {
 }
 
 /* ─── KANAALGESCHIEDENISNAVIGATIE ─────────────────────────────────────────────
-   Functies voor het bladeren door eerdere nieuws- en WhatsApp-berichten via
+   Functies voor het bladeren door eerdere nieuws- en berichten via
    de < > knoppen in de kanaalheader. Elk scenario-moment wordt als één 'pagina'
    in het log opgeslagen.
 */
@@ -1213,7 +1213,7 @@ function renderNewsPage() {
   updateChannelNav('news');
 }
 
-// Rendert een WhatsApp-pagina: toont eerst een eventueel NL-Alert,
+// Rendert een berichtenpagina: toont eerst een eventueel NL-Alert,
 // daarna de berichten (nieuwste bovenaan). Maakt onderscheid tussen
 // inkomende en uitgaande berichten.
 function renderWaPage(page) {
@@ -1270,7 +1270,7 @@ function updateChannelNav(type) {
     `${entry.dayBadge ? entry.dayBadge + ' · ' : ''}${entry.time}`;
 }
 
-// Navigeert naar een oudere of nieuwere pagina in het nieuws- of WhatsApp-kanaal.
+// Navigeert naar een oudere of nieuwere pagina in het nieuws- of berichtkanaal.
 // Doet niets als de telefoonbatterij leeg is.
 function navChannel(type, goOlder) {
   if (state.phoneBattery === 0) return;
@@ -1292,7 +1292,7 @@ function navChannel(type, goOlder) {
 // ──────────────────────────────────────────────────────────────────────────────
 
 /* ─── KANALEN RENDEREN ────────────────────────────────────────────────────────
-   Werkt alle drie de kanalen (nieuws, WhatsApp/NL-Alert en radio) bij voor de
+   Werkt alle drie de kanalen (nieuws, berichten/NL-Alert en radio) bij voor de
    huidige scène. Berichten worden direct getoond zonder stagger-animatie.
    Nieuwe inhoud wordt ook gelogd voor scrollback-navigatie, maar nooit dubbel.
 */
@@ -1375,7 +1375,7 @@ function renderChannels(scene) {
     markUnread('whatsapp');
     playMessagePing();
     if (activeTab === 'whatsapp') {
-      // Als de WhatsApp-tab al actief is, hoeft er geen ongelezen-indicator te zijn
+      // Als de berichtentab al actief is, hoeft er geen ongelezen-indicator te zijn
       document.getElementById('tab-whatsapp')?.classList.remove('has-unread');
     }
   }

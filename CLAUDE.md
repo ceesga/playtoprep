@@ -72,7 +72,7 @@ playtoprep/
 ### Globale objecten (altijd beschikbaar)
 - `profile` — spelersinstellingen (huis, huishouden, voertuigen, noodpakket)
 - `state` — spelstatus tijdens een scenario (stats, flags zoals `helpedNeighbor`)
-- `channels` — actuele inhoud nieuws/whatsapp/radio per scene
+- `channels` — actuele inhoud nieuws/berichten/radio per scene
 - `choiceHistory` — alle keuzes (voor rapport)
 - `sceneDecay` — automatische stat-wijzigingen per scene-ID (toegewezen in `startScenario()`)
 - `adultsCount`, `childrenCount`, `slechtTerBeenCount`, `petsCount` — globale tellers uit de intake
@@ -147,6 +147,7 @@ Er is geen auto-advance timer. Verwijder of voeg deze niet toe.
 
 - Maak nooit een nieuwe file aan als het ook in een bestaande file kan.
 - Gebruik altijd B1-Nederlands in alle teksten en keuzes (zie STIJLGIDS.md).
+- Noem WhatsApp of WhatsAppjes in user-facing tekst altijd `bericht`, `berichten` of `berichtjes`. Laat technische keys zoals `whatsapp` ongemoeid.
 - Verander nooit de script-laadvolgorde zonder expliciete toestemming.
 - Voeg geen dark-mode CSS toe (zie gotcha #1).
 - Gebruik `conditionalOn` consequent voor keuzes die niet voor alle spelers relevant zijn (profiel én state).
@@ -279,7 +280,7 @@ Of open `index.html` direct in de browser (let op: audio werkt beter via HTTP).
 
 7. **Canvas portrait snapshot** — Na de intake wordt een canvas-snapshot opgeslagen in `portraitSnapshot`. De popup gebruikt dit als fallback bij het tonen van het huishouden.
 
-8. **Taalregels** — Zie `STIJLGIDS.md`. Schrijf altijd B1-Nederlands. Gebruik vaste termen: "stroomstoring" (niet "black-out"), "dringend advies" (niet "noodverordening").
+8. **Taalregels** — Zie `STIJLGIDS.md`. Schrijf altijd B1-Nederlands. Gebruik vaste termen: "stroomstoring" (niet "black-out"), "dringend advies" (niet "noodverordening"), en noem WhatsApp of WhatsAppjes in zichtbare tekst altijd `bericht`, `berichten` of `berichtjes`.
 
 9. **Script-laadvolgorde in index.html** — Scripts worden geladen in deze volgorde: `icons-data.js` → `data-state.js` → scenario-data → `intake.js` → `prep.js` → `audio.js` → `engine.js` → `report.js` → `ui.js`. Nieuwe scripts toevoegen? Respecteer de afhankelijkheden.
 

@@ -71,8 +71,8 @@
   --c-ios-text:#1c1c1e;
   --c-ios-muted:#8e8e93;
   --c-ios-blue:#007aff;
-  /* Chat/WhatsApp */
-  /* WhatsApp brand colors — intentional */
+  /* Chat/berichten */
+  /* Berichtenkleuren — intentional */
   --c-wa-bg:#f0f0f0;
   --c-wa-bubble-out:#dcf8c6;
   --c-wa-divider:#d0d0d0;
@@ -3604,4 +3604,3 @@ a:focus-visible {
   }
 
 }
-

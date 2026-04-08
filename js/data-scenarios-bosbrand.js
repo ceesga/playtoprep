@@ -557,7 +557,7 @@ const scenes_natuurbrand = [{
     }
   }, {
     text: '📱 Eerst familie bellen, ze weten niet of je veilig bent',
-    consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, want het netwerk is overbelast. Daarom stuur je een WhatsApp: "Veilig bij de noodopvang." Twintig minuten later zie je dubbele vinkjes. Ze weten het nu.' : 'Je telefoon is leeg. Je kunt je familie niet bereiken.',
+    consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, want het netwerk is overbelast. Daarom stuur je een bericht: "Veilig bij de noodopvang." Twintig minuten later zie je dubbele vinkjes. Ze weten het nu.' : 'Je telefoon is leeg. Je kunt je familie niet bereiken.',
     stateChange: {}
   }, {
     text: '🛏️ Snel een slaapplek claimen voordat alles weg is',
