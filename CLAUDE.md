@@ -125,6 +125,8 @@ De kleur van een keuzeknop wordt bepaald door het emoji-prefix in `text`, via `C
 ### Icons
 Icons worden geladen uit `icons-data.js` als inline SVG. Wil je een nieuw icon toevoegen? Voeg het SVG-bestand toe aan `/icons/` én voeg de data-entry toe aan `icons-data.js`. Gebruik geen Lucide CDN.
 
+**Nieuwe standaard voor scenario's:** gebruik in zichtbare scenarioteksten en keuze-labels geen emoji's meer. Gebruik in plaats daarvan Lucide-icons die lokaal zijn gedownload en toegevoegd aan `/icons/` en `icons-data.js`. Bestaande emoji-prefixen in oudere scenario's zijn legacy en moeten bij nieuwe aanpassingen bij voorkeur niet worden uitgebreid.
+
 ### Opslaan/laden
 LocalStorage, sleutel: `ptp_savegame`. Functies: `saveGame()`, `loadGame()`, `clearSave()`.
 
@@ -148,6 +150,7 @@ Er is geen auto-advance timer. Verwijder of voeg deze niet toe.
 - Maak nooit een nieuwe file aan als het ook in een bestaande file kan.
 - Gebruik altijd B1-Nederlands in alle teksten en keuzes (zie STIJLGIDS.md).
 - Noem WhatsApp of WhatsAppjes in user-facing tekst altijd `bericht`, `berichten` of `berichtjes`. Laat technische keys zoals `whatsapp` ongemoeid.
+- Gebruik in scenario's geen nieuwe emoji's in zichtbare tekst of keuzes. Gebruik Lucide-icons uit de lokale `/icons/`-map; download ontbrekende iconen eerst en voeg ze toe aan `icons-data.js`.
 - Verander nooit de script-laadvolgorde zonder expliciete toestemming.
 - Voeg geen dark-mode CSS toe (zie gotcha #1).
 - Gebruik `conditionalOn` consequent voor keuzes die niet voor alle spelers relevant zijn (profiel én state).
@@ -278,7 +281,9 @@ Of open `index.html` direct in de browser (let op: audio werkt beter via HTTP).
 
 6. **Scenario-sleutel 'thuis_komen' heeft commute-vragen** — Dit scenario heeft een extra scherm (`s-commute`) met eigen vragen over reiswijze en -afstand vóór het eigenlijke scenario start.
 
-7. **Canvas portrait snapshot** — Na de intake wordt een canvas-snapshot opgeslagen in `portraitSnapshot`. De popup gebruikt dit als fallback bij het tonen van het huishouden.
+7. **Emoji's in scenario's zijn legacy** — Oudere scenario's gebruiken nog emoji-prefixen in keuze-teksten voor icon-mapping. Voeg dit patroon niet verder uit. Nieuwe of aangepaste scenario-UI moet uitgaan van lokale Lucide-icons in plaats van zichtbare emoji's.
+
+8. **Canvas portrait snapshot** — Na de intake wordt een canvas-snapshot opgeslagen in `portraitSnapshot`. De popup gebruikt dit als fallback bij het tonen van het huishouden.
 
 8. **Taalregels** — Zie `STIJLGIDS.md`. Schrijf altijd B1-Nederlands. Gebruik vaste termen: "stroomstoring" (niet "black-out"), "dringend advies" (niet "noodverordening"), en noem WhatsApp of WhatsAppjes in zichtbare tekst altijd `bericht`, `berichten` of `berichtjes`.
 
