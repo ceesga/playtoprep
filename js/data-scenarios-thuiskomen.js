@@ -89,7 +89,11 @@ const scenes_thuis_komen = [{
   }, {
     conditionalOn: () => profile.adults > 1,
     text: '📱 Partner bellen om af te stemmen',
+<<<<<<< Updated upstream
     consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, het netwerk zit vol. Je stuurt een bericht: "Ik kom naar huis, duur onbekend." Pas veel later zie je een leesteken. Meer contact lukt voorlopig niet.' : 'Je telefoon is leeg. Je kunt je partner niet bereiken.',
+=======
+    consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, het netwerk zit vol. Je stuurt een bericht: "Kom naar huis, duur onbekend." Een uur later krijg je een leesteken. Meer communicatie zit er niet in.' : 'Je telefoon is leeg. Je kunt je partner niet bereiken.',
+>>>>>>> Stashed changes
     stateChange: {}
   }]
 }, {
@@ -126,7 +130,11 @@ const scenes_thuis_komen = [{
     } : {}
   }, {
     text: () => profile.adults > 1 ? '📱 Partner vragen de kinderen op te halen' : '📱 Een kennis vragen de kinderen op te halen',
+<<<<<<< Updated upstream
     consequence: () => state.phoneBattery > 0 ? (profile.adults > 1 ? 'Je stuurt een bericht naar je partner. Na twintig minuten komt een reactie: "Ik ga ze ophalen." Dat geeft rust.' : 'Je belt een kennis in de buurt. Na wat aarzeling zegt die: "Oké, ik ga ze halen." Dat lucht op.') : 'Je telefoon is leeg. Je kunt niemand bereiken om de kinderen op te halen.',
+=======
+    consequence: () => state.phoneBattery > 0 ? (profile.adults > 1 ? 'Je stuurt een bericht naar je partner. Na 20 minuten een bevestiging: "Ik ga ze ophalen." Opgelost.' : 'Je belt een kennis die in de buurt woont. Na wat aarzeling: "Oké, ik ga ze halen." Opgelost.') : 'Je telefoon is leeg. Je kunt niemand bereiken om de kinderen op te halen.',
+>>>>>>> Stashed changes
     stateChange: () => state.phoneBattery > 0 ? {
       kidsArranged: true
     } : {}
