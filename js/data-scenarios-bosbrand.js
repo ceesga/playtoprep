@@ -23,7 +23,7 @@ const scenes_natuurbrand = [{
   },
   get narrative() {
     const natuur = profile.location.includes('rural_area') || profile.location.includes('forest')
-      ? ' Je woont vlak bij de natuur. Na weken zonder regen staat de begroeiing er dor bij.'
+      ? ' Je woont vlak bij natuurgebied, dus zulke waarschuwingen voelen meteen dichterbij.'
       : '';
     return 'Het is een gewone vrijdagmiddag. De tuin staat er wat dor bij na een lange periode zonder regen, maar verder is er weinig bijzonders. Het nieuws meldt dat morgen droog en winderig wordt, met een verhoogd risico op natuurbranden in de regio.' + natuur;
   },
@@ -290,6 +290,7 @@ const scenes_natuurbrand = [{
   date: 'Zaterdag 14 augustus 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
+  conditionalOn: () => !state.evacuatedEarly,
   channels: {
     news: [{
       time: '11:28',
@@ -340,7 +341,7 @@ const scenes_natuurbrand = [{
   date: 'Zaterdag 14 augustus 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
-  conditionalOn: () => profile.hasChildren && state.kidsWithYou === true,
+  conditionalOn: () => profile.hasChildren && state.kidsWithYou === true && !state.evacuatedEarly,
   channels: {
     news: [],
     whatsapp: [{
@@ -354,11 +355,24 @@ const scenes_natuurbrand = [{
   },
   get narrative() {
     const een = profile.childrenCount === 1;
-    return een ? 'Je gaat evacueren. De auto staat klaar. Maar bij de voordeur stokt het. Je kind wil terug naar binnen voor de cavia. Tegelijk staat het stil naar de oranje lucht te kijken. Je buurman toetert vanuit zijn auto.' : 'Je gaat evacueren. De auto staat klaar. Maar bij de voordeur stokt het. De jongste wil terug naar binnen voor de cavia. De oudste staat buiten stil naar de oranje lucht te kijken en beweegt niet. Je buurman toetert vanuit zijn auto.';
+    const vertrek = profile.hasCar
+      ? 'De auto staat klaar.'
+      : profile.hasBike
+      ? 'De fietsen staan klaar.'
+      : 'Jullie staan klaar om te vertrekken.';
+    const reden = profile.hasPets ? 'voor het huisdier' : 'voor een knuffel';
+    const buur = profile.hasCar
+      ? ' Je buurman toetert vanuit zijn auto.'
+      : ' Je buurman roept dat jullie moeten opschieten.';
+    return een
+      ? 'Je gaat evacueren. ' + vertrek + ' Maar bij de voordeur stokt het. Je kind wil terug naar binnen ' + reden + '. Tegelijk staat het stil naar de oranje lucht te kijken.' + buur
+      : 'Je gaat evacueren. ' + vertrek + ' Maar bij de voordeur stokt het. De jongste wil terug naar binnen ' + reden + '. De oudste staat buiten stil naar de oranje lucht te kijken en beweegt niet.' + buur;
   },
   choices: [{
-    text: () => profile.childrenCount === 1 ? '⚡ Je kind bij de hand pakken en direct de auto in zetten' : '⚡ Iedereen meteen in de auto zetten',
-    consequence: () => profile.childrenCount === 1 ? 'Je pakt je kind bij de hand en trekt het mee. Het smeekt nog om de cavia, maar jullie moeten echt weg. De hele rit blijft het huilen.' : 'De jongste smeekt nog om de cavia. Je zegt dat jullie nu moeten gaan. Ze komt mee, maar huilt de hele rit. In de auto is het verder stil.',
+    text: () => profile.childrenCount === 1 ? '⚡ Je kind bij de hand pakken en meteen verdergaan' : '⚡ Iedereen meteen meenemen en verdergaan',
+    consequence: () => profile.childrenCount === 1
+      ? 'Je pakt je kind bij de hand en trekt het mee. Het smeekt nog even om ' + (profile.hasPets ? 'het huisdier' : 'de knuffel') + ', maar jullie moeten echt weg. Onderweg blijft het huilen.'
+      : 'De jongste smeekt nog even om ' + (profile.hasPets ? 'het huisdier' : 'de knuffel') + '. Je zegt dat jullie nu moeten gaan. Ze komt mee, maar onderweg blijft ze huilen. De rest van de tocht is het stil.',
     stateChange: {
       kidsNoodpakket: false,
       comfort: -1
@@ -370,8 +384,10 @@ const scenes_natuurbrand = [{
       comfort: 1
     }
   }, {
-    text: '🐾 Even teruggaan voor de cavia',
-    consequence: 'Je rent toch nog naar binnen om de cavia te pakken. Dat lukt, maar de weg is nu drukker. Jullie verliezen kostbare minuten.',
+    text: () => profile.hasPets ? '🐾 Even teruggaan voor het huisdier' : '🧸 Even teruggaan voor de knuffel',
+    consequence: () => profile.hasPets
+      ? 'Je rent toch nog naar binnen om het huisdier te pakken. Dat lukt, maar de weg is nu drukker. Jullie verliezen kostbare minuten.'
+      : 'Je rent toch nog naar binnen om de knuffel te pakken. Dat lukt, maar de weg is nu drukker. Jullie verliezen kostbare minuten.',
     stateChange: {
       kidsNoodpakket: false,
       phoneBattery: -5
@@ -409,8 +425,11 @@ const scenes_natuurbrand = [{
     return 'Je verlaat het huis. De lucht is oranje-bruin en de rook is dik.' + (state.evacuatedEarly ? ' Omdat je vroeg bent vertrokken staat de weg nog vrij. Je ziet hoe de auto\'s achter je al beginnen op te stapelen.' : ' De straat staat vol met auto\'s die allemaal richting de uitvalswegen rijden.') + geenAuto + huisdier + ' Hoe ga je naar de noodopvang?';
   },
   choices: [{
-    text: '🚗 Met de auto, snelste route via de hoofdweg',
-    consequence: 'Je rijdt naar de hoofdweg. Daar staat nu al een file van twee kilometer. Iedereen heeft hetzelfde idee gehad.',
+    conditionalOn: () => profile.hasCar,
+    text: '🚗 Met de auto via de hoofdweg',
+    consequence: () => state.evacuatedEarly
+      ? 'Je stapt in en voegt vroeg in op de hoofdweg. Het verkeer rijdt nog door, maar achter je wordt het snel drukker.'
+      : 'Je rijdt naar de hoofdweg. Daar staat nu al een file van twee kilometer. Iedereen heeft hetzelfde idee gehad.',
     stateChange: {
       bfTravelMode: 'car'
     }
@@ -459,20 +478,26 @@ const scenes_natuurbrand = [{
     return state.evacuatedEarly ? 'Jij bent vroeg genoeg vertrokken. De hoofdweg is nog redelijk vrij, al is het wel drukker dan normaal. De radio is nog te horen. Wat doe je?' : 'Je staat muurvast in de file. De rook is overal. De radio doet het nog. Wat doe je?';
   },
   choices: [{
-    text: '📻 Radio luisteren voor alternatieve route',
-    consequence: 'De radio geeft een alternatieve route. Je rijdt eraf en komt via een rustigere weg alsnog bij de noodopvang aan.',
+    text: () => state.evacuatedEarly ? '📻 Radio aanhouden en de hoofdroute blijven volgen' : '📻 Radio luisteren voor alternatieve route',
+    consequence: () => state.evacuatedEarly
+      ? 'Je houdt de radio aan en volgt de aanwijzingen onderweg. Omdat je er vroeg bij was, blijf je in beweging en bereik je zonder stilstand de noodopvang.'
+      : 'De radio geeft een alternatieve route. Je rijdt eraf en komt via een rustigere weg alsnog bij de noodopvang aan.',
     stateChange: {
       evacuated: true
     }
   }, {
-    text: '🛤️ Auto aan de kant, te voet verder',
-    consequence: 'Je zet de auto in een zijstraat en loopt de rest. Het is twintig minuten lopen, maar je bent sneller dan de file.',
+    text: () => state.evacuatedEarly ? '🛣️ Meteen de omleiding nemen voordat het vastloopt' : '🛤️ Auto aan de kant, te voet verder',
+    consequence: () => state.evacuatedEarly
+      ? 'Je neemt direct de omleiding die de politie adviseert. Vijf minuten later zie je in je spiegel dat de hoofdweg alsnog dichtslibt. Via de omweg kom je zonder file bij de noodopvang aan.'
+      : 'Je zet de auto in een zijstraat en loopt de rest. Het is twintig minuten lopen, maar je bent sneller dan de file.',
     stateChange: {
       evacuated: true
     }
   }, {
-    text: '⏳ In de file blijven wachten',
-    consequence: 'De file komt langzaam op gang. Na 45 minuten ben je er. Ondertussen hangt er steeds meer rook in de auto. Achteraf had je de airco beter uitgezet.',
+    text: () => state.evacuatedEarly ? '🚘 Ramen dicht en rustig doorrijden' : '⏳ In de file blijven wachten',
+    consequence: () => state.evacuatedEarly
+      ? 'Je houdt de ramen dicht en blijft rustig doorrijden. Het verkeer vertraagt even, maar valt nog niet stil. Je bereikt de noodopvang zonder extra omweg.'
+      : 'De file komt langzaam op gang. Na 45 minuten ben je er. Ondertussen hangt er steeds meer rook in de auto. Achteraf had je de airco beter uitgezet.',
     stateChange: {
       evacuated: true
     }
@@ -826,19 +851,19 @@ const scenes_natuurbrand = [{
   narrative: 'Het is eindelijk ochtend. Je hebt slecht geslapen. Buiten is de lucht nog wit van de rook, maar het NL-Alert is verdwenen. Mensen komen langzaam overeind. Je vraagt je af of het nu echt veilig is.',
   choices: [{
     text: '📋 Wachten op officieel sein veilig van gemeente',
-    consequence: 'Je wacht rustig. Om 9 uur komt de bevestiging: terugkeer is toegestaan. Je rijdt in de georganiseerde stroom mee terug.',
+    consequence: 'Je wacht rustig. Om 9 uur komt de bevestiging: terugkeer is toegestaan. Samen met de andere bewoners ga je terug naar de wijk.',
     stateChange: {
       returnedHome: true
     }
   }, {
-    text: '🚗 Alvast zelf gaan kijken bij de woning',
-    consequence: 'Je rijdt voorzichtig terug. Een politieagent bij de ingang laat je door. Het sein veilig is net gegeven. Je woning staat er nog.',
+    text: () => profile.hasCar ? '🚗 Alvast zelf gaan kijken bij de woning' : profile.hasBike ? '🚲 Alvast zelf gaan kijken bij de woning' : '🚶 Alvast zelf gaan kijken bij de woning',
+    consequence: 'Je gaat alvast voorzichtig terug. Een politieagent bij de ingang laat je door. Het sein veilig is net gegeven. Je woning staat er nog.',
     stateChange: {
       returnedHome: true
     }
   }, {
     text: '⏳ Nog even wachten, de situatie is nog onduidelijk',
-    consequence: 'Je wacht. Een uur later is er meer duidelijkheid en rij je zonder extra stress terug.',
+    consequence: 'Je wacht. Een uur later is er meer duidelijkheid en ga je zonder extra stress terug.',
     stateChange: {
       returnedHome: true
     }
@@ -907,7 +932,7 @@ const scenes_natuurbrand = [{
     if (state.kidsWithYou) {
       return 'De lucht ruikt nog naar as en verbrande hars. Je bent al even terug, maar nu komen de vragen pas echt. Bij jou en bij je kind' + (profile.childrenCount > 1 ? 'eren' : '') + '. Sommige huizen in de buurt zijn beschadigd, met zwarte gevels en kapotte dakpannen. Jouw woning staat er nog.';
     }
-    return 'Je rijdt je straat in. De lucht ruikt naar as en verbrande hars. Sommige huizen in de buurt zijn beschadigd, met aangeblakerde gevels en kapotte dakpannen. Jouw woning staat er nog.';
+    return 'Je komt je straat weer in. De lucht ruikt naar as en verbrande hars. Sommige huizen in de buurt zijn beschadigd, met aangeblakerde gevels en kapotte dakpannen. Jouw woning staat er nog.';
   },
   choices: [{
     text: '🏠 Woning inspecteren, eerst buiten en dan binnen',

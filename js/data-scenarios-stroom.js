@@ -352,6 +352,7 @@ const scenes_stroom = [
       consequence: 'Je maakt een overzicht: wat ligt er in de vriezer, de kelder, de kast? Je weet nu wat je hebt.',
       stateChange: {}
     }, {
+      conditionalOn: () => profile.hasCar,
       text: '🚗 Met de auto naar een tankstation voor benzine',
       consequence: 'Bij het tankstation staat een rij van 40 auto\'s. Na een uur wachten krijg je te horen: "Alleen voor hulpdiensten." Teleurgesteld rij je terug. Je hebt gezien hoe gespannen de sfeer buiten is.',
       stateChange: {}
@@ -912,6 +913,7 @@ const scenes_stroom = [
       consequence: 'Je legt alles wat je hebt op de keukentafel. Daarna verdeel je het zo eerlijk en realistisch mogelijk over de komende dagen.',
       stateChange: {}
     }, {
+      conditionalOn: () => profile.hasCar,
       text: '🚗 Je besluit de auto te pakken en de stad te gaan verkennen',
       consequence: 'Je rijdt voorzichtig richting het centrum. Bij enkele winkels en tankstations is het druk en onoverzichtelijk. Op een paar kruispunten regelt de politie het verkeer met zaklampen. Je draait om. Dit kost nu vooral brandstof en levert weinig op.',
       stateChange: {}

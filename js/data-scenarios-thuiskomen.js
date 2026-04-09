@@ -77,8 +77,8 @@ const scenes_thuis_komen = [{
   },
   narrative: 'Verkeerslichten zijn uit. Treinen staan stil. Je baas zegt: "Volgens mij kan iedereen beter naar huis gaan. Werken lukt vandaag toch niet meer." Om je heen pakken collega\'s hun spullen. <span style="background:#fff8e1;border-radius:var(--r-sm);padding:2px 6px;font-size:.82rem;color:#92400e">⚠️ Het netwerk raakt overbelast. Berichten kunnen vertraagd binnenkomen.</span>',
   choices: [{
-    text: '🚗 Nu direct vertrekken, vóór de files',
-    consequence: 'Je trekt je jas aan, pakt je spullen en vertrekt meteen. Op de weg is het nog redelijk rustig. Je bent er vroeg bij.',
+    text: '🏃 Nu direct vertrekken, vóór het vastloopt',
+    consequence: 'Je trekt je jas aan, pakt je spullen en vertrekt meteen. Buiten is het nog redelijk overzichtelijk. Je bent er vroeg bij.',
     stateChange: {
       leftEarly: true
     }
@@ -305,7 +305,7 @@ const scenes_thuis_komen = [{
     consequence: 'Je loopt het station uit en kijkt rond. Buiten vragen mensen wie welke kant op moet. Je kunt meerijden met iemand die dezelfde richting op gaat.',
     stateChange: {
       foundAlternative: true,
-      travelMode: 'car'
+      travelMode: 'ride'
     }
   }, {
     text: '🚶 Te voet of met de fiets alvast vertrekken',
@@ -430,7 +430,7 @@ const scenes_thuis_komen = [{
     consequence: 'Je steekt je duim omhoog. Na tien minuten stopt er een auto. "Welke kant moet je op?" vraagt de bestuurder. Hij rijdt je een stuk verder.',
     stateChange: {
       foundAlternative: true,
-      travelMode: 'car'
+      travelMode: 'ride'
     }
   }]
 }, {
@@ -452,7 +452,7 @@ const scenes_thuis_komen = [{
     consequence: 'Je gaat aan de kant van de weg staan met je duim omhoog. Na twintig minuten stopt een busje. De bestuurder neemt je een flink stuk mee.',
     stateChange: {
       foundAlternative: true,
-      travelMode: 'car'
+      travelMode: 'ride'
     }
   }, {
     text: '🏠 Aankloppen bij iemand voor onderdak of hulp',

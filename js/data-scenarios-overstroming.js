@@ -222,6 +222,7 @@ const scenes_overstroming = [{
       sealedHome: true
     }
   }, {
+    conditionalOn: () => profile.hasCar,
     text: '🚗 De auto alvast hoger wegzetten zolang de route nog open is',
     consequence: 'Je rijdt de auto naar een hoger deel van de wijk en loopt terug. Dat kost tijd, maar als evacueren later nodig wordt, ben je je auto niet meteen kwijt.',
     stateChange: {
@@ -229,8 +230,9 @@ const scenes_overstroming = [{
       awarenessLevel: 1
     }
   }, {
-    text: '📱 Partner of familie laten weten dat het serieus wordt',
-    consequence: 'Je belt of stuurt een bericht. Dat geeft afstemming, maar terwijl jij contact zoekt stijgt het water buiten gewoon door.',
+    conditionalOn: () => !profile.hasChildren,
+    text: '📱 Buurvrouw Ans laten weten dat het serieus wordt',
+    consequence: 'Je appt Ans dat het water snel stijgt en dat ze alert moet zijn. Dat geeft afstemming, maar terwijl jij contact zoekt stijgt het water buiten gewoon door.',
     stateChange: {
       contactedAns: true
     }
