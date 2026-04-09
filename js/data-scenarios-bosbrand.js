@@ -62,7 +62,7 @@ const scenes_natuurbrand = [{
     nlalert: null,
     radio: null
   },
-  narrative: 'Je bent \'s ochtends bezig met van alles — ontbijt, de was, iets in de tuin — als je opeens een vage rooklucht opmerkt. Zwak, maar onmiskenbaar. Je stopt even en snuift de lucht op. Verbrand hout? Of iets anders? Je vraagt je af waar die geur vandaan komt.',
+  narrative: 'Je bent \'s ochtends bezig met je ochtendritueel als je opeens een vage rooklucht opmerkt. Zwak, maar onmiskenbaar. Je stopt even en snuift de lucht op. Verbrand hout? Of iets anders? Je vraagt je af waar die geur vandaan komt.',
   choices: [{
     text: '🔍 Naar buiten gaan om te kijken waar de geur vandaan komt',
     consequence: 'Je stapt de deur uit en kijkt om je heen. De lucht hangt stil en warm. In de richting van het bos zie je heel vaag een lichte waas boven de boomtoppen. Niet veel. Maar genoeg om onrustig van te worden.',
@@ -104,7 +104,7 @@ const scenes_natuurbrand = [{
     const bewust = state.awarenessLevel > 0
       ? ' Die rooklucht van zo-even was dus geen verbeelding.'
       : ' Dat verklaart de rooklucht van zo-even.';
-    return 'Je staat buiten als je het ziet: in de verte stijgt een dikke, grijze rookpluim op boven de boomtoppen.' + bewust + kinderen;
+    return 'Je staat buiten als je in de verte een grijze rookpluim boven de boomtoppen ziet opstijgen.' + bewust + kinderen;
   },
   choices: [{
     text: '📱 Nieuws checken, wat is er aan de hand?',
