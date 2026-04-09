@@ -72,7 +72,7 @@ const scenes_thuis_komen = [{
       });
       return msgs;
     },
-    nlalert: 'NL-Alert\n15 januari 2027 – 12:15\n\nGrote stroomstoring in heel Nederland. Duur onbekend. Verkeerslichten zijn uit. Treinen rijden niet. Blijf kalm en ga veilig naar huis. Update volgt.',
+    nlalert: 'NL-Alert\n14 januari 2027 – 12:15\n\nGrote stroomstoring in heel Nederland. Duur onbekend. Verkeerslichten zijn uit. Treinen rijden niet. Blijf kalm en ga veilig naar huis. Update volgt.',
     radio: null
   },
   narrative: 'Verkeerslichten zijn uit. Treinen staan stil. Je baas zegt: "Volgens mij kan iedereen beter naar huis gaan. Werken lukt vandaag toch niet meer." Om je heen pakken collega\'s hun spullen. <span style="background:#fff8e1;border-radius:var(--r-sm);padding:2px 6px;font-size:.82rem;color:#92400e">⚠️ Het netwerk raakt overbelast. Berichten kunnen vertraagd binnenkomen.</span>',

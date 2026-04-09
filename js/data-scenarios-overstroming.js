@@ -27,9 +27,9 @@ const scenes_overstroming = [{
     radio: 'Radio 1: Het KNMI heeft code oranje afgegeven voor de regio. Door aanhoudende regen wordt een verhoogde waterstand verwacht. Bewoners in laaggelegen gebieden wordt gevraagd de situatie te blijven volgen.'
   },
   get narrative() {
-    const locatie = profile.location.includes('buitengebied')
+    const locatie = profile.location.includes('rural_area')
       ? ' Je woont afgelegen, niet ver van het water. Als het misgaat, ben jij een van de eersten.'
-      : profile.location.includes('stedelijk')
+      : profile.location.includes('city')
       ? ' Je woont in de stad, dicht bij het water. Als het stijgt, kan het hier snel gaan.'
       : '';
     const kinderen = profile.hasChildren
@@ -37,7 +37,7 @@ const scenes_overstroming = [{
         ? ' Je kind ligt al in bed. Je hoopt dat je dit vanavond rustig kunt oplossen.'
         : ' De kinderen liggen al in bed. Je hoopt dat je dit vanavond rustig kunt oplossen.')
       : '';
-    return 'Het is maandagavond. Je woont op loopafstand van de rivier. Het uitzicht is er mooi en op zonnige dagen kan je er echt van genieten. Buiten regent het gestaag. De lucht voelt zwaar en vochtig, drukkend. In de verte klinkt de regen harder op de daken dan normaal. De rivier stond deze week al hoog.' + locatie + kinderen;
+    return 'Het is maandagavond. Je woont op loopafstand van de rivier. Het uitzicht is er mooi en op zonnige dagen kun je er echt van genieten. Buiten regent het gestaag. De lucht voelt zwaar en vochtig, drukkend. In de verte klinkt de regen harder op de daken dan normaal. De rivier stond deze week al hoog.' + locatie + kinderen;
   },
   choices: [{
     text: '🎒 Noodtas inpakken en documenten waterdicht verpakken',
@@ -211,7 +211,7 @@ const scenes_overstroming = [{
       time: '09:22',
       outgoing: false
     }],
-    nlalert: 'NL-Alert\n11 november 2027 – 09:20\n\nHoogwater in uw omgeving. De waterstand stijgt. Let op de situatie. Bereid u voor op mogelijke maatregelen. Houd deuren en ramen gesloten.',
+    nlalert: 'NL-Alert\n9 november 2027 – 09:20\n\nHoogwater in uw omgeving. De waterstand stijgt. Let op de situatie. Bereid u voor op mogelijke maatregelen. Houd deuren en ramen gesloten.',
     radio: 'Radio 1: Op enkele plekken in de regio staat water op straat. Gemeenten plaatsen zandzakken en sluiten wegen af waar nodig. Woont u in een laaggelegen gebied, houd de situatie goed in de gaten.'
   },
   narrative: 'De straat staat nu een paar centimeter blank. Verderop leggen gemeentewerkers zandzakken neer en een busje van het waterschap zet een deel van de weg af. Buren lopen af en aan met laarzen en kratten.',
@@ -322,7 +322,7 @@ const scenes_overstroming = [{
   }, {
     conditionalOn: () => profile.childrenCount > 1,
     text: '🛑🗣️ Beide kinderen aanpakken: jongste tegenhouden én oudste aanspreken',
-    consequence: 'Je houdt de jongste stevig vast en legt uit waarom ze niet terug mag. Dan kniel je naast de oudste: "Wat zie je?" vraagt je. "Komt ons huis vol water?" vraagt hij. Je legt het uit. Langzaam komen allebei tot rust.',
+    consequence: 'Je houdt de jongste stevig vast en legt uit waarom ze niet terug mag. Dan kniel je naast de oudste: "Wat zie je?" vraag je. "Komt ons huis vol water?" vraagt hij. Je legt het uit. Langzaam komen allebei tot rust.',
     stateChange: {
       comfort: -1
     }
@@ -348,7 +348,7 @@ const scenes_overstroming = [{
         outgoing: false
       }] : [];
     },
-    nlalert: 'NL-Alert\n11 november 2027 – 10:22\n\nEVACUATIEADVIES voor laaggelegen wijken. Vertrek nu als de route nog veilig is, of ga naar de bovenste verdieping. Gebruik aangewezen evacuatieroutes.',
+    nlalert: 'NL-Alert\n9 november 2027 – 10:22\n\nEVACUATIEADVIES voor laaggelegen wijken. Vertrek nu als de route nog veilig is, of ga naar de bovenste verdieping. Gebruik aangewezen evacuatieroutes.',
     radio: 'Radio 1: Evacuatieadvies voor laaggelegen wijken. Ga nu weg als de route nog open is. Kan dat niet meer, ga dan naar boven. Sluit de meterkast af. Bel 112 alleen in levensbedreigende situaties.'
   },
   get narrative() {

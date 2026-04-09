@@ -22,7 +22,7 @@ const scenes_natuurbrand = [{
     radio: 'Radio 1: Het weerbericht voor morgen: droog en winderig, windkracht 6 uit het oosten, luchtvochtigheid laag. Brandweer waarschuwt voor verhoogd risico op natuurbranden in de regio.'
   },
   get narrative() {
-    const natuur = profile.location.includes('buitengebied') || profile.location.includes('bos')
+    const natuur = profile.location.includes('rural_area') || profile.location.includes('forest')
       ? ' Je woont vlak bij de natuur. Na weken zonder regen staat de begroeiing er dor bij.'
       : '';
     return 'Het is een gewone vrijdagmiddag. De tuin staat er wat dor bij na een lange periode zonder regen, maar verder is er weinig bijzonders. Het nieuws meldt dat morgen droog en winderig wordt, met een verhoogd risico op natuurbranden in de regio.' + natuur;
@@ -823,7 +823,7 @@ const scenes_natuurbrand = [{
     nlalert: null,
     radio: 'Radio 1: De natuurbrand in het gebied is volledig geblust. Bewoners van de geëvacueerde wijken mogen terugkeren. De gemeente vraagt bewoners schade te melden.'
   },
-  narrative: 'Het is eindelijk ochtend. Je hebt slecht geslapen. Buiten is de lucht nog wit van de rook, maar het NL Alert is verdwenen. Mensen komen langzaam overeind. Je vraagt je af of het nu echt veilig is.',
+  narrative: 'Het is eindelijk ochtend. Je hebt slecht geslapen. Buiten is de lucht nog wit van de rook, maar het NL-Alert is verdwenen. Mensen komen langzaam overeind. Je vraagt je af of het nu echt veilig is.',
   choices: [{
     text: '📋 Wachten op officieel sein veilig van gemeente',
     consequence: 'Je wacht rustig. Om 9 uur komt de bevestiging: terugkeer is toegestaan. Je rijdt in de georganiseerde stroom mee terug.',

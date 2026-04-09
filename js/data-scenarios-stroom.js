@@ -70,7 +70,7 @@ const scenes_stroom = [
       nlalert: null,
       radio: 'Radio 1. Experts melden onrustige signalen op delen van het Europese stroomnet. De precieze oorzaak is nog niet duidelijk. De minister van Economische Zaken zegt dat er geen acuut gevaar is voor de stroomlevering. Houd onze berichtgeving in de gaten voor updates.'
     },
-    narrative: 'In het dorp hangt vandaag een onrustige sfeer. Mensen praten in groepjes en in het lunchcafe staat de tv harder dan normaal. Buiten lijkt alles gewoon, maar de stemming voelt anders.',
+    narrative: 'In het dorp hangt vandaag een onrustige sfeer. Mensen praten in groepjes en in het lunchcafé staat de tv harder dan normaal. Buiten lijkt alles gewoon, maar de stemming voelt anders.',
     choices: [{
       text: '💵 Ik pin even €100 contant geld, voor de zekerheid',
       consequence: 'Je haalt €100 op uit de automaat. Achteraf blijkt dat een verstandige beslissing, maar dat weet je nu nog niet.',
@@ -262,7 +262,7 @@ const scenes_stroom = [
           ? ' Meteen denk je: school morgen, eten, hoe leg je dit uit aan een kind?'
           : ' Meteen denk je: school morgen, eten, hoe leg je dit uit aan de kinderen?')
         : '';
-      const afgelegen = !profile.hasCar && !profile.location.includes('stedelijk')
+      const afgelegen = !profile.hasCar && !profile.location.includes('city')
         ? ' Je woont buiten het centrum en hebt geen auto. Als je ergens naartoe moet, ben je afhankelijk van je eigen benen of je fiets.'
         : '';
       return 'De stroom valt opnieuw uit. Alles wordt stil. Dit keer voelt het anders — geen gezoem van apparaten, geen standby-lampjes, niets. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.' + kinderen + afgelegen;

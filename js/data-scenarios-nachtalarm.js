@@ -268,8 +268,8 @@ const scenes_nachtalarm = [
           : 'Je staat buiten je appartement, op de galerij of in het portiek. Vanuit de woning komt nog rook. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.' + delayedNote;
       }
       return hasHousemates()
-        ? 'Je staat buiten in de koude nacht. Vanuit de voordeur ruik je nog steeds rook. Naast je staat iedereen half aangekleed en geschrokken op straat. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.' + delayedNote
-        : 'Je staat buiten in de koude nacht. Vanuit de woning ruik je nog steeds rook. Het is koud en je vraagt je af of je toch nog even naar binnen kan om wat extra kleren te pakken.' + delayedNote;
+        ? 'Je staat buiten in de koude nacht. Vanuit de voordeur ruik je nog steeds rook. Naast je staat iedereen half aangekleed en geschrokken op straat. Het is koud en je vraagt je af of je toch nog even naar binnen kunt om wat extra kleren te pakken.' + delayedNote
+        : 'Je staat buiten in de koude nacht. Vanuit de woning ruik je nog steeds rook. Het is koud en je vraagt je af of je toch nog even naar binnen kunt om wat extra kleren te pakken.' + delayedNote;
     },
     choices: [
       {
