@@ -28,16 +28,16 @@ const scenes_overstroming = [{
   },
   get narrative() {
     const locatie = profile.location.includes('rural_area')
-      ? ' Je woont afgelegen, niet ver van het water. Als het misgaat, ben jij een van de eersten.'
+      ? ' Je woont afgelegen, op loopafstand van het water. Het uitzicht is er mooi en op zonnige dagen kun je er echt van genieten.'
       : profile.location.includes('city')
-      ? ' Je woont in de stad, dicht bij het water. Als het stijgt, kan het hier snel gaan.'
+      ? ' Je woont in de bebouwde kom, op loopafstand van het water. Het uitzicht is er mooi en op zonnige dagen kun je er echt van genieten.'
       : '';
     const kinderen = profile.hasChildren
       ? (profile.childrenCount === 1
-        ? ' Je kind ligt al in bed. Je hoopt dat je dit vanavond rustig kunt oplossen.'
-        : ' De kinderen liggen al in bed. Je hoopt dat je dit vanavond rustig kunt oplossen.')
+        ? ' Je kind ligt al lekker in bed te slapen.'
+        : ' De kinderen liggen al lekker in bed te slapen.')
       : '';
-    return 'Het is maandagavond. Je woont op loopafstand van de rivier. Het uitzicht is er mooi en op zonnige dagen kun je er echt van genieten. Buiten regent het gestaag. De lucht voelt zwaar en vochtig, drukkend. In de verte klinkt de regen harder op de daken dan normaal. De rivier stond deze week al hoog.' + locatie + kinderen;
+    return 'Het is maandagavond. Buiten regent het gestaag en de grond is al de hele week verzadigd van al het water.' + locatie + kinderen;
   },
   choices: [{
     text: '🎒 Noodtas inpakken en documenten waterdicht verpakken',
@@ -89,9 +89,9 @@ const scenes_overstroming = [{
         : ' De kinderen slapen nog. Je merkt dat je niet goed weet hoe serieus dit is.')
       : '';
     const huisdier = profile.hasPets && !state.tookPets
-      ? ' Je huisdier is onrustig. Het hoort het water en de regen en loopt heen en weer.'
+      ? ' Je huisdier is onrustig en loopt heen en weer te ijsberen.'
       : '';
-    return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. Het klinkt zwaarder dan normaal, aanhoudender.' + gisteren + tasNietKlaar + kinderen + huisdier;
+    return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. De regen klinkt heftiger dan normaal.' + gisteren + tasNietKlaar + kinderen + huisdier;
   },
   choices: [{
     conditionalOn: () => !state.packedBag,
@@ -133,7 +133,7 @@ const scenes_overstroming = [{
   },
   get narrative() {
     const een = profile.childrenCount === 1;
-    return een ? 'Je kind is opgestaan en vraagt of het naar school gaat. Je kijkt buiten. Er staat al wat water op de stoep. De lucht hangt laag en grijs.' : 'De kinderen zijn opgestaan en vragen of ze naar school gaan. Je kijkt buiten. Er staat al wat water op de stoep. De lucht hangt laag en grijs.';
+    return een ? 'Je kind is opgestaan en vraagt of het naar school gaat. Je kijkt buiten. Er staat al wat water op de stoep. De lucht hangt laag en grijs.' : 'De kinderen zijn opgestaan en vragen of ze naar school gaan. Je kijkt buiten. Er staat al wat water op de stoep. De lucht is een grijze deken.';
   },
   choices: [{
     text: '🏫 Toch naar school brengen, school is open',
