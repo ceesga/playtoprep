@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Nachtalarm — "De rookmelder gaat af in de nacht"
-// 6 scenes — van na_0 (02:17) tot na_5 (02:45)
+// 7 scenes — van na_0 (02:17) tot na_5 (02:45)
 // Tijdspanne: ~30 minuten
 // Geen nieuws- of radiokanaal
 // ═══════════════════════════════════════════════════════════════

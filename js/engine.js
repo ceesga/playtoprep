@@ -12,6 +12,16 @@
    verschijnt.
 */
 const sceneVisuals = {
+  st_pre_d2: {
+    seed: 'office-lunch-winter',
+    label: 'Dag -2 · 12:00',
+    title: 'Eerste waarschuwingen'
+  },
+  st_pre_d1: {
+    seed: 'office-tension-lunchroom',
+    label: 'Dag -1 · 12:00',
+    title: 'Onrustige signalen'
+  },
   st_d0_morgen: {
     seed: 'suburb-morning-calm',
     label: 'Dag 1 · 08:00',
@@ -67,10 +77,20 @@ const sceneVisuals = {
     label: 'Dag 2 · 05:30',
     title: 'Buurvrouw heeft hulp nodig'
   },
+  st_8b: {
+    seed: 'neighbor-medical-help',
+    label: 'Dag 2 · 05:30',
+    title: 'Bij Annie thuis'
+  },
   st_9: {
     seed: 'pipes-water-basement',
     label: 'Dag 2 · 08:30',
     title: 'Riolering valt uit'
+  },
+  st_autolaad: {
+    seed: 'car-charger-cold-morning',
+    label: 'Dag 2 · 09:15',
+    title: 'Opladen in de auto'
   },
   st_d1_morgen: {
     seed: 'frost-winter-dawn-house',
@@ -159,15 +179,25 @@ const sceneVisuals = {
     label: 'Dag 1 · 11:00',
     title: 'Wind draait'
   },
+  bf_2c: {
+    seed: '',
+    label: 'Dag 1 · 11:15',
+    title: 'Kinderen buiten'
+  },
+  bf_2d: {
+    seed: '',
+    label: 'Dag 1 · 11:20',
+    title: 'Rugzakjes pakken'
+  },
   bf_3: {
     seed: '',
     label: 'Dag 1 · 11:30',
     title: 'Evacuatiebevel'
   },
-  bf_3b: {
+  bf_3c: {
     seed: '',
-    label: 'Dag 1 · 11:45',
-    title: 'Kinderen op school'
+    label: 'Dag 1 · 12:00',
+    title: 'Kinderen in de auto'
   },
   bf_4: {
     seed: '',
@@ -189,15 +219,20 @@ const sceneVisuals = {
     label: 'Dag 1 · 12:30',
     title: 'Te voet door de rook'
   },
+  bf_4e: {
+    seed: '',
+    label: 'Dag 1 · 12:45',
+    title: 'Met kinderen door de rook'
+  },
   bf_5: {
     seed: '',
     label: 'Dag 1 · 13:30',
     title: 'Noodopvang'
   },
-  bf_5a: {
+  bf_5f: {
     seed: '',
-    label: 'Dag 1 · 14:00',
-    title: 'Kinderen zoeken bij de noodopvang'
+    label: 'Dag 1 · 13:45',
+    title: 'Kinderen in de sporthal'
   },
   bf_5b: {
     seed: '',
@@ -214,10 +249,20 @@ const sceneVisuals = {
     label: 'Dag 1 · 18:00',
     title: 'Avond op de opvang'
   },
+  bf_5g: {
+    seed: '',
+    label: 'Dag 1 · 18:30',
+    title: 'Vragen voor het slapengaan'
+  },
   bf_6: {
     seed: '',
     label: 'Dag 2 · 09:00',
     title: 'Sein veilig?'
+  },
+  bf_6b: {
+    seed: '',
+    label: 'Dag 2 · 10:00',
+    title: 'Terug in de straat'
   },
   bf_7: {
     seed: '',
@@ -240,6 +285,11 @@ const sceneVisuals = {
     label: 'Dag 1 · 07:30',
     title: 'Kinderen naar school?'
   },
+  ov_1d: {
+    seed: '',
+    label: 'Dag 1 · 08:00',
+    title: 'Kinderen zoeken houvast'
+  },
   ov_2: {
     seed: '',
     label: 'Dag 1 · 09:30',
@@ -250,10 +300,20 @@ const sceneVisuals = {
     label: 'Dag 1 · 09:45',
     title: 'School sluit'
   },
+  ov_2c: {
+    seed: '',
+    label: 'Dag 1 · 10:00',
+    title: 'Kinderen willen terug'
+  },
   ov_3: {
     seed: '',
     label: 'Dag 1 · 10:30',
     title: 'Evacuatieadvies'
+  },
+  ov_3c: {
+    seed: '',
+    label: 'Dag 1 · 10:45',
+    title: 'Op de trap'
   },
   ov_4a: {
     seed: '',
@@ -264,6 +324,11 @@ const sceneVisuals = {
     seed: '',
     label: 'Dag 1 · 11:00',
     title: 'Evacueren mislukt'
+  },
+  ov_4c: {
+    seed: '',
+    label: 'Dag 1 · 12:30',
+    title: 'Wachten met kinderen'
   },
   ov_5: {
     seed: '',
@@ -280,10 +345,25 @@ const sceneVisuals = {
     label: 'Dag 1 · 15:00',
     title: 'Reddingsboot'
   },
+  ov_6e: {
+    seed: '',
+    label: 'Dag 1 · 15:30',
+    title: 'In de reddingsboot'
+  },
   ov_6c: {
     seed: '',
     label: 'Dag 1 · 17:00',
     title: 'Noodopvang'
+  },
+  ov_6f: {
+    seed: '',
+    label: 'Dag 1 · 18:30',
+    title: 'Kinderen op de noodopvang'
+  },
+  ov_6g: {
+    seed: '',
+    label: 'Dag 1 · 18:00',
+    title: 'Avondeten boven'
   },
   ov_6d: {
     seed: '',
@@ -305,6 +385,11 @@ const sceneVisuals = {
     label: 'Dag 2 · 09:00',
     title: 'Buurvrouw Ans'
   },
+  ov_7c: {
+    seed: '',
+    label: 'Dag 2 · 09:30',
+    title: 'Kinderen terug bij huis'
+  },
   ov_8: {
     seed: '',
     label: 'Dag 2 · 10:30',
@@ -325,6 +410,11 @@ const sceneVisuals = {
     seed: '',
     label: 'Werk · 12:30',
     title: 'School belt'
+  },
+  tk_3b: {
+    seed: '',
+    label: 'Onderweg · 12:58',
+    title: 'Martijn sluit aan'
   },
   tk_3: {
     seed: '',
@@ -361,6 +451,11 @@ const sceneVisuals = {
     label: 'Onderweg · 15:30',
     title: 'Onderweg'
   },
+  tk_5m: {
+    seed: '',
+    label: 'Onderweg · 15:30',
+    title: 'Pauze bij Martijn'
+  },
   tk_5b: {
     seed: '',
     label: 'Onderweg · 20:00',
@@ -368,14 +463,18 @@ const sceneVisuals = {
   },
   tk_6: {
     seed: '',
-    label: 'Thuis · 18:00',
+    label: 'Thuis · 21:00',
     title: 'Thuiskomst'
   },
-  tk_7: {
-    seed: '',
-    label: 'Thuis · 21:00',
-    title: 'Eerste nacht thuis'
-  },
+  // Drinkwater — scènes voor het drinkwaterscenario
+  wd_0: { seed: '', label: 'Dag 1 · 13:10', title: 'Troebel water' },
+  wd_1: { seed: '', label: 'Dag 1 · 13:35', title: 'Kookadvies' },
+  wd_2: { seed: '', label: 'Dag 1 · 14:10', title: 'Water verdelen' },
+  wd_3: { seed: '', label: 'Dag 1 · 15:00', title: 'Officiële update' },
+  wd_4: { seed: '', label: 'Dag 1 · 16:15', title: 'Supermarkt druk' },
+  wd_5: { seed: '', label: 'Dag 1 · 17:00', title: 'Water voor school' },
+  wd_6: { seed: '', label: 'Dag 1 · 17:30', title: 'Ans heeft hulp nodig' },
+  wd_7: { seed: '', label: 'Dag 1 · 20:30', title: 'Voorraad voor morgen' },
   // Nachtalarm — scènes voor het nachtalarm-scenario
   na_0: { seed: '', label: 'Nacht · 02:17', title: 'De rookmelder gaat af' },
   na_1: { seed: '', label: 'Nacht · 02:18', title: 'Rook op de gang' },
@@ -499,18 +598,23 @@ function renderSceneVisual(scene) {
     bf_1: 'afbeelding/bosbrand/bosbrand_stadium1.jpg',
     bf_2: 'afbeelding/bosbrand/bosbrand_stadium1.jpg',
     bf_2b: 'afbeelding/bosbrand/bosbrand_stadium2.png',
+    bf_2c: 'afbeelding/bosbrand/bosbrand_stadium2.png',
+    bf_2d: 'afbeelding/bosbrand/bosbrand_stadium2.png',
     bf_3: 'afbeelding/bosbrand/bosbrand_stadium2.png',
-    bf_3b: 'afbeelding/bosbrand/bosbrand_stadium2b.png',
+    bf_3c: 'afbeelding/bosbrand/bosbrand_stadium2b.png',
     bf_4: 'afbeelding/bosbrand/bosbrand_stadium2b.png',
     bf_4b: 'afbeelding/bosbrand/bosbrand_stadium2b.png',
     bf_4c: 'afbeelding/bosbrand/bosbrand_stadium3.png',
     bf_4d: 'afbeelding/bosbrand/bosbrand_stadium3.png',
+    bf_4e: 'afbeelding/bosbrand/bosbrand_stadium3.png',
     bf_5: 'afbeelding/algemeen/noodopvang.jpg',
-    bf_5a: 'afbeelding/algemeen/noodopvang.jpg',
+    bf_5f: 'afbeelding/algemeen/noodopvang.jpg',
     bf_5b: 'afbeelding/algemeen/noodopvang.jpg',
     bf_5c: 'afbeelding/algemeen/noodopvang.jpg',
     bf_5d: 'afbeelding/algemeen/noodopvang.jpg',
+    bf_5g: 'afbeelding/algemeen/noodopvang.jpg',
     bf_6: 'afbeelding/bosbrand/bomen_afgebrand.png',
+    bf_6b: 'afbeelding/bosbrand/bomen_afgebrand.png',
     bf_7: 'afbeelding/bosbrand/bomen_afgebrand.png',
     ov_0: 'afbeelding/overstroming/overstroming0_avond.png',
     ov_1: 'afbeelding/overstroming/overstroming1_hoogwater.png',
@@ -532,6 +636,7 @@ function renderSceneVisual(scene) {
     ov_6d: 'afbeelding/algemeen/noodopvang.jpg',
     ov_6b: 'afbeelding/algemeen/noodopvang.jpg',
     ov_6c: 'afbeelding/algemeen/noodopvang.jpg',
+    ov_6g: 'afbeelding/overstroming/overstroming4_overstroming.png',
     ov_7: 'afbeelding/overstroming/overstroming5_naderhand.png',
     ov_7b: 'afbeelding/overstroming/overstroming5_naderhand.png',
     ov_7c: 'afbeelding/overstroming/overstroming5_naderhand.png',
@@ -572,6 +677,7 @@ function renderSceneVisual(scene) {
     tk_1: 'afbeelding/stroomstoring_onderweg/kantoor.png',
     tk_2: 'afbeelding/stroomstoring_onderweg/kantoor.png',
     tk_2b: 'afbeelding/stroomstoring_onderweg/kantoor.png',
+    tk_3b: 'afbeelding/stroomstoring_onderweg/kantoor.png',
     tk_3: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
     tk_4a: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
     tk_4b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
@@ -579,7 +685,18 @@ function renderSceneVisual(scene) {
     tk_4d: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
     tk_4e: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
     tk_5: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+    tk_5m: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
     tk_5b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+    tk_6: 'afbeelding/stroomstoring/Huis_winter1.png',
+    // Drinkwater
+    wd_0: 'afbeelding/algemeen/huis_normaal.png',
+    wd_1: 'afbeelding/algemeen/huis_normaal.png',
+    wd_2: 'afbeelding/algemeen/huis_normaal.png',
+    wd_3: 'afbeelding/algemeen/huis_normaal.png',
+    wd_4: 'afbeelding/algemeen/huis_normaal.png',
+    wd_5: 'afbeelding/algemeen/huis_normaal.png',
+    wd_6: 'afbeelding/algemeen/huis_normaal.png',
+    wd_7: 'afbeelding/algemeen/huis_normaal.png',
     // Nachtalarm
     na_0: 'afbeelding/brandalarm/Rook_hal.png',
     na_1: 'afbeelding/brandalarm/Rook_hal.png',
@@ -894,6 +1011,7 @@ function startScenario(scenarioId) {
   state.stayedOutside = false;
   state.delayedEvacuation = false;
   state.travelingWithMartijn = false;
+  state.followedOfficialAdvice = false;
 
   // Reset scène-index en alle kanaal- en geschiedenisbuffers
   currentSceneIdx = 0;
@@ -970,6 +1088,7 @@ function loadGame() {
   else if (currentScenario === 'natuurbrand') { scenes = scenes_natuurbrand;   sceneDecay = sceneDecay_natuurbrand; }
   else if (currentScenario === 'overstroming'){ scenes = scenes_overstroming;  sceneDecay = sceneDecay_overstroming; }
   else if (currentScenario === 'thuis_komen') { scenes = scenes_thuis_komen;   sceneDecay = sceneDecay_thuis_komen; }
+  else if (currentScenario === 'drinkwater')  { scenes = scenes_drinkwater;    sceneDecay = sceneDecay_drinkwater; }
   else if (currentScenario === 'nachtalarm')  { scenes = scenes_nachtalarm;    sceneDecay = sceneDecay_nachtalarm; }
   currentSceneIdx = d.currentSceneIdx;
 

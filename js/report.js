@@ -36,6 +36,8 @@ function showReport() {
     intro = `${jij} hebt het overstromingsscenario gespeeld. Stijgend water geeft weinig tijd. Hieronder zie je welke keuzes jij maakte.`;
   } else if (currentScenario === 'thuis_komen') {
     intro = `${jij} hebt het scenario Onderweg naar huis gespeeld. Hoe kom je thuis als alles uitvalt? Hieronder zie je jouw route en keuzes.`;
+  } else if (currentScenario === 'drinkwater') {
+    intro = `${jij} hebt het scenario Vervuild drinkwater gespeeld. Bij een kookadvies draait het om zuinig plannen, officiële informatie volgen en schoon water op tijd apart zetten.`;
   } else if (currentScenario === 'nachtalarm') {
     intro = `${jij} hebt het scenario Alarm in de nacht gespeeld. De eerste minuten bij brand zijn bepalend. Hieronder zie je hoe jij reageerde.`;
   }
@@ -46,7 +48,10 @@ function showReport() {
   const scoreW = state.ranOutOfWater ? 0 : 1;          // 0 als water op was, anders 1
   const scoreF = state.ranOutOfFood  ? 0 : 1;          // 0 als voedsel op was, anders 1
   const scoreC = state.comfort / MAX_STAT_COMFORT;     // Comfort als fractie van het maximum
-  const avgScore = (scoreW + scoreF + scoreC) / 3;     // Gemiddelde van de drie scores (0–1)
+  const scoreH = state.health / MAX_STAT_HEALTH;       // Gezondheid als fractie van het maximum
+  const avgScore = currentScenario === 'drinkwater'
+    ? (scoreW + scoreH + scoreC) / 3
+    : (scoreW + scoreF + scoreC) / 3;
   let outcomeText, outcomeClass;
   // Bepaal de uitkomsttekst en bijbehorende CSS-klasse op basis van de gemiddelde score
   if (avgScore >= 0.7) {
@@ -205,7 +210,7 @@ function showReport() {
       labelMissing: 'Geen noodtas bij je gehad',
       icon: '🎒'
     }, {
-      key: 'kidsPickedUp',
+      has: () => state.kidsPickedUp || state.kidsArranged,
       label: 'Kinderen opgehaald of geregeld',
       labelMissing: 'Kinderen niet opgehaald of geregeld',
       icon: '👶'
@@ -220,6 +225,34 @@ function showReport() {
       labelMissing: 'Geen contant geld bij je gehad',
       icon: '💵'
     }];
+  } else if (currentScenario === 'drinkwater') {
+    statusItems = [{
+      key: 'hasWater',
+      label: 'Schoon water apart gezet',
+      labelMissing: 'Geen schoon water apart gezet',
+      icon: '🍶'
+    }, {
+      key: 'followedOfficialAdvice',
+      label: 'Officiële updates gevolgd',
+      labelMissing: 'Officiële updates genegeerd',
+      icon: '📋'
+    }, {
+      has: () => state.health >= START_HEALTH,
+      label: 'Veilig met het kookadvies omgegaan',
+      labelMissing: 'Onveilig met water omgegaan',
+      icon: '💧'
+    }, {
+      key: 'helpedNeighbor',
+      label: 'Buur geholpen',
+      labelMissing: 'Buur niet geholpen',
+      icon: '🤝'
+    },
+    ...(profile.hasChildren ? [{
+      key: 'kidsNoodpakket',
+      label: 'Water voor school of opvang klaargezet',
+      labelMissing: 'Geen water voor school of opvang klaargezet',
+      icon: '🎒'
+    }] : [])];
   } else if (currentScenario === 'nachtalarm') {
     // Statusbadges specifiek voor het nachtalarm-scenario
     statusItems = [
@@ -325,7 +358,7 @@ function showReport() {
   // Elke badge krijgt klasse 'has' (groen) of 'missing' (rood) afhankelijk van de spelerstatus
   let statusHtml = '<div class="status-row">';
   statusItems.forEach(item => {
-    const has = state[item.key]; // Controleer of de speler dit item heeft bereikt
+    const has = typeof item.has === 'function' ? item.has() : state[item.key];
     const badgeLabel = has ? item.label : (item.labelMissing || item.label); // Kies de juiste labeltekst
     statusHtml += `<div class="status-badge ${has ? 'has' : 'missing'}">${item.icon} ${badgeLabel}</div>`;
   });
@@ -361,11 +394,19 @@ function showReport() {
   }
 
   // Render de eindstatistieken: water, voedsel en comfortniveau
-  document.getElementById('rep-endstats').innerHTML = `<div class="rep-endstats">
-    ${shortageIndicator(state.ranOutOfWater, '💧', 'Geen watertekort', 'Watertekort gehad')}
-    ${shortageIndicator(state.ranOutOfFood,  '🥫', 'Geen voedseltekort', 'Voedseltekort gehad')}
-    ${statBar(state.comfort, MAX_STAT_COMFORT, '🧸', 'Comfort aan het eind')}
-  </div>`;
+  if (currentScenario === 'drinkwater') {
+    document.getElementById('rep-endstats').innerHTML = `<div class="rep-endstats">
+      ${shortageIndicator(state.ranOutOfWater, '💧', 'Genoeg schoon water gehouden', 'Schoon watertekort gehad')}
+      ${statBar(state.health, MAX_STAT_HEALTH, '🩺', 'Gezondheid aan het eind')}
+      ${statBar(state.comfort, MAX_STAT_COMFORT, '🧸', 'Rust aan het eind')}
+    </div>`;
+  } else {
+    document.getElementById('rep-endstats').innerHTML = `<div class="rep-endstats">
+      ${shortageIndicator(state.ranOutOfWater, '💧', 'Geen watertekort', 'Watertekort gehad')}
+      ${shortageIndicator(state.ranOutOfFood,  '🥫', 'Geen voedseltekort', 'Voedseltekort gehad')}
+      ${statBar(state.comfort, MAX_STAT_COMFORT, '🧸', 'Comfort aan het eind')}
+    </div>`;
+  }
 
   // GOOD
   // Verzamel positieve feedbackitems op basis van de keuzes van de speler per scenario
@@ -479,6 +520,27 @@ function showReport() {
     if (state.kidsPickedUp || state.kidsArranged) goodItems.push({
       icon: '👶',
       text: '<b>Kinderen geregeld</b>. Je zorgde dat de kinderen veilig waren, ook op afstand.'
+    });
+  } else if (currentScenario === 'drinkwater') {
+    if (state.hasWater) goodItems.push({
+      icon: '🍶',
+      text: '<b>Schoon water op tijd apart gezet</b>. Je legde een buffer aan zolang er nog water uit de kraan kwam. Dat gaf rust en ruimte om betere keuzes te maken.'
+    });
+    if (state.followedOfficialAdvice) goodItems.push({
+      icon: '📋',
+      text: '<b>Officiële informatie gevolgd</b>. Je wachtte op berichten van Vitens of de gemeente in plaats van te gokken. Bij drinkwater is dat precies wat veilig gedrag is.'
+    });
+    if (state.health >= START_HEALTH) goodItems.push({
+      icon: '💧',
+      text: '<b>Veilig met het kookadvies omgegaan</b>. Je nam het advies serieus en voorkwam onnodig gezondheidsrisico.'
+    });
+    if (state.helpedNeighbor) goodItems.push({
+      icon: '🤝',
+      text: '<b>Buur geholpen</b>. Je keek niet alleen naar je eigen voorraad, maar hielp ook iemand in je omgeving. Dat maakt een buurt veerkrachtiger.'
+    });
+    if (profile.hasChildren && state.kidsNoodpakket) goodItems.push({
+      icon: '🎒',
+      text: '<b>Vooruitgedacht voor school of opvang</b>. Je zette drinkwater voor de volgende ochtend apart. Dat voorkomt stress op het moment dat iedereen tegelijk iets nodig heeft.'
     });
   } else {
     // Positieve acties voor het standaard stroomuitvalscenario
@@ -628,6 +690,27 @@ function showReport() {
     if (!profile.hasCash && !state.hasCash) improveItems.push({
       icon: '💵',
       text: '<b>Geen contant geld</b>. Taxi\'s, liften en tankstations accepteerden alleen cash. Zorg altijd voor €50 in je tas.'
+    });
+  } else if (currentScenario === 'drinkwater') {
+    if (!state.hasWater) improveItems.push({
+      icon: '🍶',
+      text: '<b>Geen waterbuffer gemaakt</b>. Toen het kookadvies kwam had je weinig schoon water apart gezet. Vul meteen flessen, pannen en kannen zolang er nog waterdruk is.'
+    });
+    if (!state.followedOfficialAdvice) improveItems.push({
+      icon: '📋',
+      text: '<b>Te veel op aannames vertrouwd</b>. Bij troebel water en een kookadvies moet je alleen uitgaan van officiële updates van Vitens of de gemeente. Uiterlijk zegt niet genoeg over veiligheid.'
+    });
+    if (state.health < START_HEALTH) improveItems.push({
+      icon: '💧',
+      text: '<b>Onveilig met water omgegaan</b>. Je nam een risico met mogelijk vervuild water. Volg een kookadvies altijd letterlijk op en gebruik schoon water alleen voor drinken, tandenpoetsen, medicijnen en eten.'
+    });
+    if (profile.hasChildren && !state.kidsNoodpakket) improveItems.push({
+      icon: '🎒',
+      text: '<b>Geen water voor school of opvang klaargezet</b>. Als het kookadvies langer duurt, wil je dit het liefst de avond ervoor al geregeld hebben.'
+    });
+    if (!state.helpedNeighbor) improveItems.push({
+      icon: '🤝',
+      text: '<b>Omgeving niet meegenomen</b>. Bij een wateradvies zijn vooral alleenwonende buren of ouderen snel kwetsbaar. Even afstemmen kan veel schelen.'
     });
   } else {
     // Verbeterpunten voor het standaard stroomuitvalscenario

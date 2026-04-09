@@ -1,16 +1,16 @@
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Stroomstoring — "Een gewone winterdag"
-// 26 scenes — van st_pre_d2 (vrijdag avond) tot st_14 (stroom terug)
-// Tijdspanne: vrijdag 24 jan → woensdag 3 feb 2027
+// 28 scenes — van st_pre_d2 (vrijdagmiddag) tot st_14 (stroom terug)
+// Tijdspanne: vrijdag 29 jan → woensdag 3 feb 2027
 // ═══════════════════════════════════════════════════════════════
 
 
 const scenes_stroom = [
-  // SCENE 1 — Day -7
+  // SCENE 1 — Day -2
   {
     id: 'st_pre_d2',
     time: '12:00',
-    date: 'Vrijdag 24 januari 2027',
+    date: 'Vrijdag 29 januari 2027',
     dayBadge: '',
     dayBadgeClass: 'blue',
     channels: {
@@ -70,7 +70,7 @@ const scenes_stroom = [
       nlalert: null,
       radio: 'Radio 1. Experts melden onrustige signalen op delen van het Europese stroomnet. De precieze oorzaak is nog niet duidelijk. De minister van Economische Zaken zegt dat er geen acuut gevaar is voor de stroomlevering. Houd onze berichtgeving in de gaten voor updates.'
     },
-    narrative: 'Op het werk hangt vandaag een onrustige sfeer. Mensen praten in groepjes en in de lunchruimte staat de tv harder dan normaal. Buiten lijkt alles gewoon, maar de stemming voelt anders.',
+    narrative: 'In het dorp hangt vandaag een onrustige sfeer. Mensen praten in groepjes en in het lunchcafe staat de tv harder dan normaal. Buiten lijkt alles gewoon, maar de stemming voelt anders.',
     choices: [{
       text: '💵 Ik pin even €100 contant geld, voor de zekerheid',
       consequence: 'Je haalt €100 op uit de automaat. Achteraf blijkt dat een verstandige beslissing, maar dat weet je nu nog niet.',

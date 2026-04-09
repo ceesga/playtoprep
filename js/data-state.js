@@ -63,6 +63,7 @@ const profile = {
 // ─── GAME STATE ───────────────────────────────────────────────────────────────
 const state = {
   awarenessLevel: 0,
+  followedOfficialAdvice: false,
   hasCash: false,
   hasExtraFood: false,
   wentToSupermarket: null,

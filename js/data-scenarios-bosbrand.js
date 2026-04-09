@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Bosbrand — "Een warme droge zomer"
-// 22 scenes — van bf_0 (vrijdagavond) tot bf_7 (thuiskomst)
+// 23 scenes — van bf_0 (vrijdagavond) tot bf_7 (thuiskomst)
 // Tijdspanne: ~24 uur
 // ═══════════════════════════════════════════════════════════════
 

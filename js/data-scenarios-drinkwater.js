@@ -42,7 +42,9 @@ const scenes_drinkwater = [{
   choices: [{
     text: '📱 Online zoeken wat er aan de hand is',
     consequence: 'Op de website van Vitens staat een kort bericht: meldingen van troebel kraanwater, oorzaak wordt onderzocht. De gemeente verwijst naar dezelfde pagina. Er is nog geen kookadvies, maar het advies is voorzichtig te zijn.',
-    stateChange: {}
+    stateChange: {
+      awarenessLevel: 1
+    }
   }, {
     text: '🍶 Alvast flessen en pannen vullen met kraanwater',
     consequence: 'Het water dat nu uit de kraan komt is troebel, maar er loopt wel wat. Je vult een paar flessen en zet ze apart. Later kun je het koken als dat nodig is. Slim om dit nu te doen, want je weet niet of de druk straks lager wordt.',
@@ -182,7 +184,9 @@ const scenes_drinkwater = [{
   choices: [{
     text: '📱 Alleen officiële updates blijven volgen',
     consequence: 'De website van Vitens is duidelijk: het advies geldt tot er een nieuw bericht is. Je deelt dat kort in de buurtapp. Een paar mensen reageren dankbaar.',
-    stateChange: {}
+    stateChange: {
+      followedOfficialAdvice: true
+    }
   }, {
     text: '😰 Zelf aannemen dat het wel weer goed zal zijn',
     consequence: 'Het ziet er helder uit, dus het zal wel in orde zijn. Je gebruikt het water ongekookt. Later begrijp je dat uiterlijk niets zegt over of het water veilig is.',
@@ -193,7 +197,9 @@ const scenes_drinkwater = [{
     text: '💬 In de buurtapp delen dat iedereen het officiële bericht moet afwachten',
     consequence: 'Je typt een kort berichtje in de buurtapp: "Kookadvies geldt nog steeds, ook al ziet het water er beter uit. Wacht op bericht van Vitens." Meerdere mensen reageren met een duim omhoog.',
     cat: 'cat-social',
-    stateChange: {}
+    stateChange: {
+      followedOfficialAdvice: true
+    }
   }]
 }, {
   id: 'wd_4',

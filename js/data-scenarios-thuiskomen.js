@@ -8,7 +8,7 @@
 const scenes_thuis_komen = [{
   id: 'tk_1',
   time: '11:57',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Werk',
   dayBadgeClass: '',
   channels: {
@@ -38,7 +38,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_2',
   time: '12:20',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Werk',
   dayBadgeClass: '',
   channels: {
@@ -95,7 +95,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_2b',
   time: '12:30',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Werk',
   dayBadgeClass: '',
   conditionalOn: () => profile.hasChildren,
@@ -140,7 +140,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_3b',
   time: '12:58',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => !state.leftEarly,
@@ -172,7 +172,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_3',
   time: '13:00',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   channels: {
@@ -232,7 +232,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_4a',
   time: '13:15',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelMode === 'car',
@@ -279,7 +279,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_4b',
   time: '13:15',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelMode === 'train',
@@ -322,9 +322,57 @@ const scenes_thuis_komen = [{
     }
   }]
 }, {
+  id: 'tk_4d',
+  time: '13:15',
+  date: 'Donderdag 14 januari 2027',
+  dayBadge: 'Onderweg',
+  dayBadgeClass: '',
+  conditionalOn: () => state.travelMode === 'bike' || state.travelMode === 'walking',
+  channels: {
+    news: [],
+    whatsapp: [],
+    nlalert: null,
+    radio: null
+  },
+  get narrative() {
+    return state.travelMode === 'bike'
+      ? 'Je fiets staat klaar. Geen files en geen afhankelijkheid van uitgevallen systemen. De wegen zijn druk maar je kunt erlangs.'
+      : 'Je bent te voet vertrokken. Langzaam, maar je bent niet afhankelijk van systemen. De wegen zijn druk, toch kom je vooruit.';
+  },
+  choices: [{
+    text: () => state.travelMode === 'bike' ? '🚲 Direct doorrijden, zonder omwegen' : '🚶 Stevig doorlopen, zonder omwegen',
+    consequence: () => profile.commuteDistance === 'far'
+      ? (state.travelMode === 'bike' ? 'Je fietst. Na twee uur begin je te twijfelen. Je hebt nog meer dan de helft te gaan.' : 'Je loopt. Na twee uur begin je te twijfelen. Je hebt nog meer dan de helft te gaan.')
+      : (state.travelMode === 'bike' ? 'Je fietst stevig door. Na anderhalf uur ben je thuis. Moe maar voldaan.' : 'Je loopt stevig door. Na twee uur ben je thuis. Moe maar voldaan.'),
+    stateChange: () => profile.commuteDistance === 'far' ? {
+      travelMode: state.travelMode
+    } : {
+      reachedHome: true
+    }
+  }, {
+    text: '🛣️ Alternatieve route via rustige wegen',
+    consequence: () => state.travelMode === 'bike'
+      ? 'Je neemt rustige fietsroutes. Minder gedoe met drukke kruispunten. Na twee uur ben je thuis.'
+      : 'Je kiest rustige straten en steegjes. Minder gedoe met drukke wegen en grote groepen mensen. Na twee uur ben je thuis.',
+    stateChange: {
+      reachedHome: true
+    }
+  }, {
+    conditionalOn: () => profile.hasChildren && !state.kidsArranged,
+    text: '🏘️ Omrijden om kinderen op te halen',
+    consequence: () => state.travelMode === 'bike'
+      ? 'Je rijdt via school. De kinderen worden erbij gehaald en mogen met je mee. Samen fietsen jullie naar huis.'
+      : 'Je loopt via school. De kinderen worden erbij gehaald en gaan met je mee. Samen lopen jullie naar huis.',
+    stateChange: {
+      reachedHome: true,
+      kidsPickedUp: true,
+      kidsArranged: true
+    }
+  }]
+}, {
   id: 'tk_4c',
   time: '14:15',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelMode === 'ov',
@@ -386,57 +434,9 @@ const scenes_thuis_komen = [{
     }
   }]
 }, {
-  id: 'tk_4d',
-  time: '13:15',
-  date: 'Donderdag 15 januari 2027',
-  dayBadge: 'Onderweg',
-  dayBadgeClass: '',
-  conditionalOn: () => state.travelMode === 'bike' || state.travelMode === 'walking',
-  channels: {
-    news: [],
-    whatsapp: [],
-    nlalert: null,
-    radio: null
-  },
-  get narrative() {
-    return state.travelMode === 'bike'
-      ? 'Je fiets staat klaar. Geen files en geen afhankelijkheid van uitgevallen systemen. De wegen zijn druk maar je kunt erlangs.'
-      : 'Je bent te voet vertrokken. Langzaam, maar je bent niet afhankelijk van systemen. De wegen zijn druk, toch kom je vooruit.';
-  },
-  choices: [{
-    text: () => state.travelMode === 'bike' ? '🚲 Direct doorrijden, zonder omwegen' : '🚶 Stevig doorlopen, zonder omwegen',
-    consequence: () => profile.commuteDistance === 'far'
-      ? (state.travelMode === 'bike' ? 'Je fietst. Na twee uur begin je te twijfelen. Je hebt nog meer dan de helft te gaan.' : 'Je loopt. Na twee uur begin je te twijfelen. Je hebt nog meer dan de helft te gaan.')
-      : (state.travelMode === 'bike' ? 'Je fietst stevig door. Na anderhalf uur ben je thuis. Moe maar voldaan.' : 'Je loopt stevig door. Na twee uur ben je thuis. Moe maar voldaan.'),
-    stateChange: () => profile.commuteDistance === 'far' ? {
-      travelMode: state.travelMode
-    } : {
-      reachedHome: true
-    }
-  }, {
-    text: '🛣️ Alternatieve route via rustige wegen',
-    consequence: () => state.travelMode === 'bike'
-      ? 'Je neemt rustige fietsroutes. Minder gedoe met drukke kruispunten. Na twee uur ben je thuis.'
-      : 'Je kiest rustige straten en steegjes. Minder gedoe met drukke wegen en grote groepen mensen. Na twee uur ben je thuis.',
-    stateChange: {
-      reachedHome: true
-    }
-  }, {
-    conditionalOn: () => profile.hasChildren && !state.kidsArranged,
-    text: '🏘️ Omrijden om kinderen op te halen',
-    consequence: () => state.travelMode === 'bike'
-      ? 'Je rijdt via school. De kinderen worden erbij gehaald en mogen met je mee. Samen fietsen jullie naar huis.'
-      : 'Je loopt via school. De kinderen worden erbij gehaald en gaan met je mee. Samen lopen jullie naar huis.',
-    stateChange: {
-      reachedHome: true,
-      kidsPickedUp: true,
-      kidsArranged: true
-    }
-  }]
-}, {
   id: 'tk_4e',
   time: '15:30',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelMode === 'walking' && profile.commuteDistance === 'far',
@@ -476,7 +476,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_5',
   time: '15:30',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => !state.reachedHome && !state.travelingWithMartijn && !(state.travelMode === 'walking' && profile.commuteDistance === 'far'),
@@ -530,7 +530,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_5m',
   time: '15:30',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelingWithMartijn && !state.reachedHome,
@@ -570,7 +570,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_5b',
   time: '20:00',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => profile.commuteDistance === 'far' && !state.reachedHome && !state.foundAlternative && !state.travelingWithMartijn,
@@ -609,7 +609,7 @@ const scenes_thuis_komen = [{
 }, {
   id: 'tk_6',
   time: '21:00',
-  date: 'Donderdag 15 januari 2027',
+  date: 'Donderdag 14 januari 2027',
   dayBadge: 'Thuis',
   dayBadgeClass: 'green',
   channels: {

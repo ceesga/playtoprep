@@ -8,7 +8,7 @@
 const scenes_overstroming = [{
   id: 'ov_0',
   time: '20:00',
-  date: 'Maandag 10 november 2027',
+  date: 'Maandag 8 november 2027',
   dayBadge: 'Dag 0',
   dayBadgeClass: '',
   channels: {
@@ -67,7 +67,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_1',
   time: '07:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   channels: {
@@ -116,7 +116,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_1b',
   time: '07:30',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => profile.hasChildren,
@@ -160,7 +160,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_1d',
   time: '08:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => profile.hasChildren && state.kidsKeptHome === true && !state.kidsNoodpakket,
@@ -196,7 +196,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_2',
   time: '09:30',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   channels: {
@@ -245,7 +245,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_2b',
   time: '09:45',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => profile.hasChildren && state.sentKidsToSchool === true && !state.evacuatedFlood,
@@ -288,7 +288,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_2c',
   time: '10:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => profile.hasChildren && state.kidsKeptHome === true && !state.evacuatedFlood,
@@ -330,7 +330,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_3',
   time: '10:30',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => !state.evacuatedFlood,
@@ -420,7 +420,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_3c',
   time: '10:45',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => profile.hasChildren && state.kidsWithYou === true && state.wentUpstairs === true,
@@ -457,7 +457,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_4a',
   time: '11:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => state.wentUpstairs === true,
@@ -507,9 +507,44 @@ const scenes_overstroming = [{
     }
   }, ]
 }, {
+  id: 'ov_4b',
+  time: '11:00',
+  date: 'Dinsdag 9 november 2027',
+  dayBadge: 'Dag 1',
+  dayBadgeClass: '',
+  conditionalOn: () => state.wentUpstairs === false,
+  channels: {
+    news: [],
+    whatsapp: [],
+    nlalert: null,
+    radio: null
+  },
+  narrative: 'Je auto staat vast. Je staat in het water, kniehoogte. Je kunt niet weg. Wat nu?',
+  choices: [{
+    text: '🏠 Terug naar huis gaan en naar boven',
+    consequence: 'Je wadt terug naar je huis en klimt naar boven. Nat, maar veilig. Het had slechter kunnen aflopen.',
+    stateChange: {
+      wentUpstairs: true
+    }
+  }, {
+    text: '🆘 Hulp vragen aan voorbijrijdende boot of buren',
+    consequence: 'Je roept. Een buurman met een roeiboot vaart voorbij en pikt je op. Je wordt naar hoger gelegen terrein gebracht.',
+    stateChange: {
+      evacuatedFlood: true,
+      calledRescue: true
+    }
+  }, {
+    text: '📱 112 bellen',
+    consequence: () => state.phoneBattery > 0 ? 'Je belt 112. "Blijf op uw auto staan, niet lopen." Na 40 minuten komt een reddingsboot. Je bent gered, maar de auto is verloren.' : 'Je telefoon is leeg. Je kunt 112 niet bereiken. Je wacht en hoopt dat iemand je ziet.',
+    stateChange: () => state.phoneBattery > 0 ? {
+      evacuatedFlood: true,
+      calledRescue: true
+    } : {}
+  }]
+}, {
   id: 'ov_4c',
   time: '12:30',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => profile.hasChildren && state.kidsWithYou === true && state.wentUpstairs === true,
@@ -555,44 +590,9 @@ const scenes_overstroming = [{
     stateChange: {}
   }]
 }, {
-  id: 'ov_4b',
-  time: '11:00',
-  date: 'Dinsdag 11 november 2027',
-  dayBadge: 'Dag 1',
-  dayBadgeClass: '',
-  conditionalOn: () => state.wentUpstairs === false,
-  channels: {
-    news: [],
-    whatsapp: [],
-    nlalert: null,
-    radio: null
-  },
-  narrative: 'Je auto staat vast. Je staat in het water, kniehoogte. Je kunt niet weg. Wat nu?',
-  choices: [{
-    text: '🏠 Terug naar huis gaan en naar boven',
-    consequence: 'Je wadt terug naar je huis en klimt naar boven. Nat, maar veilig. Het had slechter kunnen aflopen.',
-    stateChange: {
-      wentUpstairs: true
-    }
-  }, {
-    text: '🆘 Hulp vragen aan voorbijrijdende boot of buren',
-    consequence: 'Je roept. Een buurman met een roeiboot vaart voorbij en pikt je op. Je wordt naar hoger gelegen terrein gebracht.',
-    stateChange: {
-      evacuatedFlood: true,
-      calledRescue: true
-    }
-  }, {
-    text: '📱 112 bellen',
-    consequence: () => state.phoneBattery > 0 ? 'Je belt 112. "Blijf op uw auto staan, niet lopen." Na 40 minuten komt een reddingsboot. Je bent gered, maar de auto is verloren.' : 'Je telefoon is leeg. Je kunt 112 niet bereiken. Je wacht en hoopt dat iemand je ziet.',
-    stateChange: () => state.phoneBattery > 0 ? {
-      evacuatedFlood: true,
-      calledRescue: true
-    } : {}
-  }]
-}, {
   id: 'ov_5',
   time: '13:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => state.wentUpstairs === true,
@@ -636,7 +636,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_5b',
   time: '13:15',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => state.wentUpstairs === true && !state.cutElectricity,
@@ -670,7 +670,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_6',
   time: '15:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => !state.evacuatedFlood,
@@ -709,7 +709,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_6e',
   time: '15:30',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => profile.hasChildren && state.kidsWithYou === true && state.evacuatedFlood === true && state.wentUpstairs !== null,
@@ -748,7 +748,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_6c',
   time: '17:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => state.evacuatedFlood === true,
@@ -791,67 +791,9 @@ const scenes_overstroming = [{
     }
   }]
 }, {
-  id: 'ov_6f',
-  time: '18:30',
-  date: 'Dinsdag 11 november 2027',
-  dayBadge: 'Dag 1',
-  dayBadgeClass: '',
-  conditionalOn: () => profile.hasChildren && state.kidsWithYou === true && state.evacuatedFlood === true,
-  channels: {
-    news: [],
-    whatsapp: [],
-    nlalert: null,
-    radio: null
-  },
-  get narrative() {
-    const een = profile.childrenCount === 1;
-    if (state.kidsNoodpakket) {
-      return een ?
-        'Op de noodopvang klemt je kind zich aan je vast. Het laat je geen seconde los, zelfs niet als je even naar het toilet wilt. Het weet wel waar het is en dat jij er bent, maar het blijft zich aan je vasthouden.' :
-        'Op de noodopvang klemt de jongste zich aan je vast, met haar arm om je been en haar hoofd tegen je zij. De oudste blijft rustiger. Jullie hebben eerder over dit soort situaties gepraat, maar voor de jongste is dat nu even weg.';
-    } else {
-      return een ?
-        'Op de noodopvang klemt je kind zich aan je vast en wil het je geen seconde kwijt. Als je opstaat, staat het meteen ook op. Als je naar het toilet wilt, trekt het aan je mouw. Je begrijpt het, maar het maakt alles wel zwaarder.' :
-        'Op de noodopvang klemt de jongste zich aan je vast en wil ze je geen seconde kwijt. Als je opstaat, staat zij ook op. Ondertussen speelt de oudste al met andere kinderen, alsof er niets is gebeurd.';
-    }
-  },
-  choices: [{
-    text: () => profile.childrenCount === 1 ? '🫂 Je kind dicht bij je houden en samen blijven' : '🫂 De jongste dicht bij je houden en samen blijven',
-    consequence: () => profile.childrenCount === 1 ? 'Je laat het toe. Je kind blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.' : 'Je laat het toe. De jongste blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    text: () => profile.childrenCount === 1 ? '🗣️ Uitleggen dat het hier veilig is en dat je niet weggaat' : '🗣️ Jongste uitleggen dat het hier veilig is en dat je niet weggaat',
-    consequence: () => profile.childrenCount === 1 ? '"Ik ga niet weg. We zijn hier samen en het is veilig." Je kind kijkt je aan. Het gelooft het half. Maar de greep wordt iets losser.' : '"Ik ga niet weg. We zijn hier samen en het is veilig." De jongste kijkt je aan. Het gelooft het half. Maar de greep wordt iets losser.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    conditionalOn: () => !state.kidsNoodpakket && profile.childrenCount > 1,
-    text: '🎮 De oudste laten spelen, dat is zijn manier van verwerken',
-    consequence: 'Een vrijwilliger fluistert: "Laat maar. Spelen is hoe kinderen stress verwerken. Het is in orde." Je stopt met tegenhouden. Dat voelt beter.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    text: '🤝 Met andere ouders vergelijken hoe hun kinderen reageren',
-    consequence: '"Die van mij laat me geen seconde los," zeg jij. "Die van mij rent al een uur rond," zegt een vader. "Allebei normaal," zegt een vrijwilliger. Dat helpt.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    conditionalOn: () => state.kidsNoodpakket,
-    text: '📋 Samen terugkijken op wat goed ging met het plan',
-    consequence: () => profile.childrenCount === 1 ? '"Ik wist wat ik moest doen," zegt je kind. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.' : '"We wisten wat we moesten doen," zegt de oudste. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.',
-    stateChange: {
-      comfort: 1
-    }
-  }]
-}, {
   id: 'ov_6g',
   time: '18:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => state.wentUpstairs === true && state.evacuatedFlood === false,
@@ -915,9 +857,67 @@ const scenes_overstroming = [{
     stateChange: {}
   }]
 }, {
+  id: 'ov_6f',
+  time: '18:30',
+  date: 'Dinsdag 9 november 2027',
+  dayBadge: 'Dag 1',
+  dayBadgeClass: '',
+  conditionalOn: () => profile.hasChildren && state.kidsWithYou === true && state.evacuatedFlood === true,
+  channels: {
+    news: [],
+    whatsapp: [],
+    nlalert: null,
+    radio: null
+  },
+  get narrative() {
+    const een = profile.childrenCount === 1;
+    if (state.kidsNoodpakket) {
+      return een ?
+        'Op de noodopvang klemt je kind zich aan je vast. Het laat je geen seconde los, zelfs niet als je even naar het toilet wilt. Het weet wel waar het is en dat jij er bent, maar het blijft zich aan je vasthouden.' :
+        'Op de noodopvang klemt de jongste zich aan je vast, met haar arm om je been en haar hoofd tegen je zij. De oudste blijft rustiger. Jullie hebben eerder over dit soort situaties gepraat, maar voor de jongste is dat nu even weg.';
+    } else {
+      return een ?
+        'Op de noodopvang klemt je kind zich aan je vast en wil het je geen seconde kwijt. Als je opstaat, staat het meteen ook op. Als je naar het toilet wilt, trekt het aan je mouw. Je begrijpt het, maar het maakt alles wel zwaarder.' :
+        'Op de noodopvang klemt de jongste zich aan je vast en wil ze je geen seconde kwijt. Als je opstaat, staat zij ook op. Ondertussen speelt de oudste al met andere kinderen, alsof er niets is gebeurd.';
+    }
+  },
+  choices: [{
+    text: () => profile.childrenCount === 1 ? '🫂 Je kind dicht bij je houden en samen blijven' : '🫂 De jongste dicht bij je houden en samen blijven',
+    consequence: () => profile.childrenCount === 1 ? 'Je laat het toe. Je kind blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.' : 'Je laat het toe. De jongste blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.',
+    stateChange: {
+      comfort: 1
+    }
+  }, {
+    text: () => profile.childrenCount === 1 ? '🗣️ Uitleggen dat het hier veilig is en dat je niet weggaat' : '🗣️ Jongste uitleggen dat het hier veilig is en dat je niet weggaat',
+    consequence: () => profile.childrenCount === 1 ? '"Ik ga niet weg. We zijn hier samen en het is veilig." Je kind kijkt je aan. Het gelooft het half. Maar de greep wordt iets losser.' : '"Ik ga niet weg. We zijn hier samen en het is veilig." De jongste kijkt je aan. Het gelooft het half. Maar de greep wordt iets losser.',
+    stateChange: {
+      comfort: 1
+    }
+  }, {
+    conditionalOn: () => !state.kidsNoodpakket && profile.childrenCount > 1,
+    text: '🎮 De oudste laten spelen, dat is zijn manier van verwerken',
+    consequence: 'Een vrijwilliger fluistert: "Laat maar. Spelen is hoe kinderen stress verwerken. Het is in orde." Je stopt met tegenhouden. Dat voelt beter.',
+    stateChange: {
+      comfort: 1
+    }
+  }, {
+    text: '🤝 Met andere ouders vergelijken hoe hun kinderen reageren',
+    consequence: '"Die van mij laat me geen seconde los," zeg jij. "Die van mij rent al een uur rond," zegt een vader. "Allebei normaal," zegt een vrijwilliger. Dat helpt.',
+    stateChange: {
+      comfort: 1
+    }
+  }, {
+    conditionalOn: () => state.kidsNoodpakket,
+    text: '📋 Samen terugkijken op wat goed ging met het plan',
+    consequence: () => profile.childrenCount === 1 ? '"Ik wist wat ik moest doen," zegt je kind. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.' : '"We wisten wat we moesten doen," zegt de oudste. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.',
+    stateChange: {
+      comfort: 1
+    }
+  }]
+}, {
   id: 'ov_6b',
   time: '21:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => state.wentUpstairs === true && state.evacuatedFlood === false,
@@ -956,7 +956,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_6d',
   time: '22:00',
-  date: 'Dinsdag 11 november 2027',
+  date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   conditionalOn: () => state.evacuatedFlood === true,
@@ -988,7 +988,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_7',
   time: '08:00',
-  date: 'Woensdag 12 november 2027',
+  date: 'Woensdag 10 november 2027',
   dayBadge: 'Dag 2',
   dayBadgeClass: 'blue',
   channels: {
@@ -1060,7 +1060,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_7b',
   time: '09:00',
-  date: 'Woensdag 12 november 2027',
+  date: 'Woensdag 10 november 2027',
   dayBadge: 'Dag 2',
   dayBadgeClass: 'blue',
   conditionalOn: () => state.contactedAns,
@@ -1088,7 +1088,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_7c',
   time: '09:30',
-  date: 'Woensdag 12 november 2027',
+  date: 'Woensdag 10 november 2027',
   dayBadge: 'Dag 2',
   dayBadgeClass: 'blue',
   conditionalOn: () => profile.hasChildren && state.kidsWithYou === true,
@@ -1133,7 +1133,7 @@ const scenes_overstroming = [{
 }, {
   id: 'ov_8',
   time: '10:30',
-  date: 'Woensdag 12 november 2027',
+  date: 'Woensdag 10 november 2027',
   dayBadge: 'Dag 2',
   dayBadgeClass: 'blue',
   channels: {
