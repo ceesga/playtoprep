@@ -174,9 +174,10 @@ const Ambience = {
   // Bepaalt op basis van het scène-ID welke ambient track geschikt is
   // en speelt die af, of stopt ambient audio als de scène er geen heeft.
   resumeForScene(sceneId) {
-    // scènes die beginnen met 'bf_' = bosbrand → vuur
+    // scènes die beginnen met 'bf_' = bosbrand → vuur (pas vanaf bf_2, niet in bf_0/bf_0b/bf_1)
     // scènes die beginnen met 'ov_' = overstroming → regen
-    const name = sceneId.startsWith('bf_') ? 'fire' :
+    const noFireYet = ['bf_0', 'bf_0b', 'bf_1'];
+    const name = (sceneId.startsWith('bf_') && !noFireYet.includes(sceneId)) ? 'fire' :
       sceneId.startsWith('ov_') ? 'rain' :
       null;
     if (name) this.play(name);

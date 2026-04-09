@@ -124,6 +124,7 @@ const scenes_nachtalarm = [
       {
         text: '🚪 Teruglopen en iedereen naar buiten sturen',
         consequence: 'Je draait je om, rent naar de slaapkamers, maakt iedereen wakker, en stuurt ze naar buiten. Onderweg trek je de woonkamerdeur dicht, zodat de rook zich minder snel verspreidt.',
+        cat: 'cat-social',
         stateChange: { warnedHousemates: true, didntUseWaterOnFire: true },
         conditionalOn: () => hasHousemates() && !state.warnedHousemates
       },
@@ -135,6 +136,41 @@ const scenes_nachtalarm = [
           ? 'Je trekt de deur dicht om de rook te remmen en gaat snel terug om de anderen naar buiten te krijgen.'
           : 'Je trekt de deur dicht om de rook te remmen en loopt direct naar buiten.',
         stateChange: { didntUseWaterOnFire: true }
+      }
+    ]
+  },
+
+  // ─── Scene 2b: Huisgenoten komen de gang op ──────────────────────────────
+  {
+    id: 'na_2b',
+    time: '02:20',
+    date: 'Dinsdag',
+    dayBadge: 'Nacht',
+    dayBadgeClass: 'blue',
+    conditionalOn: () => hasHousemates() && !state.warnedHousemates,
+    channels: {
+      news: [],
+      whatsapp: [],
+      nlalert: null,
+      radio: null
+    },
+    narrative: 'Slaperig komen de anderen hun kamer uit. Ze kijken je vragend aan: "Wat is er aan de hand?" De rooklucht dringt nu ook de gang in. Je ziet ze pas echt wakker worden als ze het ruiken.',
+    choices: [
+      {
+        text: '🚪 Iedereen direct naar buiten sturen',
+        consequence: 'Je stuurt iedereen snel naar de voordeur. Verward maar gehoorzaam lopen ze naar buiten. Je gaat als laatste en trekt de deur achter je dicht.',
+        cat: 'cat-social',
+        stateChange: { warnedHousemates: true, evacuatedFire: true }
+      },
+      {
+        text: () => petsCount > 1
+          ? '🐾 Je huisdieren roepen en meenemen'
+          : '🐾 Je huisdier roepen en meenemen',
+        consequence: () => petsCount > 1
+          ? 'Je roept je huisdieren. De dieren die vlak bij de deur zitten, neem je meteen mee naar buiten. De anderen lopen met jou mee.'
+          : 'Je roept je huisdier. Het komt verschrikt tevoorschijn vanonder de kast. Je neemt het mee naar buiten. De anderen lopen met jou mee.',
+        stateChange: { evacuatedFire: true, tookPets: true, warnedHousemates: true },
+        conditionalOn: () => profile.hasPets
       }
     ]
   },
@@ -188,19 +224,8 @@ const scenes_nachtalarm = [
         conditionalOn: () => profile.hasBOBBag === 'ja'
       },
       {
-        text: () => petsCount > 1
-          ? '🐾 Je huisdieren roepen en meenemen'
-          : '🐾 Je huisdier roepen en meenemen',
-        consequence: () => petsCount > 1
-          ? 'Je roept je huisdieren. De dieren die vlak bij de deur zitten, neem je meteen mee naar buiten.'
-          : 'Je roept je huisdier. Het komt verschrikt tevoorschijn vanonder de kast. Je neemt het meteen mee naar buiten',
-        stateChange: { evacuatedFire: true, tookPets: true },
-        conditionalOn: () => profile.hasPets
-      },
-      {
         text: () => {
           if (profile.hasMobilityImpaired && !profile.hasChildren) return '🦽 Iemand direct helpen om naar buiten te gaan';
-          if (childrenCount === 1) return '🧒 Je kind mee naar buiten nemen';
           if (childrenCount > 1) return '🧒 De kinderen direct helpen om naar buiten te gaan';
           return '🗣️ Huisgenoten wakker maken en naar buiten sturen';
         },
@@ -275,12 +300,6 @@ const scenes_nachtalarm = [
         cat: 'cat-social',
         stateChange: { stayedOutside: true, knowsNeighbors: true }
       },
-      {
-        text: '🚪 Snel naar binnen gaan om iets te halen',
-        consequence: 'Je stapt toch nog naar binnen, maar de rook is veel dikker dan net. Je moet meteen hoestend terug. Dit was te gevaarlijk.',
-        cat: 'cat-risk',
-        stateChange: { health: -2 }
-      }
     ]
   },
 

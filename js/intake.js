@@ -582,8 +582,19 @@ function renderEnvironmentStep() {
 */
 function selectEnvironment(val) {
   const idx = selectedEnvironment.indexOf(val);
-  if (idx > -1) selectedEnvironment.splice(idx, 1); // Al geselecteerd: verwijder
-  else selectedEnvironment.push(val);                // Nog niet geselecteerd: voeg toe
+  if (idx > -1) {
+    selectedEnvironment.splice(idx, 1); // Al geselecteerd: verwijder
+  } else {
+    // 'stedelijk' en 'buitengebied' sluiten elkaar uit
+    if (val === 'stedelijk') {
+      const buIdx = selectedEnvironment.indexOf('buitengebied');
+      if (buIdx > -1) selectedEnvironment.splice(buIdx, 1);
+    } else if (val === 'buitengebied') {
+      const stIdx = selectedEnvironment.indexOf('stedelijk');
+      if (stIdx > -1) selectedEnvironment.splice(stIdx, 1);
+    }
+    selectedEnvironment.push(val);
+  }
   document.getElementById('intake-next').disabled = selectedEnvironment.length === 0;
   renderEnvironmentStep(); // Herbouw de stap om de stage-overlay te verversen
 }

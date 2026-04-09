@@ -110,7 +110,9 @@ Elke scenario heeft een eigen `sceneDecay_stroom` etc. object in `data-state.js`
 
 ### Keuze-categorieën (kleuren)
 
-De kleur van een keuzeknop wordt bepaald door het emoji-prefix in `text`, via `CHOICE_ICON_MAP` in `engine.js`. Volgorde in de UI is: action → social → supply → info/risk.
+De kleur én het Lucide-icon van een keuzeknop worden bepaald door het emoji-prefix in `text`, via `CHOICE_ICON_MAP` in `engine.js`. Volgorde in de UI is: action → social → supply → info/risk.
+
+**Belangrijk**: het emoji-prefix in `text` is geen decoratie maar een functionele sleutel. De engine leest het prefix, zoekt het op in `CHOICE_ICON_MAP`, haalt daaruit de Lucide-iconnaam en de kleurcategorie, en verwijdert het emoji-prefix daarna uit de zichtbare tekst. Zonder dit prefix verschijnt er géén icon en géén kleur op de keuzeknop. Verwijder deze prefixen dus nooit.
 
 | Klasse | Kleur | Gebruik |
 |---|---|---|
@@ -125,7 +127,11 @@ De kleur van een keuzeknop wordt bepaald door het emoji-prefix in `text`, via `C
 ### Icons
 Icons worden geladen uit `icons-data.js` als inline SVG. Wil je een nieuw icon toevoegen? Voeg het SVG-bestand toe aan `/icons/` én voeg de data-entry toe aan `icons-data.js`. Gebruik geen Lucide CDN.
 
-**Nieuwe standaard voor scenario's:** gebruik in zichtbare scenarioteksten en keuze-labels geen emoji's meer. Gebruik in plaats daarvan Lucide-icons die lokaal zijn gedownload en toegevoegd aan `/icons/` en `icons-data.js`. Bestaande emoji-prefixen in oudere scenario's zijn legacy en moeten bij nieuwe aanpassingen bij voorkeur niet worden uitgebreid.
+**Emoji's zijn verboden** in narratives, consequences, HTML en code-commentaar. De enige twee uitzonderingen:
+1. **Emoji-prefixen in `text:` van keuzes** — functioneel vereist als sleutel voor `CHOICE_ICON_MAP` (zie boven). Verwijder ze nooit.
+2. **`msg`-velden in WhatsApp-berichten van personen** — emoji's zijn daar toegestaan omdat dit realistisch chatgedrag nabootst.
+
+Ontbreekt een icon voor een nieuw keuze-prefix? Voeg eerst het emoji-prefix toe aan `CHOICE_ICON_MAP` in `engine.js` (met bijbehorend Lucide-icon en categorie), download het SVG van lucide.dev naar `/icons/` en voeg het toe aan `icons-data.js`.
 
 ### Opslaan/laden
 LocalStorage, sleutel: `ptp_savegame`. Functies: `saveGame()`, `loadGame()`, `clearSave()`.
@@ -150,7 +156,7 @@ Er is geen auto-advance timer. Verwijder of voeg deze niet toe.
 - Maak nooit een nieuwe file aan als het ook in een bestaande file kan.
 - Gebruik altijd B1-Nederlands in alle teksten en keuzes (zie STIJLGIDS.md).
 - Noem WhatsApp of WhatsAppjes in user-facing tekst altijd `bericht`, `berichten` of `berichtjes`. Laat technische keys zoals `whatsapp` ongemoeid.
-- Gebruik in scenario's geen nieuwe emoji's in zichtbare tekst of keuzes. Gebruik Lucide-icons uit de lokale `/icons/`-map; download ontbrekende iconen eerst en voeg ze toe aan `icons-data.js`.
+- Gebruik **nergens** emoji's — niet in teksten, keuzes, HTML of commentaar. Gebruik altijd Lucide-icons uit de lokale `/icons/`-map. Ontbreekt een icon? Download het SVG van lucide.dev, sla op in `/icons/` en voeg toe aan `icons-data.js`. Uitzondering: in `msg`-velden van WhatsApp-berichten van personen zijn emoji's toegestaan.
 - Verander nooit de script-laadvolgorde zonder expliciete toestemming.
 - Voeg geen dark-mode CSS toe (zie gotcha #1).
 - Gebruik `conditionalOn` consequent voor keuzes die niet voor alle spelers relevant zijn (profiel én state).
@@ -281,7 +287,7 @@ Of open `index.html` direct in de browser (let op: audio werkt beter via HTTP).
 
 6. **Scenario-sleutel 'thuis_komen' heeft commute-vragen** — Dit scenario heeft een extra scherm (`s-commute`) met eigen vragen over reiswijze en -afstand vóór het eigenlijke scenario start.
 
-7. **Emoji's in scenario's zijn legacy** — Oudere scenario's gebruiken nog emoji-prefixen in keuze-teksten voor icon-mapping. Voeg dit patroon niet verder uit. Nieuwe of aangepaste scenario-UI moet uitgaan van lokale Lucide-icons in plaats van zichtbare emoji's.
+7. **Emoji-regels** — Emoji's zijn verboden in narratives, consequences, HTML en commentaar. Twee uitzonderingen: (1) emoji-prefixen in `text:` van keuzes zijn functioneel vereist — ze zijn de sleutel waarmee de engine het Lucide-icon en de kleurcategorie opzoekt in `CHOICE_ICON_MAP`; verwijder ze nooit. (2) `msg`-velden van WhatsApp-berichten van personen mogen emoji's bevatten. Nieuw keuze-prefix nodig? Eerst toevoegen aan `CHOICE_ICON_MAP` in `engine.js`, dan SVG downloaden van lucide.dev naar `/icons/`, dan toevoegen aan `icons-data.js`.
 
 8. **Canvas portrait snapshot** — Na de intake wordt een canvas-snapshot opgeslagen in `portraitSnapshot`. De popup gebruikt dit als fallback bij het tonen van het huishouden.
 
@@ -291,7 +297,7 @@ Of open `index.html` direct in de browser (let op: audio werkt beter via HTTP).
 
 10. **WhatsApp-berichten gebruiken `msg`, niet `text`** — Het veld in whatsapp-objecten heet `msg`. Gebruik `get channels()` als berichten conditioneel moeten zijn op profiel of state.
 
-11. **`phoneBattery` instellen op een vaste waarde** — `phoneBattery` wordt door de engine als delta toegepast. Om naar een exact percentage te zetten gebruik je een functie: `stateChange: () => ({ phoneBattery: 60 - state.phoneBattery })`.
+11. **`phoneBattery` is altijd een delta** — `phoneBattery` wordt door de engine als delta toegepast: `phoneBattery: 20` telt 20 op bij de huidige waarde. Gebruik dit voor opladen (bijv. +20, +30). Wil je toch naar een exact percentage (zelden nodig), gebruik dan een functie: `stateChange: () => ({ phoneBattery: 60 - state.phoneBattery })`.
 
 12. **Howl-instanties zijn lazy** — `_nlAlertSound`, `rain` en `fire` worden pas aangemaakt bij eerste gebruik, niet bij paginaladen. Zo worden AudioContext-waarschuwingen voorkomen. Houd dit patroon aan bij nieuwe geluiden.
 

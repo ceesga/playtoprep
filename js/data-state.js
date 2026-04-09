@@ -383,7 +383,7 @@ const ENVIRONMENT_TYPES = [{
   thumb: `<img src="afbeelding/avatars/omgeving/schaap.png" alt="">`
 }, {
   val: 'stedelijk',
-  label: 'Stedelijk',
+  label: 'Bebouwde kom',
   thumb: `<img src="afbeelding/avatars/omgeving/stadsgebouw.png" alt="">`
 }, ];
 

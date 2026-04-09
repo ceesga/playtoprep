@@ -136,8 +136,13 @@ const sceneVisuals = {
   // Bosbrand — scènes voor het bosbrандscenario
   bf_0: {
     seed: '',
-    label: 'Dag 0 · 22:00',
-    title: 'De avond ervoor'
+    label: 'Dag 0 · 16:00',
+    title: 'De middag ervoor'
+  },
+  bf_0b: {
+    seed: '',
+    label: 'Dag 1 · 08:30',
+    title: 'Rooklucht in de ochtend'
   },
   bf_1: {
     seed: '',
@@ -375,6 +380,7 @@ const sceneVisuals = {
   na_0: { seed: '', label: 'Nacht · 02:17', title: 'De rookmelder gaat af' },
   na_1: { seed: '', label: 'Nacht · 02:18', title: 'Rook op de gang' },
   na_2: { seed: '', label: 'Nacht · 02:19', title: 'Brand in de woonkamer' },
+  na_2b: { seed: '', label: 'Nacht · 02:20', title: 'Huisgenoten op de gang' },
   na_3: { seed: '', label: 'Nacht · 02:20', title: 'Naar buiten' },
   na_4: { seed: '', label: 'Nacht · 02:22', title: 'Buiten, wacht op brandweer' },
   na_5: { seed: '', label: 'Nacht · 02:45', title: 'Brandweer heeft controle' }
@@ -489,6 +495,7 @@ function renderSceneVisual(scene) {
   // Update page background per scene
   const bodyBgMap = {
     bf_0: 'afbeelding/bosbrand/geen_bosbrand.png',
+    bf_0b: 'afbeelding/bosbrand/geen_bosbrand.png',
     bf_1: 'afbeelding/bosbrand/bosbrand_stadium1.jpg',
     bf_2: 'afbeelding/bosbrand/bosbrand_stadium1.jpg',
     bf_2b: 'afbeelding/bosbrand/bosbrand_stadium2.png',
@@ -573,6 +580,14 @@ function renderSceneVisual(scene) {
     tk_4e: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
     tk_5: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
     tk_5b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+    // Nachtalarm
+    na_0: 'afbeelding/brandalarm/Rook_hal.png',
+    na_1: 'afbeelding/brandalarm/Rook_hal.png',
+    na_2: 'afbeelding/brandalarm/rook_woonkamer.png',
+    na_2b: 'afbeelding/brandalarm/Rook_hal.png',
+    na_3: 'afbeelding/brandalarm/Rook_uitgang.png',
+    na_4: 'afbeelding/brandalarm/Rook_uitgang.png',
+    na_5: 'afbeelding/brandalarm/Rook_uitgang.png',
   };
   // Gebruik de standaard achtergrond als er geen specifieke afbeelding is voor deze scène
   const bgImg = bodyBgMap[scene.id] || 'afbeelding/algemeen/huis_normaal.png';
@@ -581,7 +596,6 @@ function renderSceneVisual(scene) {
   // Situatie-overlays — opacity per scène (0 = uit)
   // Hoe verder de brand/overstroming vordert, hoe hoger de opacity van de overlay
   const fireOpacity = {
-    bf_1: 0.20,
     bf_2: 0.30,
     bf_2b: 0.35,
     bf_3: 0.40,
@@ -628,9 +642,7 @@ function renderSceneVisual(scene) {
   applyOverlay(document.getElementById('rain-overlay'), rainOpacity[scene.id] || 0);
 
   // Brightness overlay based on time of day and scenario
-  const darknessOverride = {
-    bf_0: 0.6 // zomeravond 22:00 — nog schemer, niet nacht
-  };
+  const darknessOverride = {};
   const darkness = document.getElementById('bg-darkness');
   if (darkness) {
     // Haal het uur op uit het tijdstip van de scène (standaard: 12:00 = overdag)
@@ -826,6 +838,7 @@ function startScenario(scenarioId) {
   // Reset all scenario-specific state flags
   state.evacuated = false;
   state.packedBag = false;
+  state.madeFirebreak = false;
   state.bfTravelMode = '';
   state.returnedHome = false;
   state.tookPets = false;
@@ -1674,6 +1687,18 @@ const CHOICE_ICON_MAP = {
   '🏠': {
     icon: 'house',
     cat: 'cat-action'
+  },
+  '🛤️': {
+    icon: 'footprints',
+    cat: 'cat-action'
+  },
+  '🔀': {
+    icon: 'shuffle',
+    cat: 'cat-action'
+  },
+  '📢': {
+    icon: 'megaphone',
+    cat: 'cat-social'
   },
   '🏡': {
     icon: 'house',

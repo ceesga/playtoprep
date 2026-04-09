@@ -323,7 +323,7 @@ const scenes_thuis_komen = [{
   }]
 }, {
   id: 'tk_4c',
-  time: '13:15',
+  time: '14:15',
   date: 'Donderdag 15 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
@@ -336,19 +336,21 @@ const scenes_thuis_komen = [{
   },
   get narrative() {
     return profile.commuteDistance === 'near' ?
-      'Er rijdt nog een bus, maar de chauffeur waarschuwt meteen dat hij niet weet hoe ver hij nog komt. Het is druk en de route kan tussendoor veranderen. Je stapt in en hoopt dat je dicht genoeg bij huis uitkomt.' :
-      'De bus rijdt nog, maar de halte stroomt vol. De chauffeur waarschuwt dat de rit kan worden ingekort. Sommige bussen rijden al niet meer. Je stapt in en kijkt hoe ver je komt.';
+      'Na een uur rijden stopt de bus op een busstation halverwege de route. De chauffeur omroept dat hij hier eindigt. Hij kan niet verder vanwege de storing. Je staat op een onbekend busstation, nog lang niet thuis.' :
+      'Na een uur rijden stopt de bus op een busstation. De chauffeur omroept dat hij hier eindigt. Hij kan niet verder vanwege de storing. Je staat op een busstation halverwege, met nog een flink stuk te gaan.';
   },
   choices: [{
-    text: '🚌 In de bus blijven zitten',
+    text: '🚌 Een volgende bus pakken',
     consequence: () => profile.commuteDistance === 'near' ?
-      'Je blijft zitten. De bus rijdt zijn route af. Uiteindelijk stap je uit bij de eindhalte, nog een kwartier lopen van huis. Beter dan niets.' :
-      'Je blijft zitten. De bus brengt je een flink stuk dichter bij huis. De laatste tien kilometer loop je alsnog. Tegen de avond kom je thuis.',
+      'Je koopt een nieuw kaartje voor €10 en wacht op de volgende bus. Die rijdt een stuk verder, maar eindigt ook voor jouw halte. Je stapt uit en loopt de rest.' :
+      'Je koopt een nieuw kaartje voor €10 en wacht op de volgende bus. Die rijdt je een flink stuk verder. De laatste kilometers loop je alsnog. Tegen de avond kom je thuis.',
     stateChange: () => profile.commuteDistance === 'near' ? {
       travelMode: 'walking',
-      reachedHome: false
+      reachedHome: false,
+      cash: -10
     } : {
-      reachedHome: true
+      reachedHome: true,
+      cash: -10
     }
   }, {
     text: '🚶 Te voet verder',

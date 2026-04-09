@@ -123,7 +123,7 @@ function showReport() {
       }] : []),
       // Voeg kinderenbadge alleen toe als het profiel kinderen bevat
       ...(profile.hasChildren ? [{
-        key: 'kidsEvacuated',
+        key: 'kidsWithYou',
         label: 'Kinderen veilig gesteld',
         labelMissing: 'Kinderen niet veilig gesteld',
         icon: '👶'

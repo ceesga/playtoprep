@@ -94,12 +94,20 @@ const scenes_overstroming = [{
     return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. Het klinkt zwaarder dan normaal, aanhoudender.' + gisteren + tasNietKlaar + kinderen + huisdier;
   },
   choices: [{
+    conditionalOn: () => !state.packedBag,
     text: '🎒 Direct beginnen met voorbereiding',
     consequence: 'Je begint alvast: documenten in een waterdichte zak, medicijnen, kleding. Je zet je schoenen bij de deur. Als het bevel komt ben je klaar.',
     stateChange: {
       awarenessLevel: 1,
       packedBag: true
     }
+  }, {
+    conditionalOn: () => profile.hasPets && !state.tookPets,
+    text: () => petsCount > 1 ? '🐾 Transportmanden alvast bij de deur zetten' : '🐾 Transportmand alvast bij de deur zetten',
+    consequence: () => petsCount > 1
+      ? 'Je zet de transportmanden klaar bij de deur. Als het bevel morgen komt, hoef je de dieren alleen nog erin te zetten en te gaan.'
+      : 'Je zet de transportmand klaar bij de deur. Als het bevel komt, hoef je je huisdier alleen nog erin te zetten en te gaan.',
+    stateChange: { tookPets: true }
   }, {
     text: '🙈 Afwachten, het regelt zichzelf wel',
     consequence: 'Je gaat door met je ochtendroutine. Buiten stijgt het water al licht. Je merkt het pas als je naar de brievenbus loopt en natte voeten krijgt.',
@@ -769,16 +777,11 @@ const scenes_overstroming = [{
   choices: [{
     text: '📱 Familie bellen zodat ze weten dat je veilig bent',
     consequence: () => state.phoneBattery > 0 ? 'Je zoekt een hoek met een stopcontact en laadt je telefoon op terwijl je belt. Aan de andere kant hoor je vooral opluchting. Ze wisten niet waar je was.' : 'Je telefoon is leeg. Je vraagt of je iemands telefoon even mag lenen om een bericht te sturen. Een vrouw naast je helpt meteen.',
-    stateChange: {
-      phoneBattery: 20
-    }
+    stateChange: { phoneBattery: 20 }
   }, {
     text: '🛏️ Een slaapplek regelen voordat alles vol is',
     consequence: 'Je loopt de hal in en vindt een rustig hoekje. Je legt er je jas neer. Later blijkt dat slim, want een uur later zijn alle fatsoenlijke plekken bezet.',
-    stateChange: {
-      comfort: 1,
-      phoneBattery: 20
-    }
+    stateChange: { comfort: 1, phoneBattery: 20 }
   }, {
     text: '🍲 Warm eten halen en even bijkomen',
     consequence: 'Je schuift aan bij de rij voor eten. Soep en brood. Je gaat zitten. Het is het eerste moment vandaag dat je stilzit. Dat voelt vreemd en goed tegelijk.',

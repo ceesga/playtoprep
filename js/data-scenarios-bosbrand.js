@@ -7,30 +7,25 @@
 // ─── BOSBRAND SCENARIO ────────────────────────────────────────────────────────
 const scenes_natuurbrand = [{
   id: 'bf_0',
-  time: '22:00',
+  time: '16:00',
   date: 'Vrijdag 13 augustus 2027',
   dayBadge: 'Dag 0',
   dayBadgeClass: '',
   channels: {
     news: [{
-      time: '21:30',
-      headline: 'Extreem brandgevaar verwacht zaterdag, meerdere natuurbranden al actief',
-      body: 'Het KNMI waarschuwt voor extreem droog en warm weer met harde wind morgen. In de regio zijn al twee kleine bosbranden gemeld. De brandweer staat paraat.'
+      time: '15:30',
+      headline: 'KNMI: verhoogd risico op natuurbranden verwacht zaterdag',
+      body: 'Het KNMI waarschuwt voor droog en winderig weer morgen. De bodem is na weken zonder regen erg droog. In de regio zijn al twee kleine bosbranden gemeld. De brandweer staat paraat.'
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Radio 1: Het weerbericht voor morgen: temperaturen tot 38 graden, windkracht 6 uit het oosten, luchtvochtigheid extreem laag. Brandweer waarschuwt voor verhoogd risico op natuurbranden in de regio.'
+    radio: 'Radio 1: Het weerbericht voor morgen: droog en winderig, windkracht 6 uit het oosten, luchtvochtigheid laag. Brandweer waarschuwt voor verhoogd risico op natuurbranden in de regio.'
   },
   get narrative() {
     const natuur = profile.location.includes('buitengebied') || profile.location.includes('bos')
-      ? ' Je woont midden in de natuur. Normaal is dat prachtig. Nu voelt het anders.'
+      ? ' Je woont vlak bij de natuur. Na weken zonder regen staat de begroeiing er dor bij.'
       : '';
-    const kinderen = profile.hasChildren
-      ? (profile.childrenCount === 1
-        ? ' Je kind ligt al in bed, het is laat. Je wil het niet onnodig wakker maken.'
-        : ' De kinderen liggen al in bed. Je wil ze niet onnodig wakker maken.')
-      : '';
-    return 'Het is laat op vrijdagavond. Je woont niet ver van mooie natuur — normaal een prachtig gezicht, al staat de natuur er nu enigszins dor bij na weken van droogte en hitte. De lucht is warm, zelfs nu het donker is, en er staat een droge oostenwind. Buiten ruikt het vaag naar stof en droog gras. Verder niks bijzonders.' + natuur + kinderen;
+    return 'Het is een gewone vrijdagmiddag. De tuin staat er wat dor bij na een lange periode zonder regen, maar verder is er weinig bijzonders. Het nieuws meldt dat morgen droog en winderig wordt, met een verhoogd risico op natuurbranden in de regio.' + natuur;
   },
   choices: [{
     text: '🎒 Noodtas klaarzetten voor het geval dat',
@@ -41,21 +36,47 @@ const scenes_natuurbrand = [{
     }
   }, {
     text: '📰 Het nieuws extra in de gaten houden',
-    consequence: 'Je zet een nieuwsmelding aan voor de regio en checkt voor het slapen nog een keer het laatste bericht. Als het morgen erger wordt, ben je alert.',
+    consequence: 'Je zet een nieuwsmelding aan voor de regio en checkt voor het slapengaan nog een keer het laatste bericht. Als het morgen erger wordt, ben je alert.',
     stateChange: {
       awarenessLevel: 1
     }
   }, {
+    text: '🌿 Brandbare materialen rondom het huis weghalen',
+    consequence: 'Je haalt droge bladhopen, tuinstoelen en andere brandbare spullen weg bij de buitenmuren en schutting. Het kost een half uur zweet, maar je woning is nu een stuk minder kwetsbaar als het vuur dichtbij komt.',
+    cat: 'cat-action',
+    stateChange: { madeFirebreak: true, awarenessLevel: 1 }
+  }, {
     text: '🛌 Lekker slapen, morgen zien we wel',
     consequence: 'Je legt de telefoon neer. Het weerbericht ziet er niet best uit, maar zo erg zal het toch niet worden. Je slaapt.',
     stateChange: {}
+  }]
+}, {
+  id: 'bf_0b',
+  time: '08:30',
+  date: 'Zaterdag 14 augustus 2027',
+  dayBadge: 'Dag 1',
+  dayBadgeClass: '',
+  channels: {
+    news: [],
+    whatsapp: [],
+    nlalert: null,
+    radio: null
+  },
+  narrative: 'Je bent \'s ochtends bezig met van alles — ontbijt, de was, iets in de tuin — als je opeens een vage rooklucht opmerkt. Zwak, maar onmiskenbaar. Je stopt even en snuift de lucht op. Verbrand hout? Of iets anders? Je vraagt je af waar die geur vandaan komt.',
+  choices: [{
+    text: '🔍 Naar buiten gaan om te kijken waar de geur vandaan komt',
+    consequence: 'Je stapt de deur uit en kijkt om je heen. De lucht hangt stil en warm. In de richting van het bos zie je heel vaag een lichte waas boven de boomtoppen. Niet veel. Maar genoeg om onrustig van te worden.',
+    cat: 'cat-action',
+    stateChange: { awarenessLevel: 1 }
   }, {
-    conditionalOn: () => profile.hasPets,
-    text: () => petsCount > 1 ? '🐾 Transportmanden alvast bij de voordeur zetten' : '🐾 Transportmand alvast bij de voordeur zetten',
-    consequence: () => petsCount > 1
-      ? 'Je zet de transportmanden klaar bij de deur. Als het morgen ernst wordt, ben je klaar om de dieren snel mee te nemen.'
-      : 'Je zet de transportmand klaar bij de deur. Als het morgen ernst wordt, ben je klaar om je huisdier snel mee te nemen.',
-    stateChange: { tookPets: true }
+    text: '📱 Op de telefoon kijken of er al iets gemeld is',
+    consequence: 'Je scrolt door het nieuws. Nog niets in de buurt, maar er is wel een KNMI-waarschuwing voor extreme droogte en hitte. Je besluit de situatie in de gaten te houden.',
+    cat: 'cat-info',
+    stateChange: { awarenessLevel: 1 }
+  }, {
+    text: '🙈 Het negeren, het zal wel meevallen',
+    consequence: 'Je ruikt het nog even, en gaat dan verder met wat je aan het doen was. Misschien is het van ver. Misschien niks.',
+    stateChange: {}
   }]
 }, {
   id: 'bf_1',
@@ -64,11 +85,7 @@ const scenes_natuurbrand = [{
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
   channels: {
-    news: [{
-      time: '08:45',
-      headline: 'Bosbrand uitgebroken in de omgeving, brandweer ter plaatse',
-      body: 'De brandweer bestrijdt een grote natuurbrand in het bosgebied. Door de droogte en de wind verspreidt de brand zich snel. Omwonenden wordt gevraagd deuren en ramen gesloten te houden.'
-    }],
+    news: [],
     whatsapp: [{
       from: 'Buurman Kevin',
       msg: 'Hé, zie jij die rookpluim ook? Moeten we ons zorgen maken?',
@@ -76,15 +93,18 @@ const scenes_natuurbrand = [{
       outgoing: false
     }],
     nlalert: null,
-    radio: 'Radio 1: In de omgeving is een grote natuurbrand. Er is veel rook. De brandweer is aanwezig. Bewoners in de buurt krijgen het advies om ramen en deuren te sluiten. Verdere updates volgen.'
+    radio: null
   },
   get narrative() {
     const kinderen = profile.hasChildren
       ? (profile.childrenCount === 1
-        ? ' Je kind is al op. Je houdt het voorlopig maar binnen.'
-        : ' De kinderen zijn al op. Je houdt ze voorlopig maar binnen.')
+        ? ' Je kind is al op.'
+        : ' De kinderen zijn al op.')
       : '';
-    return 'Je staat buiten koffie te drinken op een warme augustusochtend. In de verte zie je een dikke, grijze rookpluim opstijgen boven de boomtoppen. Het ruikt vaag naar verbrand hout.' + (state.awarenessLevel > 0 ? ' Die rookpluim verbaast je niet eens meer; vannacht hield je er al een beetje rekening mee.' : '') + kinderen;
+    const bewust = state.awarenessLevel > 0
+      ? ' Die rooklucht van zo-even was dus geen verbeelding.'
+      : ' Dat verklaart de rooklucht van zo-even.';
+    return 'Je staat buiten als je het ziet: in de verte stijgt een dikke, grijze rookpluim op boven de boomtoppen.' + bewust + kinderen;
   },
   choices: [{
     text: '📱 Nieuws checken, wat is er aan de hand?',
@@ -109,23 +129,12 @@ const scenes_natuurbrand = [{
       headline: 'NL-Alert: natuurbrand in de omgeving, mogelijk evacuatie nabijgelegen wijken',
       body: 'De brandweer heeft de brand nog niet onder controle. Er wordt rekening gehouden met een mogelijk evacuatiebevel voor nabijgelegen wijken. Bewoners worden opgeroepen alert te zijn.'
     }],
-    get whatsapp() {
-      const msgs = [{
-        from: 'Zus Lisa',
-        msg: 'Jullie wonen toch bij het bos? Gaat alles goed? Ik zie het op het nieuws.',
-        time: '10:20',
-        outgoing: false
-      }];
-      if (profile.hasChildren) {
-        msgs.push({
-          from: 'School De Klimop',
-          msg: 'Vanwege de bosbrand in uw omgeving sluiten wij vandaag de deuren. Wij vragen ouders hun kind zo snel mogelijk op te halen. Wacht u op ons: wij blijven bereikbaar zolang het veilig is.',
-          time: '10:25',
-          outgoing: false
-        });
-      }
-      return msgs;
-    },
+    whatsapp: [{
+      from: 'Zus Lisa',
+      msg: 'Jullie wonen toch bij het bos? Gaat alles goed? Ik zie het op het nieuws.',
+      time: '10:20',
+      outgoing: false
+    }],
     nlalert: 'NL-Alert\n14 augustus 2027 – 10:08\n\nBosbrand in uw omgeving. Mogelijk evacuatiebevel. Let goed op. Houd deuren en ramen gesloten. Bereid je voor op een evacuatie. Update volgt.',
     radio: 'Radio 1: De brandweer heeft de natuurbrand nog niet onder controle. De wind is gedraaid. Mogelijk moeten omliggende wijken worden geëvacueerd. Leg een tas klaar met medicijnen, documenten en kleding voor twee dagen.'
   },
@@ -136,10 +145,6 @@ const scenes_natuurbrand = [{
     stateChange: {
       packedBag: true
     }
-  }, {
-    text: '⏳ Afwachten, het is nog geen officieel bevel',
-    consequence: 'Je wacht af. Het is nog niet duidelijk of jouw wijk er echt bij zit. Maar je verliest er wel kostbare tijd mee.',
-    stateChange: {}
   }, {
     text: '📱 Familie en vrienden informeren waar je bent',
     consequence: 'Je stuurt berichten naar familie. Ze weten nu waar je bent. Als communicatie later uitvalt, is dat goud waard.',
@@ -181,10 +186,11 @@ const scenes_natuurbrand = [{
   choices: [{
     text: '🚗 Nu zelf vertrekken, niet wachten op officieel bevel',
     consequence: 'Je besluit meteen te gaan. De weg is nog vrij. Je bent weg voordat de files ontstaan.',
-    stateChange: {
+    stateChange: () => ({
       evacuated: true,
-      evacuatedEarly: true
-    }
+      evacuatedEarly: true,
+      ...(profile.hasChildren ? { kidsWithYou: true, kidsKeptHome: true } : {})
+    })
   }, {
     text: '📻 Wachten op officieel bericht via radio',
     consequence: 'Je zet de radio op volle sterkte. Een minuut later: "Evacueert u direct." Je pakt alles in twee minuten bij elkaar.',
@@ -216,19 +222,19 @@ const scenes_natuurbrand = [{
   get narrative() {
     const een = profile.childrenCount === 1;
     return een ?
-      'De lucht is al een tijd oranje. Je kind staat buiten stil bij het hek en kijkt naar de rookwolk aan de horizon. Het speelt niet meer. Het voelt dat er iets mis is.' :
+      'De lucht is al een tijd oranje. Je kind staat buiten stil bij het hek en kijkt naar de rookwolk aan de horizon. Je kind speelt niet meer en voelt dat er iets mis is.' :
       'De lucht is al een tijd oranje. De kinderen staan buiten stil bij het hek en kijken naar de rookwolk aan de horizon. Ze spelen niet meer en zeggen niets. Ze voelen dat er iets mis is.';
   },
   choices: [{
     text: () => profile.childrenCount === 1 ? '📢 Naar buiten en je kind meteen naar binnen roepen' : '📢 Naar buiten en de kinderen meteen naar binnen roepen',
-    consequence: () => profile.childrenCount === 1 ? 'Je roept vanuit de deur. Je kind draait zich om en komt meteen naar je toe. Het stelt geen vragen. Het voelt zelf ook dat dit serieus is.' : 'Je roept vanuit de deur. De kinderen draaien zich om en komen meteen naar je toe. Ze stellen geen vragen. Ze voelen zelf ook dat dit serieus is.',
+    consequence: () => profile.childrenCount === 1 ? 'Je roept vanuit de deur. Je kind draait zich om en komt meteen naar je toe. Je kind stelt geen vragen en voelt zelf ook dat dit serieus is.' : 'Je roept vanuit de deur. De kinderen draaien zich om en komen meteen naar je toe. Ze stellen geen vragen. Ze voelen zelf ook dat dit serieus is.',
     stateChange: {
       kidsWithYou: true,
       kidsKeptHome: true
     }
   }, {
     text: () => profile.childrenCount === 1 ? '🚶 Naar buiten lopen en even naast je kind gaan staan' : '🚶 Naar buiten lopen en even naast de kinderen gaan staan',
-    consequence: () => profile.childrenCount === 1 ? 'Je loopt de tuin in en gaat naast je kind staan. Jullie kijken even samen naar de horizon. Daarna zeg je rustig dat jullie naar binnen gaan. Het loopt zonder gedoe met je mee.' : 'Je loopt de tuin in en gaat naast de kinderen staan. Jullie kijken even samen naar de horizon. Daarna zeg je rustig dat jullie naar binnen gaan. Ze lopen zonder gedoe met je mee.',
+    consequence: () => profile.childrenCount === 1 ? 'Je loopt de tuin in en gaat naast je kind staan. Jullie kijken even samen naar de horizon. Daarna zeg je rustig dat jullie naar binnen gaan. Je kind loopt zonder gedoe met je mee.' : 'Je loopt de tuin in en gaat naast de kinderen staan. Jullie kijken even samen naar de horizon. Daarna zeg je rustig dat jullie naar binnen gaan. Ze lopen zonder gedoe met je mee.',
     stateChange: {
       kidsWithYou: true,
       kidsKeptHome: true,
@@ -236,7 +242,7 @@ const scenes_natuurbrand = [{
     }
   }, {
     text: () => profile.childrenCount === 1 ? '⏳ Je kind nog even laten staan terwijl jij doorgaat' : '⏳ De kinderen nog even laten staan terwijl jij doorgaat',
-    consequence: () => profile.childrenCount === 1 ? 'Je laat je kind nog even bij het hek staan en gaat verder met voorbereiden. Even later komt het zelf naar binnen, stiller dan normaal. Je weet niet hoe lang het daar al zo stond.' : 'Je laat de kinderen nog even bij het hek staan en gaat verder met voorbereiden. Even later komen ze zelf naar binnen, stiller dan normaal. Je weet niet hoe lang ze daar al zo stonden.',
+    consequence: () => profile.childrenCount === 1 ? 'Je laat je kind nog even bij het hek staan en gaat verder met voorbereiden. Even later komt je kind zelf naar binnen, stiller dan normaal. Je weet niet hoe lang je kind daar al zo stond.' : 'Je laat de kinderen nog even bij het hek staan en gaat verder met voorbereiden. Even later komen ze zelf naar binnen, stiller dan normaal. Je weet niet hoe lang ze daar al zo stonden.',
     stateChange: {
       kidsWithYou: true,
       kidsKeptHome: true
@@ -248,7 +254,7 @@ const scenes_natuurbrand = [{
   date: 'Zaterdag 14 augustus 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
-  conditionalOn: () => profile.hasChildren && state.kidsWithYou === true && state.kidsKeptHome === true,
+  conditionalOn: () => profile.hasChildren && state.kidsWithYou === true && state.kidsKeptHome === true && !state.evacuatedEarly,
   channels: {
     news: [],
     whatsapp: [],
@@ -258,7 +264,7 @@ const scenes_natuurbrand = [{
   get narrative() {
     const een = profile.childrenCount === 1;
     return een ?
-      'Je kind is binnen. De rook hangt laag en je ruikt hem nu ook in huis. Het loopt stil achter je aan van kamer naar kamer. Het zegt niets en kijkt steeds naar jou.' :
+      'Je kind is binnen. De rook hangt laag en je ruikt hem nu ook in huis. Je kind loopt stil achter je aan van kamer naar kamer. Het zegt niets en kijkt steeds naar jou.' :
       'De kinderen zijn binnen. De rook hangt laag en je ruikt hem nu ook in huis. Ze lopen stil achter je aan van kamer naar kamer. Ze zeggen weinig en kijken vooral naar jou.';
   },
   choices: [{
@@ -323,7 +329,7 @@ const scenes_natuurbrand = [{
     }
   }, {
     text: '⚡ Nu direct weg, niets meenemen',
-    consequence: 'Je rent naar buiten en rijdt weg. Geen tas, geen documenten. Je bent veilig, maar de komende dagen moet je het zonder je spullen doen.',
+    consequence: 'Je pakt niets en loopt direct de deur uit. Geen tas, geen documenten. Je verlaat het huis en gaat zo snel mogelijk weg.',
     stateChange: {
       evacuated: true
     }
@@ -374,7 +380,6 @@ const scenes_natuurbrand = [{
     text: '📋 Herinneren aan jullie vaste gezinsplan',
     consequence: () => profile.childrenCount === 1 ? '"Weet je nog wat we hadden afgesproken als er iets ernstigs gebeurt?" Je kind knikt en loopt meteen mee. Het kent het plan.' : '"Weet je nog wat we hadden afgesproken als er iets ernstigs gebeurt?" De oudste knikt en begint te lopen. De jongste volgt meteen. Ze kennen het plan.',
     stateChange: {
-      kidsNoodpakket: true,
       comfort: 1
     }
   }]
@@ -710,7 +715,7 @@ const scenes_natuurbrand = [{
     nlalert: null,
     radio: null
   },
-  narrative: 'Iemand tikt je op de schouder. Het is Kevin, je buurman. "Hé, ik zag je staan. Goed dat je me vanochtend gewaarschuwd hebt. Anders had ik het veel later doorgehad." Hij knikt je toe. "Ik meen het echt."',
+  narrative: 'Iemand tikt je op de schouder. Het is Kevin, je buurman. "Hé, ik zag je staan. Goed dat je me vandaag gewaarschuwd hebt. Anders had ik het veel later doorgehad." Hij knikt je toe. "Ik meen het echt."',
   choices: [{
     text: '🤝 Blij zijn dat hij veilig is',
     consequence: 'Je praat even bij. Kevin is gevlucht met zijn hond en een rugzak. Zijn huis staat er nog. Het voelt goed om te merken dat je echt iets voor iemand hebt betekend.',
