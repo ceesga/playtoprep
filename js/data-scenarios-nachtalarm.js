@@ -189,11 +189,11 @@ const scenes_nachtalarm = [
       },
       {
         text: () => petsCount > 1
-          ? '🐾 Je huisdieren roepen en meenemen als ze direct bereikbaar zijn'
-          : '🐾 Je huisdier roepen en meenemen als het direct bereikbaar is',
+          ? '🐾 Je huisdieren roepen en meenemen'
+          : '🐾 Je huisdier roepen en meenemen',
         consequence: () => petsCount > 1
-          ? 'Je roept je huisdieren. De dieren die vlak bij de deur zitten, neem je meteen mee naar buiten. Verder zoeken doe je niet.'
-          : 'Je roept je huisdier. Het komt verschrikt tevoorschijn vlak bij de deur. Je neemt het meteen mee naar buiten en gaat niet verder zoeken.',
+          ? 'Je roept je huisdieren. De dieren die vlak bij de deur zitten, neem je meteen mee naar buiten.'
+          : 'Je roept je huisdier. Het komt verschrikt tevoorschijn vanonder de kast. Je neemt het meteen mee naar buiten',
         stateChange: { evacuatedFire: true, tookPets: true },
         conditionalOn: () => profile.hasPets
       },
@@ -268,9 +268,9 @@ const scenes_nachtalarm = [
         stateChange: { stayedOutside: true }
       },
       {
-        text: '🏘️ Direct naar de buren gaan om te zeggen dat er brand is in jouw woning',
+        text: '🏘️ Naar de buren gaan om te zeggen dat er brand is in jouw woning',
         consequence: () => profile.houseType === 'appartement'
-          ? 'Je klopt hard aan bij de directe buren op de gang en roept dat er brand is in jouw appartement. Slaperige gezichten, dan geschrokken ogen. Ze gaan meteen naar buiten. Goed dat je dit deed — in een appartementsgebouw kan rook snel naar andere woningen trekken.'
+          ? 'Je klopt hard aan bij de directe buren op de gang en roept dat er brand is in jouw appartement. Slaperige gezichten, dan geschrokken ogen. Ze gaan meteen naar buiten. Goed dat je dit deed, in een appartementsgebouw kan rook snel naar andere woningen trekken.'
           : 'Je loopt snel naar de buren en klopt aan. Even later staan ze in de deuropening. Je legt kort uit wat er aan de hand is. Ze bellen 112 en houden een oogje in het zeil. Je bent blij dat je dit even gedaan hebt.',
         cat: 'cat-social',
         stateChange: { stayedOutside: true, knowsNeighbors: true }
