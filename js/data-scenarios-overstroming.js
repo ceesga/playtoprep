@@ -26,7 +26,19 @@ const scenes_overstroming = [{
     nlalert: null,
     radio: 'Radio 1: Het KNMI heeft code oranje afgegeven voor de regio. Door aanhoudende regen wordt een verhoogde waterstand verwacht. Bewoners in laaggelegen gebieden wordt gevraagd de situatie te blijven volgen.'
   },
-  narrative: 'Het is maandagavond. Je woont op loopafstand van de rivier. Het uitzicht is er mooi en op zonnige dagen kan je er echt van genieten. Buiten regent het gestaag. De lucht voelt zwaar en vochtig, drukkend. In de verte klinkt de regen harder op de daken dan normaal. De rivier stond deze week al hoog.',
+  get narrative() {
+    const locatie = profile.location.includes('buitengebied')
+      ? ' Je woont afgelegen, niet ver van het water. Als het misgaat, ben jij een van de eersten.'
+      : profile.location.includes('stedelijk')
+      ? ' Je woont in de stad, dicht bij het water. Als het stijgt, kan het hier snel gaan.'
+      : '';
+    const kinderen = profile.hasChildren
+      ? (profile.childrenCount === 1
+        ? ' Je kind ligt al in bed. Je hoopt dat je dit vanavond rustig kunt oplossen.'
+        : ' De kinderen liggen al in bed. Je hoopt dat je dit vanavond rustig kunt oplossen.')
+      : '';
+    return 'Het is maandagavond. Je woont op loopafstand van de rivier. Het uitzicht is er mooi en op zonnige dagen kan je er echt van genieten. Buiten regent het gestaag. De lucht voelt zwaar en vochtig, drukkend. In de verte klinkt de regen harder op de daken dan normaal. De rivier stond deze week al hoog.' + locatie + kinderen;
+  },
   choices: [{
     text: '🎒 Noodtas inpakken en documenten waterdicht verpakken',
     consequence: 'Je pakt een tas: paspoort, medicijnen, oplader, kleding. Documenten stop je in een ziplock. Als het bevel komt, ben je klaar.',
@@ -44,6 +56,13 @@ const scenes_overstroming = [{
     text: '🛌 Gewoon gaan slapen, het zal wel meevallen',
     consequence: 'Code oranje is niet code rood. Je legt de telefoon neer. Het zal wel meevallen.',
     stateChange: {}
+  }, {
+    conditionalOn: () => profile.hasPets,
+    text: () => petsCount > 1 ? '🐾 Transportmanden alvast bij de deur zetten' : '🐾 Transportmand alvast bij de deur zetten',
+    consequence: () => petsCount > 1
+      ? 'Je zet de transportmanden klaar bij de deur. Als het bevel morgen komt, hoef je de dieren alleen nog erin te zetten en te gaan.'
+      : 'Je zet de transportmand klaar bij de deur. Als het bevel morgen komt, hoef je je huisdier alleen nog erin te zetten en te gaan.',
+    stateChange: { tookPets: true }
   }]
 }, {
   id: 'ov_1',
@@ -62,7 +81,17 @@ const scenes_overstroming = [{
     radio: 'Radio 1: Code oranje blijft van kracht. De waterstand stijgt. Bewoners in laaggelegen gebieden wordt gevraagd de situatie te volgen en rekening te houden met lokale maatregelen of afsluitingen.'
   },
   get narrative() {
-    return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. Het klinkt zwaarder dan normaal, aanhoudender.' + (state.awarenessLevel > 0 ? ' Die code oranje van gisteren zat nog vers in je hoofd.' : '');
+    const gisteren = state.awarenessLevel > 0 ? ' Die code oranje van gisteren zat nog vers in je hoofd.' : '';
+    const tasNietKlaar = !state.packedBag ? ' Je had gisteren niets klaargelegd.' : ' Je tas staat klaar. Dat stelt je nu al gerust.';
+    const kinderen = profile.hasChildren && state.awarenessLevel === 0
+      ? (profile.childrenCount === 1
+        ? ' Je kind slaapt nog. Je merkt dat je niet goed weet hoe serieus dit is.'
+        : ' De kinderen slapen nog. Je merkt dat je niet goed weet hoe serieus dit is.')
+      : '';
+    const huisdier = profile.hasPets && !state.tookPets
+      ? ' Je huisdier is onrustig. Het hoort het water en de regen en loopt heen en weer.'
+      : '';
+    return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. Het klinkt zwaarder dan normaal, aanhoudender.' + gisteren + tasNietKlaar + kinderen + huisdier;
   },
   choices: [{
     text: '🎒 Direct beginnen met voorbereiding',
@@ -197,6 +226,13 @@ const scenes_overstroming = [{
     stateChange: {
       contactedAns: true
     }
+  }, {
+    conditionalOn: () => profile.hasPets,
+    text: () => petsCount > 1 ? '🐾 Huisdieren naar een hogere plek in huis brengen' : '🐾 Huisdier naar een hogere plek in huis brengen',
+    consequence: () => petsCount > 1
+      ? 'Je brengt de dieren naar boven. Ze zijn onrustig door het geluid van het water buiten. Je haalt ook de transportmanden naar boven voor het geval je snel weg moet.'
+      : 'Je brengt je huisdier naar boven. Het is onrustig door het geluid van het water buiten. Je haalt ook de transportmand naar boven voor het geval je snel weg moet.',
+    stateChange: { tookPets: true }
   }]
 }, {
   id: 'ov_2b',
@@ -307,7 +343,17 @@ const scenes_overstroming = [{
     nlalert: 'NL-Alert\n11 november 2027 – 10:22\n\nEVACUATIEADVIES voor laaggelegen wijken. Vertrek nu als de route nog veilig is, of ga naar de bovenste verdieping. Gebruik aangewezen evacuatieroutes.',
     radio: 'Radio 1: Evacuatieadvies voor laaggelegen wijken. Ga nu weg als de route nog open is. Kan dat niet meer, ga dan naar boven. Sluit de meterkast af. Bel 112 alleen in levensbedreigende situaties.'
   },
-  narrative: 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Het evacuatieadvies is duidelijk: ga nu weg als dat nog kan, of ga naar boven. Wat doe je?',
+  get narrative() {
+    const tas = !state.packedBag
+      ? ' Je hebt niets klaargelegd. Je moet nu alles tegelijk: pakken én gaan.'
+      : ' Je tas staat klaar bij de deur. Dat scheelt nu veel tijd.';
+    const geenAuto = !profile.hasCar
+      ? profile.hasBike
+        ? ' Je hebt geen auto, maar wel een fiets. Als je weg wilt, ga je op de fiets.'
+        : ' Je hebt geen auto en geen fiets. Weggaan betekent te voet door het water.'
+      : '';
+    return 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Het evacuatieadvies is duidelijk: ga nu weg als dat nog kan, of ga naar boven.' + tas + geenAuto + ' Wat doe je?';
+  },
   choices: [{
     conditionalOn: () => !profile.hasMobilityImpaired,
     text: '🏠 Boven blijven en naar de eerste verdieping gaan',
@@ -333,6 +379,7 @@ const scenes_overstroming = [{
       wentUpstairs: true
     }
   }, {
+    conditionalOn: () => profile.hasCar,
     text: '🚗 Toch proberen weg te rijden',
     consequence: () => state.carMovedHigher ?
       'Je auto stond al hoger geparkeerd. Daardoor kom je nu nog weg via de omleiding. Je rijdt langzaam maar gestaag naar een droog deel van de stad.' :
@@ -342,6 +389,24 @@ const scenes_overstroming = [{
     } : {
       wentUpstairs: false,
       evacuatedFlood: false
+    }
+  }, {
+    conditionalOn: () => profile.hasPets && !state.tookPets,
+    text: () => petsCount > 1 ? '🐾 Huisdieren veiligstellen voor je vertrekt' : '🐾 Huisdier veiligstellen voor je vertrekt',
+    consequence: () => petsCount > 1
+      ? 'Je pakt de manden en roept de dieren. Ze zijn bang van het water en werken niet mee. Na een paar minuten heb je ze. Je vertrekt samen — maar kostbare tijd ben je kwijt.'
+      : 'Je pakt de transportmand en roept je huisdier. Het is bang en wil niet mee. Na anderhalve minuut heb je het. Je vertrekt samen — maar kostbare tijd ben je kwijt.',
+    stateChange: { tookPets: true, comfort: -1 }
+  }, {
+    conditionalOn: () => !profile.hasCar && !profile.hasMobilityImpaired,
+    text: '🚶 Te voet wegwaden nu het nog kan',
+    consequence: profile.hasBike
+      ? 'Je pakt je fiets en rijdt langzaam door het water. Het staat al tot je knieën, maar je fiets houdt je op de been. Via de omweg bereik je een droog stuk weg.'
+      : 'Je trekt laarzen aan en waadt naar buiten. Het water staat bijna tot je knieën. Het is zwaar en koud, maar je werkt je door de straat heen en bereikt een droog stuk weg verderop.',
+    stateChange: {
+      evacuatedFlood: true,
+      comfort: -2,
+      health: -1
     }
   }]
 }, {
@@ -395,7 +460,12 @@ const scenes_overstroming = [{
     radio: null
   },
   get narrative() {
-    return state.takingAns ? 'Je bent boven met Ans. Beneden stijgt het water en je hoort het kabbelen. Twee paar ogen zien meer dan één. Hoe bereid je de komende uren voor?' : 'Je bent boven. Beneden stijgt het water en je hoort het kabbelen. Hoe bereid je de komende uren voor?';
+    const huisdier = profile.hasPets
+      ? state.tookPets
+        ? (petsCount > 1 ? ' Je huisdieren zijn bij je.' : ' Je huisdier is bij je.')
+        : (petsCount > 1 ? ' Je huisdieren zijn beneden achtergebleven. Je hoort ze onrustig bewegen.' : ' Je huisdier is beneden achtergebleven. Je hoort het onrustig bewegen.')
+      : '';
+    return (state.takingAns ? 'Je bent boven met Ans. Beneden stijgt het water en je hoort het kabbelen. Twee paar ogen zien meer dan één. Hoe bereid je de komende uren voor?' : 'Je bent boven. Beneden stijgt het water en je hoort het kabbelen. Hoe bereid je de komende uren voor?') + huisdier;
   },
   choices: [{
     text: '💧 Water en eten meenemen naar boven',

@@ -665,6 +665,7 @@ let currentSceneIdx = 0; // index van de huidige zichtbare scène
 let activeTab = 'buiten'; // actief tabblad in de kanalen-sectie
 let radioUnlocked = false; // wordt true zodra een scène radio-inhoud heeft
 const stateSnapshots = []; // opgeslagen staat per scène-index (voor terugnavigatie)
+let pendingChoiceMade = false; // true zodra een geldige keuze gemaakt is (niet bij fail)
 const historySnapshots = []; // opgeslagen keuzegeschiedenislengte per scène-index
 
 // Channel history logs for < > scrollback
@@ -1025,6 +1026,7 @@ function markUnread(name) {
 */
 function renderScene() {
   Typewriter.cancel();
+  pendingChoiceMade = false; // reset bij elke nieuwe scène
   // Wis alle unread-stipjes van de vorige scene
   document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('has-unread'));
   // Fade-in nieuwe scene
@@ -1936,9 +1938,26 @@ function pickChoice(idx) {
   const scene = visibleScenes[currentSceneIdx];
   const choice = scene.choices[idx];
 
+  // Check fail condition (bijv. onvoldoende cash)
+  if (choice.failCondition && choice.failCondition()) {
+    const failText = typeof choice.failConsequence === 'function'
+      ? choice.failConsequence()
+      : (choice.failConsequence || 'Je kunt deze keuze nu niet maken.');
+    switchTab('buiten');
+    const failNarrativeEl = document.getElementById('sc-narrative');
+    if (!failNarrativeEl) return;
+    failNarrativeEl.innerHTML = '';
+    const failSpan = document.createElement('span');
+    failSpan.className = 'consequence-inline';
+    failNarrativeEl.appendChild(failSpan);
+    Typewriter.run(failText, failSpan, null);
+    return; // stop hier — geen lock, geen stateChange, geen advance
+  }
+
   // Vergrendel alle keuzes zodra er één is gekozen
   document.querySelectorAll('#sc-choices .choice-btn').forEach(b => { b.disabled = true; });
   btn.classList.add('picked');
+  pendingChoiceMade = true;
 
   // Snapshot state before changes for delta calculation
   const statsBefore = {
@@ -2048,6 +2067,10 @@ function pickChoice(idx) {
    eerst overgeslagen. De overgang bevat een korte fade-out van de scène-zones.
 */
 function advanceScene() {
+  if (!pendingChoiceMade) {
+    Typewriter.skip(); // toon fail-tekst direct als typewriter nog loopt
+    return;            // maar ga niet verder naar volgende scène
+  }
   if (Typewriter.isRunning()) {
     Typewriter.skip(); // toon tekst direct, wacht op volgende klik
     return;

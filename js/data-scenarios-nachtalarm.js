@@ -64,9 +64,9 @@ const scenes_nachtalarm = [
     },
     get narrative() {
       if (profile.houseType === 'appartement') {
-        return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. In de hal van het appartement hangt al een grauwe waas. Vanuit de woonkamer trekt rook richting voordeur. Verder is het stil. Alleen de rookmelder piept. Meteen is duidelijk dat er iets mis is.';
+        return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. In de hal van het appartement hangt al een grauwe waas. Vanuit de woonkamer trekt rook richting voordeur. Verder is het stil. Alleen de rookmelder piept. Het is meteen duidelijk dat er iets mis is.';
       }
-      return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. Vanaf de trap hangt een grauwe waas in de hal. Het is stil in huis, op de rookmelder na, en meteen duidelijk dat er iets mis is.';
+      return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. Vanaf de trap hangt een grauwe waas in de hal. Het is stil in huis, op de rookmelder na. Het is meteen duidelijk dat er iets mis is.';
     },
     choices: [
       {

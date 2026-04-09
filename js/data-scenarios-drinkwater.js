@@ -29,7 +29,15 @@ const scenes_drinkwater = [{
     const kook = profile.hasKit === 'ja' || profile.hasWater === 'ja'
       ? ' Je hebt gelukkig al wat schoon water in huis.'
       : '';
-    return 'Je draait de kraan open om iets te drinken te pakken. Het water is niet helder. Het is lichtbruin en ruikt anders dan normaal. Je zet de kraan meteen uit. Je telefoon geeft een melding van het waterbedrijf.' + kook;
+    const afgelegen = !profile.location.includes('stedelijk')
+      ? ' Je woont niet midden in de stad. De dichtstbijzijnde supermarkt is een eind weg — flessenwater halen is niet even om de hoek.'
+      : '';
+    const kinderen = profile.hasChildren
+      ? (profile.childrenCount === 1
+        ? ' Je denkt meteen aan je kind: wat kan die drinken?'
+        : ' Je denkt meteen aan de kinderen: wat kunnen zij drinken?')
+      : '';
+    return 'Je draait de kraan open om iets te drinken te pakken. Het water is niet helder. Het is lichtbruin en ruikt anders dan normaal. Je zet de kraan meteen uit. Je telefoon geeft een melding van het waterbedrijf.' + kook + afgelegen + kinderen;
   },
   choices: [{
     text: '📱 Online zoeken wat er aan de hand is',
@@ -63,17 +71,30 @@ const scenes_drinkwater = [{
       headline: 'Gemeente: postcodecheck beschikbaar',
       body: 'De gemeente verwijst inwoners naar de postcodecheck op de website van Vitens om te zien of het kookadvies voor hun adres geldt. Het is niet bekend hoe lang het advies van kracht blijft.'
     }],
-    whatsapp: [{
-      from: 'Vitens',
-      msg: 'Kookadvies voor uw adres. Kook kraanwater minimaal 3 minuten voordat u het gebruikt voor drinken, tandenpoetsen of het bereiden van eten en drinken. Volg onze website voor updates.',
-      time: '13:30',
-      outgoing: false
-    }, {
-      from: 'Partner',
-      msg: 'Heb je het al gezien? Kookadvies. Zullen we alvast water apart zetten?',
-      time: '13:33',
-      outgoing: false
-    }],
+    get whatsapp() {
+      const msgs = [{
+        from: 'Vitens',
+        msg: 'Kookadvies voor uw adres. Kook kraanwater minimaal 3 minuten voordat u het gebruikt voor drinken, tandenpoetsen of het bereiden van eten en drinken. Volg onze website voor updates.',
+        time: '13:30',
+        outgoing: false
+      }];
+      if (adultsCount > 1) {
+        msgs.push({
+          from: 'Partner',
+          msg: 'Heb je het al gezien? Kookadvies. Zullen we alvast water apart zetten?',
+          time: '13:33',
+          outgoing: false
+        });
+      } else if (!profile.location.includes('stedelijk')) {
+        msgs.push({
+          from: 'Buurman Rob',
+          msg: 'Hé, heb je dat kookadvies ontvangen? Ik probeer de supermarkt te bellen maar niemand neemt op. Hier is flessenwater altijd een eind rijden.',
+          time: '13:35',
+          outgoing: false
+        });
+      }
+      return msgs;
+    },
     nlalert: null,
     radio: 'Er geldt nu een kookadvies in delen van de gemeente. Gebruik kraanwater alleen als u het eerst minimaal drie minuten gekookt heeft. Bewaar schoon water als u dat al in huis heeft.'
   },
@@ -195,7 +216,14 @@ const scenes_drinkwater = [{
     nlalert: null,
     radio: 'Bij de supermarkt is het druk. Mensen halen vooral houdbaar eten, batterijen en kaarsen. Flessenwater en sommige basisproducten zijn bijna op. Als u nog schoon water in huis heeft, gebruik dat dan zuinig.'
   },
-  narrative: 'Je denkt na over je voorraad voor vanavond en morgenochtend. De supermarkt is nog open, maar meer mensen hebben hetzelfde idee.',
+  get narrative() {
+    const auto = !profile.hasCar
+      ? profile.hasBike
+        ? ' Je hebt geen auto, maar wel een fiets — handig als je toch naar de winkel wilt.'
+        : ' Je hebt geen auto en geen fiets. Als de winkel leeg is, ben je aangewezen op wat je thuis hebt of op de buren.'
+      : '';
+    return 'Je denkt na over je voorraad voor vanavond en morgenochtend. De supermarkt is nog open, maar meer mensen hebben hetzelfde idee.' + auto;
+  },
   choices: [{
     text: '🏠 Thuis blijven en zuinig omgaan met wat je al hebt',
     consequence: 'Je bekijkt je voorraad. Er is genoeg voor vanavond als je verstandig omgaat met wat je hebt. Kraanwater koken kost tijd, maar het werkt. Je blijft thuis.',

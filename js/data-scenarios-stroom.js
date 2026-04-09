@@ -107,7 +107,15 @@ const scenes_stroom = [
       nlalert: null,
       radio: 'Goedemorgen, u luistert naar Radio 1. Het is acht uur. Vandaag wisselend bewolkt met kans op natte sneeuw. Het wordt koud: maximaal −1°C. Straks in het nieuws van negen uur meer over de situatie rond de beschadigde zeekabels.'
     },
-    narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#22c55e">18°C</b> &nbsp;|&nbsp; 🌨️ Buiten: <b style="color:#93c5fd">−1°C</b> </div>Zondagochtend. De CV tikt, de koelkast zoemt, de waterkoker fluit. Gewone geluiden. Buiten ligt een dun laagje rijp op de daken. Bewolkt, stil. Je drinkt je koffie bij het raam. Een gewone zondag, zo voelt het tenminste.',
+    get narrative() {
+      const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#22c55e">18°C</b> &nbsp;|&nbsp; 🌨️ Buiten: <b style="color:#93c5fd">−1°C</b> </div>';
+      const kinderen = profile.hasChildren
+        ? (profile.childrenCount === 1
+          ? ' Je kind slaapt nog — of is alweer op. Een gewone ochtend.'
+          : ' De kinderen slapen nog — of zijn alweer op. Een gewone ochtend.')
+        : '';
+      return statusBar + 'Zondagochtend. De CV tikt, de koelkast zoemt, de waterkoker fluit. Gewone geluiden. Buiten ligt een dun laagje rijp op de daken. Bewolkt, stil. Je drinkt je koffie bij het raam. Een gewone zondag, zo voelt het tenminste.' + kinderen;
+    },
     choices: [{
       text: '☕ Koffie zetten en rustig ontbijten',
       consequence: 'Je zet koffie. Warm water, verse geur, de krant. Normaal. Je weet nog niet dat dit de laatste gewone ochtend is voor een tijdje.',
@@ -249,7 +257,15 @@ const scenes_stroom = [
       radio: 'Hier Radio 1. We onderbreken onze uitzending voor een urgent noodbericht. Er is een grootschalige stroomstoring in Nederland en andere delen van Europa. Na de brand in Dronten lijken problemen zich door het gekoppelde stroomnet te verspreiden. De precieze oorzaak wordt nog onderzocht. De overheid vraagt iedereen thuis te blijven, warm te blijven en voldoende drinkwater achter de hand te houden. Houd uw radio aan voor verdere updates. We houden u op de hoogte.'
     },
     get narrative() {
-      return 'De stroom valt opnieuw uit. Alles wordt stil. Dit keer voelt het anders — geen gezoem van apparaten, geen standby-lampjes, niets. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.';
+      const kinderen = profile.hasChildren
+        ? (profile.childrenCount === 1
+          ? ' Meteen denk je: school morgen, eten, hoe leg je dit uit aan een kind?'
+          : ' Meteen denk je: school morgen, eten, hoe leg je dit uit aan de kinderen?')
+        : '';
+      const afgelegen = !profile.hasCar && !profile.location.includes('stedelijk')
+        ? ' Je woont buiten het centrum en hebt geen auto. Als je ergens naartoe moet, ben je afhankelijk van je eigen benen of je fiets.'
+        : '';
+      return 'De stroom valt opnieuw uit. Alles wordt stil. Dit keer voelt het anders — geen gezoem van apparaten, geen standby-lampjes, niets. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.' + kinderen + afgelegen;
     },
     choices: [{
       text: '🍶 Lege flessen vullen met water, voor noodgebruik',
@@ -361,23 +377,29 @@ const scenes_stroom = [
       nlalert: null,
       radio: 'Radio 1. De stroomstoring houdt aan. Supermarkten zijn beperkt open maar accepteren alleen contant geld. Drinkwater uit de kraan is voorlopig veilig. Houd uw radio aan voor updates.'
     },
-    narrative: 'Je staat in de rij bij de supermarkt. Er staan minstens 60 mensen voor je. Iedereen praat zachtjes of staart naar hun telefoon. Een vrouw vooraan begint hard te schreeuwen dat ze voordringt omdat ze kleine kinderen heeft. Er ontstaat een discussie. Een beveiliger doet zijn best maar is duidelijk nerveus. Als je eindelijk binnen bent: de schappen zijn al behoorlijk uitgedund. Drinkwater is uitverkocht. Hetzelfde geldt voor wc-papier, olie, benzine en lucifers. Honing en blikopeners zijn ook al weg.',
+    get narrative() {
+      const kinderen = profile.hasChildren
+        ? ' Je zet de kinderen op je mentale lijstje: genoeg eten voor de komende dagen, en iets voor als ze zich vervelen zonder licht of scherm.'
+        : '';
+      const vervoer = !profile.hasCar
+        ? profile.hasBike
+          ? ' Je bent met de fiets. Je kunt niet zoveel meenemen — je moet kiezen wat je pakt.'
+          : ' Je bent te voet gekomen. Je kunt niet veel sjouwen — je kiest verstandig.'
+        : '';
+      return 'Je staat in de rij bij de supermarkt. Er staan minstens 60 mensen voor je. Iedereen praat zachtjes of staart naar hun telefoon. Een vrouw vooraan begint hard te schreeuwen dat ze voordringt omdat ze kleine kinderen heeft. Er ontstaat een discussie. Een beveiliger doet zijn best maar is duidelijk nerveus. Als je eindelijk binnen bent: de schappen zijn al behoorlijk uitgedund. Drinkwater is uitverkocht. Hetzelfde geldt voor wc-papier, olie, benzine en lucifers. Honing en blikopeners zijn ook al weg.' + kinderen + vervoer;
+    },
     choices: [{
       text: '🥫 Zoveel mogelijk blikvoer, rijst en pasta inslaan',
+      failCondition: () => state.cash < 50,
+      failConsequence: () => `Je vult een grote tas, maar aan de kassa hoor je: "Alleen contant." Je hebt €${state.cash} bij je — niet genoeg voor €50. Je legt alles terug. Kies een andere optie.`,
       consequence: 'Je vult een grote tas: blikken soep, bonen, tomaten, rijst, pasta, crackers. Aan de kassa: "Alleen contant." Je betaalt €50.',
-      stateChange: {
-        supermarketItems: ['blikvoer', 'rijst', 'pasta', 'crackers'],
-        food: 2,
-        cash: -50
-      }
+      stateChange: { supermarketItems: ['blikvoer', 'rijst', 'pasta', 'crackers'], food: 2, cash: -50 }
     }, {
       text: '🕯️ Kaarsen, aansteker, batterijen, praktische spullen',
-      consequence: 'Je vindt nog twee pakken kaarsen, een aansteker en het laatste pakje AA-batterijen. Aan de kassa hoor je: "Alleen contant." Je betaalt €25.',
-      stateChange: {
-        hasFlashlight: true,
-        supermarketItems: ['kaarsen', 'batterijen', 'aansteker'],
-        cash: -25
-      }
+      failCondition: () => state.cash < 25,
+      failConsequence: () => `Je vindt kaarsen en batterijen, maar aan de kassa: "Alleen contant." Je hebt €${state.cash} bij je — niet genoeg voor €25. Je legt alles terug. Kies een andere optie.`,
+      consequence: 'Je vindt nog twee pakken kaarsen, een aansteker en het laatste pakje AA-batterijen. Aan de kassa: "Alleen contant." Je betaalt €25.',
+      stateChange: { hasFlashlight: true, supermarketItems: ['kaarsen', 'batterijen', 'aansteker'], cash: -25 }
     }, {
       text: '😤 Ik ga weg, de sfeer is te gespannen en ik wil niet in dit gedrang',
       consequence: 'De spanning in de winkel is tastbaar. Je besluit te vertrekken. Dat is veiliger, maar je gaat wel met lege handen naar huis.',
@@ -411,7 +433,15 @@ const scenes_stroom = [
       const supermarkt = profile.location.includes('city') ?
         'De supermarkt om de hoek is nog open maar je ziet de rij al van ver.' :
         'Je overweegt naar de supermarkt te gaan, maar die zit een eind weg. En je weet niet of ze nog open zijn.';
-      return 'Het begint door te dringen: dit is geen storing van een uur. ' + supermarkt + ' Buiten hoor je meer sirenes. Je ziet een auto voorbijrijden die heel langzaam rijdt, alsof de bestuurder ook niet weet wat te doen.';
+      const kinderen = profile.hasChildren
+        ? (profile.childrenCount === 1
+          ? ' School morgen? Kinderopvang? Je weet het niet. Je kind merkt dat er iets mis is.'
+          : ' School morgen? Kinderopvang? Je weet het niet. De kinderen merken dat er iets mis is.')
+        : '';
+      const geenAuto = !profile.hasCar && !profile.location.includes('city')
+        ? ' Zonder auto is alles buiten je directe buurt ineens ver weg.'
+        : '';
+      return 'Het begint door te dringen: dit is geen storing van een uur. ' + supermarkt + ' Buiten hoor je meer sirenes. Je ziet een auto voorbijrijden die heel langzaam rijdt, alsof de bestuurder ook niet weet wat te doen.' + kinderen + geenAuto;
     },
     choices: [{
       conditionalOn: () => !state.hasWater,
@@ -634,12 +664,6 @@ const scenes_stroom = [
     date: 'Maandag 1 februari 2027',
     dayBadge: 'Dag 2',
     dayBadgeClass: '',
-    channels: {
-      news: [],
-      whatsapp: [],
-      nlalert: null,
-      radio: 'Radio 1. Goedemorgen. De stroomstoring duurt nu meer dan twintig uur. Herstel wordt niet voor morgenavond verwacht. In sommige plaatsen verliep de avond onrustig. Sommige winkels sloten eerder en hulpdiensten hebben het druk. Waterleidingbedrijven vragen het verbruik te beperken.'
-    },
     get narrative() {
       const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">5°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~20 uur zonder stroom</div>';
       const mood = state.comfort >= 4 ?
@@ -648,7 +672,32 @@ const scenes_stroom = [
         'Je hebt slecht geslapen. Alles voelt zwaarder dan normaal.' :
         'Je bent uitgeput. De spanning van gisterennacht, de kou en alle geluiden buiten beginnen echt door te wegen.';
       const mob = profile.hasMobilityImpaired ? ' De trap valt zwaar; zonder lift is elke verdieping een opgave.' : '';
-      return statusBar + mood + ' Een bleke streep licht achter de gordijnen. Je adem vormt kleine wolkjes. Buiten ligt rijp op de daken en ijs op de auto\'s. De stilte voelt onwerkelijk.' + mob;
+      const water = !state.hasWater
+        ? ' Je had gisteren geen water opgeslagen. Je hebt nu weinig te drinken.'
+        : ' Gelukkig heb je gisteren water opgeslagen. Dat scheelt nu al.';
+      const kinderen = profile.hasChildren
+        ? (profile.childrenCount === 1
+          ? ' Je kind vraagt wanneer het licht weer aangaat. Je hebt geen goed antwoord.'
+          : ' De kinderen vragen wanneer het licht weer aangaat. Je hebt geen goed antwoord.')
+        : '';
+      return statusBar + mood + ' Een bleke streep licht achter de gordijnen. Je adem vormt kleine wolkjes. Buiten ligt rijp op de daken en ijs op de auto\'s. De stilte voelt onwerkelijk.' + mob + water + kinderen;
+    },
+    get channels() {
+      const msgs = [];
+      if (profile.hasChildren) {
+        msgs.push({
+          from: 'School / kinderopvang',
+          msg: 'Vanwege de stroomstoring blijft school vandaag gesloten. Zodra er meer duidelijk is over herstel, laten we u weten wanneer we weer open zijn. Houd uw kind thuis.',
+          time: '07:45',
+          outgoing: false
+        });
+      }
+      return {
+        news: [],
+        whatsapp: msgs,
+        nlalert: null,
+        radio: 'Radio 1. Goedemorgen. De stroomstoring duurt nu meer dan twintig uur. Herstel wordt niet voor morgenavond verwacht. In sommige plaatsen verliep de avond onrustig. Sommige winkels sloten eerder en hulpdiensten hebben het druk. Waterleidingbedrijven vragen het verbruik te beperken.'
+      };
     },
     choices: [{
       text: '🔭 Door het raam kijken, wat zie je buiten?',

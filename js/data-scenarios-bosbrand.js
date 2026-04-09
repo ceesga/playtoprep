@@ -21,7 +21,17 @@ const scenes_natuurbrand = [{
     nlalert: null,
     radio: 'Radio 1: Het weerbericht voor morgen: temperaturen tot 38 graden, windkracht 6 uit het oosten, luchtvochtigheid extreem laag. Brandweer waarschuwt voor verhoogd risico op natuurbranden in de regio.'
   },
-  narrative: 'Het is laat op vrijdagavond. Je woont niet ver van mooie natuur — normaal een prachtig gezicht, al staat de natuur er nu enigszins dor bij na weken van droogte en hitte. De lucht is warm, zelfs nu het donker is, en er staat een droge oostenwind. Buiten ruikt het vaag naar stof en droog gras. Verder niks bijzonders.',
+  get narrative() {
+    const natuur = profile.location.includes('buitengebied') || profile.location.includes('bos')
+      ? ' Je woont midden in de natuur. Normaal is dat prachtig. Nu voelt het anders.'
+      : '';
+    const kinderen = profile.hasChildren
+      ? (profile.childrenCount === 1
+        ? ' Je kind ligt al in bed, het is laat. Je wil het niet onnodig wakker maken.'
+        : ' De kinderen liggen al in bed. Je wil ze niet onnodig wakker maken.')
+      : '';
+    return 'Het is laat op vrijdagavond. Je woont niet ver van mooie natuur — normaal een prachtig gezicht, al staat de natuur er nu enigszins dor bij na weken van droogte en hitte. De lucht is warm, zelfs nu het donker is, en er staat een droge oostenwind. Buiten ruikt het vaag naar stof en droog gras. Verder niks bijzonders.' + natuur + kinderen;
+  },
   choices: [{
     text: '🎒 Noodtas klaarzetten voor het geval dat',
     consequence: 'Je pakt alvast een tas: paspoort, medicijnen, oplader, wat kleding. Zet hem bij de deur. Als het mis gaat, ben je klaar.',
@@ -39,6 +49,13 @@ const scenes_natuurbrand = [{
     text: '🛌 Lekker slapen, morgen zien we wel',
     consequence: 'Je legt de telefoon neer. Het weerbericht ziet er niet best uit, maar zo erg zal het toch niet worden. Je slaapt.',
     stateChange: {}
+  }, {
+    conditionalOn: () => profile.hasPets,
+    text: () => petsCount > 1 ? '🐾 Transportmanden alvast bij de voordeur zetten' : '🐾 Transportmand alvast bij de voordeur zetten',
+    consequence: () => petsCount > 1
+      ? 'Je zet de transportmanden klaar bij de deur. Als het morgen ernst wordt, ben je klaar om de dieren snel mee te nemen.'
+      : 'Je zet de transportmand klaar bij de deur. Als het morgen ernst wordt, ben je klaar om je huisdier snel mee te nemen.',
+    stateChange: { tookPets: true }
   }]
 }, {
   id: 'bf_1',
@@ -62,7 +79,12 @@ const scenes_natuurbrand = [{
     radio: 'Radio 1: In de omgeving is een grote natuurbrand. Er is veel rook. De brandweer is aanwezig. Bewoners in de buurt krijgen het advies om ramen en deuren te sluiten. Verdere updates volgen.'
   },
   get narrative() {
-    return 'Je staat buiten koffie te drinken op een warme augustusochtend. In de verte zie je een dikke, grijze rookpluim opstijgen boven de boomtoppen. Het ruikt vaag naar verbrand hout.' + (state.awarenessLevel > 0 ? ' Die rookpluim verbaast je niet eens meer; vannacht hield je er al een beetje rekening mee.' : '');
+    const kinderen = profile.hasChildren
+      ? (profile.childrenCount === 1
+        ? ' Je kind is al op. Je houdt het voorlopig maar binnen.'
+        : ' De kinderen zijn al op. Je houdt ze voorlopig maar binnen.')
+      : '';
+    return 'Je staat buiten koffie te drinken op een warme augustusochtend. In de verte zie je een dikke, grijze rookpluim opstijgen boven de boomtoppen. Het ruikt vaag naar verbrand hout.' + (state.awarenessLevel > 0 ? ' Die rookpluim verbaast je niet eens meer; vannacht hield je er al een beetje rekening mee.' : '') + kinderen;
   },
   choices: [{
     text: '📱 Nieuws checken, wat is er aan de hand?',
@@ -87,12 +109,23 @@ const scenes_natuurbrand = [{
       headline: 'NL-Alert: natuurbrand in de omgeving, mogelijk evacuatie nabijgelegen wijken',
       body: 'De brandweer heeft de brand nog niet onder controle. Er wordt rekening gehouden met een mogelijk evacuatiebevel voor nabijgelegen wijken. Bewoners worden opgeroepen alert te zijn.'
     }],
-    whatsapp: [{
-      from: 'Zus Lisa',
-      msg: 'Jullie wonen toch bij het bos? Gaat alles goed? Ik zie het op het nieuws.',
-      time: '10:20',
-      outgoing: false
-    }],
+    get whatsapp() {
+      const msgs = [{
+        from: 'Zus Lisa',
+        msg: 'Jullie wonen toch bij het bos? Gaat alles goed? Ik zie het op het nieuws.',
+        time: '10:20',
+        outgoing: false
+      }];
+      if (profile.hasChildren) {
+        msgs.push({
+          from: 'School De Klimop',
+          msg: 'Vanwege de bosbrand in uw omgeving sluiten wij vandaag de deuren. Wij vragen ouders hun kind zo snel mogelijk op te halen. Wacht u op ons: wij blijven bereikbaar zolang het veilig is.',
+          time: '10:25',
+          outgoing: false
+        });
+      }
+      return msgs;
+    },
     nlalert: 'NL-Alert\n14 augustus 2027 – 10:08\n\nBosbrand in uw omgeving. Mogelijk evacuatiebevel. Let goed op. Houd deuren en ramen gesloten. Bereid je voor op een evacuatie. Update volgt.',
     radio: 'Radio 1: De brandweer heeft de natuurbrand nog niet onder controle. De wind is gedraaid. Mogelijk moeten omliggende wijken worden geëvacueerd. Leg een tas klaar met medicijnen, documenten en kleding voor twee dagen.'
   },
@@ -113,6 +146,13 @@ const scenes_natuurbrand = [{
     stateChange: {
       awarenessLevel: 1
     }
+  }, {
+    conditionalOn: () => profile.hasPets && !state.tookPets,
+    text: () => petsCount > 1 ? '🐾 Huisdieren alvast in de transportmanden zetten' : '🐾 Huisdier alvast in de transportmand zetten',
+    consequence: () => petsCount > 1
+      ? 'De dieren zijn onrustig door de rook buiten. Het kost moeite om ze in de manden te krijgen, maar het lukt. Als het evacuatiebevel komt, ben je klaar om meteen te vertrekken.'
+      : 'Je huisdier is onrustig door de rook buiten. Het kost moeite om het in de mand te krijgen, maar het lukt. Als het evacuatiebevel komt, ben je klaar om meteen te vertrekken.',
+    stateChange: { tookPets: true }
   }, {
     conditionalOn: () => profile.hasChildren,
     text: () => profile.childrenCount === 1 ? '🧒 Even vijf minuten nemen om je kind uit te leggen wat er aan de hand is' : '🧒 Even vijf minuten nemen om de kinderen uit te leggen wat er aan de hand is',
@@ -267,7 +307,7 @@ const scenes_natuurbrand = [{
       packedBag: true
     }
   }, {
-    conditionalOn: () => profile.hasPets,
+    conditionalOn: () => profile.hasPets && !state.tookPets,
     text: '🐕 Eerst huisdier veiligstellen',
     consequence: 'Je pakt de transportmand en roept je huisdier. Het is bang en wil niet mee. Na anderhalve minuut heb je hem. Je verlaat het huis samen.',
     stateChange: {
@@ -351,7 +391,17 @@ const scenes_natuurbrand = [{
     radio: null
   },
   get narrative() {
-    return 'Je verlaat het huis. De lucht is oranje-bruin en de rook is dik.' + (state.evacuatedEarly ? ' Omdat je vroeg bent vertrokken staat de weg nog vrij. Je ziet hoe de auto\'s achter je al beginnen op te stapelen.' : ' De straat staat vol met auto\'s die allemaal richting de uitvalswegen rijden.') + ' Hoe ga je naar de noodopvang?';
+    const geenAuto = !profile.hasCar
+      ? profile.hasBike
+        ? ' Je hebt geen auto, maar wel een fiets. De achterpaden zijn vrij van files.'
+        : ' Je hebt geen auto en geen fiets. Je gaat te voet — drie kilometer door de rook.'
+      : '';
+    const huisdier = profile.hasPets
+      ? state.tookPets
+        ? (petsCount > 1 ? ' Je hebt je huisdieren bij je.' : ' Je hebt je huisdier bij je.')
+        : (petsCount > 1 ? ' Je huisdieren laat je noodgedwongen achter.' : ' Je huisdier laat je noodgedwongen achter.')
+      : '';
+    return 'Je verlaat het huis. De lucht is oranje-bruin en de rook is dik.' + (state.evacuatedEarly ? ' Omdat je vroeg bent vertrokken staat de weg nog vrij. Je ziet hoe de auto\'s achter je al beginnen op te stapelen.' : ' De straat staat vol met auto\'s die allemaal richting de uitvalswegen rijden.') + geenAuto + huisdier + ' Hoe ga je naar de noodopvang?';
   },
   choices: [{
     text: '🚗 Met de auto, snelste route via de hoofdweg',

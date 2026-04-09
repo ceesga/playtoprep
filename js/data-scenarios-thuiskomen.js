@@ -265,15 +265,10 @@ const scenes_thuis_komen = [{
     })
   }, {
     text: '⛽ Tanken bij een tankstation',
-    consequence: () => profile.hasEDCBag ?
-      'Je rijdt een tankstation op. Bij de kassa zegt iemand: "Alleen contant." Je hebt nog cash bij je en tankt vol voor €75.' :
-      'Je rijdt een tankstation op. Bij de kassa zegt iemand: "Alleen contant." Je voelt in je jaszak, maar daar zit niets. Je kunt niet tanken en rijdt verder op wat je nog hebt.',
-    stateChange: () => profile.hasEDCBag ? {
-      comfort: 1,
-      cash: -75
-    } : {
-      comfort: -1
-    }
+    failCondition: () => state.cash < 75,
+    failConsequence: () => `Je rijdt een tankstation op. Bij de kassa: "Alleen contant." Je hebt €${state.cash} bij je — niet genoeg voor €75. Je rijdt verder op wat je nog hebt. Kies een andere optie.`,
+    consequence: 'Je rijdt een tankstation op. Bij de kassa zegt iemand: "Alleen contant." Je telt je geld en tankt vol voor €75.',
+    stateChange: { comfort: 1, cash: -75 }
   }, {
     text: '🚶 Auto achterlaten en te voet verder',
     consequence: 'Je zet de auto aan de kant en gaat verder te voet. Zwaar, maar je maakt weer meters.',
@@ -367,25 +362,18 @@ const scenes_thuis_komen = [{
     }
   }, {
     text: '🚕 Taxi of deelfiets zoeken',
+    failCondition: () => state.cash < (profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110),
+    failConsequence: () => {
+      const cost = profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110;
+      return `Je vraagt een taxichauffeur, maar je hebt maar €${state.cash} bij je. Dat is niet genoeg voor €${cost}. Hij weigert. Kies een andere optie.`;
+    },
     consequence: () => {
       const cost = profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110;
-      if (state.cash === 0) return 'Je zoekt een taxi of deelfiets, maar zonder contant geld kom je nergens. Je loopt verder.';
-      if (state.cash >= cost) return `Je vindt een taxichauffeur die voor cash rijdt. Je betaalt €${cost} en rijdt naar huis.`;
-      return `Je vraagt een taxichauffeur, maar je hebt maar €${state.cash} bij je en dat is niet genoeg. Hij weigert. Je loopt verder.`;
+      return `Je vindt een taxichauffeur die voor cash rijdt. Je betaalt €${cost} en rijdt naar huis.`;
     },
     stateChange: () => {
       const cost = profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110;
-      if (state.cash === 0) return {
-        travelMode: 'walking'
-      };
-      if (state.cash >= cost) return {
-        reachedHome: true,
-        comfort: 1,
-        cash: -cost
-      };
-      return {
-        travelMode: 'walking'
-      };
+      return { reachedHome: true, foundAlternative: true, cash: -cost };
     }
   }, {
     text: '🚘 Lift vragen aan voorbijrijdende auto\'s',
@@ -472,16 +460,10 @@ const scenes_thuis_komen = [{
     }
   }, {
     text: '🚲 Een fiets lenen of kopen van een voorbijganger',
-    consequence: () => profile.hasEDCBag
-      ? 'Je spreekt een fietser aan. Hij kent iemand verderop die een oude fiets verkoopt voor €50 cash. Een kwartier later ben je weer onderweg.'
-      : 'Je spreekt een fietser aan. Er is wel een oude fiets te koop, maar alleen voor €50 cash. Dat heb je niet bij je, dus je moet verder lopen.',
-    stateChange: () => profile.hasEDCBag ? {
-      foundAlternative: true,
-      travelMode: 'bike',
-      cash: -50
-    } : {
-      travelMode: 'walking'
-    }
+    failCondition: () => state.cash < 50,
+    failConsequence: () => `Je spreekt een fietser aan. Er is wel een oude fiets te koop, maar alleen voor €50 cash. Je hebt maar €${state.cash} bij je — niet genoeg. Kies een andere optie.`,
+    consequence: 'Je spreekt een fietser aan. Hij kent iemand verderop die een oude fiets verkoopt voor €50 cash. Een kwartier later ben je weer onderweg.',
+    stateChange: { foundAlternative: true, travelMode: 'bike', cash: -50 }
   }, {
     text: '😤 Toch doorgaan, ik kom er wel',
     consequence: 'Je blijft doorlopen, maar je lichaam protesteert. Na nog twee uur in het donker ben je uitgeput en nog lang niet thuis.',
@@ -532,15 +514,10 @@ const scenes_thuis_komen = [{
     stateChange: {}
   }, {
     text: '🍎 Ergens stoppen voor eten',
-    consequence: () => profile.hasEDCBag ?
-      'Je stapt een bakker binnen. "Alleen contant." Je legt een tientje neer en krijgt een broodje en een fles water. Dat helpt meteen.' :
-      'Je probeert iets te kopen, maar zonder cash lukt dat niet overal. Uiteindelijk krijg je bij een bakker toch een broodje mee.',
-    stateChange: () => profile.hasEDCBag ? {
-      food: 1,
-      cash: -10
-    } : {
-      food: 1
-    }
+    failCondition: () => state.cash < 10,
+    failConsequence: 'Je stapt een bakker binnen, maar je hebt geen contant geld. De bakker wil niet anders. Je loopt met lege handen verder.',
+    consequence: 'Je stapt een bakker binnen. "Alleen contant." Je legt een tientje neer en krijgt een broodje en een fles water. Dat helpt meteen.',
+    stateChange: { food: 1, cash: -10 }
   }, {
     text: '🤝 De mevrouw bij het bushokje helpen',
     consequence: 'Je loopt naar haar toe. Ze zit er al een uur en weet niet meer hoe ze thuis moet komen. Je helpt haar haar dochter te bereiken. Die komt haar ophalen. Het kost je twintig minuten, maar het voelt goed.',
