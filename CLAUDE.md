@@ -2,6 +2,10 @@
 
 > Lees dit bestand elke keer als je dit project opnieuw leert kennen.
 
+## Werkwijze — BELANGRIJK
+
+Stel altijd verduidelijkende vragen als een opdracht niet volledig duidelijk is. Ga nooit zelf iets implementeren op basis van aannames, tenzij de gebruiker expliciet opdracht geeft om direct te implementeren. Bij twijfel: eerst vragen, dan doen.
+
 ## Project overzicht
 
 Vanilla HTML/CSS/JS single-page app — geen framework, geen build-stap, geen npm.

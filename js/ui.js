@@ -4,6 +4,33 @@
 //        show() schermwisselaar, toetsenbord-navigatie
 // ═══════════════════════════════════════════════════════════════
 
+/* ── Globale klok (reële tijd) ─────────────────────────────── */
+const NL_DAYS   = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+const NL_MONTHS = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+
+function tickGlobalClock() {
+  const now = new Date();
+  const tEl = document.getElementById('global-clock-time');
+  const dEl = document.getElementById('global-clock-day');
+  const mEl = document.getElementById('global-clock-date');
+  if (!tEl) return;
+  tEl.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  if (dEl) dEl.textContent = NL_DAYS[now.getDay()];
+  if (mEl) mEl.textContent = now.getDate() + ' ' + NL_MONTHS[now.getMonth()];
+}
+tickGlobalClock();
+setInterval(tickGlobalClock, 1000);
+
+/* ── Prep-state: bereken indicatorwaarden uit profiel-antwoorden ── */
+function updatePrepState() {
+  state.water        = 1 + (profile.hasWater === 'ja' ? 3 : 0);
+  state.food         = 2 + (profile.hasKit === 'ja' ? 3 : 0);
+  state.comfort      = 10;
+  state.phoneBattery = 100;
+  state.cash         = 20 + (profile.hasCash === 'ja' ? 100 : 0) + (profile.hasEDCBag === 'ja' ? 100 : 0);
+  if (typeof renderStatusBars === 'function') renderStatusBars();
+}
+
 // Wisselt de zichtbare subpagina van het startmenu (0 = hoofd, 1 = laden).
 function startMenuPage(n) {
   const titles = { 0: 'Menu', 1: 'Laden' };
@@ -211,11 +238,53 @@ function show(id) {
   const screen = document.getElementById(id);
   screen.classList.add('active'); // activeer het gevraagde scherm
 
-  // Toon de rechter- en linkersidebar alleen op het scenario-scherm
+  // Verberg kaartachtergrond en schaduw tijdens scenario (fixed overlay is transparant)
+  const card = document.getElementById('main-content');
+  if (card) card.classList.toggle('scenario-active', id === 's-scenario');
+
+  // Hamburgerknop verborgen op startpagina en scenario (scenario heeft eigen profielknop)
+  const globalMenuBtn = document.getElementById('global-menu-btn');
+  if (globalMenuBtn) globalMenuBtn.style.display = (id === 's-start' || id === 's-scenario') ? 'none' : 'flex';
+
+  // Globale klok: verborgen op startpagina en scenario (scenario heeft eigen topbar-klok)
+  const globalClock = document.getElementById('global-clock');
+  if (globalClock) globalClock.style.display = (id === 's-start' || id === 's-uitleg' || id === 's-scenario') ? 'none' : '';
+
+  // Sidebar: toon op prep en alle latere schermen
+  const showSidebar = ['s-prep','s-scenariokeuze','s-commute','s-scenario','s-report'].includes(id);
   const sidebar = document.getElementById('status-sidebar');
-  if (sidebar) sidebar.classList.toggle('visible', id === 's-scenario');
+  if (sidebar) sidebar.classList.toggle('visible', showSidebar);
   const sidebarLeft = document.getElementById('status-sidebar-left');
-  if (sidebarLeft) sidebarLeft.classList.toggle('visible', id === 's-scenario');
+  if (sidebarLeft) sidebarLeft.classList.toggle('visible', showSidebar);
+  const cashBox = document.getElementById('ss-cash-box');
+  if (cashBox) cashBox.classList.toggle('visible', showSidebar);
+
+  // Bereken prep-state bij binnenkomen prep-scherm
+  if (id === 's-prep') updatePrepState();
+
+  // Positioneer sidebar dynamisch onder de klokwidget
+  if (showSidebar && sidebar) {
+    requestAnimationFrame(() => {
+      // Kies klokwidget op basis van scherm
+      const clockEl = id === 's-scenario'
+        ? document.querySelector('#s-scenario .sc-topbar-left')
+        : document.getElementById('global-clock');
+      const sidebarTop = (clockEl && clockEl.offsetParent !== null)
+        ? (clockEl.getBoundingClientRect().bottom + 48)
+        : 110;
+      sidebar.style.top = sidebarTop + 'px';
+      // Hoofdvenster uitlijnen met bovenkant sidebar (alleen scenario, alleen desktop)
+      const scenarioZones = document.querySelector('#s-scenario .scenario-zones');
+      if (scenarioZones && id === 's-scenario' && window.innerWidth > 768) {
+        const offset = sidebarTop - scenarioZones.getBoundingClientRect().top;
+        scenarioZones.style.marginTop = (offset > 0 ? offset : 0) + 'px';
+      } else if (scenarioZones) {
+        scenarioZones.style.marginTop = '';
+      }
+      // Cash-box onder de sidebar
+      if (cashBox) cashBox.style.top = (sidebarTop + sidebar.offsetHeight + 10) + 'px';
+    });
+  }
 
   // Vertaal scherm-ID naar een leesbare paginacode voor de hoek-indicator
   const pageCodes = {

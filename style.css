@@ -92,7 +92,7 @@ body {
   display:flex;
   flex-direction:column;
   align-items:center;
-  padding:24px 16px;
+  padding:114px 16px 24px;
 }
 
 #bg-darkness {
@@ -121,15 +121,45 @@ body {
 }
 
 .card {
-  background:linear-gradient(160deg, #f8f8f8 0%, #efefef 100%);
-  border-radius:var(--r-md);
+  background:rgba(255,255,255,.98);
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.4);
   max-width:680px;
   width:100%;
-  box-shadow:0 4px 40px rgba(0,0,0,.22);
+  box-shadow:0 25px 50px -12px rgba(0,0,0,.25);
   overflow:hidden;
   position:relative;
   z-index:1;
-  border:2px solid rgba(128,128,128,.5);
+  height:calc(100vh - 138px);
+  display:flex;
+  flex-direction:column;
+}
+
+/* Elk scherm vult de kaart als flex-kolom */
+.screen.active:not(#s-scenario) {
+  flex:1;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+/* Scrollbaar inhoudsgebied binnen elk scherm */
+.screen-body {
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  padding-bottom:12px;
+}
+
+/* Vaste navigatiebalk onderaan — zelfde look als zone-bottom in scenario */
+.screen-footer {
+  flex-shrink:0;
+  margin:0 -32px;
+  padding:14px 32px 20px;
+  background:linear-gradient(to bottom,rgba(248,250,252,.95),rgba(248,250,252,.85));
+  border-top:1px solid rgba(226,232,240,.8);
+  margin-top:0;
 }
 
 h1 {
@@ -393,20 +423,22 @@ p.sub {
 }
 
 .btn {
-  background:var(--c-primary);
+  background:linear-gradient(to right,#2563eb,#1d4ed8);
   color:#fff;
   border:none;
-  border-radius:var(--r-sm);
+  border-radius:12px;
   padding:12px 28px;
   font-size:.88rem;
   font-weight:700;
   letter-spacing:.2px;
   cursor:pointer;
   transition:all .2s;
+  box-shadow:0 4px 14px rgba(37,99,235,.3);
 }
 
 .btn:hover {
-  background:var(--c-primary-dark);
+  background:linear-gradient(to right,#1d4ed8,#1e40af);
+  box-shadow:0 6px 20px rgba(37,99,235,.4);
 }
 
 .btn:disabled {
@@ -425,7 +457,7 @@ p.sub {
   background:var(--c-white);
   border:1px solid var(--c-neutral-border);
   color:var(--c-text-muted);
-  border-radius:var(--r-sm);
+  border-radius:12px;
   padding:11px 24px;
   font-size:.86rem;
   font-weight:500;
@@ -508,43 +540,151 @@ p.sub {
   padding:32px;
 }
 
+/* Schermen met vaste footer: geen bodempading (footer biedt die) */
+#s-uitleg,
+#s-intake,
+#s-prep,
+#s-commute {
+  padding-bottom:0;
+}
+
 #s-start {
   padding:32px 32px 12px;
 }
 
 /* ── SCENARIO SCREEN ── */
 
+/* Verberg de kaartachtergrond als het scenario actief is (fixed overlay is transparant) */
+.card.scenario-active {
+  background:transparent !important;
+  box-shadow:none !important;
+  border:none !important;
+}
+
 #s-scenario {
   padding:0;
+}
+
+#s-scenario.active {
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  inset:0;
+  z-index:5;
+  background:transparent;
+  overflow:hidden;
+  padding-bottom:12px;
+}
+
+
+#s-scenario .progress-wrap {
+  position:relative;
+  z-index:1;
+  flex-shrink:0;
+  background:rgba(255,255,255,.18);
+}
+
+#s-scenario .progress-fill {
+  background:linear-gradient(to right,#3b82f6,#6366f1);
 }
 
 .sc-topbar {
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:8px 16px 8px 12px;
-  background:#0f2240;
-  border-bottom:2px solid #0a1a33;
-  box-shadow:0 2px 14px rgba(0,0,0,.3);
+  padding:16px 18px;
+  background:transparent;
+  position:relative;
+  z-index:1;
+  flex-shrink:0;
 }
 
-/* Gear toggle button — in linker sidebar onder profielfoto */
-.gear-toggle-btn {
-  width:44px;
-  height:44px;
-  background:rgba(255,255,255,.15);
-  border:1px solid rgba(255,255,255,.3);
-  border-radius:50%;
-  color:rgba(255,255,255,.85);
-  font-size:1.1rem;
+/* Spelersprofiel-knop links in de topbar */
+.sc-profile {
+  display:flex;
+  align-items:center;
+  gap:15px;
+  background:none;
+  border:none;
   cursor:pointer;
+  padding:0;
+  flex-shrink:0;
+  text-align:left;
+  transition:opacity .15s;
+  margin-left:-6px;
+  margin-top:10px;
+}
+.sc-profile:hover { opacity:.85; }
+
+.sc-portrait-wrap {
+  position:relative;
+  flex-shrink:0;
+}
+
+/* Portret-container — erft de bestaande ss-household-face stijl maar kleiner */
+.sc-profile .ss-household-face {
+  width:69px;
+  height:69px;
+  pointer-events:none;
+  box-shadow:0 0 0 2px rgba(255,255,255,.6);
+}
+
+/* Menubadge — grijs hamburgericoon rechtsonder op het portret */
+.sc-menu-badge {
+  position:absolute;
+  bottom:0;
+  right:0;
+  width:27px;
+  height:27px;
+  background:rgba(30,40,70,.85);
+  border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  flex-shrink:0;
-  transition:background .15s;
+  color:#fff;
 }
-.gear-toggle-btn:hover { background:rgba(255,255,255,.25); }
+
+.sc-menu-badge svg {
+  width:13px;
+  height:13px;
+}
+
+/* Naam + huishoudensamenstelling */
+.sc-profile-text {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:3px;
+}
+
+.sc-profile .ss-player-name {
+  font-size:1.28rem;
+  font-weight:700;
+  color:#fff;
+  line-height:1.1;
+}
+
+.sc-household-desc {
+  font-size:1rem;
+  color:rgba(255,255,255,.6);
+  line-height:1.2;
+}
+
+/* Klokwidget uitgelijnd rechts in de topbar */
+.sc-topbar-left {
+  width:200px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:4px;
+  background:rgba(30,40,70,.55);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.14);
+  padding:12px 14px;
+}
 
 .setup-gear-btn {
   margin-top:0;
@@ -573,38 +713,50 @@ p.sub {
 }
 .gear-box {
   position:relative;
-  background:#e4e4e4;
-  border-radius:var(--r-md);
+  background:#fff;
+  border-radius:24px;
   max-width:min(400px, 92vw);
   width:100%;
-  box-shadow:0 24px 60px rgba(0,0,0,.38);
+  box-shadow:0 25px 50px -12px rgba(0,0,0,.25);
   overflow:hidden;
   font-family:'DM Sans',Arial,sans-serif;
   animation:alertslide .25s ease-out;
-  border:2px solid rgba(128,128,128,.5);
+  border:1px solid rgba(255,255,255,.4);
 }
 .gear-header {
   position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:9px 16px;
-  background:var(--c-topbar);
-  border-bottom:1px solid rgba(0,0,0,.15);
+  padding:14px 16px;
+  background:#fff;
+  border-bottom:3px solid transparent;
+  border-image:linear-gradient(to right,#3b82f6,#2563eb) 1;
+}
+.gear-header-title {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#2563eb;
+}
+.gear-header-title svg {
+  width:18px;
+  height:18px;
+  stroke:#2563eb;
+  flex-shrink:0;
 }
 .gear-header span {
-  font-size:.72rem;
+  font-size:.95rem;
   font-weight:700;
-  color:rgba(255,255,255,.9);
-  text-transform:uppercase;
-  letter-spacing:.08em;
+  color:#2563eb;
+  letter-spacing:.01em;
 }
 .gear-header .help-close-x {
   position:absolute;
   right:12px;
-  color:rgba(255,255,255,.75);
+  color:#94a3b8;
 }
-.gear-header .help-close-x:hover { color:#fff; }
+.gear-header .help-close-x:hover { color:#2563eb; }
 .gear-back {
   position:absolute;
   left:12px;
@@ -622,9 +774,9 @@ p.sub {
   display:flex;
   align-items:center;
   width:100%;
-  background:#e4e4e4;
+  background:#fff;
   border:none;
-  border-bottom:1px solid var(--c-border);
+  border-bottom:1px solid #e2e8f0;
   padding:13px 16px;
   gap:12px;
   font-size:.95rem;
@@ -652,53 +804,111 @@ p.sub {
   font-weight:600;
 }
 
-.sc-topbar-left {
+
+.sc-time-row {
   display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  flex:1;
-  gap:0;
+  align-items:center;
+  gap:12px;
 }
 
-.sc-topbar .time-big {
-  font-size:1.4rem;
+/* Zelfde breedte als ss-icon-bg (36px); viewBox centreert het icoon automatisch */
+.sc-clock-icon {
+  width:36px;
+  height:18px;
+  stroke:rgba(255,255,255,.7);
+  flex-shrink:0;
+}
+
+.sc-topbar .time-big,
+#global-clock .time-big {
+  font-size:1.6rem;
   font-weight:800;
   letter-spacing:1px;
   color:#fff;
   font-variant-numeric:tabular-nums;
   line-height:1;
-  border-left:1px solid rgba(255,255,255,.2);
-  padding-left:20px;
-  margin-left:20px;
 }
 
-.day-badge-wrap {
+.sc-date-row {
   display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:3px;
+  align-items:center;
+  gap:6px;
+  font-size:.75rem;
+  font-weight:500;
+  color:rgba(255,255,255,.75);
+  line-height:1;
+  padding-left:48px; /* 36px icon + 12px gap = uitlijning onder de tijdscijfers */
+}
+
+.sc-date-sep {
+  color:rgba(255,255,255,.4);
 }
 
 .sc-dayofweek {
-  font-size:.6rem;
-  color:rgba(255,255,255,.5);
-  text-transform:lowercase;
-  letter-spacing:.8px;
-  line-height:1;
+  text-transform:capitalize;
 }
 
 .scene-day-badge {
   background:none;
   border:none;
-  color:#fff;
-  font-size:1.4rem;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:1.5px;
+  color:rgba(255,255,255,.75);
+  font-size:.75rem;
+  font-weight:500;
+  text-transform:capitalize;
+  letter-spacing:0;
   padding:0;
   flex-shrink:0;
   white-space:nowrap;
   line-height:1;
+}
+
+/* Globale klok — reële tijd, zichtbaar vanaf intake */
+.global-clock-fixed {
+  position:fixed;
+  top:16px;
+  right:18px;
+  z-index:10;
+}
+
+/* Globale menuknop — spiegelt de profielpositie op niet-scenario-schermen */
+.global-menu-btn {
+  position:fixed;
+  top:26px;
+  left:12px;
+  width:69px;
+  height:69px;
+  border-radius:50%;
+  background:rgba(30,40,70,.55);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.2);
+  box-shadow:0 0 0 2px rgba(255,255,255,.6);
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+  transition:opacity .15s, transform .15s;
+}
+
+.global-menu-btn:hover {
+  opacity:.85;
+  transform:scale(1.05);
+}
+
+.global-menu-btn svg {
+  width:26px;
+  height:26px;
+  stroke:#fff;
+}
+
+/* Verborgen bij paginaladen (startpagina is standaard actief) en tijdens scenario */
+#global-menu-btn {
+  display:none;
+}
+#main-content.scenario-active ~ #global-menu-btn {
+  display:none;
 }
 
 #scene-id-corner {
@@ -730,18 +940,20 @@ p.sub {
 .status-sidebar {
   position:fixed;
   right:18px;
-  top:60px;
+  top:110px; /* wordt overschreven door JS na meten klokwidget */
   z-index:200;
   display:none;
   flex-direction:column;
-  align-items:center;
+  align-items:stretch;
   gap:0;
-  background:rgba(0,42,102,.88);
-  border-radius:var(--r-md);
-  padding:14px 10px;
-  backdrop-filter:blur(4px);
-  border:2px solid rgba(128,128,128,.5);
-  box-shadow:0 4px 24px rgba(0,0,0,.32);
+  background:rgba(30,40,70,.55);
+  border-radius:20px;
+  padding:6px 0;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  width:200px;
 }
 
 .status-sidebar.visible {
@@ -764,48 +976,137 @@ p.sub {
   flex-shrink:0;
 }
 
+/* Sidebar — elke rij */
 .ss-stat {
   display:flex;
-  flex-direction:column;
+  flex-direction:row;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  padding:10px 14px;
+}
+
+/* Gekleurd icoon-vierkantje */
+.ss-icon-bg {
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  display:flex;
   align-items:center;
   justify-content:center;
+  flex-shrink:0;
+}
+
+.ss-icon-bg svg {
+  width:18px;
+  height:18px;
+}
+
+/* Kleur per stat */
+.ss-col-food   { background:transparent; color:#f97316; }
+.ss-col-water  { background:transparent; color:#22d3ee; }
+.ss-col-comfort{ background:transparent; color:#a855f7; }
+.ss-col-battery{ background:transparent; color:#3b82f6; }
+.ss-col-cash   { background:transparent; color:#eab308; }
+
+/* Waarde-blok rechts van het icon */
+.ss-val-block {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  min-width:0;
+}
+
+.ss-val-row {
+  display:flex;
+  align-items:baseline;
   gap:3px;
-  flex:0 0 72px;
+}
+
+.ss-big-val {
+  font-size:1.7rem;
+  font-weight:800;
+  color:#fff;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+
+.ss-unit {
+  font-size:.75rem;
+  color:rgba(255,255,255,.55);
+  font-weight:600;
+}
+
+/* Voortgangsbalk */
+.ss-progress {
+  height:3px;
+  border-radius:2px;
+  background:rgba(255,255,255,.1);
   overflow:hidden;
 }
 
-.ss-stat-label {
-  font-size:.44rem;
-  color:rgba(255,255,255,.78);
-  text-transform:uppercase;
-  letter-spacing:.6px;
+.ss-progress-fill {
+  height:100%;
+  border-radius:2px;
+  transition:width .4s ease;
+}
+
+.ss-fill-comfort { background:#a855f7; }
+.ss-fill-battery { background:#3b82f6; }
+
+/* Waarschuwings-driehoek */
+.ss-warn {
+  display:none;
+  color:#ef4444;
+  flex-shrink:0;
+}
+
+.ss-warn svg { width:16px; height:16px; }
+
+.ss-stat.warn  .ss-warn,
+.ss-stat.danger .ss-warn { display:flex; }
+
+/* Kleuroverrides bij lage waarden */
+.ss-stat.warn  .ss-icon-bg.ss-col-food,
+.ss-stat.warn  .ss-icon-bg.ss-col-water  { background:transparent; color:#fbbf24; }
+.ss-stat.danger .ss-icon-bg.ss-col-food,
+.ss-stat.danger .ss-icon-bg.ss-col-water { background:transparent; color:#ef4444; }
+.ss-stat.warn  .ss-big-val { color:#fbbf24; }
+.ss-stat.danger .ss-big-val { color:#ef4444; animation:blink-alert .8s ease-in-out infinite; }
+
+/* Mobile statusbalk icon */
+.msb-stat-icon {
+  display:inline-flex;
+  background:rgba(15,23,42,.5);
+  padding:5px;
+  border-radius:7px;
+  flex-shrink:0;
+}
+
+.msb-stat-icon svg {
+  width:14px;
+  height:14px;
+  stroke:rgba(255,255,255,.85);
+  flex-shrink:0;
+}
+
+/* Gekleurde icons per indicator */
+#msb-food .msb-stat-icon svg      { stroke:#fb923c; }
+#msb-water .msb-stat-icon svg     { stroke:#22d3ee; }
+#msb-comfort .msb-stat-icon svg   { stroke:#c084fc; }
+.msb-cash-pill .msb-stat-icon svg { stroke:#fbbf24; }
+
+.msb-value {
+  font-size:.75rem;
+  font-weight:700;
+  color:#fff;
   white-space:nowrap;
 }
 
-.ss-icon-row {
-  display:flex;
-  flex-direction:row;
-  gap:2px;
-}
-
-.ss-icon-unit {
-  font-size:1.4rem;
-  line-height:1;
-  transition:opacity .35s,filter .35s;
-}
-
-.ss-icon-unit.empty {
-  opacity:.18;
-  filter:grayscale(1);
-}
-
-.ss-icon-unit.warn {
-  opacity:.7;
-}
-
-.ss-icon-unit.danger {
-  animation:blink-alert .8s ease-in-out infinite;
-}
+.msb-stat.warn { border-color:rgba(251,191,36,.4); }
+.msb-stat.warn .msb-value { color:#fbbf24; }
+.msb-stat.danger .msb-value { color:#f87171; animation:blink-alert .8s ease-in-out infinite; }
 
 @keyframes blink-alert {
   0%,
@@ -819,17 +1120,7 @@ p.sub {
 
 }
 
-.ss-stat.zero .ss-stat-label {
-  color:#f87171;
-  animation:blink-alert .8s ease-in-out infinite;
-}
-
-.ss-divider {
-  width:100%;
-  height:1px;
-  background:rgba(255,255,255,.15);
-  margin:2px 0;
-}
+.ss-divider { display:none; }
 
 .ss-vehicles-row {
   display:flex;
@@ -1119,11 +1410,33 @@ p.sub {
   margin-top:2px;
 }
 
-/* Cash display */
+/* Cash — eigen floating box onder de sidebar */
+
+.ss-cash-box {
+  position:fixed;
+  right:18px;
+  top:auto;
+  z-index:200;
+  display:none;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  background:rgba(30,40,70,.55);
+  border-radius:16px;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  width:200px;
+}
+
+.ss-cash-box.visible {
+  display:flex;
+}
 
 .ss-cash-amount {
-  font-size:.95rem;
-  font-weight:700;
+  font-size:1.7rem;
+  font-weight:800;
   color:#fff;
   letter-spacing:-.5px;
 }
@@ -1132,26 +1445,50 @@ p.sub {
   display:flex;
   gap:0;
   margin-bottom:0;
-  border-bottom:2px solid var(--c-border-light);
   background:#fff;
-  padding:0 12px;
+  padding:0;
+  flex-shrink:0;
 }
 
 .ch-tab {
   background:transparent;
   border:none;
   color:var(--c-text-faint);
-  font-size:.7rem;
+  font-size:.75rem;
   font-weight:600;
-  padding:11px 13px;
-  min-height:44px;
+  padding:12px 8px;
+  min-height:48px;
   cursor:pointer;
-  border-bottom:2px solid transparent;
-  margin-bottom:-2px;
+  border-bottom:none;
   transition:all .2s;
-  text-transform:uppercase;
-  letter-spacing:.8px;
+  letter-spacing:.2px;
   white-space:nowrap;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:1;
+  justify-content:center;
+  position:relative;
+}
+
+.ch-tab svg {
+  width:14px;
+  height:14px;
+  flex-shrink:0;
+  stroke:currentColor;
+}
+
+.ch-tab::after {
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:3px;
+  background:linear-gradient(to right,#3b82f6,#2563eb);
+  border-radius:3px 3px 0 0;
+  opacity:0;
+  transition:opacity .2s;
 }
 
 .ch-tab:hover {
@@ -1159,36 +1496,47 @@ p.sub {
 }
 
 .ch-tab.active {
-  color:var(--c-primary);
-  border-bottom-color:var(--c-primary);
+  color:#2563eb;
+}
+
+.ch-tab.active::after {
+  opacity:1;
 }
 
 .ch-tab.hidden-tab {
   display:none;
 }
 
-@keyframes tabglow {
-  0%,
-  100% {
-    color:var(--c-text-faint);
-    border-bottom-color:transparent;
-  }
-
-  50% {
-    color:var(--c-primary-dark);
-    border-bottom-color:var(--c-primary);
-    background:var(--c-primary-border);
-  }
-
+/* Icon-wrapper voor badge-positionering */
+.tab-icon-wrap {
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.ch-tab.has-unread {
-  animation:tabglow 1s ease-in-out infinite;
-  border-radius:var(--r-sm) var(--r-sm) 0 0;
+/* Ongelezen-badge (getal) */
+.tab-badge {
+  position:absolute;
+  top:-7px;
+  right:-7px;
+  min-width:16px;
+  height:16px;
+  background:#ef4444;
+  color:#fff;
+  font-size:9px;
+  font-weight:700;
+  border-radius:9999px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  border:2px solid #fff;
+  padding:0 3px;
+  line-height:1;
+  pointer-events:none;
 }
-
-.ch-tab.active.has-unread {
-  animation:none;
+.tab-badge.visible {
+  display:flex;
 }
 
 .sv-wrap {
@@ -1264,15 +1612,35 @@ p.sub {
 
 .channel-panel {
   display:none;
-  padding:16px;
+  padding:24px 20px;
   background:#fff;
-  height:42vh;
-  min-height:160px;
-  overflow-y:auto;
 }
 
 .channel-panel.active {
-  display:block;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+}
+
+/* Scrollbare contentgebieden per tab */
+#news-content,
+.wa-bg {
+  flex:1;
+  overflow-y:auto;
+  min-height:0;
+}
+
+#panel-buiten .narrative-text {
+  flex:1;
+  overflow-y:auto;
+  min-height:0;
+}
+
+.radio-panel-bg {
+  flex:1;
+  min-height:0;
 }
 
 .ch-empty {
@@ -1436,10 +1804,12 @@ p.sub {
   background:transparent;
   margin:-16px;
   padding:16px;
-  min-height:calc(100% + 32px);
   box-sizing:border-box;
   display:flex;
   flex-direction:column;
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
 }
 
 .radio-panel-bg .radio-play-btn {
@@ -1459,7 +1829,7 @@ p.sub {
 }
 
 .radio-display::before {
-  content:'📻 Radio: ';
+  content:'📻 ';
   color:#22c55e;
   font-weight:700;
 }
@@ -1484,7 +1854,7 @@ p.sub {
 .radio-text {
   font-size:.84rem;
   line-height:1.85;
-  color:var(--c-text-3);
+  color:var(--c-text-1);
   white-space:pre-line;
 }
 
@@ -1785,6 +2155,24 @@ p.sub {
   flex-direction:column;
   gap:0;
   transition:opacity 320ms ease;
+  background:rgba(255,255,255,.98);
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.4);
+  box-shadow:0 25px 50px -12px rgba(0,0,0,.25);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  position:relative;
+  z-index:1;
+  overflow:hidden;
+}
+
+#s-scenario.active .scenario-zones {
+  flex:1;
+  min-height:0;
+  max-width:680px;
+  width:100%;
+  margin-left:auto;
+  margin-right:auto;
 }
 
 .scenario-zones.fading {
@@ -1792,17 +2180,26 @@ p.sub {
 }
 
 .zone-top {
-  background:#fff;
+  background:transparent;
   border-bottom:1px solid var(--c-border-light);
+  flex:1;
+  min-height:120px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
 }
 
 .zone-bottom {
-  background:var(--c-surface);
-  padding:22px 24px 28px;
+  background:linear-gradient(to bottom,rgba(248,250,252,.85),rgba(248,250,252,.65));
+  border-top:1px solid rgba(226,232,240,.8);
+  padding:16px 20px 22px;
+  flex-shrink:0;
+  overflow-y:auto;
+  max-height:55vh;
 }
 
 #sc-choices {
-  min-height:244px;
+  min-height:140px;
 }
 
 .zone-label {
@@ -1815,9 +2212,9 @@ p.sub {
 }
 
 .narrative-text {
-  font-size:.95rem;
-  line-height:1.8;
-  color:var(--c-text-2);
+  font-size:.875rem;
+  line-height:1.65;
+  color:#334155;
 }
 
 .narrative-text b {
@@ -1833,6 +2230,11 @@ p.sub {
   margin:-16px -16px 12px;
   border-bottom:1px solid var(--c-border-light);
   background:var(--c-faint-bg);
+}
+.ch-nav.ch-nav-bottom {
+  margin:12px -16px -16px;
+  border-bottom:none;
+  border-top:1px solid var(--c-border-light);
 }
 
 .ch-nav-btn {
@@ -1872,9 +2274,9 @@ p.sub {
 
 .choice-btn {
   background:var(--c-white);
-  border:1px solid var(--c-border);
-  border-left:3px solid var(--c-border);
-  border-radius:var(--r-sm);
+  border:2px solid #e2e8f0;
+  border-left:4px solid #e2e8f0;
+  border-radius:12px;
   padding:12px 16px;
   color:var(--c-text-2);
   font-size:.88rem;
@@ -1892,8 +2294,10 @@ p.sub {
 }
 
 .choice-btn:hover:not(:disabled) {
-  background:#f0f5ff;
-  box-shadow:0 2px 10px rgba(var(--c-primary-rgb),.13);
+  border-color:#93c5fd;
+  background:rgba(239,246,255,.4);
+  box-shadow:0 2px 10px rgba(37,99,235,.1);
+  transform:translateX(2px);
 }
 
 .choice-btn:active {
@@ -2862,25 +3266,50 @@ p.sub {
 .mobile-status-bar {
   display:none;
   align-items:center;
-  gap:10px;
-  background:rgba(0,30,80,.92);
-  padding:7px 14px;
-  border-bottom:1px solid rgba(255,255,255,.1);
+  gap:8px;
+  background:transparent;
+  padding:6px 16px 10px;
+  border-bottom:none;
   flex-wrap:nowrap;
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
+  position:relative;
+  z-index:1;
+  flex-shrink:0;
+}
+
+/* Mobile status bar: alleen zichtbaar op kleine schermen (sidebar neemt het over op desktop) */
+#s-scenario .mobile-status-bar {
+  display:flex;
+}
+
+@media(min-width:769px) {
+  #s-scenario .mobile-status-bar {
+    display:none;
+  }
 }
 
 .msb-stat {
   display:flex;
   align-items:center;
-  gap:1px;
+  gap:6px;
   flex-shrink:0;
+  background:rgba(15,23,42,.6);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.1);
+  padding:6px 10px;
+  box-shadow:0 4px 6px rgba(0,0,0,.15);
+}
+
+.msb-cash-pill {
+  margin-left:8px;
 }
 
 .msb-segs {
   display:flex;
-  gap:1px;
+  gap:2px;
 }
 
 .msb-icon-unit {
@@ -2911,19 +3340,9 @@ p.sub {
   height:18px;
   background:rgba(255,255,255,.2);
   flex-shrink:0;
+  display:none;
 }
 
-.msb-info {
-  font-size:.72rem;
-  font-weight:700;
-  color:rgba(255,255,255,.85);
-  white-space:nowrap;
-  flex-shrink:0;
-}
-
-.msb-info span {
-  color:#fff;
-}
 
 /* ── TABLET BREAKPOINT (768px) ── */
 
@@ -2932,7 +3351,7 @@ p.sub {
 /* ── RESPONSIVE: TABLET (max 768px) ───────────────────────────────────────── */
 @media(max-width:768px) {
   body {
-    padding:16px 10px;
+    padding:106px 10px 20px;
   }
 
   #s-intake,
@@ -2945,7 +3364,20 @@ p.sub {
   }
 
   .sc-topbar {
-    padding:9px 14px 9px 14px;
+    padding:12px 14px;
+  }
+
+  .sc-topbar-left {
+    width:auto;
+    padding:8px 16px;
+  }
+
+  .sc-profile .ss-player-name {
+    font-size:.78rem;
+  }
+
+  .sc-household-desc {
+    font-size:.62rem;
   }
 
   .toggle-wrap {
@@ -2953,14 +3385,11 @@ p.sub {
     gap:4px;
   }
 
-  /* Hide fixed sidebars; show compact status bar */
-
-  .mobile-status-bar {
-    display:flex;
-  }
+  /* Hide fixed sidebars on tablet; mobile status bar already always shown in scenario */
 
   .status-sidebar.visible,
-  .status-sidebar-left.visible {
+  .status-sidebar-left.visible,
+  .ss-cash-box.visible {
     display:none!important;
   }
 
@@ -2972,26 +3401,23 @@ p.sub {
 
 /* ── RESPONSIVE: MOBIEL (max 640px) ───────────────────────────────────────── */
 @media(max-width:640px) {
-  /* Show mobile status bar, hide desktop sidebars */
-
-  .mobile-status-bar {
-    display:flex;
-  }
+  /* Hide desktop sidebars on mobile; status bar shown inline in scenario screen */
 
   .status-sidebar.visible,
-  .status-sidebar-left.visible {
+  .status-sidebar-left.visible,
+  .ss-cash-box.visible {
     display:none!important;
   }
 
   /* Body */
 
   body {
-    padding:12px 0;
+    padding:106px 10px 20px;
     align-items:stretch;
   }
 
   .card {
-    border-radius:0;
+    border-radius:20px;
     max-width:100%;
   }
 
@@ -3011,8 +3437,7 @@ p.sub {
 
   .ch-tab {
     padding:11px 10px;
-    font-size:.63rem;
-    letter-spacing:.5px;
+    font-size:.7rem;
   }
 
   /* Scenario bottom zone */
@@ -3024,7 +3449,6 @@ p.sub {
   /* Channel panel */
 
   .channel-panel {
-    height:34vh;
     min-height:140px;
   }
 
@@ -3101,12 +3525,14 @@ p.sub {
 
   /* Topbar time + badge */
 
-  .sc-topbar .time-big {
-    font-size:1.2rem;
+  .sc-topbar .time-big,
+  #global-clock .time-big {
+    font-size:1.3rem;
   }
 
+  .sc-date-row,
   .scene-day-badge {
-    font-size:1.2rem;
+    font-size:.68rem;
   }
 
 }
@@ -3443,21 +3869,33 @@ a:focus-visible {
   gap: 0;
   width: 50%;
   margin: 0 auto 28px;
-  border-radius: var(--r-md);
+  border-radius: 24px;
   overflow: hidden;
-  background: #e4e4e4;
+  background: #fff;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.4);
 }
 
 .start-menu-topbar {
-  padding: 9px 16px;
-  font-size: .72rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
+  font-size: .95rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: rgba(255,255,255,.9);
+  color: #2563eb;
   text-align: center;
-  border-bottom: 1px solid rgba(0,0,0,.15);
-  background: var(--c-topbar);
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(to right,#3b82f6,#2563eb) 1;
+  background: #fff;
+}
+
+.start-menu-topbar svg {
+  width: 18px;
+  height: 18px;
+  stroke: #2563eb;
+  flex-shrink: 0;
 }
 
 .start-menu-btn {
@@ -3466,9 +3904,9 @@ a:focus-visible {
   align-items: center;
   width: 100%;
   padding: 13px 16px;
-  background: #e4e4e4;
+  background: #fff;
   border: none;
-  border-bottom: 1px solid var(--c-border);
+  border-bottom: 1px solid #e2e8f0;
   font-size: .95rem;
   font-weight: 400;
   color: var(--c-text);
@@ -3493,7 +3931,7 @@ a:focus-visible {
 }
 
 .start-menu-btn:disabled:hover {
-  background: #e4e4e4;
+  background: #fff;
   color: var(--c-text-faint);
 }
 

@@ -7,8 +7,8 @@
 // ─── CONSTANTEN ───────────────────────────────────────────────────────────────
 
 // Maximale waarden voor stat-meters
-const MAX_STAT_WATER   = 5;
-const MAX_STAT_FOOD    = 5;
+const MAX_STAT_WATER   = 999; // onbegrensd — echte dagwaarden
+const MAX_STAT_FOOD    = 999; // onbegrensd — echte dagwaarden
 const MAX_STAT_COMFORT = 10;
 const MAX_STAT_HEALTH  = 10;
 const MAX_STAT_SEGS    = 5; // aantal segmenten zichtbaar in de UI
@@ -16,10 +16,10 @@ const MAX_STAT_SEGS    = 5; // aantal segmenten zichtbaar in de UI
 // Startwaarden bij aanvang van een scenario
 const START_WATER         = 3;
 const START_FOOD          = 3;
-const START_COMFORT       = 5;
-const START_HEALTH        = 5;
+const START_COMFORT       = 10;
+const START_HEALTH        = 10;
 const START_CASH          = 20;
-const START_PHONE_BATTERY = 80;
+const START_PHONE_BATTERY = 100;
 
 // Huishoud-limieten
 const MAX_HOUSEHOLD = 8;

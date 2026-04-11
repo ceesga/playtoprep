@@ -491,40 +491,53 @@ const sceneVisuals = {
    contant geld en voertuigen.
 */
 function renderStatusBars() {
+  // Waarschuwingskleuren voor water/voedsel alleen tonen tijdens een actief scenario
+  const scenarioActive = document.getElementById('main-content')?.classList.contains('scenario-active');
   // Helper: update een reeks segmenten in zowel de zijbalk als de mobiele balk
   function updateSegs(segId, msbSegId, wrapId, msbStatId, val) {
-    // Sidebar icon units
-    const icons = document.querySelectorAll('#' + segId + ' .ss-icon-unit');
-    icons.forEach((icon, i) => {
-      icon.classList.remove('empty', 'warn', 'danger');
-      if (i >= val) {
-        // Dit segment is leeg (boven de huidige waarde)
-        icon.classList.add('empty');
-      } else if (val <= 1) {
-        // Kritiek laag: rood
-        icon.classList.add('danger');
-      } else if (val <= 2) {
-        // Laag: oranje/geel
-        icon.classList.add('warn');
-      }
-    });
+    // Sidebar: icon + getal + warn/danger klasse
+    const svalMap = { 'stat-food': 'ss-val-food', 'stat-water': 'ss-val-water', 'stat-comfort': 'ss-val-comfort' };
+    const svalEl = document.getElementById(svalMap[segId]);
+    if (svalEl) {
+      svalEl.textContent = segId === 'stat-comfort' ? Math.round(val / 10 * 100) : val;
+    }
+    // Sidebar: unit-label voor water en voedsel (dag/dagen)
+    const sunitMap = { 'stat-food': 'ss-unit-food', 'stat-water': 'ss-unit-water' };
+    const sunitEl = sunitMap[segId] ? document.getElementById(sunitMap[segId]) : null;
+    if (sunitEl) sunitEl.textContent = val === 1 ? 'dag' : 'dagen';
+    // Progress bar (comfort)
+    if (segId === 'stat-comfort') {
+      const fillEl = document.getElementById('ss-fill-comfort');
+      if (fillEl) fillEl.style.width = Math.round(val / 10 * 100) + '%';
+    }
+    const isWaterOrFood = segId === 'stat-water' || segId === 'stat-food';
     const wrap = document.getElementById(wrapId);
-    // Voeg klasse 'zero' toe als de waarde nul is (voor extra visuele nadruk)
-    if (wrap) wrap.classList.toggle('zero', val === 0);
-    // Mobile icon units
-    const micons = document.querySelectorAll('#' + msbSegId + ' .msb-icon-unit');
-    micons.forEach((icon, i) => {
-      icon.classList.remove('empty', 'warn', 'danger');
-      if (i >= val) {
-        icon.classList.add('empty');
-      } else if (val <= 1) {
-        icon.classList.add('danger');
-      } else if (val <= 2) {
-        icon.classList.add('warn');
+    if (wrap) {
+      wrap.classList.remove('warn', 'danger', 'zero');
+      if (!isWaterOrFood || scenarioActive) {
+        if (val === 0)     { wrap.classList.add('zero', 'danger'); }
+        else if (val <= 1) { wrap.classList.add('danger'); }
+        else if (val <= 3) { wrap.classList.add('warn'); }
       }
-    });
+    }
+    // Mobile statusbalk: icon + tekstwaarde
+    const mvalMap = { 'msb-seg-food': 'msb-val-food', 'msb-seg-water': 'msb-val-water', 'msb-seg-comfort': 'msb-val-comfort' };
+    const mvalEl = document.getElementById(mvalMap[msbSegId]);
+    if (mvalEl) {
+      mvalEl.textContent = msbSegId === 'msb-seg-comfort'
+        ? Math.round(val / 10 * 100) + '%'
+        : val === 1 ? '1 dag' : val + ' dagen';
+    }
+    const isMsbWaterOrFood = msbSegId === 'msb-seg-water' || msbSegId === 'msb-seg-food';
     const mwrap = document.getElementById(msbStatId);
-    if (mwrap) mwrap.classList.toggle('zero', val === 0);
+    if (mwrap) {
+      mwrap.classList.remove('warn', 'danger', 'zero');
+      if (!isMsbWaterOrFood || scenarioActive) {
+        mwrap.classList.toggle('zero', val === 0);
+        if (val <= 1) mwrap.classList.add('danger');
+        else if (val <= 3) mwrap.classList.add('warn');
+      }
+    }
   }
   // Werk de drie hoofdstatistieken bij: water, voedsel, comfort
   updateSegs('stat-water', 'msb-seg-water', 'ss-water', 'msb-water', state.water);
@@ -535,7 +548,7 @@ function renderStatusBars() {
   updateBattery('batt-phone-fill', 'batt-phone-pct', 'batt-phone-empty', state.phoneBattery);
   // Cash
   const cashEl = document.getElementById('ss-cash-amount');
-  if (cashEl) cashEl.textContent = '💵 €' + state.cash;
+  if (cashEl) cashEl.textContent = '€' + state.cash + ',-';
   // Mobile bar — battery + cash
   const mBatt = document.getElementById('msb-battery');
   if (mBatt) mBatt.textContent = state.phoneBattery + '%';
@@ -564,24 +577,32 @@ function renderStatusBars() {
 function updateBattery(fillId, pctId, emptyId, val) {
   const body = document.getElementById(fillId);
   const pctEl = document.getElementById(pctId);
-  if (!body) return;
   // Rond af op een veelvoud van 10 voor een cleaner weergave
   const pct = Math.round(val / 10) * 10;
-  // Bereken het aantal gevulde batterijbalken (max. 5)
-  const filledBars = Math.round(pct / 20); // 0–5 bars
-  // Kies de kleur op basis van het resterende percentage
-  const color = pct >= 80 ? 'var(--c-battery-full)' : pct >= 60 ? 'var(--c-battery-mid)' : pct >= 40 ? 'var(--c-battery-low)' : 'var(--c-battery-empty)';
-  body.querySelectorAll('.batt-bar').forEach((bar, i) => {
-    // Gevulde balken krijgen de statuskleur; lege balken worden gereset
-    bar.style.backgroundColor = i < filledBars ? color : '';
-  });
-  // Kritiek (≤20%): rand en tekst rood + knipperanimatie
   const critical = pct <= 20;
-  body.style.borderColor = critical ? 'var(--c-battery-empty)' : '';
+  // Bar-widget (indien aanwezig)
+  if (body) {
+    const filledBars = Math.round(pct / 20);
+    const color = pct >= 80 ? 'var(--c-battery-full)' : pct >= 60 ? 'var(--c-battery-mid)' : pct >= 40 ? 'var(--c-battery-low)' : 'var(--c-battery-empty)';
+    body.querySelectorAll('.batt-bar').forEach((bar, i) => {
+      bar.style.backgroundColor = i < filledBars ? color : '';
+    });
+    body.style.borderColor = critical ? 'var(--c-battery-empty)' : '';
+  }
+  // Procenttekst — alleen het getal (eenheid staat als aparte span in HTML)
   if (pctEl) {
-    pctEl.textContent = pct + '%';
-    pctEl.style.color = critical ? 'var(--c-battery-empty)' : '';
+    pctEl.textContent = pct;
     pctEl.classList.toggle('blink-alert', critical);
+  }
+  // Progress bar
+  const battFill = document.getElementById('ss-fill-battery');
+  if (battFill) battFill.style.width = pct + '%';
+  // Kleurklassen op de ss-battery stat-kaart
+  const battStat = document.getElementById('ss-battery');
+  if (battStat) {
+    battStat.classList.remove('warn', 'danger');
+    if (critical) battStat.classList.add('danger');
+    else if (pct <= 40) battStat.classList.add('warn');
   }
 }
 
@@ -984,10 +1005,10 @@ function startScenario(scenarioId) {
   if (profile.hasWater === 'ja') state.hasWater = true;
 
   // Initialize survival stats from profile
-  state.water = profile.hasWater === 'ja' ? 5 : 1; // speler met watervoorraad start met vol water
-  state.food = (profile.hasKit === 'ja' || profile.hasExtraFood) ? 5 : 2; // noodpakket geeft vol voedsel
-  state.comfort = 5;
-  state.health = 5;
+  state.water = 1 + (profile.hasWater === 'ja' ? 3 : 0); // basisvoorraad 1 dag + 3 extra bij noodpakket
+  state.food  = 2 + ((profile.hasKit === 'ja' || profile.hasExtraFood) ? 3 : 0); // basis 2 dagen + 3 extra bij noodpakket
+  state.comfort = START_COMFORT;
+  state.health  = START_HEALTH;
   // Bij thuis_komen ben je onderweg: alleen zakgeld + reistasje, noodpakket is thuis
   const homeCash = currentScenario === 'thuis_komen' ? 0 : (profile.hasCash === 'ja' ? 100 : 0);
   // Startbedrag: basisbedrag + eventueel contant geld thuis + EDC-tas bonusgeld
@@ -1137,12 +1158,34 @@ function getActiveScenes() {
   return scenes.filter(s => !s.conditionalOn || s.conditionalOn());
 }
 
-// Voegt de 'has-unread'-klasse toe aan een kanaaltab om een ongelezen-indicator
-// te tonen. Synchroniseert de animatiefase zodat alle tabs gelijk knipperen.
+// Bijhouder voor ongelezen aantallen per kanaal
+const unreadCounts = { news: 0, whatsapp: 0, radio: 0 };
+
+// Timer-referentie voor badge-markering — wordt geannuleerd bij scènewissel
+let _badgeMarkTimer = null;
+
+// Toont of verbergt de getal-badge op een tab
+function setBadge(name, count) {
+  const id = name === 'radio' ? 'badge-radio' : 'badge-' + name;
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (count > 0) {
+    el.textContent = count > 9 ? '9+' : count;
+    el.classList.add('visible');
+  } else {
+    el.classList.remove('visible');
+    el.textContent = '';
+  }
+}
+
+// Voegt de 'has-unread'-klasse toe aan een kanaaltab en verhoogt de badge-teller.
+// Synchroniseert de animatiefase zodat alle tabs gelijk knipperen.
 // Doet niets als de tab al actief is.
-function markUnread(name) {
+function markUnread(name, increment) {
   const tab = document.getElementById('tab-' + name) || (name === 'radio' ? document.getElementById('radio-tab') : null);
   if (!tab || tab.classList.contains('active')) return;
+  unreadCounts[name] = (unreadCounts[name] || 0) + (increment || 1);
+  setBadge(name, unreadCounts[name]);
   // Sync all tabs to the same point in the 1s animation cycle
   const phase = (Date.now() % 1000) / 1000;
   tab.style.animationDelay = `-${phase.toFixed(3)}s`;
@@ -1159,8 +1202,11 @@ function markUnread(name) {
 function renderScene() {
   Typewriter.cancel();
   pendingChoiceMade = false; // reset bij elke nieuwe scène
-  // Wis alle unread-stipjes van de vorige scene
+  // Annuleer openstaande badge-timer van vorige scène
+  if (_badgeMarkTimer) { clearTimeout(_badgeMarkTimer); _badgeMarkTimer = null; }
+  // Wis alle unread-stipjes en badges van de vorige scene
   document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('has-unread'));
+  ['news', 'whatsapp', 'radio'].forEach(n => { unreadCounts[n] = 0; setBadge(n, 0); });
   // Fade-in nieuwe scene
   const _zones = document.querySelector('.scenario-zones');
   if (_zones) {
@@ -1185,7 +1231,7 @@ function renderScene() {
     Object.keys(decay).forEach(k => {
       // Vliegtuigmodus: telefoonbatterij daalt niet door verval
       if (k === 'phoneBattery' && state.airplaneMode) return;
-      const max = k === 'phoneBattery' ? 100 : 5;
+      const max = k === 'phoneBattery' ? 100 : (k === 'water' || k === 'food') ? 999 : 5;
       // Pas de vervalwaarde toe maar houd de stat binnen het geldige bereik
       state[k] = Math.max(0, Math.min(max, state[k] + decay[k]));
     });
@@ -1205,10 +1251,11 @@ function renderScene() {
   }
   renderStatusBars();
 
-  // Clear all unread dots — only re-add below for this scene's new content
+  // Clear all unread dots en badges — only re-add below for this scene's new content
   ['news', 'whatsapp', 'radio'].forEach(t => {
     const tab = document.getElementById('tab-' + t);
     if (tab) tab.classList.remove('has-unread');
+    unreadCounts[t] = 0; setBadge(t, 0);
   });
 
   // Show/hide back button
@@ -1280,16 +1327,25 @@ function renderScene() {
   // Render only current scene's new content
   renderChannels(scene);
 
-  // Mark unread dots for tabs with genuinely new content this scene
-  setTimeout(() => {
-    if (scene.channels.news && scene.channels.news.length) markUnread('news');
-    if (scene.channels.nlalert) {
-      markUnread('whatsapp');
-      playMessagePing(); // geluidssignaal voor binnenkomend NL-Alert
+  // Mark unread dots en badges voor tabs met nieuwe inhoud in deze scène
+  // Kanaalinhoud wordt eenmalig opgevangen zodat getter-scenes consistent tellen
+  const _ch = scene.channels;
+  const _newsCount    = (_ch.news    && _ch.news.length)    ? _ch.news.length    : 0;
+  const _waCount      = (_ch.whatsapp && _ch.whatsapp.length) ? _ch.whatsapp.length : 0;
+  const _nlalertCount = 0; // NL-Alert verschijnt als popup en telt niet mee als bericht
+  const _hasRadio     = !!(_ch.radio && (profile.hasRadio || state.hasCarRadio));
+  _badgeMarkTimer = setTimeout(() => {
+    _badgeMarkTimer = null;
+    if (_newsCount)  markUnread('news',     _newsCount);
+    if (_waCount)    markUnread('whatsapp', _waCount);
+    if (_ch.nlalert) playMessagePing(); // geluidssignaal voor NL-Alert popup
+    if (_hasRadio)   markUnread('radio', 1);
+    // Actieve tab heeft nooit een indicator nodig
+    const activeTabEl = document.getElementById('tab-' + activeTab) || (activeTab === 'radio' ? document.getElementById('radio-tab') : null);
+    if (activeTabEl) {
+      activeTabEl.classList.remove('has-unread');
+      unreadCounts[activeTab] = 0; setBadge(activeTab, 0);
     }
-    if (scene.channels.radio && (profile.hasRadio || state.hasCarRadio)) markUnread('radio');
-    // Active tab never needs a dot
-    document.getElementById('tab-' + activeTab)?.classList.remove('has-unread');
   }, 200); // kleine vertraging zodat de tab zeker al actief is
 
   // Reset next-row animation so it re-fires each scene
@@ -1506,7 +1562,6 @@ function renderChannels(scene) {
       if (placeholder) placeholder.remove();
       waContainer.appendChild(div);
     });
-    markUnread('whatsapp');
     playMessagePing();
     if (activeTab === 'whatsapp') {
       // Als de berichtentab al actief is, hoeft er geen ongelezen-indicator te zijn
@@ -1520,8 +1575,8 @@ function renderChannels(scene) {
   const radioBtn = document.getElementById('radio-play-btn');
   if ((profile.hasRadio || state.hasCarRadio) && sc.radio) {
     // Toon de frequentie afhankelijk van het type radio dat de speler heeft
-    document.getElementById('radio-freq').textContent = '98.9 FM • Radio 1';
-    document.getElementById('radio-content').style.color = '#cbd5e1';
+    document.getElementById('radio-freq').textContent = 'Radio 1: 98.9 FM';
+    document.getElementById('radio-content').style.color = '';
     document.getElementById('radio-content').innerHTML = sc.radio;
     currentRadioText = sc.radio;
     if (radioBtn) radioBtn.style.display = 'block';
@@ -2125,7 +2180,7 @@ function pickChoice(idx) {
       state[k] = Math.max(state[k], sc[k]);
     } else if (DELTA_KEYS.has(k)) {
       // Begrens de statwaarde tot het geldige bereik [0, max]
-      const max = k === 'cash' ? 9999 : k === 'phoneBattery' ? 100 : 5;
+      const max = k === 'cash' ? 9999 : k === 'phoneBattery' ? 100 : (k === 'water' || k === 'food') ? 999 : 5;
       state[k] = Math.max(0, Math.min(max, state[k] + sc[k]));
     } else if (Array.isArray(sc[k])) {
       // Kopieer arrays om referentieproblemen te vermijden
@@ -2257,10 +2312,10 @@ function goBack() {
 */
 function switchTab(tab) {
   activeTab = tab;
-  // Clear unread dot for this tab
-  const tabEl = document.getElementById('tab-' + tab) || document.getElementById('radio-tab');
+  // Wis ongelezen-indicator en badge voor dit tabblad
   const resolvedTabEl = document.getElementById('tab-' + tab) || (tab === 'radio' ? document.getElementById('radio-tab') : null);
   if (resolvedTabEl) resolvedTabEl.classList.remove('has-unread');
+  if (unreadCounts[tab] !== undefined) { unreadCounts[tab] = 0; setBadge(tab, 0); }
 
   // Deactiveer alle tabs en panelen
   document.querySelectorAll('.ch-tab').forEach(t => {

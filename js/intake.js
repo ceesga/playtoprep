@@ -699,8 +699,14 @@ function renderHouseholdIndicator() {
     `<img src="${avatarPath}" alt="">` :
     '<span>👤</span>';
 
-  const persons = adultsCount + childrenCount + slechtTerBeenCount;
-  countEl.textContent = persons === 1 ? '1 pers.' : `${persons} pers.`;
+  const totalAdults = adultsCount + slechtTerBeenCount;
+  const parts = [];
+  if (totalAdults > 0)  parts.push(totalAdults  === 1 ? '1 volwassene'  : `${totalAdults} volwassenen`);
+  if (childrenCount > 0) parts.push(childrenCount === 1 ? '1 kind'        : `${childrenCount} kinderen`);
+  if (petsCount > 0)     parts.push(petsCount     === 1 ? '1 huisdier'    : `${petsCount} huisdieren`);
+  countEl.textContent = parts.length <= 1
+    ? (parts[0] || '1 volwassene')
+    : parts.slice(0, -1).join(', ') + ' en ' + parts[parts.length - 1];
 
   if (nameEl) nameEl.textContent = profile.playerName || '';
 }

@@ -267,6 +267,9 @@ function setToggle(id, val) {
       });
     });
   }
+
+  // Live indicatorupdate op basis van gewijzigde profiel-antwoorden
+  if (typeof updatePrepState === 'function') updatePrepState();
 }
 
 /* ─── SCENARIOKEUZE ──────────────────────────────────────────────────────────
