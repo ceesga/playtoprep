@@ -3,8 +3,6 @@
    PlayToPrep.nl
    ═══════════════════════════════════════════════════════════════ */
 
-
-
 /* ── VARIABELEN & DESIGN SYSTEEM ──────────────────────────────────────────── */
 :root {
   /* Brand */
@@ -48,7 +46,6 @@
   /* Radius scale */
   --r-xs:2px;
   --r-sm:6px;
-  --r-md:6px;
   --r-bubble:12px;
   --r-modal:14px;
   /* Spacing scale */
@@ -62,7 +59,6 @@
   --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-fast: cubic-bezier(0.22, 1, 0.36, 1);
   /* Neutral */
-  --c-white:transparent;
   --c-neutral-light:#f5f5f5;
   --c-neutral-border:#ccc;
   --c-faint-bg:#f8f8f8;
@@ -135,7 +131,6 @@ body {
   flex-direction:column;
 }
 
-
 /* Elk scherm vult de kaart als flex-kolom */
 .screen.active:not(#s-scenario) {
   flex:1;
@@ -166,7 +161,6 @@ body {
   padding:14px 32px 20px;
   background:transparent;
   border-top:1px solid rgba(226,232,240,.8);
-  margin-top:0;
 }
 
 h1 {
@@ -195,8 +189,6 @@ p.sub {
   font-size:.91rem;
 }
 
-
-
 /* ── FORMULIER ELEMENTEN (labels, progress, kaarten) ──────────────────────── */
 .phase-label {
   font-size:.62rem;
@@ -221,7 +213,7 @@ p.sub {
   width:100%;
   transform:scaleX(0);
   transform-origin:left;
-  transition:transform .4s var(--ease-out);
+  transition:transform .4s var(--ease-out), width .45s var(--ease-out);
 }
 
 .q-label {
@@ -306,7 +298,7 @@ p.sub {
 }
 
 .tog {
-  background:var(--c-white);
+  background:var(--c-surface);
   border:1px solid var(--c-neutral-border);
   color:var(--c-text-faint);
   border-radius:var(--r-sm);
@@ -461,7 +453,7 @@ p.sub {
 }
 
 .btn-ghost {
-  background:var(--c-white);
+  background:var(--c-surface);
   border:1px solid var(--c-neutral-border);
   color:var(--c-text-muted);
   border-radius:12px;
@@ -482,7 +474,7 @@ p.sub {
 }
 
 .btn-secondary {
-  background:var(--c-white);
+  background:var(--c-surface);
   border:2px solid var(--c-primary);
   color:var(--c-primary);
   border-radius:var(--r-sm);
@@ -582,7 +574,6 @@ p.sub {
   overflow:hidden;
   padding-bottom:12px;
 }
-
 
 #s-scenario .progress-wrap {
   position:relative;
@@ -797,9 +788,7 @@ p.sub {
 }
 .gear-row:last-child { border-bottom:none; }
 .gear-row:hover { background:var(--c-primary-bg-hover); color:var(--c-primary); }
-.gear-row-icon { display:none; }
 .gear-row-label { flex:unset; }
-.gear-arrow { display:none; }
 .gear-row-stacked { flex-direction:column; align-items:center; gap:0; }
 .gear-row-sub { font-size:.72rem; font-weight:400; color:var(--c-text-faint); margin-top:1px; text-align:center; }
 .gear-feedback {
@@ -812,7 +801,6 @@ p.sub {
   color:#2e7d32;
   font-weight:600;
 }
-
 
 .sc-time-row {
   display:flex;
@@ -945,7 +933,6 @@ p.sub {
   border-color:rgba(80,200,100,.5);
 }
 
-
 .status-sidebar {
   position:fixed;
   right:18px;
@@ -972,7 +959,6 @@ p.sub {
 .ss-stat-row {
   display:flex;
   align-items:flex-start;
-  gap:0;
   padding:4px 0;
   width:100%;
 }
@@ -1012,11 +998,11 @@ p.sub {
 }
 
 /* Kleur per stat */
-.ss-col-food   { background:transparent; color:#f97316; }
-.ss-col-water  { background:transparent; color:#22d3ee; }
-.ss-col-comfort{ background:transparent; color:#a855f7; }
-.ss-col-battery{ background:transparent; color:#3b82f6; }
-.ss-col-cash   { background:transparent; color:#eab308; }
+.ss-col-food   { color:#f97316; }
+.ss-col-water  { color:#22d3ee; }
+.ss-col-comfort{ color:#a855f7; }
+.ss-col-battery{ color:#3b82f6; }
+.ss-col-cash   { color:#eab308; }
 
 /* Waarde-blok rechts van het icon */
 .ss-val-block {
@@ -1078,9 +1064,9 @@ p.sub {
 
 /* Kleuroverrides bij lage waarden */
 .ss-stat.warn  .ss-icon-bg.ss-col-food,
-.ss-stat.warn  .ss-icon-bg.ss-col-water  { background:transparent; color:#fbbf24; }
+.ss-stat.warn  .ss-icon-bg.ss-col-water  { color:#fbbf24; }
 .ss-stat.danger .ss-icon-bg.ss-col-food,
-.ss-stat.danger .ss-icon-bg.ss-col-water { background:transparent; color:#ef4444; }
+.ss-stat.danger .ss-icon-bg.ss-col-water { color:#ef4444; }
 .ss-stat.warn  .ss-big-val { color:#fbbf24; }
 .ss-stat.danger .ss-big-val { color:#ef4444; animation:blink-alert .8s ease-in-out infinite; }
 
@@ -1128,8 +1114,6 @@ p.sub {
   }
 
 }
-
-.ss-divider { display:none; }
 
 .ss-vehicles-row {
   display:flex;
@@ -1234,7 +1218,7 @@ p.sub {
   margin-top:16px;
   padding:12px 16px;
   border:2px solid var(--c-border);
-  border-radius:var(--r-md);
+  border-radius:var(--r-sm);
   box-sizing:border-box;
   font-family:inherit;
   color:var(--c-text);
@@ -1256,7 +1240,7 @@ p.sub {
 .hh-house-opt,
 .hh-vehicle-opt,
 .hh-env-opt {
-  background:var(--c-white);
+  background:var(--c-surface);
   font:inherit;
   color:inherit;
 }
@@ -1302,7 +1286,7 @@ p.sub {
 
 .hh-popup-box {
   background:#fff;
-  border-radius:var(--r-md);
+  border-radius:var(--r-sm);
   overflow:hidden;
   width:320px;
   max-width:90vw;
@@ -1324,7 +1308,7 @@ p.sub {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: var(--r-md);
+  border-radius: var(--r-sm);
 }
 
 #hh-portrait-stage {
@@ -1456,7 +1440,6 @@ p.sub {
 
 .channel-tabs {
   display:flex;
-  gap:0;
   margin-bottom:0;
   background:transparent;
   padding:0;
@@ -1599,7 +1582,7 @@ p.sub {
 }
 
 .radio-play-btn {
-  background:var(--c-white);
+  background:var(--c-surface);
   border:1px solid var(--c-neutral-border);
   color:var(--c-text-3);
   border-radius:var(--r-sm);
@@ -1635,6 +1618,7 @@ p.sub {
   flex:1;
   min-height:0;
   overflow:hidden;
+  animation:tabFade 180ms var(--ease-out);
 }
 
 /* Scrollbare contentgebieden per tab */
@@ -1937,7 +1921,7 @@ p.sub {
   display:flex;
   gap:13px;
   padding:14px 16px 16px;
-  background:var(--c-white);
+  background:var(--c-surface);
 }
 
 .nl-alert-icon {
@@ -2073,7 +2057,7 @@ p.sub {
 
 .help-page {
   padding:18px 20px 16px;
-  background:var(--c-white);
+  background:var(--c-surface);
   font-size:.88rem;
   line-height:1.6;
   color:var(--c-ios-text);
@@ -2286,7 +2270,7 @@ p.sub {
 }
 
 .choice-btn {
-  background:var(--c-white);
+  background:var(--c-surface);
   border:2px solid var(--c-border);
   border-radius:var(--r-sm);
   padding:15px 16px;
@@ -2439,7 +2423,7 @@ p.sub {
   font-size:1.05rem;
   font-weight:700;
   padding:12px 16px;
-  border-radius:var(--r-md);
+  border-radius:var(--r-sm);
   margin:12px 0 4px;
   text-align:center;
 }
@@ -2876,7 +2860,7 @@ p.sub {
 
 .hh-vehicle-opt {
   cursor:pointer;
-  border-radius:var(--r-md);
+  border-radius:var(--r-sm);
   border:2px solid var(--c-border);
   padding:6px 14px;
   display:flex;
@@ -2915,7 +2899,7 @@ p.sub {
 
 .hh-house-opt {
   cursor:pointer;
-  border-radius:var(--r-md);
+  border-radius:var(--r-sm);
   border:2px solid var(--c-border);
   overflow:hidden;
   transition:border-color .15s,box-shadow .15s;
@@ -3254,7 +3238,7 @@ p.sub {
   height:62px;
   width:auto;
   cursor:pointer;
-  border-radius:var(--r-md);
+  border-radius:var(--r-sm);
   border:2px solid transparent;
   transition:border-color .15s,transform .15s;
   filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));
@@ -3347,19 +3331,6 @@ p.sub {
   animation:blink-alert .8s ease-in-out infinite;
 }
 
-.msb-divider {
-  width:1px;
-  height:18px;
-  background:rgba(255,255,255,.2);
-  flex-shrink:0;
-  display:none;
-}
-
-
-/* ── TABLET BREAKPOINT (768px) ── */
-
-
-
 /* ── RESPONSIVE: TABLET (max 768px) ───────────────────────────────────────── */
 @media(max-width:768px) {
   body {
@@ -3407,24 +3378,9 @@ p.sub {
 
 }
 
-/* ── MOBILE BREAKPOINT (640px) ── */
-
-
-
 /* ── RESPONSIVE: MOBIEL (max 640px) ───────────────────────────────────────── */
 @media(max-width:640px) {
-  /* Hide desktop sidebars on mobile; status bar shown inline in scenario screen */
-
-  .status-sidebar.visible,
-  .status-sidebar-left.visible,
-  .ss-cash-box.visible {
-    display:none!important;
-  }
-
-  /* Body */
-
   body {
-    padding:106px 10px 20px;
     align-items:stretch;
   }
 
@@ -3469,12 +3425,6 @@ p.sub {
   .choice-btn {
     padding:14px 16px;
     min-height:52px;
-  }
-
-  /* Prep screen toggle wrap */
-
-  .toggle-wrap {
-    width:auto;
   }
 
   .prep-row {
@@ -3553,10 +3503,6 @@ p.sub {
 
 }
 
-/* ── ANIMATIONS ── */
-
-
-
 /* ── ANIMATIES ─────────────────────────────────────────────────────────────── */
 @keyframes screenEnter {
   from {
@@ -3629,12 +3575,6 @@ p.sub {
   animation:screenEnter 280ms var(--ease-out) both;
 }
 
-/* Tab panels fade in */
-
-.channel-panel.active {
-  animation:tabFade 180ms var(--ease-out);
-}
-
 /* Choice button selected confirmation */
 
 .choice-btn.picked {
@@ -3663,18 +3603,6 @@ p.sub {
 
 .scenario-pick-card {
   transition:border-color .15s,background .15s,transform .2s var(--ease-out),box-shadow .2s var(--ease-out);
-}
-
-/* Progress bar smooth init */
-
-.progress-fill {
-  transition:width .45s var(--ease-out);
-}
-
-/* Scene topbar progress bar */
-
-#sc-prog {
-  transition:width .45s var(--ease-out);
 }
 
 /* ── SKIP LINK ── */
@@ -3997,7 +3925,7 @@ a:focus-visible {
 }
 
 .over-box {
-  background: var(--c-white);
+  background: var(--c-surface);
   border-radius: 10px;
   width: min(480px, calc(100vw - 32px));
   max-height: 80vh;
