@@ -254,8 +254,6 @@ function show(id) {
   const showSidebar = ['s-prep','s-scenariokeuze','s-commute','s-scenario','s-report'].includes(id);
   const sidebar = document.getElementById('status-sidebar');
   if (sidebar) sidebar.classList.toggle('visible', showSidebar);
-  const sidebarLeft = document.getElementById('status-sidebar-left');
-  if (sidebarLeft) sidebarLeft.classList.toggle('visible', showSidebar);
   const cashBox = document.getElementById('ss-cash-box');
   if (cashBox) cashBox.classList.toggle('visible', showSidebar);
 

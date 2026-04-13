@@ -141,7 +141,7 @@ const scenes_natuurbrand = [{
   narrative: 'De rookpluim is groter geworden en je ruikt de rook nu duidelijk. Je ogen prikken licht. Buiten zie je een buurvrouw haar auto volstouwen. Het begint serieus te worden.',
   choices: [{
     text: '🎒 Alvast een tas inpakken, voor het geval dat',
-    consequence: 'Je pakt een tas met paspoort, medicijnen, oplader, wat kleding en contant geld. Als het bevel komt, kun je meteen weg. Slim.',
+    consequence: 'Je pakt een tas met paspoort, medicijnen, oplader, wat kleding en contant geld. Als het bevel komt, kun je meteen weg.',
     stateChange: {
       packedBag: true
     }
@@ -641,7 +641,7 @@ const scenes_natuurbrand = [{
     stateChange: {}
   }, {
     text: '🛏️ Snel een slaapplek claimen voordat alles weg is',
-    consequence: 'Je loopt door de hal en vindt een rustig hoekje bij de muur. Je legt er je jas neer. Later blijkt dat slim, want halverwege de avond is alles vol.',
+    consequence: 'Je loopt door de hal en vindt een rustig hoekje bij de muur. Je legt er je jas neer. Later op de avond zijn bijna alle plekken bezet.',
     stateChange: {
       comfort: 1
     }

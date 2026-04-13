@@ -440,7 +440,7 @@ const scenes_overstroming = [{
   },
   choices: [{
     text: () => profile.childrenCount === 1 ? '🗣️ Knielen en eerlijk zeggen: "Het huis kan nat worden, maar wij redden het samen"' : '🗣️ Bij de oudste knielen en eerlijk zeggen: "Het huis kan nat worden, maar wij redden het samen"',
-    consequence: () => profile.childrenCount === 1 ? 'Je kind kijkt je aan. Even is het stil. Daarna loopt het weer mee de trap op. Eerlijk zijn helpt hier beter dan doen alsof er niets aan de hand is.' : 'De oudste knikt langzaam en loopt mee. De jongste ziet dat en volgt vanzelf. Eerlijk zijn helpt hier beter dan doen alsof er niets aan de hand is.',
+    consequence: () => profile.childrenCount === 1 ? 'Je kind kijkt je aan. Even is het stil. Daarna loopt het weer mee de trap op. Het weet nu beter wat er gebeurt.' : 'De oudste knikt langzaam en loopt mee. De jongste ziet dat en volgt vanzelf. Ze weten nu beter wat er gebeurt.',
     stateChange: {
       comfort: 1
     }
@@ -487,7 +487,7 @@ const scenes_overstroming = [{
   }, {
     conditionalOn: () => !state.cutElectricity,
     text: '⚡ Meterkast afsluiten voor de veiligheid',
-    consequence: 'Je loopt naar de meterkast beneden, die al half onder water staat. Je gooit de hoofdschakelaar eruit. Goed instinct, want water en stroom zijn levensgevaarlijk.',
+    consequence: 'Je loopt naar de meterkast beneden, die al half onder water staat. Je gooit de hoofdschakelaar eruit. Water en stroom zijn hier een gevaarlijke combinatie.',
     stateChange: {
       cutElectricity: true,
       savedItems: true
@@ -782,7 +782,7 @@ const scenes_overstroming = [{
     stateChange: { phoneBattery: 20 }
   }, {
     text: '🛏️ Een slaapplek regelen voordat alles vol is',
-    consequence: 'Je loopt de hal in en vindt een rustig hoekje. Je legt er je jas neer. Later blijkt dat slim, want een uur later zijn alle fatsoenlijke plekken bezet.',
+    consequence: 'Je loopt de hal in en vindt een rustig hoekje. Je legt er je jas neer. Een uur later zijn de meeste plekken in de hal bezet.',
     stateChange: { comfort: 1, phoneBattery: 20 }
   }, {
     text: '🍲 Warm eten halen en even bijkomen',

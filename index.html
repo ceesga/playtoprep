@@ -129,13 +129,15 @@
 
 <!-- SCENARIOKEUZE SCREEN -->
 <div id="s-scenariokeuze" class="screen">
-  <div class="screen-header">
-    <h2 style="margin:0">Kies een scenario</h2>
+  <div class="screen-body">
+    <div class="screen-header">
+      <h2 style="margin:0">Kies een scenario</h2>
+    </div>
+    <div class="progress-wrap"><div class="progress-fill" style="width:85%"></div></div>
+    <div class="phase-label" style="margin-top:8px">Stap 2: Kies je scenario</div>
+    <p class="sub" id="scenario-keuze-sub"></p>
+    <div style="display:flex;flex-direction:column;gap:12px" id="scenario-cards-wrap"></div>
   </div>
-<div class="progress-wrap"><div class="progress-fill" style="width:85%"></div></div>
-<div class="phase-label" style="margin-top:8px">Stap 2: Kies je scenario</div>
-<p class="sub" id="scenario-keuze-sub"></p>
-<div style="display:flex;flex-direction:column;gap:12px" id="scenario-cards-wrap"></div>
 </div>
 
 <!-- COMMUTE QUESTIONS (thuis komen) -->
@@ -263,28 +265,30 @@
 
 <!-- REPORT SCREEN -->
 <div id="s-report" class="screen">
-  <div class="phase-label">Stap 5: Jouw rapport</div>
-  <h2 id="rep-title">Jouw scenario, hoe liep het?</h2>
-  <p class="sub" id="rep-intro"></p>
-  <div id="rep-outcome"></div>
-  <div id="rep-context"></div>
-  <div class="report-section-title">Tijdlijn van jouw keuzes</div>
-  <div id="rep-timeline"></div>
-  <div class="report-section-title">Jouw crisisstatus</div>
-  <div id="rep-status"></div>
-  <div id="rep-endstats"></div>
-  <div class="report-section-title">Dit deed je goed</div>
-  <div id="rep-good"></div>
-  <div class="report-section-title">Dit kun je verbeteren</div>
-  <div id="rep-improve"></div>
-  <div class="report-section-title">Persoonlijke tips voor jouw situatie</div>
-  <div id="rep-personal"></div>
-  <div class="btn-row">
-    <button type="button" class="btn" onclick="show('s-scenariokeuze')">Ander scenario kiezen</button>
-    <button type="button" class="btn-ghost" onclick="location.reload()">Helemaal opnieuw</button>
-  </div>
-  <div class="ptp-logo-footer">
-    <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="ptp-logo-sm">
+  <div class="screen-body">
+    <div class="phase-label">Stap 5: Jouw rapport</div>
+    <h2 id="rep-title">Jouw scenario, hoe liep het?</h2>
+    <p class="sub" id="rep-intro"></p>
+    <div id="rep-outcome"></div>
+    <div id="rep-context"></div>
+    <div class="report-section-title">Tijdlijn van jouw keuzes</div>
+    <div id="rep-timeline"></div>
+    <div class="report-section-title">Jouw crisisstatus</div>
+    <div id="rep-status"></div>
+    <div id="rep-endstats"></div>
+    <div class="report-section-title">Dit deed je goed</div>
+    <div id="rep-good"></div>
+    <div class="report-section-title">Dit kun je verbeteren</div>
+    <div id="rep-improve"></div>
+    <div class="report-section-title">Persoonlijke tips voor jouw situatie</div>
+    <div id="rep-personal"></div>
+    <div class="btn-row">
+      <button type="button" class="btn" onclick="show('s-scenariokeuze')">Ander scenario kiezen</button>
+      <button type="button" class="btn-ghost" onclick="location.reload()">Helemaal opnieuw</button>
+    </div>
+    <div class="ptp-logo-footer">
+      <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="ptp-logo-sm">
+    </div>
   </div>
 </div>
 
@@ -408,9 +412,6 @@
   <div class="ss-icon-bg ss-col-cash" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg></div>
   <span class="ss-cash-amount" id="ss-cash-amount">€20,-</span>
 </div>
-
-<!-- LEFT STATUS SIDEBAR -->
-<div class="status-sidebar-left" id="status-sidebar-left" style="display:none!important"></div>
 
 <!-- HELP OVERLAY -->
 <div id="help-overlay" role="dialog" aria-modal="true" aria-labelledby="help-title">

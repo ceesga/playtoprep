@@ -73,7 +73,7 @@ const scenes_stroom = [
     narrative: 'In het dorp hangt vandaag een onrustige sfeer. Mensen praten in groepjes en in het lunchcafé staat de tv harder dan normaal. Buiten lijkt alles gewoon, maar de stemming voelt anders.',
     choices: [{
       text: '💵 Ik pin even €100 contant geld, voor de zekerheid',
-      consequence: 'Je haalt €100 op uit de automaat. Achteraf blijkt dat een verstandige beslissing, maar dat weet je nu nog niet.',
+      consequence: 'Je haalt €100 op uit de automaat. Je hebt nu contant geld bij je als pinnen of betalen later moeilijker wordt.',
       stateChange: {
         hasCash: true,
         cash: 100
@@ -167,7 +167,7 @@ const scenes_stroom = [
       stateChange: {}
     }, {
       text: '🔌 Alle grote apparaten uitschakelen en de zekering uitzetten',
-      consequence: 'Je loopt door het huis en zet alles handmatig uit: wasmachine, oven, verwarming. Goed idee, want bij herstel van de stroom kunnen pieken apparaten beschadigen.',
+      consequence: 'Je loopt door het huis en zet alles handmatig uit: wasmachine, oven, verwarming. Zo verklein je de kans op schade als de stroom later terugkomt.',
       stateChange: {}
     }, {
       text: '☕ Even koffie zetten op het gasfornuis en rustig afwachten',
@@ -269,7 +269,7 @@ const scenes_stroom = [
     },
     choices: [{
       text: '🍶 Lege flessen vullen met water, voor noodgebruik',
-      consequence: 'Je pakt alle lege flessen, pannen en emmers die je kunt vinden en vult ze met kraanwater. Goed instinct: als de waterpomp uitvalt, heb je dit water nog voor drinken, koken en de wc.',
+      consequence: 'Je pakt alle lege flessen, pannen en emmers die je kunt vinden en vult ze met kraanwater. Als de waterpomp uitvalt, heb je nog water voor drinken, koken en de wc.',
       stateChange: {
         hasWater: true,
         water: 2
@@ -539,7 +539,7 @@ const scenes_stroom = [
       }
     }, {
       text: '😴 Vroeg naar bed, spaar je energie',
-      consequence: 'Je kruipt vroeg in bed met zo veel mogelijk lagen kleding aan. Slim: lichaamswarmte in een slaapzak houdt je warm. Je slaapt onrustig, maar wel.',
+      consequence: 'Je kruipt vroeg in bed met zo veel mogelijk lagen kleding aan. Lichaamswarmte in een slaapzak houdt je langer warm. Je slaapt onrustig, maar wel.',
       stateChange: {}
     }]
   },
@@ -738,7 +738,7 @@ const scenes_stroom = [
     },
     choices: [{
       text: '🚫 Waterafvoer afsluiten en zo min mogelijk water gebruiken',
-      consequence: 'Je stopt de afvoeropeningen af met doppen of plastiek. Zo voorkom je dat rioolwater terugstroomt in huis. Goed instinct.',
+      consequence: 'Je stopt de afvoeropeningen af met doppen of plastiek. Zo voorkom je dat rioolwater terugstroomt in huis.',
       stateChange: {
         handledSewage: true
       }
@@ -957,7 +957,7 @@ const scenes_stroom = [
       stateChange: {}
     }, {
       text: '🥄 Zuinig koken, kleine portie en voorraad sparen',
-      consequence: 'Je maakt een halve portie, net genoeg om de ergste honger weg te nemen. De rest bewaar je. Dat is slim in een situatie die nog dagen kan duren, al knort je buik daarna nog steeds.',
+      consequence: 'Je maakt een halve portie, net genoeg om de ergste honger weg te nemen. De rest bewaar je. Zo houd je meer over voor de dagen erna, al knort je buik daarna nog steeds.',
       stateChange: {
         food: 1,
         comfort: -1
@@ -980,7 +980,7 @@ const scenes_stroom = [
     narrative: 'Eerst hoor je stemmen buiten. Dan ruik je rook. Als je naar het raam loopt, zie je dat er bij de overburen iets brandt bij de schuur of een container. Waarschijnlijk is er iets misgegaan met open vuur of een kooktoestel.',
     choices: [{
       text: '🏠 Binnenblijven en door het raam in de gaten houden',
-      consequence: 'Je blijft binnen en kijkt toe vanuit het raam. De brand lijkt beperkt te blijven tot de schuur. Na een tijdje dooft het vanzelf. Verstandig om niet naar buiten te gaan.',
+      consequence: 'Je blijft binnen en kijkt toe vanuit het raam. De brand lijkt beperkt te blijven tot de schuur. Na een tijdje dooft het vanzelf.',
       stateChange: {}
     }, {
       text: '📱 112 bellen',
@@ -1051,7 +1051,7 @@ const scenes_stroom = [
       stateChange: {}
     }, {
       text: '😔 Binnenblijven en wachten',
-      consequence: 'Je trekt de gordijnen dicht. Binnenblijven is de veiligste optie. Je hebt nog wat eten. Je wacht.',
+      consequence: 'Je trekt de gordijnen dicht. Binnen blijft het rustig. Je hebt nog wat eten. Je wacht.',
       stateChange: {}
     }]
   },
@@ -1095,7 +1095,7 @@ const scenes_stroom = [
       stateChange: {}
     }, {
       text: '🏘️ Naar het dorpssteunpunt gaan voor informatie en warmte',
-      consequence: 'Je loopt naar het dorpssteunpunt in het dorp. Er zitten al een stuk of tien buurtbewoners. Een vrijwilliger deelt warme thee uit en heeft een radio aan staan. Op een whiteboard staat de laatste informatie van de gemeente: waterpunten, wanneer stroom verwacht wordt, wie hulp nodig heeft. Je bent blij dat je gegaan bent.',
+      consequence: 'Je loopt naar het dorpssteunpunt in het dorp. Er zitten al een stuk of tien buurtbewoners. Een vrijwilliger deelt warme thee uit en heeft een radio aan staan. Op een whiteboard staat de laatste informatie van de gemeente: waterpunten, wanneer stroom verwacht wordt, wie hulp nodig heeft. Je blijft even om mee te luisteren.',
       stateChange: {
         comfort: 1,
         knowsNeighbors: true
@@ -1251,7 +1251,7 @@ const scenes_stroom = [
     narrative: 'Dan flakkert het licht onverwacht aan. De koelkast begint te zoemen. De wasmachine, die je vergeten was uit te zetten, schiet ineens weer aan. Uit de televisie komt een branderige geur. Eén lamp knalt. Buiten hoor je de buren juichen. Het ergste lijkt voorbij. Toch is niet alles meteen normaal: de CV moet nog op gang komen en de rioollucht hangt nog in huis. Maar er is weer licht.',
     choices: [{
       text: '⚡ Alle apparaten uitschakelen voordat er stroompieken schade aanrichten',
-      consequence: 'Goed instinct. Je loopt door het huis en zet alles handmatig uit. Daarna zet je apparaat voor apparaat langzaam terug aan. De TV ruikt wat gebrand, maar werkt nog.',
+      consequence: 'Je loopt door het huis en zet alles handmatig uit. Daarna zet je apparaat voor apparaat langzaam terug aan. De TV ruikt wat gebrand, maar werkt nog.',
       stateChange: {}
     }, {
       text: '📱 Als eerste mama bellen, ze weet vast niets van ons',
@@ -1259,7 +1259,7 @@ const scenes_stroom = [
       stateChange: {}
     }, {
       text: '🛁 Het water laten lopen om de leidingen door te spoelen',
-      consequence: 'Je draait de kraan open. Eerst bruin, dan helderder. De leidingen worden schoongespoeld. Goed idee na een langdurige lage druk.',
+      consequence: 'Je draait de kraan open. Eerst komt er bruin water uit, daarna wordt het helderder. Na even spoelen komt er weer schoon water uit de kraan.',
       stateChange: {}
     }, {
       text: '🤝 Bij Annie en Rob aanbellen om het nieuws te vieren',

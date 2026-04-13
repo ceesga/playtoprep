@@ -47,7 +47,7 @@ const scenes_drinkwater = [{
     }
   }, {
     text: '🍶 Alvast flessen en pannen vullen met kraanwater',
-    consequence: 'Het water dat nu uit de kraan komt is troebel, maar er loopt wel wat. Je vult een paar flessen en zet ze apart. Later kun je het koken als dat nodig is. Slim om dit nu te doen, want je weet niet of de druk straks lager wordt.',
+    consequence: 'Het water dat nu uit de kraan komt is troebel, maar er loopt wel wat. Je vult een paar flessen en zet ze apart. Later kun je het koken als dat nodig is, voor het geval de waterdruk straks wegvalt.',
     stateChange: {
       water: 2,
       hasWater: true
@@ -103,7 +103,7 @@ const scenes_drinkwater = [{
   narrative: 'Je telefoon trilt. Het waterbedrijf stuurt een sms. Het kookadvies is officieel. Het water loopt nog wel, maar je kunt het niet zomaar gebruiken. Je kijkt naar wat je in huis hebt.',
   choices: [{
     text: '🍶 Meteen flessen, pannen en kannen vullen',
-    consequence: 'Zolang het water nog loopt en je het kunt koken, is het verstandig nu zoveel mogelijk op te slaan. Je vult alles wat je kunt vinden. Een volle pan op het fornuis, flessen in de koelkast, een kan op het aanrecht.',
+    consequence: 'Zolang het water nog loopt en je het kunt koken, sla je zoveel mogelijk water op. Je vult alles wat je kunt vinden: een volle pan op het fornuis, flessen in de koelkast, een kan op het aanrecht.',
     stateChange: {
       water: 2,
       hasWater: true
@@ -232,7 +232,7 @@ const scenes_drinkwater = [{
   },
   choices: [{
     text: '🏠 Thuis blijven en zuinig omgaan met wat je al hebt',
-    consequence: 'Je bekijkt je voorraad. Er is genoeg voor vanavond als je verstandig omgaat met wat je hebt. Kraanwater koken kost tijd, maar het werkt. Je blijft thuis.',
+    consequence: 'Je bekijkt je voorraad. Er is genoeg voor vanavond als je zuinig omgaat met wat je hebt. Kraanwater koken kost tijd, maar het werkt. Je blijft thuis.',
     stateChange: {}
   }, {
     text: '🛒 Toch naar de supermarkt gaan',
