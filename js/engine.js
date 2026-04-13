@@ -780,7 +780,8 @@ function renderSceneVisual(scene) {
   applyOverlay(document.getElementById('rain-overlay'), rainOpacity[scene.id] || 0);
 
   // Brightness overlay based on time of day and scenario
-  const darknessOverride = {};
+  // Nachtalarm-fotos zijn al donker van zichzelf; geen filter nodig.
+  const darknessOverride = { na_0: 0, na_1: 0, na_2: 0, na_2b: 0, na_3: 0, na_4: 0, na_5: 0 };
   const darkness = document.getElementById('bg-darkness');
   if (darkness) {
     // Haal het uur op uit het tijdstip van de scène (standaard: 12:00 = overdag)

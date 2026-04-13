@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
   </head>
   <body>
     <a class="skip-link" href="#main-content">Naar hoofdinhoud</a>
@@ -45,13 +45,13 @@
           <!-- Pagina 1: Laden -->
           <div id="start-p1" style="display:none">
             <button type="button" class="start-menu-btn" onclick="startMenuPage(0)">← Terug</button>
-            <button type="button" class="start-menu-btn" id="start-savegame-btn" onclick="loadGame()">
-              <span>Vorige opslag laden</span>
-              <span class="start-menu-sub" id="start-load-info"></span>
-            </button>
             <button type="button" class="start-menu-btn" id="start-profile-btn" onclick="loadProfileAndGo()">
               <span>Huishouden laden</span>
               <span class="start-menu-sub" id="start-profile-info"></span>
+            </button>
+            <button type="button" class="start-menu-btn" id="start-savegame-btn" onclick="loadGame()">
+              <span>Vorige opslag laden</span>
+              <span class="start-menu-sub" id="start-load-info"></span>
             </button>
           </div>
         </nav>
@@ -93,6 +93,7 @@
     </div>
     <div class="progress-wrap"><div class="progress-fill" id="intake-prog"></div></div>
     <div class="phase-label" style="margin-top:8px">Stap 1: Jouw situatie</div>
+    <p id="intake-instruction" style="display:none;flex-shrink:0;padding:4px 0 6px;font-size:.8rem;color:var(--c-text-faint)"></p>
     <div id="intake-household" style="display:none"></div>
     <div id="intake-layout">
       <div id="character-preview">
@@ -102,6 +103,7 @@
       <div id="intake-body"></div>
     </div>
   </div>
+  <div id="intake-controls"></div>
   <div class="btn-row screen-footer">
     <button type="button" class="btn-ghost" id="intake-prev" onclick="intakePrev()" style="display:none">← Terug</button>
     <button type="button" class="btn" id="intake-next" onclick="intakeNext()" disabled>Verder →</button>
@@ -132,39 +134,8 @@
   </div>
 <div class="progress-wrap"><div class="progress-fill" style="width:85%"></div></div>
 <div class="phase-label" style="margin-top:8px">Stap 2: Kies je scenario</div>
-<p class="sub">Vijf scenario's in Nederland. Kies wat bij jou of jouw omgeving past.</p>
-<div style="display:flex;flex-direction:column;gap:12px" id="scenario-cards-wrap">
-  <button type="button" class="scenario-pick-card" onclick="startScenario('stroom')">
-  <div class="spk-top"><span class="spk-title">Een gewone winterdag</span><span class="spk-badge spk-long">Lang (~35 min)</span></div>
-  <div class="spk-desc">Het is winter. Je bent thuis, de verwarming staat aan en je hebt geen bijzondere plannen voor vandaag. Buiten is het koud en grijs. Echt weer om binnen te blijven.</div>
-  <div class="spk-rel-label">Past bij elke omgeving</div>
-  </button>
-  <button type="button" class="scenario-pick-card" onclick="startScenario('natuurbrand')">
-  <div class="spk-top"><span class="spk-title">Een warme droge zomer</span><span class="spk-badge spk-medium">Medium (~20 min)</span></div>
-  <div class="spk-desc">Het is al weken droog en warm. De tuin staat er dor bij en het nieuws heeft het over de aanhoudende hitte. Je bent thuis en de dag begint zoals gewoonlijk.</div>
-  <div class="spk-rel-label">Past bij jouw omgeving</div>
-  </button>
-  <button type="button" class="scenario-pick-card" onclick="startScenario('overstroming')">
-  <div class="spk-top"><span class="spk-title">Het water staat hoog</span><span class="spk-badge spk-medium">Medium (~20 min)</span></div>
-  <div class="spk-desc">Het heeft de afgelopen dagen veel geregend. De rivieren staan hoog en in de buurt praten mensen over het waterpeil. Voorlopig lijkt het mee te vallen, maar de regen houdt aan.</div>
-  <div class="spk-rel-label">Past bij jouw omgeving</div>
-  </button>
-  <button type="button" class="scenario-pick-card" onclick="startScenario('thuis_komen')">
-  <div class="spk-top"><span class="spk-title">Onderweg naar huis</span><span class="spk-badge spk-short">Kort (~15 min)</span></div>
-  <div class="spk-desc">Je bent op het werk of op school. Een gewone doordeweekse dag. Je hebt je spullen bij je en over een paar uur ga je naar huis.</div>
-  <div class="spk-rel-label">Past bij jouw omgeving</div>
-  </button>
-  <button type="button" class="scenario-pick-card" onclick="startScenario('drinkwater')">
-  <div class="spk-top"><span class="spk-title">Bruin water uit de kraan</span><span class="spk-badge spk-short">Kort (~15 min)</span></div>
-  <div class="spk-desc">Je bent thuis op een gewone dinsdagmiddag. Als je de kraan opendraait, zie je dat het water troebel en lichtbruin is. Iets is er niet goed met het drinkwater.</div>
-  <div class="spk-rel-label">Past bij elke omgeving</div>
-  </button>
-  <button type="button" class="scenario-pick-card" onclick="startScenario('nachtalarm')">
-  <div class="spk-top"><span class="spk-title">Alarm in de nacht</span><span class="spk-badge spk-short">Kort (~10 min)</span></div>
-  <div class="spk-desc">Het is midden in de nacht. Je schrikt wakker van een rookmelder die afgaat. Het is donker, de rest slaapt door en beneden hangt rook.</div>
-  <div class="spk-rel-label">Past bij elke omgeving</div>
-  </button>
-</div>
+<p class="sub" id="scenario-keuze-sub"></p>
+<div style="display:flex;flex-direction:column;gap:12px" id="scenario-cards-wrap"></div>
 </div>
 
 <!-- COMMUTE QUESTIONS (thuis komen) -->
@@ -362,11 +333,16 @@
 
     <!-- Pagina 2: Laden -->
     <div id="gear-p2" class="gear-page" style="display:none">
-      <button type="button" class="gear-row" onclick="gotoScenariokeuze();closeGearMenu()">
-        <span class="gear-row-icon">🎮</span><span class="gear-row-label">Scenario opnieuw kiezen</span>
+      <button type="button" class="gear-row gear-row-stacked" id="gear-profile-btn" onclick="loadProfileAndGo();closeGearMenu()">
+        <span class="gear-row-label">Huishouden laden</span>
+        <span class="gear-row-sub" id="gear-profile-info"></span>
       </button>
-      <button type="button" class="gear-row" id="gear-load-btn" onclick="loadGame();closeGearMenu()">
-        <span class="gear-row-icon">📂</span><span class="gear-row-label">Vorige opslag laden</span>
+      <button type="button" class="gear-row gear-row-stacked" id="gear-load-btn" onclick="loadGame();closeGearMenu()">
+        <span class="gear-row-label">Vorige opslag laden</span>
+        <span class="gear-row-sub" id="gear-load-info"></span>
+      </button>
+      <button type="button" class="gear-row" onclick="gotoScenariokeuze();closeGearMenu()">
+        <span class="gear-row-label">Scenario opnieuw kiezen</span>
       </button>
     </div>
   </div>

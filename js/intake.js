@@ -125,7 +125,7 @@ function renderNameStep() {
   const household = document.getElementById('intake-household');
   const layout = document.getElementById('intake-layout');
   layout.style.display = 'none';      // Verberg de standaard kaart-layout
-  household.style.display = 'block';  // Toon het huishoud-container element
+  household.style.display = 'flex';   // Toon het huishoud-container element (flex: behoudt kolom-layout)
   const playerName = escapeHtml(profile.playerName || '');
   household.innerHTML = `
     <div class="name-step-wrap">
@@ -137,6 +137,8 @@ function renderNameStep() {
         autocomplete="given-name"
         oninput="setPlayerName(this.value)">
     </div>`;
+  const controls = document.getElementById('intake-controls');
+  if (controls) controls.innerHTML = '';
   document.getElementById('intake-next').disabled = false; // Naam is optioneel, Volgende altijd toegankelijk
   setTimeout(() => document.getElementById('player-name-input')?.focus(), 50); // Geef invoerveld autofocus na render
 }
@@ -174,6 +176,8 @@ function renderIntake() {
 
   const household = document.getElementById('intake-household');
   const layout = document.getElementById('intake-layout');
+  const instrEl = document.getElementById('intake-instruction');
+  if (instrEl) instrEl.style.display = 'none'; // verberg standaard; renderHouseholdStep toont het opnieuw
 
   // Delegeer naar de juiste stap-renderer op basis van intakeStep
   if (intakeStep === -5) {
@@ -183,7 +187,7 @@ function renderIntake() {
 
   if (intakeStep === -4) {
     layout.style.display = 'none';
-    household.style.display = 'block';
+    household.style.display = 'flex';
     renderHouseholdStep();
     document.getElementById('intake-next').disabled = false; // Altijd doorgaan mogelijk
     return;
@@ -191,7 +195,7 @@ function renderIntake() {
 
   if (intakeStep === -3) {
     layout.style.display = 'none';
-    household.style.display = 'block';
+    household.style.display = 'flex';
     renderHouseStep();
     // Volgende alleen mogelijk als er een woningtype gekozen is
     document.getElementById('intake-next').disabled = selectedHouseType === null;
@@ -200,7 +204,7 @@ function renderIntake() {
 
   if (intakeStep === -2) {
     layout.style.display = 'none';
-    household.style.display = 'block';
+    household.style.display = 'flex';
     renderVehicleStep();
     document.getElementById('intake-next').disabled = false; // Geen voertuig is ook een geldige keuze
     return;
@@ -208,7 +212,7 @@ function renderIntake() {
 
   if (intakeStep === -1) {
     layout.style.display = 'none';
-    household.style.display = 'block';
+    household.style.display = 'flex';
     renderEnvironmentStep();
     document.getElementById('intake-next').disabled = false;
     return;
@@ -387,20 +391,23 @@ function renderHouseholdStep() {
   while (avatarSelections.slechtTerBeen.length < slechtTerBeenCount) avatarSelections.slechtTerBeen.push(defaultStbAvatar(avatarSelections.slechtTerBeen.length));
 
   // Hoogtetabel: index = totaal aantal personen+dieren, waarde = hoogte in px van een volwassene
-  const ht = [0, 280, 260, 240, 220, 205, 190, 178, 168, 158, 150, 142, 135];
+  const ht = [190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190];
   const figures    = buildFigures(ht, true);    // Figuren zijn klikbaar in deze stap
   const petOverlay = buildPetOverlay(ht, true); // Huisdieren ook klikbaar
   const totalPersons = adultsCount + childrenCount + slechtTerBeenCount;
 
   // Blokkeer de + knoppen zodra het maximum aantal huishoudsleden bereikt is
   const atMax = totalPersons >= MAX_HOUSEHOLD;
+  const instrEl = document.getElementById('intake-instruction');
+  if (instrEl) { instrEl.textContent = 'Klik op een persoon of dier om die te veranderen.'; instrEl.style.display = 'block'; }
   document.getElementById('intake-household').innerHTML = `
-    <p style="padding:8px 32px 12px;font-size:.8rem;color:var(--c-text-faint)">Klik op een persoon of dier om die te veranderen.</p>
     <div id="hh-stage">
       <div id="hh-char-figures">${figures}</div>
       <div class="hh-pet-overlay">${petOverlay}</div>
       <div id="hh-avatar-picker" style="display:none"></div>
-    </div>
+    </div>`;
+  const intakeControls = document.getElementById('intake-controls');
+  if (intakeControls) intakeControls.innerHTML = `
     <div id="hh-controls">
       <div class="hh-counter">
         <span class="hh-label">Volwassenen</span>
@@ -442,7 +449,7 @@ function renderHouseholdStep() {
    en een live preview van het geselecteerde woningtype als achtergrond in de stage.
 */
 function renderHouseStep() {
-  const ht = [0, 220, 205, 192, 180, 170, 160, 152, 144, 137, 130, 124, 118];
+  const ht = [160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160];
   const figures    = buildFigures(ht);    // Figuren niet klikbaar in deze stap
   const petOverlay = buildPetOverlay(ht);
 
@@ -463,8 +470,9 @@ function renderHouseStep() {
       <div id="hh-char-figures">${figures}</div>
       <div class="hh-pet-overlay">${petOverlay}</div>
       <div id="hh-avatar-picker" style="display:none"></div>
-    </div>
-    <div id="hh-house-grid">${houseOpts}</div>`;
+    </div>`;
+  const intakeControlsHouse = document.getElementById('intake-controls');
+  if (intakeControlsHouse) intakeControlsHouse.innerHTML = `<div id="hh-house-grid">${houseOpts}</div>`;
 }
 
 /* Verwerkt een klik op een woningtype-optie.
@@ -493,7 +501,7 @@ function selectHouseType(val) {
    Geselecteerde voertuigen worden als overlays in de stage weergegeven.
 */
 function renderVehicleStep() {
-  const ht = [0, 220, 205, 192, 180, 170, 160, 152, 144, 137, 130, 124, 118];
+  const ht = [160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160];
   const figures    = buildFigures(ht);
   const petOverlay = buildPetOverlay(ht);
   const houseSrc = selectedHouseType ? `afbeelding/avatars/woningtype/${selectedHouseType}.png` : '';
@@ -514,8 +522,9 @@ function renderVehicleStep() {
       <div id="hh-char-figures">${figures}</div>
       <div class="hh-pet-overlay">${petOverlay}</div>
       <div id="hh-avatar-picker" style="display:none"></div>
-    </div>
-    <div id="hh-vehicle-row">${vehicleOpts}</div>`;
+    </div>`;
+  const intakeControlsVehicle = document.getElementById('intake-controls');
+  if (intakeControlsVehicle) intakeControlsVehicle.innerHTML = `<div id="hh-vehicle-row">${vehicleOpts}</div>`;
 }
 
 /* ─── OMGEVING OVERLAY BUILDER ────────────────────────────────────────────────
@@ -551,7 +560,7 @@ function buildEnvOverlay(envArr) {
    De stage-overlay wordt live bijgewerkt bij iedere wijziging.
 */
 function renderEnvironmentStep() {
-  const ht = [0, 220, 205, 192, 180, 170, 160, 152, 144, 137, 130, 124, 118];
+  const ht = [160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160];
   const figures    = buildFigures(ht);
   const petOverlay = buildPetOverlay(ht);
   const houseSrc = selectedHouseType ? `afbeelding/avatars/woningtype/${selectedHouseType}.png` : '';
@@ -572,8 +581,9 @@ function renderEnvironmentStep() {
       <div id="hh-char-figures">${figures}</div>
       <div class="hh-pet-overlay">${petOverlay}</div>
       <div id="hh-avatar-picker" style="display:none"></div>
-    </div>
-    <div id="hh-env-grid">${envOpts}</div>`;
+    </div>`;
+  const intakeControlsEnv = document.getElementById('intake-controls');
+  if (intakeControlsEnv) intakeControlsEnv.innerHTML = `<div id="hh-env-grid">${envOpts}</div>`;
 }
 
 /* Togglet een omgevingstype in de selectedEnvironment-array.

@@ -262,6 +262,9 @@ function show(id) {
   // Bereken prep-state bij binnenkomen prep-scherm
   if (id === 's-prep') updatePrepState();
 
+  // Bouw scenario-kaarten op basis van profiel
+  if (id === 's-scenariokeuze') renderScenarioKeuze();
+
   // Positioneer sidebar dynamisch onder de klokwidget
   if (showSidebar && sidebar) {
     requestAnimationFrame(() => {
@@ -374,6 +377,7 @@ function openGearMenu() {
   const menu = document.getElementById('gear-menu');
   if (!menu) return;
   _lastFocusBeforeModal = document.activeElement;
+  checkSave(); // laad-info bijwerken voordat het menu zichtbaar wordt
   gearPage(0); // begin altijd op de hoofdpagina van het menu
   menu.classList.add('show');
   trapFocus(menu);
@@ -491,14 +495,23 @@ function saveProfile() {
 // Controleert of er een opgeslagen sessie beschikbaar is en werkt
 // de "Spel laden"-knop in het startmenu bij.
 function checkSave() {
-  const saveBtn  = document.getElementById('start-savegame-btn');
-  const saveInfo = document.getElementById('start-load-info');
+  const scenarioNames = {
+    stroom: 'Stroomstoring', natuurbrand: 'Bosbrand', overstroming: 'Overstroming',
+    thuis_komen: 'Thuiskomen', drinkwater: 'Drinkwater', nachtalarm: 'Nachtalarm'
+  };
 
   // Vorige opslag laden
+  const saveBtn      = document.getElementById('start-savegame-btn');
+  const saveInfo     = document.getElementById('start-load-info');
+  const gearLoadBtn  = document.getElementById('gear-load-btn');
+  const gearLoadInfo = document.getElementById('gear-load-info');
+
   const raw = localStorage.getItem(SAVE_KEY);
   if (!raw) {
-    if (saveBtn)  saveBtn.disabled = true;
-    if (saveInfo) saveInfo.textContent = 'Geen opgeslagen spel';
+    if (saveBtn)      saveBtn.disabled = true;
+    if (saveInfo)     saveInfo.textContent = 'Geen opgeslagen spel';
+    if (gearLoadBtn)  gearLoadBtn.disabled = true;
+    if (gearLoadInfo) gearLoadInfo.textContent = 'Geen opgeslagen spel';
   } else {
     try {
       const d = JSON.parse(raw);
@@ -506,35 +519,51 @@ function checkSave() {
       const timeStr = min < 1   ? 'zojuist'
                     : min < 60  ? `${min} min geleden`
                     :             `${Math.round(min / 60)} uur geleden`;
-      const names = { stroom: 'Stroomstoring', natuurbrand: 'Bosbrand', overstroming: 'Overstroming', thuis_komen: 'Thuiskomen' };
-      if (saveInfo) saveInfo.textContent = `${names[d.currentScenario] || d.currentScenario} — ${timeStr}`;
-      if (saveBtn)  saveBtn.disabled = false;
+      const scenarioLabel = `${scenarioNames[d.currentScenario] || d.currentScenario} — ${timeStr}`;
+      if (saveInfo)     saveInfo.textContent = scenarioLabel;
+      if (saveBtn)      saveBtn.disabled = false;
+      if (gearLoadInfo) gearLoadInfo.textContent = scenarioLabel;
+      if (gearLoadBtn)  gearLoadBtn.disabled = false;
     } catch(e) {
-      if (saveBtn)  saveBtn.disabled = true;
-      if (saveInfo) saveInfo.textContent = '';
+      if (saveBtn)      saveBtn.disabled = true;
+      if (saveInfo)     saveInfo.textContent = '';
+      if (gearLoadBtn)  gearLoadBtn.disabled = true;
+      if (gearLoadInfo) gearLoadInfo.textContent = '';
     }
   }
 
   // Huishouden laden
-  const profBtn  = document.getElementById('start-profile-btn');
-  const profInfo = document.getElementById('start-profile-info');
-  const rawProf  = localStorage.getItem('ptp_profile');
+  const profBtn      = document.getElementById('start-profile-btn');
+  const profInfo     = document.getElementById('start-profile-info');
+  const gearProfBtn  = document.getElementById('gear-profile-btn');
+  const gearProfInfo = document.getElementById('gear-profile-info');
+
+  const rawProf = localStorage.getItem('ptp_profile');
   if (!rawProf) {
-    if (profBtn)  profBtn.disabled = true;
-    if (profInfo) profInfo.textContent = 'Geen opgeslagen huishouden';
+    if (profBtn)      profBtn.disabled = true;
+    if (profInfo)     profInfo.textContent = 'Geen opgeslagen huishouden';
+    if (gearProfBtn)  gearProfBtn.disabled = true;
+    if (gearProfInfo) gearProfInfo.textContent = 'Geen opgeslagen huishouden';
   } else {
     try {
       const p = JSON.parse(rawProf);
+      const naam = (p.profile && p.profile.playerName) || '';
       const parts = [];
       const adults = (p.adultsCount || 0) + (p.slechtTerBeenCount || 0);
       if (adults > 0)           parts.push(`${adults} volw.`);
       if (p.childrenCount > 0)  parts.push(`${p.childrenCount} kind${p.childrenCount > 1 ? 'eren' : ''}`);
       if (p.petsCount > 0)      parts.push(`${p.petsCount} huisdier${p.petsCount > 1 ? 'en' : ''}`);
-      if (profInfo) profInfo.textContent = parts.length ? parts.join(', ') : 'Huishouden opgeslagen';
-      if (profBtn)  profBtn.disabled = false;
+      const comp = parts.length ? parts.join(', ') : 'Huishouden opgeslagen';
+      const profLabel = naam ? `${naam} — ${comp}` : comp;
+      if (profInfo)     profInfo.textContent = profLabel;
+      if (profBtn)      profBtn.disabled = false;
+      if (gearProfInfo) gearProfInfo.textContent = profLabel;
+      if (gearProfBtn)  gearProfBtn.disabled = false;
     } catch(e) {
-      if (profBtn)  profBtn.disabled = true;
-      if (profInfo) profInfo.textContent = '';
+      if (profBtn)      profBtn.disabled = true;
+      if (profInfo)     profInfo.textContent = '';
+      if (gearProfBtn)  gearProfBtn.disabled = true;
+      if (gearProfInfo) gearProfInfo.textContent = '';
     }
   }
 }
@@ -554,6 +583,103 @@ function openOver() {
 function closeOver() {
   document.getElementById('over-overlay').classList.remove('open');
   if (_overReturnFocus) _overReturnFocus.focus();
+}
+
+/* ─── SCENARIO-KEUZE RENDERER ─────────────────────────────────────────────────
+   Bouwt de scenario-kaarten dynamisch op basis van het spelersprofiel.
+   Omgevingsspecifieke scenario's worden alleen getoond als ze passen bij
+   de omgeving die de speler opgegeven heeft in de intake.
+   Volgorde: korst-durend bovenaan, langst-durend onderaan.
+*/
+function renderScenarioKeuze() {
+  const loc = (typeof profile !== 'undefined' && profile.location) ? profile.location : [];
+
+  // Bepaal welke omgevingsspecifieke scenario's getoond worden:
+  // - overstroming: alleen bij 'water'
+  // - natuurbrand:  alleen bij 'bos' of 'buitengebied'
+  const showOverstroming = loc.includes('water');
+  const showNatuurbrand  = loc.includes('bos') || loc.includes('buitengebied');
+
+  // Alle mogelijke scenario's, gesorteerd van korst naar langst.
+  // active: false = wordt nooit getoond.
+  // env: true = alleen tonen als de omgevingscheck slaagt.
+  const defs = [
+    {
+      key: 'nachtalarm',
+      title: 'Alarm in de nacht',
+      badge: 'Kort (~10 min)',
+      badgeClass: 'spk-short',
+      cardClass: 'spk-universal',
+      label: 'Kort scenario',
+      desc: 'Het is midden in de nacht. Je schrikt wakker van een rookmelder die afgaat. Het is donker, de rest slaapt door en beneden hangt rook.',
+      active: true,
+      env: false
+    },
+    {
+      key: 'thuis_komen',
+      title: 'Onderweg naar huis',
+      badge: 'Kort (~15 min)',
+      badgeClass: 'spk-short',
+      cardClass: 'spk-universal',
+      label: 'Reisscenario',
+      desc: 'Je bent op het werk of op school. Een gewone doordeweekse dag. Je hebt je spullen bij je en over een paar uur ga je naar huis.',
+      active: true,
+      env: false
+    },
+    {
+      key: 'overstroming',
+      title: 'Het water staat hoog',
+      badge: 'Medium (~20 min)',
+      badgeClass: 'spk-medium',
+      cardClass: 'spk-relevant',
+      label: 'Specifiek voor jouw omgeving',
+      desc: 'Het heeft de afgelopen dagen veel geregend. De rivieren staan hoog en in de buurt praten mensen over het waterpeil. Voorlopig lijkt het mee te vallen, maar de regen houdt aan.',
+      active: true,
+      env: true,
+      show: showOverstroming
+    },
+    {
+      key: 'natuurbrand',
+      title: 'Een warme droge zomer',
+      badge: 'Medium (~20 min)',
+      badgeClass: 'spk-medium',
+      cardClass: 'spk-relevant',
+      label: 'Specifiek voor jouw omgeving',
+      desc: 'Het is al weken droog en warm. De tuin staat er dor bij en het nieuws heeft het over de aanhoudende hitte. Je bent thuis en de dag begint zoals gewoonlijk.',
+      active: true,
+      env: true,
+      show: showNatuurbrand
+    },
+    {
+      key: 'stroom',
+      title: 'Een gewone winterdag',
+      badge: 'Lang (~35 min)',
+      badgeClass: 'spk-long',
+      cardClass: 'spk-universal',
+      label: 'Uitgebreid scenario',
+      desc: 'Het is winter. Je bent thuis, de verwarming staat aan en je hebt geen bijzondere plannen voor vandaag. Buiten is het koud en grijs. Echt weer om binnen te blijven.',
+      active: true,
+      env: false
+    }
+  ];
+
+  const visible = defs.filter(d => d.active && (!d.env || d.show));
+
+  const wrap = document.getElementById('scenario-cards-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = visible.map(d => `
+    <button type="button" class="scenario-pick-card ${d.cardClass}" onclick="startScenario('${d.key}')">
+      <div class="spk-top">
+        <span class="spk-title">${d.title}</span>
+        <span class="spk-badge ${d.badgeClass}">${d.badge}</span>
+      </div>
+      <div class="spk-desc">${d.desc}</div>
+      <div class="spk-rel-label">${d.label}</div>
+    </button>`).join('');
+
+  // Pas de subtitel aan op het aantal zichtbare scenario's
+  const sub = document.getElementById('scenario-keuze-sub');
+  if (sub) sub.textContent = `${visible.length} scenario${visible.length === 1 ? '' : "'s"} voor jouw situatie. Kies wat je wilt oefenen.`;
 }
 
 // Controleer de opgeslagen sessie zodra de pagina volledig geladen is.

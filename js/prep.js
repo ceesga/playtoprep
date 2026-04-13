@@ -279,17 +279,7 @@ function setToggle(id, val) {
    de gekozen omgeving (bos/rural voor natuurbrand, water voor overstroming).
 */
 function gotoScenariokeuze() {
+  // renderScenarioKeuze() in ui.js bouwt de kaarten inclusief klassen
+  // op basis van profile.location — geen extra klassenlogica nodig hier.
   show('s-scenariokeuze');
-  const cards = document.querySelectorAll('.scenario-pick-card');
-  cards.forEach(card => {
-    const onclick = card.getAttribute('onclick') || '';
-    const isStroom = onclick.includes("'stroom'");
-    const relevant =
-      isStroom ||
-      (onclick.includes("'natuurbrand'") && (profile.location.includes('forest') || profile.location.includes('rural_area'))) ||
-      (onclick.includes("'overstroming'") && profile.location.includes('water'));
-    card.classList.toggle('spk-relevant', relevant);
-    // Stroom is altijd relevant, ongeacht omgeving — aparte stijl
-    card.classList.toggle('spk-universal', isStroom);
-  });
 }
