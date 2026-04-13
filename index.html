@@ -261,6 +261,22 @@
 </div>
 </div>
 
+<div class="scenario-inventory" id="scenario-inventory">
+  <div class="inventory-panel" id="inventory-panel" role="dialog" aria-modal="false" aria-labelledby="inventory-title" hidden>
+    <div class="inventory-panel-header">
+      <div>
+        <div class="inventory-kicker">Inventaris</div>
+        <h3 id="inventory-title">Wat je bij je hebt</h3>
+      </div>
+      <button type="button" class="inventory-close" onclick="closeInventory()" aria-label="Inventaris sluiten">✕</button>
+    </div>
+    <div class="inventory-panel-body" id="inventory-body"></div>
+  </div>
+  <button type="button" class="inventory-fab" id="inventory-toggle" onclick="toggleInventory()" aria-label="Open inventaris" aria-haspopup="dialog" aria-expanded="false">
+    <span class="inventory-fab-icon" id="inventory-toggle-icon" aria-hidden="true"></span>
+  </button>
+</div>
+
 </div>
 
 <!-- REPORT SCREEN -->
@@ -515,6 +531,7 @@
 <script src="js/data-scenarios-nachtalarm.js"></script>
 <script src="js/intake.js"></script>
 <script src="js/prep.js"></script>
+<script src="js/inventory.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/report.js"></script>

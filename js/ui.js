@@ -234,6 +234,7 @@ document.getElementById('household-popup').addEventListener('click', function(e)
 function show(id) {
   // Verwijder 'active' van alle schermen
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  if (typeof closeInventory === 'function' && id !== 's-scenario') closeInventory();
 
   const screen = document.getElementById(id);
   screen.classList.add('active'); // activeer het gevraagde scherm

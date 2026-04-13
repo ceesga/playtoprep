@@ -94,7 +94,8 @@ const state = {
   called112: false,
   stayedOutside: false,
   delayedEvacuation: false,
-  travelingWithMartijn: false
+  travelingWithMartijn: false,
+  inventory: {}
 };
 
 // Scene decay — automatic stat reductions when a scene is entered

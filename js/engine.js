@@ -1034,7 +1034,10 @@ function startScenario(scenarioId) {
   state.stayedOutside = false;
   state.delayedEvacuation = false;
   state.travelingWithMartijn = false;
+  state.hasCarRadio = false;
+  state.airplaneMode = false;
   state.followedOfficialAdvice = false;
+  if (typeof ensureInventoryState === 'function') ensureInventoryState();
 
   // Reset scène-index en alle kanaal- en geschiedenisbuffers
   currentSceneIdx = 0;
@@ -1104,6 +1107,7 @@ function loadGame() {
   // Herstel state en profiel
   Object.assign(state, d.state);
   Object.assign(profile, d.profile);
+  if (typeof ensureInventoryState === 'function') ensureInventoryState();
 
   // Herstel scenario + scenes
   currentScenario = d.currentScenario;
@@ -1311,7 +1315,7 @@ function renderScene() {
     scene.channels.whatsapp.forEach(m => channels.whatsapp.push(m));
   }
   // Radio-inhoud toevoegen als de speler een radio heeft
-  if (scene.channels.radio && (profile.hasRadio || state.hasCarRadio)) {
+  if (scene.channels.radio && (profile.hasRadio === 'ja' || state.hasCarRadio)) {
     channels.radio.push({
       time: scene.time,
       text: scene.channels.radio
@@ -1330,7 +1334,7 @@ function renderScene() {
   const _newsCount    = (_ch.news    && _ch.news.length)    ? _ch.news.length    : 0;
   const _waCount      = (_ch.whatsapp && _ch.whatsapp.length) ? _ch.whatsapp.length : 0;
   const _nlalertCount = 0; // NL-Alert verschijnt als popup en telt niet mee als bericht
-  const _hasRadio     = !!(_ch.radio && (profile.hasRadio || state.hasCarRadio));
+  const _hasRadio     = !!(_ch.radio && (profile.hasRadio === 'ja' || state.hasCarRadio));
   _badgeMarkTimer = setTimeout(() => {
     _badgeMarkTimer = null;
     if (_newsCount)  markUnread('news',     _newsCount);
@@ -1351,6 +1355,7 @@ function renderScene() {
 
   // Render choices or just a "verder" button
   renderChoices(scene);
+  if (typeof renderInventory === 'function') renderInventory();
 
   // Trigger NL-Alert overlay
   if (scene.channels.nlalert) {
@@ -1570,7 +1575,7 @@ function renderChannels(scene) {
 
   // RADIO — altijd weergeven; inhoud afhankelijk van of speler een radio heeft
   const radioBtn = document.getElementById('radio-play-btn');
-  if (!(profile.hasRadio || state.hasCarRadio)) {
+  if (!(profile.hasRadio === 'ja' || state.hasCarRadio)) {
     // Speler heeft geen radio
     document.getElementById('radio-freq').textContent = 'Geen radio';
     document.getElementById('radio-content').innerHTML = '<p class="ch-empty">Je hebt geen batterijradio bij je. Daardoor kun je geen officiële berichten ontvangen.</p>';
@@ -1600,7 +1605,10 @@ function renderChannels(scene) {
 function renderChoices(scene) {
   const wrap = document.getElementById('sc-choices');
   const _conseqEl = document.getElementById('sc-consequence');
-  if (_conseqEl) _conseqEl.classList.remove('show');
+  if (_conseqEl) {
+    _conseqEl.classList.remove('show');
+    _conseqEl.innerHTML = '';
+  }
   if (!scene.choices) {
     // Geen keuzes: leeg de container (scène heeft alleen een 'Verder'-knop)
     if (wrap) wrap.innerHTML = '';
@@ -2136,6 +2144,7 @@ function parseChoiceIcon(text) {
 function pickChoice(idx) {
   const btn = document.getElementById('cbtn-' + idx);
   if (btn.classList.contains('picked')) return; // prevent double-picking same choice
+  if (typeof hideInventoryConsequence === 'function') hideInventoryConsequence();
 
   const visibleScenes = getActiveScenes();
   const scene = visibleScenes[currentSceneIdx];
@@ -2197,6 +2206,7 @@ function pickChoice(idx) {
   if (state.water === 0) state.ranOutOfWater = true;
   if (state.food === 0) state.ranOutOfFood = true;
   renderStatusBars();
+  if (typeof renderInventory === 'function') renderInventory();
 
   // Floating stat delta indicators
   const statAnchorMap = {
