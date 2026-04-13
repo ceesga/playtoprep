@@ -339,15 +339,15 @@ const commuteQs = [{
   id: 'commuteMode',
   q: 'Hoe reis je normaal naar je werk?',
   opts: [{
-    icon: '🚗',
+    icon: 'car',
     label: 'Met de auto',
     val: 'car'
   }, {
-    icon: '🚌',
+    icon: 'bus',
     label: 'Openbaar vervoer',
     val: 'ov'
   }, {
-    icon: '🚲',
+    icon: 'bike',
     label: 'Met de fiets',
     val: 'bike'
   }]
@@ -355,15 +355,15 @@ const commuteQs = [{
   id: 'commuteDistance',
   q: 'Hoe ver is jouw woon-werkafstand?',
   opts: [{
-    icon: '🏘️',
+    icon: 'house',
     label: 'Dichtbij, minder dan 15 km',
     val: 'near'
   }, {
-    icon: '🛤️',
+    icon: 'footprints',
     label: 'Middel, 15 tot 50 km',
     val: 'medium'
   }, {
-    icon: '🗺️',
+    icon: 'train',
     label: 'Ver, meer dan 50 km',
     val: 'far'
   }]

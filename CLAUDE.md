@@ -86,7 +86,7 @@ Er is geen auto-advance timer. Verwijder of voeg deze niet toe.
 
 4. **`sceneDecay` is dynamisch** — Staat in `data-state.js` maar wordt per scenario overschreven in `engine.js` via `startScenario()`. Zoek nooit statisch naar `sceneDecay`; gebruik de scenario-specifieke objecten.
 
-5. **Radio-tab is standaard verborgen** — De radio-tab heeft klasse `hidden-tab`. Hij wordt pas zichtbaar als het scenario een radio-scene activeert.
+5. **Radio-tab is altijd zichtbaar** — De radio-tab is in alle scenarios altijd zichtbaar. Als de speler geen radio heeft (`profile.hasRadio` en `state.hasCarRadio` zijn beide falsy), toont het paneel een melding dat de speler geen radio heeft. Gebruik de `hidden-tab`-klasse niet meer voor de radio-tab.
 
 6. **Scenario-sleutel 'thuis_komen' heeft commute-vragen** — Dit scenario heeft een extra scherm (`s-commute`) met eigen vragen over reiswijze en -afstand vóór het eigenlijke scenario start.
 

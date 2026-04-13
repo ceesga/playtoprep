@@ -499,7 +499,7 @@ function renderStatusBars() {
     const svalMap = { 'stat-food': 'ss-val-food', 'stat-water': 'ss-val-water', 'stat-comfort': 'ss-val-comfort' };
     const svalEl = document.getElementById(svalMap[segId]);
     if (svalEl) {
-      svalEl.textContent = segId === 'stat-comfort' ? Math.round(val / 10 * 100) : val;
+      svalEl.textContent = segId === 'stat-comfort' ? Math.round(val / MAX_STAT_COMFORT * 100) : val;
     }
     // Sidebar: unit-label voor water en voedsel (dag/dagen)
     const sunitMap = { 'stat-food': 'ss-unit-food', 'stat-water': 'ss-unit-water' };
@@ -508,7 +508,7 @@ function renderStatusBars() {
     // Progress bar (comfort)
     if (segId === 'stat-comfort') {
       const fillEl = document.getElementById('ss-fill-comfort');
-      if (fillEl) fillEl.style.width = Math.round(val / 10 * 100) + '%';
+      if (fillEl) fillEl.style.width = Math.round(val / MAX_STAT_COMFORT * 100) + '%';
     }
     const isWaterOrFood = segId === 'stat-water' || segId === 'stat-food';
     const wrap = document.getElementById(wrapId);
@@ -525,7 +525,7 @@ function renderStatusBars() {
     const mvalEl = document.getElementById(mvalMap[msbSegId]);
     if (mvalEl) {
       mvalEl.textContent = msbSegId === 'msb-seg-comfort'
-        ? Math.round(val / 10 * 100) + '%'
+        ? Math.round(val / MAX_STAT_COMFORT * 100) + '%'
         : val === 1 ? '1 dag' : val + ' dagen';
     }
     const isMsbWaterOrFood = msbSegId === 'msb-seg-water' || msbSegId === 'msb-seg-food';
@@ -906,8 +906,9 @@ function renderCommuteQ() {
     html += `<h2 style="margin:20px 0 10px">${q.q}</h2><div class="cards">`;
     q.opts.forEach(o => {
       const sel = profile[q.id] === o.val ? ' selected' : '';
+      const iconSvg = (typeof ICON_SVG !== 'undefined' && ICON_SVG[o.icon]) ? ICON_SVG[o.icon] : '';
       html += `<button class="choice-card${sel}" data-qid="${q.id}" data-val="${o.val}" onclick="commutePick('${q.id}','${o.val}')">
-        <div class="icon">${o.icon}</div><div>${o.label}</div></button>`;
+        <span class="choice-icon" aria-hidden="true">${iconSvg}</span><div>${o.label}</div></button>`;
     });
     html += '</div>';
   });
@@ -1232,7 +1233,7 @@ function renderScene() {
     Object.keys(decay).forEach(k => {
       // Vliegtuigmodus: telefoonbatterij daalt niet door verval
       if (k === 'phoneBattery' && state.airplaneMode) return;
-      const max = k === 'phoneBattery' ? 100 : (k === 'water' || k === 'food') ? 999 : 5;
+      const max = k === 'phoneBattery' ? 100 : (k === 'water' || k === 'food') ? 999 : k === 'comfort' ? MAX_STAT_COMFORT : k === 'health' ? MAX_STAT_HEALTH : 5;
       // Pas de vervalwaarde toe maar houd de stat binnen het geldige bereik
       state[k] = Math.max(0, Math.min(max, state[k] + decay[k]));
     });
@@ -1309,17 +1310,12 @@ function renderScene() {
   if (scene.channels.whatsapp && scene.channels.whatsapp.length) {
     scene.channels.whatsapp.forEach(m => channels.whatsapp.push(m));
   }
-  // Radio-inhoud alleen toevoegen als de speler een radio heeft
+  // Radio-inhoud toevoegen als de speler een radio heeft
   if (scene.channels.radio && (profile.hasRadio || state.hasCarRadio)) {
     channels.radio.push({
       time: scene.time,
       text: scene.channels.radio
     });
-    // Maak de radio-tab zichtbaar de eerste keer dat er radio-inhoud is
-    if (!radioUnlocked) {
-      radioUnlocked = true;
-      document.getElementById('radio-tab').classList.remove('hidden-tab');
-    }
   }
 
   // Always open on 'Wat je ervaart' tab at the start of each scene
@@ -1572,17 +1568,24 @@ function renderChannels(scene) {
 
   updateChannelNav('wa');
 
-  // RADIO — show only this scene's new radio message
+  // RADIO — altijd weergeven; inhoud afhankelijk van of speler een radio heeft
   const radioBtn = document.getElementById('radio-play-btn');
-  if ((profile.hasRadio || state.hasCarRadio) && sc.radio) {
-    // Toon de frequentie afhankelijk van het type radio dat de speler heeft
+  if (!(profile.hasRadio || state.hasCarRadio)) {
+    // Speler heeft geen radio
+    document.getElementById('radio-freq').textContent = 'Geen radio';
+    document.getElementById('radio-content').innerHTML = '<p class="ch-empty">Je hebt geen batterijradio bij je. Daardoor kun je geen officiële berichten ontvangen.</p>';
+    currentRadioText = '';
+    if (radioBtn) radioBtn.style.display = 'none';
+  } else if (sc.radio) {
+    // Speler heeft een radio en er is een uitzending in deze scène
     document.getElementById('radio-freq').textContent = 'Radio 1: 98.9 FM';
     document.getElementById('radio-content').style.color = '';
     document.getElementById('radio-content').innerHTML = sc.radio;
     currentRadioText = sc.radio;
     if (radioBtn) radioBtn.style.display = 'block';
-  } else if (radioUnlocked) {
-    // Radio is ooit vrijgespeeld maar heeft in deze scène geen nieuwe uitzending
+  } else {
+    // Speler heeft een radio maar geen uitzending in deze scène
+    document.getElementById('radio-freq').textContent = 'Radio 1: 98.9 FM';
     document.getElementById('radio-content').innerHTML = '<p class="ch-empty">Geen uitzending ontvangen.</p>';
     currentRadioText = '';
     if (radioBtn) radioBtn.style.display = 'none';
@@ -2181,7 +2184,7 @@ function pickChoice(idx) {
       state[k] = Math.max(state[k], sc[k]);
     } else if (DELTA_KEYS.has(k)) {
       // Begrens de statwaarde tot het geldige bereik [0, max]
-      const max = k === 'cash' ? 9999 : k === 'phoneBattery' ? 100 : (k === 'water' || k === 'food') ? 999 : 5;
+      const max = k === 'cash' ? 9999 : k === 'phoneBattery' ? 100 : (k === 'water' || k === 'food') ? 999 : k === 'comfort' ? MAX_STAT_COMFORT : k === 'health' ? MAX_STAT_HEALTH : 5;
       state[k] = Math.max(0, Math.min(max, state[k] + sc[k]));
     } else if (Array.isArray(sc[k])) {
       // Kopieer arrays om referentieproblemen te vermijden
@@ -2297,10 +2300,10 @@ function goBack() {
   currentSceneIdx--;
   // Restore state and history to before this scene was entered
   const snap = stateSnapshots[currentSceneIdx];
-  if (snap) Object.keys(snap).forEach(k => {
-    // Kopieer arrays om gedeelde referenties te vermijden
-    state[k] = Array.isArray(snap[k]) ? snap[k].slice() : snap[k];
-  });
+  if (snap) {
+    const deepSnap = JSON.parse(JSON.stringify(snap));
+    Object.keys(deepSnap).forEach(k => { state[k] = deepSnap[k]; });
+  }
   const histLen = historySnapshots[currentSceneIdx];
   if (histLen !== undefined) choiceHistory.length = histLen;
   renderScene();

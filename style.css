@@ -561,7 +561,7 @@ p.sub {
 
 /* ── SCENARIO SCREEN ── */
 
-/* Verberg de kaartachtergrond als het scenario actief is (fixed overlay is transparant) */
+/* Kaart volledig transparant tijdens het scenario — achtergrondafbeelding schijnt door */
 .card.scenario-active {
   background:transparent !important;
   box-shadow:none !important;
@@ -1664,7 +1664,7 @@ p.sub {
 }
 
 #panel-whatsapp {
-  background:var(--c-wa-bg);
+  background:transparent;
 }
 
 #wa-nav {
@@ -1718,7 +1718,7 @@ p.sub {
 }
 
 .wa-bg {
-  background:var(--c-wa-bg);
+  background:transparent;
   margin:-16px;
   padding:16px;
 }
@@ -2168,12 +2168,12 @@ p.sub {
   flex-direction:column;
   gap:0;
   transition:opacity 320ms ease;
-  background:rgba(255,255,255,.98);
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
   border-radius:24px;
   border:1px solid rgba(255,255,255,.4);
   box-shadow:0 25px 50px -12px rgba(0,0,0,.25);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
   position:relative;
   z-index:1;
   overflow:hidden;
@@ -2203,7 +2203,7 @@ p.sub {
 }
 
 .zone-bottom {
-  background:linear-gradient(to bottom,rgba(248,250,252,.85),rgba(248,250,252,.65));
+  background:transparent;
   border-top:1px solid rgba(226,232,240,.8);
   padding:16px 20px 22px;
   flex-shrink:0;
@@ -2287,30 +2287,24 @@ p.sub {
 
 .choice-btn {
   background:var(--c-white);
-  border:2px solid #e2e8f0;
-  border-left:4px solid #e2e8f0;
-  border-radius:12px;
-  padding:12px 16px;
+  border:2px solid var(--c-border);
+  border-radius:var(--r-sm);
+  padding:15px 16px;
   color:var(--c-text-2);
   font-size:.88rem;
   line-height:1.5;
   cursor:pointer;
   text-align:left;
-  transition:all .2s;
+  transition:border-color .15s,box-shadow .15s;
   width:100%;
   margin-bottom:8px;
-  position:relative;
-  box-shadow:0 1px 4px rgba(0,0,0,.06);
   display:flex;
   align-items:flex-start;
-  gap:9px;
+  gap:10px;
 }
 
 .choice-btn:hover:not(:disabled) {
-  border-color:#93c5fd;
-  background:rgba(239,246,255,.4);
-  box-shadow:0 2px 10px rgba(37,99,235,.1);
-  transform:translateX(2px);
+  border-color:var(--c-text-faint);
 }
 
 .choice-btn:active {
@@ -2324,7 +2318,8 @@ p.sub {
 }
 
 .choice-btn.picked {
-  background:#eaf2ff;
+  border-color:var(--c-primary);
+  box-shadow:0 0 0 2px rgba(var(--c-primary-rgb),.2);
   color:var(--c-primary);
   font-weight:600;
   opacity:1;
@@ -2344,35 +2339,17 @@ p.sub {
   flex-shrink:0;
 }
 
-.cat-action,
-.cat-risk {
-  border-left-color:var(--c-cat-action);
-}
-
 .cat-action .choice-icon,
 .cat-risk .choice-icon {
   color:var(--c-cat-action);
-}
-
-.cat-social {
-  border-left-color:var(--c-cat-social);
 }
 
 .cat-social .choice-icon {
   color:var(--c-cat-social);
 }
 
-.cat-supply {
-  border-left-color:var(--c-cat-supply);
-}
-
 .cat-supply .choice-icon {
   color:var(--c-cat-supply);
-}
-
-.cat-info,
-.cat-neutral {
-  border-left-color:var(--c-cat-neutral);
 }
 
 .cat-info .choice-icon,
