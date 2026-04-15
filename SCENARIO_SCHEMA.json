@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PlayToPrep Scenario Schema",
+  "description": "Formele structuur voor een PlayToPrep noodscenario",
+  "type": "object",
+  "required": ["id", "name", "scenes", "sceneDecay"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unieke sleutel van het scenario (bijv. 'stroom', 'bosbrand')",
+      "enum": ["stroom", "natuurbrand", "overstroming", "thuis_komen", "drinkwater", "nachtalarm"]
+    },
+    "name": {
+      "type": "string",
+      "description": "Leesbare naam van het scenario"
+    },
+    "scenes": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/scene" }
+    },
+    "sceneDecay": {
+      "type": "object",
+      "description": "Automatische stat-wijzigingen per scene-ID",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "water": { "type": "integer" },
+          "food": { "type": "integer" },
+          "comfort": { "type": "integer" },
+          "health": { "type": "integer" },
+          "cash": { "type": "integer" },
+          "phoneBattery": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "scene": {
+      "type": "object",
+      "required": ["id", "time", "narrative", "choices"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z]{2,3}_[a-z0-9_]+$",
+          "description": "Uniek ID binnen het scenario (bijv. 'st_1')"
+        },
+        "time": {
+          "type": "string",
+          "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+        },
+        "date": { "type": "string" },
+        "dayBadge": { "type": "string" },
+        "dayBadgeClass": {
+          "type": "string",
+          "enum": ["blue", "orange", "red"]
+        },
+        "title": {
+          "type": "string",
+          "description": "Titel getoond in de UI boven de tijd"
+        },
+        "visuals": {
+          "type": "object",
+          "properties": {
+            "image": { "type": "string", "description": "Pad naar achtergrondafbeelding" },
+            "fireOverlay": { "type": "number", "minimum": 0, "maximum": 1 },
+            "rainOverlay": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "channels": {
+          "type": "object",
+          "properties": {
+            "news": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["time", "headline", "body"],
+                "properties": {
+                  "time": { "type": "string" },
+                  "headline": { "type": "string" },
+                  "body": { "type": "string" }
+                }
+              }
+            },
+            "whatsapp": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["from", "msg", "time"],
+                "properties": {
+                  "from": { "type": "string" },
+                  "msg": { "type": "string" },
+                  "time": { "type": "string" },
+                  "outgoing": { "type": "boolean", "default": false }
+                }
+              }
+            },
+            "nlalert": { "type": "string" },
+            "radio": { "type": "string" }
+          }
+        },
+        "narrative": {
+          "type": "string",
+          "description": "De hoofdtekst die de speler ervaart"
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["text", "consequence"],
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "Moet beginnen met een functioneel emoji-prefix uit CHOICE_ICON_MAP"
+              },
+              "consequence": { "type": "string" },
+              "cat": {
+                "type": "string",
+                "enum": ["cat-action", "cat-social", "cat-supply", "cat-info", "cat-risk", "cat-neutral"]
+              },
+              "stateChange": {
+                "type": "object",
+                "additionalProperties": { "type": ["integer", "boolean"] }
+              },
+              "conditionalOn": {
+                "type": "string",
+                "description": "Logische expressie (momenteel als string/code in JS)"
+              }
+            }
+          }
+        },
+        "conditionalOn": {
+          "type": "string",
+          "description": "Bepaalt of de hele scene getoond wordt"
+        }
+      }
+    }
+  }
+}

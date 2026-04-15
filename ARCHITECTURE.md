@@ -303,7 +303,7 @@ Override met `cat: 'cat-social'` (of andere klasse) in het keuze-object.
 3. Voeg nieuwe state-flags toe aan het `state`-object in `data-state.js`.
 4. Koppel in `engine.js` → `startScenario()`: voeg `else if`-tak toe die `scenes` en `sceneDecay` toewijst, en reset de nieuwe flags.
 5. Koppel in `engine.js` → `loadGame()`: zelfde `else if`-tak toevoegen.
-6. Voeg sceneVisuals toe voor elke scene-ID in `engine.js`.
+6. Voeg `const sceneImages_{naam} = { sceneId: 'padNaarAfbeelding', ... }` toe aan het einde van `data-scenarios-{naam}.js`. Voeg `sceneImages_{naam}` toe aan `sceneBgMap` in `engine.js`.
 7. Voeg `<script src="js/data-scenarios-{naam}.js">` toe aan `index.html` vóór `engine.js`.
 8. Voeg scenario-optie toe aan het scenariokeuze-scherm in `index.html` (`s-scenariokeuze`).
 9. Voeg intro-tekst toe in `showReport()` in `report.js`.

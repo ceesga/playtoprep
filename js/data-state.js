@@ -63,6 +63,8 @@ const profile = {
 // ─── GAME STATE ───────────────────────────────────────────────────────────────
 const state = {
   awarenessLevel: 0,
+  tapWaterAvailable: true,
+  shopsOpen: true,
   followedOfficialAdvice: false,
   hasCash: false,
   hasExtraFood: false,
@@ -120,8 +122,9 @@ const sceneDecay_stroom = {
   }, // +1.5h
   st_7: {
     comfort: -1,
-    phoneBattery: -35
-  }, // +7h nacht
+    phoneBattery: -35,
+    shopsOpen: false
+  }, // +7h nacht — supermarkten dicht
   st_8: {
     phoneBattery: -15
   }, // +3h
@@ -132,8 +135,9 @@ const sceneDecay_stroom = {
     phoneBattery: -10
   }, // +2.5h
   st_9: {
-    phoneBattery: -5
-  }, // +0.5h
+    phoneBattery: -5,
+    tapWaterAvailable: false
+  }, // +0.5h — rioolgemalen vallen uit, waterdruk daalt
   st_autolaad: {}, // +0.75h — auto opladen, geen verval
   st_watertruck: {
     phoneBattery: -10

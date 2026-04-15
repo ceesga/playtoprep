@@ -29,7 +29,7 @@ const scenes_drinkwater = [{
     const kook = profile.hasKit === 'ja' || profile.hasWater === 'ja'
       ? ' Je hebt gelukkig al wat schoon water in huis.'
       : '';
-    const afgelegen = !profile.location.includes('stedelijk')
+    const afgelegen = !profile.location.includes('city')
       ? ' Je woont niet midden in de stad. De dichtstbijzijnde supermarkt is een eind weg — flessenwater halen is niet even om de hoek.'
       : '';
     const kinderen = profile.hasChildren
@@ -87,7 +87,7 @@ const scenes_drinkwater = [{
           time: '13:33',
           outgoing: false
         });
-      } else if (!profile.location.includes('stedelijk')) {
+      } else if (!profile.location.includes('city')) {
         msgs.push({
           from: 'Buurman Rob',
           msg: 'Hé, heb je dat kookadvies ontvangen? Ik probeer de supermarkt te bellen maar niemand neemt op. Hier is flessenwater altijd een eind rijden.',
@@ -378,3 +378,18 @@ const scenes_drinkwater = [{
     }
   }]
 }];
+
+/* ─── SCENE ACHTERGRONDAFBEELDINGEN ─────────────────────────────────────────
+   Koppelt scène-ID aan achtergrondafbeelding voor dit scenario.
+   Wordt in engine.js samengevoegd tot sceneBgMap.
+*/
+const sceneImages_drinkwater = {
+  wd_0: 'afbeelding/algemeen/huis_normaal.png',
+  wd_1: 'afbeelding/algemeen/huis_normaal.png',
+  wd_2: 'afbeelding/algemeen/huis_normaal.png',
+  wd_3: 'afbeelding/algemeen/huis_normaal.png',
+  wd_4: 'afbeelding/algemeen/huis_normaal.png',
+  wd_5: 'afbeelding/algemeen/huis_normaal.png',
+  wd_6: 'afbeelding/algemeen/huis_normaal.png',
+  wd_7: 'afbeelding/algemeen/huis_normaal.png',
+};

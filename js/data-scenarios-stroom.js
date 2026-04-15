@@ -1281,3 +1281,38 @@ const scenes_stroom = [
     }
   }
 ];
+
+/* ─── SCENE ACHTERGRONDAFBEELDINGEN ─────────────────────────────────────────
+   Koppelt scène-ID aan achtergrondafbeelding voor dit scenario.
+   Wordt in engine.js samengevoegd tot sceneBgMap.
+*/
+const sceneImages_stroom = {
+  st_pre_d2:   'afbeelding/stroomstoring/huis_winter0.png',
+  st_pre_d1:   'afbeelding/stroomstoring/huis_winter0.png',
+  st_d0_morgen:'afbeelding/stroomstoring/huis_winter0.png',
+  st_2:        'afbeelding/stroomstoring/huis_winter0.png',
+  st_1:        'afbeelding/stroomstoring/Huis_winter1.png',
+  st_3:        'afbeelding/stroomstoring/Huis_winter1.png',
+  st_4:        'afbeelding/stroomstoring/Huis_winter1.png',
+  st_5:        'afbeelding/stroomstoring/Huis_winter1.png',
+  st_6:        'afbeelding/stroomstoring/Huis_winter1.png',
+  st_6b:       'afbeelding/stroomstoring/Huis_winter1.png',
+  st_7:        'afbeelding/stroomstoring/Huis_winter2.png',
+  st_8:        'afbeelding/stroomstoring/Huis_winter2.png',
+  st_8b:       'afbeelding/stroomstoring/Huis_winter2.png',
+  st_d1_morgen:'afbeelding/stroomstoring/Huis_winter2.png',
+  st_9:        'afbeelding/stroomstoring/Huis_winter2.png',
+  st_autolaad: 'afbeelding/stroomstoring/Huis_winter2.png',
+  st_watertruck:'afbeelding/stroomstoring/Huis_winter2.png',
+  st_10a:      'afbeelding/stroomstoring/Huis_winter2.png',
+  st_10:       'afbeelding/stroomstoring/Huis_winter2.png',
+  st_d1_avond: 'afbeelding/stroomstoring/Huis_winter2.png',
+  st_11:       'afbeelding/stroomstoring/Huis_winter2.png',
+  st_d2_morgen:'afbeelding/stroomstoring/Huis_winter3.png',
+  st_12:       'afbeelding/stroomstoring/Huis_winter3.png',
+  st_d2_avond: 'afbeelding/stroomstoring/Huis_winter3.png',
+  st_d3_morgen:'afbeelding/stroomstoring/Huis_winter3.png',
+  st_13:       'afbeelding/stroomstoring/Huis_winter3.png',
+  st_14:       'afbeelding/stroomstoring/Huis_winter3.png',
+  st_4b:       'afbeelding/algemeen/supermarkt.jpg',
+};

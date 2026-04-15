@@ -4,14 +4,13 @@
 // spelers bruikbare items activeren zonder de scène te verlaten.
 // ═══════════════════════════════════════════════════════════════
 
-const INVENTORY_GROUP_ORDER = ['always', 'vehicles', 'bag', 'edc', 'personal', 'home'];
+const INVENTORY_GROUP_ORDER = ['always', 'vehicles', 'bag', 'edc', 'noodpakket'];
 const INVENTORY_GROUP_LABELS = {
   always: 'Altijd bij je',
   vehicles: 'Voertuigen',
   bag: 'Vluchttas',
   edc: 'Reistas / EDC',
-  personal: 'Persoonlijk',
-  home: 'Thuis bruikbaar'
+  noodpakket: 'Noodpakket'
 };
 
 function prepYes(value) {
@@ -19,7 +18,7 @@ function prepYes(value) {
 }
 
 function prepPresent(value) {
-  return value === 'ja' || value === 'niet_opgeladen';
+  return value === 'ja';
 }
 
 function getInventoryScene() {
@@ -32,7 +31,7 @@ function getInventoryContext() {
   return {
     scene: getInventoryScene(),
     isCommute: currentScenario === 'thuis_komen',
-    isHomeScenario: currentScenario && currentScenario !== 'thuis_komen',
+    isHomeScenario: !currentScenario || currentScenario !== 'thuis_komen',
     hasCar: currentScenario === 'thuis_komen'
       ? (profile.commuteMode === 'car' || state.travelMode === 'car')
       : !!profile.hasCar,
@@ -45,19 +44,19 @@ function getInventoryContext() {
 function buildInventoryDefaults() {
   return {
     flashlight: {
-      empty: profile.hasFlashlight !== 'ja',
+      empty: false,
       used: false
     },
     radio: {
-      empty: profile.hasRadio !== 'ja',
+      empty: false,
       used: false
     },
     powerbank: {
-      empty: profile.hasPowerbank !== 'ja',
+      empty: false,
       used: false
     },
     meds: {
-      used: false
+      usedOnDay: null
     },
     waterBottle: {
       used: false
@@ -133,7 +132,7 @@ function applyInventoryStateChange(sc) {
 }
 
 function showInventoryConsequence(text) {
-  const box = document.getElementById('sc-consequence');
+  const box = document.getElementById('inv-consequence');
   if (!box) return;
   box.innerHTML = '';
   const span = document.createElement('span');
@@ -148,7 +147,7 @@ function showInventoryConsequence(text) {
 }
 
 function hideInventoryConsequence() {
-  const box = document.getElementById('sc-consequence');
+  const box = document.getElementById('inv-consequence');
   if (!box) return;
   box.classList.remove('show');
   box.innerHTML = '';
@@ -256,20 +255,25 @@ const INVENTORY_ITEMS = [
     id: 'meds',
     label: 'Medicijnen',
     icon: 'pill',
-    group: 'personal',
+    group: 'noodpakket',
     isVisible: () => prepYes(profile.hasMeds),
-    getStatus() {
-      return inventoryRuntime('meds').used ? 'Gebruikt' : '';
-    },
-    isUsed() {
-      return !!inventoryRuntime('meds').used;
-    },
-    onUse() {
+    getStatus(ctx) {
       const runtime = inventoryRuntime('meds');
-      if (runtime.used) {
-        return { consequence: 'Je hebt je medicijnen al ingenomen.' };
+      const today = ctx.scene ? ctx.scene.dayBadge : null;
+      return (runtime.usedOnDay && runtime.usedOnDay === today) ? 'Ingenomen' : '';
+    },
+    isUsed(ctx) {
+      const runtime = inventoryRuntime('meds');
+      const today = ctx.scene ? ctx.scene.dayBadge : null;
+      return !!(runtime.usedOnDay && runtime.usedOnDay === today);
+    },
+    onUse(ctx) {
+      const runtime = inventoryRuntime('meds');
+      const today = ctx.scene ? ctx.scene.dayBadge : null;
+      if (runtime.usedOnDay && runtime.usedOnDay === today) {
+        return { consequence: 'Je hebt je medicijnen vandaag al ingenomen.' };
       }
-      runtime.used = true;
+      runtime.usedOnDay = today;
       return {
         stateChange: state.health < MAX_STAT_HEALTH ? { health: 1 } : null,
         consequence: 'Je neemt je dagelijkse medicijnen in.'
@@ -281,9 +285,7 @@ const INVENTORY_ITEMS = [
     label: 'Waterfles',
     icon: 'milk',
     group: 'edc',
-    isVisible: ctx => ctx.isCommute
-      ? prepYes(profile.hasEDCWater)
-      : (prepYes(profile.hasEDCWater) || prepYes(profile.hasBOBWater)),
+    isVisible: () => prepYes(profile.hasEDCWater),
     getStatus() {
       return inventoryRuntime('waterBottle').used ? 'Op' : '';
     },
@@ -303,10 +305,34 @@ const INVENTORY_ITEMS = [
     }
   },
   {
+    id: 'waterBottleBOB',
+    label: 'Waterfles',
+    icon: 'milk',
+    group: 'bag',
+    isVisible: ctx => ctx.isHomeScenario && prepYes(profile.hasBOBWater),
+    getStatus() {
+      return inventoryRuntime('waterBottleBOB').used ? 'Op' : '';
+    },
+    isUsed() {
+      return !!inventoryRuntime('waterBottleBOB').used;
+    },
+    onUse() {
+      const runtime = inventoryRuntime('waterBottleBOB');
+      if (runtime.used) {
+        return { consequence: 'Je waterfles is leeg.' };
+      }
+      runtime.used = true;
+      return {
+        stateChange: { water: 1 },
+        consequence: 'Je neemt een paar slokken uit je waterfles.'
+      };
+    }
+  },
+  {
     id: 'firstAid',
     label: 'EHBO-doos',
     icon: 'briefcase-medical',
-    group: 'home',
+    group: 'noodpakket',
     isVisible: ctx => ctx.isHomeScenario && prepYes(profile.hasFirstAid),
     getStatus() {
       return inventoryRuntime('firstAid').used ? 'Gebruikt' : '';
@@ -333,7 +359,7 @@ const INVENTORY_ITEMS = [
     id: 'radio',
     label: 'Radio',
     icon: 'boom-box',
-    group: 'home',
+    group: 'noodpakket',
     isVisible: ctx => getRadioAvailableInContext(ctx),
     getStatus(ctx) {
       if (ctx.isCommute && state.hasCarRadio) return '';
@@ -426,7 +452,7 @@ const INVENTORY_ITEMS = [
     id: 'gasStove',
     label: 'Gasstel',
     icon: 'flame-kindling',
-    group: 'home',
+    group: 'noodpakket',
     isVisible: ctx => ctx.isHomeScenario && prepYes(profile.hasGasStove),
     onUse() {
       return {
@@ -439,7 +465,7 @@ const INVENTORY_ITEMS = [
     id: 'powerbank',
     label: 'Powerbank',
     icon: 'smartphone-charging',
-    group: 'personal',
+    group: 'noodpakket',
     isVisible: () => prepPresent(profile.hasPowerbank),
     getStatus() {
       return inventoryRuntime('powerbank').empty ? 'Leeg' : '';
@@ -479,7 +505,7 @@ const INVENTORY_ITEMS = [
     id: 'laptop',
     label: 'Laptop',
     icon: 'laptop',
-    group: 'personal',
+    group: 'noodpakket',
     isVisible: ctx => ctx.isCommute,
     onUse(ctx) {
       return {
@@ -511,11 +537,6 @@ function getVisibleInventoryItems() {
 
 function renderInventory() {
   ensureInventoryState();
-
-  const toggleIcon = document.getElementById('inventory-toggle-icon');
-  if (toggleIcon && !toggleIcon.innerHTML) {
-    toggleIcon.innerHTML = (typeof ICON_SVG !== 'undefined' && ICON_SVG.briefcase) ? ICON_SVG.briefcase : '';
-  }
 
   const body = document.getElementById('inventory-body');
   if (!body) return;
@@ -590,7 +611,10 @@ function initInventoryUi() {
   document.addEventListener('click', evt => {
     const panel = document.getElementById('inventory-panel');
     if (!panel || panel.hidden) return;
-    if (!wrap.contains(evt.target)) closeInventory();
+    // composedPath() bevat de originele DOM-pad, ook als het element al
+    // verwijderd is (bijv. door renderInventory() na een item-klik)
+    const path = evt.composedPath ? evt.composedPath() : [evt.target];
+    if (!path.some(el => el === wrap || el === panel)) closeInventory();
   });
 }
 

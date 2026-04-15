@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Nachtalarm — "De rookmelder gaat af in de nacht"
-// 7 scenes — van na_0 (02:17) tot na_5 (02:45)
+// 8 hoofdscènes + 1 conditionele scène — van na_intro (22:30) tot na_5 (02:45)
 // Tijdspanne: ~30 minuten
 // Geen nieuws- of radiokanaal
 // ═══════════════════════════════════════════════════════════════
@@ -11,6 +11,54 @@ function hasHousemates() {
 }
 
 const scenes_nachtalarm = [
+  // ─── Intro: Naar bed ──────────────────────────────────────────────────────
+  {
+    id: 'na_intro',
+    time: '22:30',
+    date: 'Maandag',
+    dayBadge: 'Avond',
+    dayBadgeClass: 'orange',
+    channels: {
+      news: [],
+      whatsapp: [],
+      nlalert: null,
+      radio: null
+    },
+    get narrative() {
+      return 'Het is laat. Het huis wordt stil en jij maakt je klaar om te gaan slapen.' +
+        (hasHousemates() ? ' Ook de anderen zoeken hun bed op.' : '') +
+        ' Buiten is alles rustig.';
+    },
+    choices: [
+      {
+        text: 'ga slapen',
+        consequence: 'Je kruipt onder de dekens. Even later val je in slaap.',
+        stateChange: {}
+      }
+    ]
+  },
+
+  // ─── Tussenscène: Alarm in het donker ────────────────────────────────────
+  {
+    id: 'na_alarm',
+    time: '02:17',
+    date: 'Dinsdag',
+    dayBadge: 'Nacht',
+    dayBadgeClass: 'blue',
+    hideContinue: true,
+    visuals: {
+      image: 'afbeelding/brandalarm/waking_up.png'
+    },
+    channels: {
+      news: [],
+      whatsapp: [],
+      nlalert: null,
+      radio: null
+    },
+    narrative: 'Midden in de nacht word je wakker.',
+    choices: []
+  },
+
   // ─── Scene 0: Wakker schrikken ────────────────────────────────────────────
   {
     id: 'na_0',
@@ -25,7 +73,7 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
-      return 'Midden in de nacht schrik je wakker van hard, schel gepiep. De rookmelder gaat af. Alles is donker. Even weet je niet waar je bent.' +
+      return 'Met een klap ben je klaarwakker. Hard, schel gepiep vult het huis: de rookmelder gaat af. Alles is donker. Even weet je niet waar je bent.' +
         (hasHousemates() ? ' Naast je, of in de kamer ernaast, slaapt iemand gewoon door. Het alarm lijkt alleen jou wakker te maken.' : '');
     },
     choices: [
@@ -119,6 +167,7 @@ const scenes_nachtalarm = [
         text: '💧 Een pan water over het stopcontact gooien',
         consequence: 'Je gooit water over het stopcontact. Er volgt een felle knal en een regen van vonken. Water en elektriciteit zijn een gevaarlijke combinatie. Dit maakt de situatie juist nog riskanter.',
         cat: 'cat-risk',
+        sound: 'coughing',
         stateChange: { health: -2 }
       },
       {
@@ -346,3 +395,18 @@ const scenes_nachtalarm = [
 ];
 
 // sceneDecay_nachtalarm staat in data-state.js
+
+/* ─── SCENE ACHTERGRONDAFBEELDINGEN ─────────────────────────────────────────
+   Koppelt scène-ID aan achtergrondafbeelding voor dit scenario.
+   Wordt in engine.js samengevoegd tot sceneBgMap.
+*/
+const sceneImages_nachtalarm = {
+  na_intro: 'afbeelding/brandalarm/going_to_bed.png',
+  na_0:  'afbeelding/brandalarm/waking_up.png',
+  na_1:  'afbeelding/brandalarm/Rook_hal.png',
+  na_2:  'afbeelding/brandalarm/rook_woonkamer.png',
+  na_2b: 'afbeelding/brandalarm/Rook_hal.png',
+  na_3:  'afbeelding/brandalarm/Rook_uitgang.png',
+  na_4:  'afbeelding/brandalarm/Dutch_house_fire.png',
+  na_5:  'afbeelding/brandalarm/Dutch_house_fire.png',
+};

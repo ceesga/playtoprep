@@ -36,8 +36,6 @@ const prepQs = [{
 }, {
   id: 'hasFlashlight',
   q: 'Zaklamp',
-  opts: ['Niet opgeladen', 'Ja', 'Nee'],
-  def: 'nee',
   subItem: true
 }, {
   id: 'hasCash',
@@ -78,8 +76,6 @@ const prepQs = [{
 }, {
   id: 'hasRadio',
   q: 'Radio op batterijen',
-  opts: ['Niet opgeladen', 'Ja', 'Nee'],
-  def: 'nee',
   subItem: true
 }, {
   id: 'hasPetFood',
@@ -122,8 +118,6 @@ const prepQs = [{
 }, {
   id: 'hasPowerbank',
   q: 'Powerbank',
-  opts: ['Niet opgeladen', 'Ja', 'Nee'],
-  def: 'nee',
   subItem: true
 }, ];
 
@@ -131,6 +125,7 @@ const prepQs = [{
 function gotoPrep() {
   renderPrep();
   show('s-prep');
+  if (typeof renderInventory === 'function') renderInventory();
 }
 
 // Bijhoudt welke collapsible secties open (true) of dicht (false) zijn

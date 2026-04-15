@@ -1,489 +1,24 @@
 // ═══════════════════════════════════════════════════════════════
 // Engine — Kern game-logica
-// Bevat: sceneVisuals (achtergronden), startScenario, renderScene,
+// Bevat: startScenario, renderScene,
 //        pickChoice, advanceScene, renderChoices, updateStatDisplay,
 //        updateSidebar, applySceneDecay, switchTab, navChannel,
 //        commuteNext/Prev
 // ═══════════════════════════════════════════════════════════════
 
-/* ─── SCENE VISUALS ────────────────────────────────────────────────────────────
-   Metadata per scène-ID: een seed-string (vroeger gebruikt voor afbeelding-
-   generatie), een leesbaar tijdlabel en een scènetitel die boven in de UI
-   verschijnt.
+/* ─── SCENE ACHTERGRONDAFBEELDINGEN ──────────────────────────────────────────
+   Samengestelde mapping van scène-ID naar achtergrondafbeelding.
+   De per-scenario maps worden gedefinieerd in de respectievelijke data-bestanden.
 */
-const sceneVisuals = {
-  st_pre_d2: {
-    seed: 'office-lunch-winter',
-    label: 'Dag -2 · 12:00',
-    title: 'Eerste waarschuwingen'
-  },
-  st_pre_d1: {
-    seed: 'office-tension-lunchroom',
-    label: 'Dag -1 · 12:00',
-    title: 'Onrustige signalen'
-  },
-  st_d0_morgen: {
-    seed: 'suburb-morning-calm',
-    label: 'Dag 1 · 08:00',
-    title: 'Vóór de storing'
-  },
-  st_1: {
-    seed: 'city-street-daylight',
-    label: 'Dag 1 · 11:30',
-    title: 'Eerste stroomstoring'
-  },
-  st_2: {
-    seed: 'flicker-lights-house',
-    label: 'Dag 1 · 11:57',
-    title: 'Stroom even terug'
-  },
-  st_3: {
-    seed: 'dramatic-storm-europe',
-    label: 'Dag 1 · 12:20',
-    title: 'Heel Europa zonder stroom'
-  },
-  st_4: {
-    seed: 'supermarket-long-queue',
-    label: 'Dag 1 · 13:30',
-    title: 'Winkels sluiten'
-  },
-  st_4b: {
-    seed: 'supermarket-empty-shelves',
-    label: 'Dag 1 · 14:00',
-    title: 'Bij de supermarkt'
-  },
-  st_5: {
-    seed: 'dark-warning-street',
-    label: 'Dag 1 · 14:00',
-    title: 'Kan dagenlang duren'
-  },
-  st_6: {
-    seed: 'dark-home-candle-warm',
-    label: 'Dag 1 · 18:00',
-    title: 'Koken zonder stroom'
-  },
-  st_6b: {
-    seed: 'candle-blanket-dark-room',
-    label: 'Dag 1 · 19:30',
-    title: 'De eerste avond'
-  },
-  st_7: {
-    seed: 'night-dark-cold-street',
-    label: 'Dag 2 · 02:30',
-    title: 'Inbraak in de buurt'
-  },
-  st_8: {
-    seed: 'emergency-neighbor-help',
-    label: 'Dag 2 · 05:30',
-    title: 'Buurvrouw heeft hulp nodig'
-  },
-  st_8b: {
-    seed: 'neighbor-medical-help',
-    label: 'Dag 2 · 05:30',
-    title: 'Bij Annie thuis'
-  },
-  st_9: {
-    seed: 'pipes-water-basement',
-    label: 'Dag 2 · 08:30',
-    title: 'Riolering valt uit'
-  },
-  st_autolaad: {
-    seed: 'car-charger-cold-morning',
-    label: 'Dag 2 · 09:15',
-    title: 'Opladen in de auto'
-  },
-  st_d1_morgen: {
-    seed: 'frost-winter-dawn-house',
-    label: 'Dag 2 · 08:00',
-    title: 'Eerste crisisochtend'
-  },
-  st_watertruck: {
-    seed: 'water-truck-queue-street',
-    label: 'Dag 2 · 10:30',
-    title: 'Watertruck bij de supermarkt'
-  },
-  st_10a: {
-    seed: 'neighbor-at-door-water-bottle',
-    label: 'Dag 2 · 14:15',
-    title: 'Buurman Rob aan de deur'
-  },
-  st_10: {
-    seed: 'empty-street-curfew-day',
-    label: 'Dag 2 · 14:30',
-    title: 'Wat doe je nu?'
-  },
-  st_d1_avond: {
-    seed: 'cold-dark-kitchen-evening',
-    label: 'Dag 2 · 18:00',
-    title: 'Koken zonder stroom'
-  },
-  st_11: {
-    seed: 'cold-dark-kitchen-evening',
-    label: 'Dag 3 · 01:30',
-    title: 'Brand bij de overburen'
-  },
-  st_d2_morgen: {
-    seed: 'burnt-car-cold-morning',
-    label: 'Dag 3 · 08:00',
-    title: 'Tweede crisisochtend'
-  },
-  st_12: {
-    seed: 'neighborhood-flyer-door',
-    label: 'Dag 3 · 11:30',
-    title: 'Gemeente deelt flyers uit'
-  },
-
-  st_d2_avond: {
-    seed: 'candle-sparse-meal-dark',
-    label: 'Dag 3 · 18:00',
-    title: 'Derde avond'
-  },
-  st_d3_morgen: {
-    seed: 'hopeful-winter-morning',
-    label: 'Dag 4 · 08:00',
-    title: 'Derde ochtend vol hoop'
-  },
-  st_13: {
-    seed: 'food-distribution-queue',
-    label: 'Dag 4 · 10:15',
-    title: 'Voedseluitdeling'
-  },
-  st_14: {
-    seed: 'lights-on-relief-home',
-    label: 'Dag 4 · 12:45',
-    title: 'Stroom terug!'
-  },
-  // Bosbrand — scènes voor het bosbrандscenario
-  bf_0: {
-    seed: '',
-    label: 'Dag 0 · 16:00',
-    title: 'De middag ervoor'
-  },
-  bf_0b: {
-    seed: '',
-    label: 'Dag 1 · 08:30',
-    title: 'Rooklucht in de ochtend'
-  },
-  bf_1: {
-    seed: '',
-    label: 'Dag 1 · 09:00',
-    title: 'Rookpluim in de verte'
-  },
-  bf_2: {
-    seed: '',
-    label: 'Dag 1 · 10:15',
-    title: 'NL-Alert: mogelijke evacuatie'
-  },
-  bf_2b: {
-    seed: '',
-    label: 'Dag 1 · 11:00',
-    title: 'Wind draait'
-  },
-  bf_2c: {
-    seed: '',
-    label: 'Dag 1 · 11:15',
-    title: 'Kinderen buiten'
-  },
-  bf_2d: {
-    seed: '',
-    label: 'Dag 1 · 11:20',
-    title: 'Rugzakjes pakken'
-  },
-  bf_3: {
-    seed: '',
-    label: 'Dag 1 · 11:30',
-    title: 'Evacuatiebevel'
-  },
-  bf_3c: {
-    seed: '',
-    label: 'Dag 1 · 12:00',
-    title: 'Kinderen in de auto'
-  },
-  bf_4: {
-    seed: '',
-    label: 'Dag 1 · 12:00',
-    title: 'Vertrekken'
-  },
-  bf_4b: {
-    seed: '',
-    label: 'Dag 1 · 12:15',
-    title: 'File op de weg'
-  },
-  bf_4c: {
-    seed: '',
-    label: 'Dag 1 · 12:30',
-    title: 'Fietsen door de rook'
-  },
-  bf_4d: {
-    seed: '',
-    label: 'Dag 1 · 12:30',
-    title: 'Te voet door de rook'
-  },
-  bf_4e: {
-    seed: '',
-    label: 'Dag 1 · 12:45',
-    title: 'Met kinderen door de rook'
-  },
-  bf_5: {
-    seed: '',
-    label: 'Dag 1 · 13:30',
-    title: 'Noodopvang'
-  },
-  bf_5f: {
-    seed: '',
-    label: 'Dag 1 · 13:45',
-    title: 'Kinderen in de sporthal'
-  },
-  bf_5b: {
-    seed: '',
-    label: 'Dag 1 · 15:00',
-    title: 'Wachten'
-  },
-  bf_5c: {
-    seed: '',
-    label: 'Dag 1 · 15:30',
-    title: 'Kevin'
-  },
-  bf_5d: {
-    seed: '',
-    label: 'Dag 1 · 18:00',
-    title: 'Avond op de opvang'
-  },
-  bf_5g: {
-    seed: '',
-    label: 'Dag 1 · 18:30',
-    title: 'Vragen voor het slapengaan'
-  },
-  bf_6: {
-    seed: '',
-    label: 'Dag 2 · 09:00',
-    title: 'Sein veilig?'
-  },
-  bf_6b: {
-    seed: '',
-    label: 'Dag 2 · 10:00',
-    title: 'Terug in de straat'
-  },
-  bf_7: {
-    seed: '',
-    label: 'Dag 2 · 11:00',
-    title: 'Schade beoordelen'
-  },
-  // Overstroming — scènes voor het overstromingsscenario
-  ov_0: {
-    seed: '',
-    label: 'Dag 0 · 20:00',
-    title: 'De avond ervoor'
-  },
-  ov_1: {
-    seed: '',
-    label: 'Dag 1 · 07:00',
-    title: 'Aanhoudende regen'
-  },
-  ov_1b: {
-    seed: '',
-    label: 'Dag 1 · 07:30',
-    title: 'Kinderen naar school?'
-  },
-  ov_1d: {
-    seed: '',
-    label: 'Dag 1 · 08:00',
-    title: 'Kinderen zoeken houvast'
-  },
-  ov_2: {
-    seed: '',
-    label: 'Dag 1 · 09:30',
-    title: 'Eerste water op straat'
-  },
-  ov_2b: {
-    seed: '',
-    label: 'Dag 1 · 09:45',
-    title: 'School sluit'
-  },
-  ov_2c: {
-    seed: '',
-    label: 'Dag 1 · 10:00',
-    title: 'Kinderen willen terug'
-  },
-  ov_3: {
-    seed: '',
-    label: 'Dag 1 · 10:30',
-    title: 'Evacuatieadvies'
-  },
-  ov_3c: {
-    seed: '',
-    label: 'Dag 1 · 10:45',
-    title: 'Op de trap'
-  },
-  ov_4a: {
-    seed: '',
-    label: 'Dag 1 · 11:00',
-    title: 'Boven blijven'
-  },
-  ov_4b: {
-    seed: '',
-    label: 'Dag 1 · 11:00',
-    title: 'Evacueren mislukt'
-  },
-  ov_4c: {
-    seed: '',
-    label: 'Dag 1 · 12:30',
-    title: 'Wachten met kinderen'
-  },
-  ov_5: {
-    seed: '',
-    label: 'Dag 1 · 13:00',
-    title: 'Water in huis'
-  },
-  ov_5b: {
-    seed: '',
-    label: 'Dag 1 · 13:15',
-    title: 'Kortsluiting!'
-  },
-  ov_6: {
-    seed: '',
-    label: 'Dag 1 · 15:00',
-    title: 'Reddingsboot'
-  },
-  ov_6e: {
-    seed: '',
-    label: 'Dag 1 · 15:30',
-    title: 'In de reddingsboot'
-  },
-  ov_6c: {
-    seed: '',
-    label: 'Dag 1 · 17:00',
-    title: 'Noodopvang'
-  },
-  ov_6f: {
-    seed: '',
-    label: 'Dag 1 · 18:30',
-    title: 'Kinderen op de noodopvang'
-  },
-  ov_6g: {
-    seed: '',
-    label: 'Dag 1 · 18:00',
-    title: 'Avondeten boven'
-  },
-  ov_6d: {
-    seed: '',
-    label: 'Dag 1 · 22:00',
-    title: 'Nacht bij de noodopvang'
-  },
-  ov_6b: {
-    seed: '',
-    label: 'Dag 1 · 21:00',
-    title: 'Nacht boven'
-  },
-  ov_7: {
-    seed: '',
-    label: 'Dag 2 · 08:00',
-    title: 'Eerste inspectie'
-  },
-  ov_7b: {
-    seed: '',
-    label: 'Dag 2 · 09:00',
-    title: 'Buurvrouw Ans'
-  },
-  ov_7c: {
-    seed: '',
-    label: 'Dag 2 · 09:30',
-    title: 'Kinderen terug bij huis'
-  },
-  ov_8: {
-    seed: '',
-    label: 'Dag 2 · 10:30',
-    title: 'Kort terug in huis'
-  },
-  // Thuis komen — scènes voor het scenario waarbij de speler onderweg naar huis is
-  tk_1: {
-    seed: '',
-    label: 'Werk · 11:57',
-    title: 'Stroom valt uit op kantoor'
-  },
-  tk_2: {
-    seed: '',
-    label: 'Werk · 12:20',
-    title: 'Heel Nederland zonder stroom'
-  },
-  tk_2b: {
-    seed: '',
-    label: 'Werk · 12:30',
-    title: 'School belt'
-  },
-  tk_3b: {
-    seed: '',
-    label: 'Onderweg · 12:58',
-    title: 'Martijn sluit aan'
-  },
-  tk_3: {
-    seed: '',
-    label: 'Onderweg · 13:00',
-    title: 'Hoe ga je naar huis?'
-  },
-  tk_4a: {
-    seed: '',
-    label: 'Onderweg · 13:15',
-    title: 'Met de auto'
-  },
-  tk_4b: {
-    seed: '',
-    label: 'Onderweg · 13:15',
-    title: 'Trein rijdt niet'
-  },
-  tk_4c: {
-    seed: '',
-    label: 'Onderweg · 13:15',
-    title: 'Met de bus'
-  },
-  tk_4d: {
-    seed: '',
-    label: 'Onderweg · 13:15',
-    title: 'Met de fiets'
-  },
-  tk_4e: {
-    seed: '',
-    label: 'Onderweg · 15:30',
-    title: 'Lopen is niet haalbaar'
-  },
-  tk_5: {
-    seed: '',
-    label: 'Onderweg · 15:30',
-    title: 'Onderweg'
-  },
-  tk_5m: {
-    seed: '',
-    label: 'Onderweg · 15:30',
-    title: 'Pauze bij Martijn'
-  },
-  tk_5b: {
-    seed: '',
-    label: 'Onderweg · 20:00',
-    title: 'Overnachten onderweg'
-  },
-  tk_6: {
-    seed: '',
-    label: 'Thuis · 21:00',
-    title: 'Thuiskomst'
-  },
-  // Drinkwater — scènes voor het drinkwaterscenario
-  wd_0: { seed: '', label: 'Dag 1 · 13:10', title: 'Troebel water' },
-  wd_1: { seed: '', label: 'Dag 1 · 13:35', title: 'Kookadvies' },
-  wd_2: { seed: '', label: 'Dag 1 · 14:10', title: 'Water verdelen' },
-  wd_3: { seed: '', label: 'Dag 1 · 15:00', title: 'Officiële update' },
-  wd_4: { seed: '', label: 'Dag 1 · 16:15', title: 'Supermarkt druk' },
-  wd_5: { seed: '', label: 'Dag 1 · 17:00', title: 'Water voor school' },
-  wd_6: { seed: '', label: 'Dag 1 · 17:30', title: 'Ans heeft hulp nodig' },
-  wd_7: { seed: '', label: 'Dag 1 · 20:30', title: 'Voorraad voor morgen' },
-  // Nachtalarm — scènes voor het nachtalarm-scenario
-  na_0: { seed: '', label: 'Nacht · 02:17', title: 'De rookmelder gaat af' },
-  na_1: { seed: '', label: 'Nacht · 02:18', title: 'Rook op de gang' },
-  na_2: { seed: '', label: 'Nacht · 02:19', title: 'Brand in de woonkamer' },
-  na_2b: { seed: '', label: 'Nacht · 02:20', title: 'Huisgenoten op de gang' },
-  na_3: { seed: '', label: 'Nacht · 02:20', title: 'Naar buiten' },
-  na_4: { seed: '', label: 'Nacht · 02:22', title: 'Buiten, wacht op brandweer' },
-  na_5: { seed: '', label: 'Nacht · 02:45', title: 'Brandweer heeft controle' }
-};
+const sceneBgMap = Object.assign(
+  {},
+  sceneImages_stroom,
+  sceneImages_natuurbrand,
+  sceneImages_overstroming,
+  sceneImages_thuis_komen,
+  sceneImages_drinkwater,
+  sceneImages_nachtalarm
+);
 
 /* ─── STATUSBALKEN WEERGAVE ────────────────────────────────────────────────────
    Werkt de visuele statusbalken bij in zowel de zijbalk als de mobiele balk
@@ -611,125 +146,33 @@ function updateBattery(fillId, pctId, emptyId, val) {
    Past ook vuur-, regen- en duisternis-overlays aan om het tijdstip en de
    ernst van de situatie te weerspiegelen.
 */
+// Bijhoudt welke achtergrondlaag momenteel zichtbaar is (voor crossfade)
+let _bgActiveLayer = 'a';
+
 function renderSceneVisual(scene) {
-  // Update page background per scene
-  const bodyBgMap = {
-    bf_0: 'afbeelding/bosbrand/geen_bosbrand.png',
-    bf_0b: 'afbeelding/bosbrand/geen_bosbrand.png',
-    bf_1: 'afbeelding/bosbrand/bosbrand_stadium1.jpg',
-    bf_2: 'afbeelding/bosbrand/bosbrand_stadium1.jpg',
-    bf_2b: 'afbeelding/bosbrand/bosbrand_stadium2.png',
-    bf_2c: 'afbeelding/bosbrand/bosbrand_stadium2.png',
-    bf_2d: 'afbeelding/bosbrand/bosbrand_stadium2.png',
-    bf_3: 'afbeelding/bosbrand/bosbrand_stadium2.png',
-    bf_3c: 'afbeelding/bosbrand/bosbrand_stadium2b.png',
-    bf_4: 'afbeelding/bosbrand/bosbrand_stadium2b.png',
-    bf_4b: 'afbeelding/bosbrand/bosbrand_stadium2b.png',
-    bf_4c: 'afbeelding/bosbrand/bosbrand_stadium3.png',
-    bf_4d: 'afbeelding/bosbrand/bosbrand_stadium3.png',
-    bf_4e: 'afbeelding/bosbrand/bosbrand_stadium3.png',
-    bf_5: 'afbeelding/algemeen/noodopvang.jpg',
-    bf_5f: 'afbeelding/algemeen/noodopvang.jpg',
-    bf_5b: 'afbeelding/algemeen/noodopvang.jpg',
-    bf_5c: 'afbeelding/algemeen/noodopvang.jpg',
-    bf_5d: 'afbeelding/algemeen/noodopvang.jpg',
-    bf_5g: 'afbeelding/algemeen/noodopvang.jpg',
-    bf_6: 'afbeelding/bosbrand/bomen_afgebrand.png',
-    bf_6b: 'afbeelding/bosbrand/bomen_afgebrand.png',
-    bf_7: 'afbeelding/bosbrand/bomen_afgebrand.png',
-    ov_0: 'afbeelding/overstroming/overstroming0_avond.png',
-    ov_1: 'afbeelding/overstroming/overstroming1_hoogwater.png',
-    ov_1b: 'afbeelding/overstroming/overstroming1_hoogwater.png',
-    ov_2c: 'afbeelding/overstroming/overstroming2_overstroming.jpg',
-    ov_1d: 'afbeelding/overstroming/overstroming2_overstroming.jpg',
-    ov_2: 'afbeelding/overstroming/overstroming2_overstroming.jpg',
-    ov_2b: 'afbeelding/overstroming/overstroming2_overstroming.jpg',
-    ov_3: 'afbeelding/overstroming/overstroming3_overstroming.png',
-    ov_3c: 'afbeelding/overstroming/overstroming3_overstroming.png',
-    ov_4a: 'afbeelding/overstroming/overstroming3_overstroming.png',
-    ov_4b: 'afbeelding/overstroming/auto_water.jpg',
-    ov_4c: 'afbeelding/overstroming/overstroming3_overstroming.png',
-    ov_5: 'afbeelding/overstroming/overstroming4_overstroming.png',
-    ov_5b: 'afbeelding/overstroming/overstroming4_overstroming.png',
-    ov_6f: 'afbeelding/overstroming/overstroming4_overstroming.png',
-    ov_6: 'afbeelding/overstroming/reddingsboot.jpg',
-    ov_6e: 'afbeelding/overstroming/reddingsboot.jpg',
-    ov_6d: 'afbeelding/algemeen/noodopvang.jpg',
-    ov_6b: 'afbeelding/algemeen/noodopvang.jpg',
-    ov_6c: 'afbeelding/algemeen/noodopvang.jpg',
-    ov_6g: 'afbeelding/overstroming/overstroming4_overstroming.png',
-    ov_7: 'afbeelding/overstroming/overstroming5_naderhand.png',
-    ov_7b: 'afbeelding/overstroming/overstroming5_naderhand.png',
-    ov_7c: 'afbeelding/overstroming/overstroming5_naderhand.png',
-    ov_8: 'afbeelding/overstroming/overstroming5_naderhand.png',
-    // Stroomstoring — voor storing
-    st_pre_d2: 'afbeelding/stroomstoring/huis_winter0.png',
-    st_pre_d1: 'afbeelding/stroomstoring/huis_winter0.png',
-    st_d0_morgen: 'afbeelding/stroomstoring/huis_winter0.png',
-    st_2: 'afbeelding/stroomstoring/huis_winter0.png',
-    // Stroomstoring — Dag 1 (storing gestart)
-    st_1: 'afbeelding/stroomstoring/Huis_winter1.png',
-    st_3: 'afbeelding/stroomstoring/Huis_winter1.png',
-    st_4: 'afbeelding/stroomstoring/Huis_winter1.png',
-    st_5: 'afbeelding/stroomstoring/Huis_winter1.png',
-    st_6: 'afbeelding/stroomstoring/Huis_winter1.png',
-    st_6b: 'afbeelding/stroomstoring/Huis_winter1.png',
-    // Stroomstoring — Dag 2 (meer sneeuw)
-    st_7: 'afbeelding/stroomstoring/Huis_winter2.png',
-    st_8: 'afbeelding/stroomstoring/Huis_winter2.png',
-    st_8b: 'afbeelding/stroomstoring/Huis_winter2.png',
-    st_d1_morgen: 'afbeelding/stroomstoring/Huis_winter2.png',
-    st_9: 'afbeelding/stroomstoring/Huis_winter2.png',
-    st_autolaad: 'afbeelding/stroomstoring/Huis_winter2.png',
-    st_watertruck: 'afbeelding/stroomstoring/Huis_winter2.png',
-    st_10a: 'afbeelding/stroomstoring/Huis_winter2.png',
-    st_10: 'afbeelding/stroomstoring/Huis_winter2.png',
-    st_d1_avond: 'afbeelding/stroomstoring/Huis_winter2.png',
-    // Stroomstoring — Dag 3/4 (meeste sneeuw)
-    st_d2_morgen: 'afbeelding/stroomstoring/Huis_winter3.png',
-    st_12: 'afbeelding/stroomstoring/Huis_winter3.png',
-    st_d2_avond: 'afbeelding/stroomstoring/Huis_winter3.png',
-    st_d3_morgen: 'afbeelding/stroomstoring/Huis_winter3.png',
-    st_13: 'afbeelding/stroomstoring/Huis_winter3.png',
-    st_14: 'afbeelding/stroomstoring/Huis_winter3.png',
-    // Stroomstoring — speciale locaties
-    st_4b: 'afbeelding/algemeen/supermarkt.jpg',
-    st_11: 'afbeelding/stroomstoring/Huis_winter2.png',
-    tk_1: 'afbeelding/stroomstoring_onderweg/kantoor.png',
-    tk_2: 'afbeelding/stroomstoring_onderweg/kantoor.png',
-    tk_2b: 'afbeelding/stroomstoring_onderweg/kantoor.png',
-    tk_3b: 'afbeelding/stroomstoring_onderweg/kantoor.png',
-    tk_3: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-    tk_4a: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-    tk_4b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-    tk_4c: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-    tk_4d: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-    tk_4e: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-    tk_5: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-    tk_5m: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-    tk_5b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-    tk_6: 'afbeelding/stroomstoring/Huis_winter1.png',
-    // Drinkwater
-    wd_0: 'afbeelding/algemeen/huis_normaal.png',
-    wd_1: 'afbeelding/algemeen/huis_normaal.png',
-    wd_2: 'afbeelding/algemeen/huis_normaal.png',
-    wd_3: 'afbeelding/algemeen/huis_normaal.png',
-    wd_4: 'afbeelding/algemeen/huis_normaal.png',
-    wd_5: 'afbeelding/algemeen/huis_normaal.png',
-    wd_6: 'afbeelding/algemeen/huis_normaal.png',
-    wd_7: 'afbeelding/algemeen/huis_normaal.png',
-    // Nachtalarm
-    na_0: 'afbeelding/brandalarm/Rook_hal.png',
-    na_1: 'afbeelding/brandalarm/Rook_hal.png',
-    na_2: 'afbeelding/brandalarm/rook_woonkamer.png',
-    na_2b: 'afbeelding/brandalarm/Rook_hal.png',
-    na_3: 'afbeelding/brandalarm/Rook_uitgang.png',
-    na_4: 'afbeelding/brandalarm/Rook_uitgang.png',
-    na_5: 'afbeelding/brandalarm/Rook_uitgang.png',
-  };
-  // Gebruik de standaard achtergrond als er geen specifieke afbeelding is voor deze scène
-  const bgImg = bodyBgMap[scene.id] || 'afbeelding/algemeen/huis_normaal.png';
-  document.body.style.backgroundImage = `url('${bgImg}')`;
+  // Gebruik een scène-specifieke override als die is meegegeven, anders de standaard achtergrond
+  const hasVisualOverride = scene.visuals && Object.prototype.hasOwnProperty.call(scene.visuals, 'image');
+  const bgImg = hasVisualOverride
+    ? scene.visuals.image
+    : (sceneBgMap[scene.id] || 'afbeelding/algemeen/huis_normaal.png');
+
+  const layerA = document.getElementById('bg-layer-a');
+  const layerB = document.getElementById('bg-layer-b');
+  const nextId = _bgActiveLayer === 'a' ? 'b' : 'a';
+  const nextLayer = nextId === 'a' ? layerA : layerB;
+  const prevLayer = nextId === 'a' ? layerB : layerA;
+
+  if (bgImg && bgImg !== 'none') {
+    nextLayer.style.backgroundImage = `url('${bgImg}')`;
+    nextLayer.style.backgroundColor = '';
+  } else {
+    nextLayer.style.backgroundImage = 'none';
+    nextLayer.style.backgroundColor = '#050505';
+  }
+  // Crossfade: nieuwe laag in, oude laag uit
+  nextLayer.style.opacity = '1';
+  prevLayer.style.opacity = '0';
+  _bgActiveLayer = nextId;
 
   // Situatie-overlays — opacity per scène (0 = uit)
   // Hoe verder de brand/overstroming vordert, hoe hoger de opacity van de overlay
@@ -781,7 +224,7 @@ function renderSceneVisual(scene) {
 
   // Brightness overlay based on time of day and scenario
   // Nachtalarm-fotos zijn al donker van zichzelf; geen filter nodig.
-  const darknessOverride = { na_0: 0, na_1: 0, na_2: 0, na_2b: 0, na_3: 0, na_4: 0, na_5: 0 };
+  const darknessOverride = { na_intro: 0, na_alarm: 0.72, na_0: 0, na_1: 0, na_2: 0, na_2b: 0, na_3: 0, na_4: 0, na_5: 0 };
   const darkness = document.getElementById('bg-darkness');
   if (darkness) {
     // Haal het uur op uit het tijdstip van de scène (standaard: 12:00 = overdag)
@@ -945,6 +388,7 @@ function commutePrev() {
 function startScenario(scenarioId) {
   // Verwijder eventuele lopende tick-timers van een eerder scenario
   if (typeof clearAllTicks === 'function') clearAllTicks();
+  if (typeof resetSceneAudioState === 'function') resetSceneAudioState();
   // Als thuis_komen wordt gekozen maar de reismodus nog niet is ingevuld,
   // stuur de speler eerst naar het woon-werkverkeer-formulier
   if (scenarioId === 'thuis_komen' && !profile.commuteMode) {
@@ -1037,6 +481,7 @@ function startScenario(scenarioId) {
   state.hasCarRadio = false;
   state.airplaneMode = false;
   state.followedOfficialAdvice = false;
+  state.inventory = {};
   if (typeof ensureInventoryState === 'function') ensureInventoryState();
 
   // Reset scène-index en alle kanaal- en geschiedenisbuffers
@@ -1055,6 +500,20 @@ function startScenario(scenarioId) {
   waPage = 0;
   newsLoggedIdxs.clear();
   waLoggedIdxs.clear();
+  // Preload achtergrondafbeeldingen voor het actieve scenario
+  const _imgMaps = {
+    stroom: sceneImages_stroom,
+    natuurbrand: sceneImages_natuurbrand,
+    overstroming: sceneImages_overstroming,
+    thuis_komen: sceneImages_thuis_komen,
+    drinkwater: sceneImages_drinkwater,
+    nachtalarm: sceneImages_nachtalarm
+  };
+  const _activeImgMap = _imgMaps[currentScenario];
+  if (_activeImgMap) {
+    const _uniqueImgs = [...new Set(Object.values(_activeImgMap))];
+    _uniqueImgs.forEach(src => { const img = new Image(); img.src = src; });
+  }
   show('s-scenario');
   renderScene();
 }
@@ -1102,6 +561,7 @@ function saveGame() {
 function loadGame() {
   const raw = localStorage.getItem(SAVE_KEY);
   if (!raw) return;
+  if (typeof resetSceneAudioState === 'function') resetSceneAudioState();
   const d = JSON.parse(raw);
 
   // Herstel state en profiel
@@ -1169,6 +629,8 @@ const unreadCounts = { news: 0, whatsapp: 0, radio: 0 };
 
 // Timer-referentie voor badge-markering — wordt geannuleerd bij scènewissel
 let _badgeMarkTimer = null;
+// Timer voor scènes die automatisch doorgaan zonder spelerkeuze
+let _sceneAutoAdvanceTimer = null;
 
 // Toont of verbergt de getal-badge op een tab
 function setBadge(name, count) {
@@ -1208,8 +670,9 @@ function markUnread(name, increment) {
 function renderScene() {
   Typewriter.cancel();
   pendingChoiceMade = false; // reset bij elke nieuwe scène
-  // Annuleer openstaande badge-timer van vorige scène
+  // Annuleer timers van de vorige scène
   if (_badgeMarkTimer) { clearTimeout(_badgeMarkTimer); _badgeMarkTimer = null; }
+  if (_sceneAutoAdvanceTimer) { clearTimeout(_sceneAutoAdvanceTimer); _sceneAutoAdvanceTimer = null; }
   // Wis alle unread-stipjes en badges van de vorige scene
   document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('has-unread'));
   ['news', 'whatsapp', 'radio'].forEach(n => { unreadCounts[n] = 0; setBadge(n, 0); });
@@ -1237,6 +700,12 @@ function renderScene() {
     Object.keys(decay).forEach(k => {
       // Vliegtuigmodus: telefoonbatterij daalt niet door verval
       if (k === 'phoneBattery' && state.airplaneMode) return;
+      // Boolean flags direct toewijzen
+      if (typeof decay[k] === 'boolean') { state[k] = decay[k]; return; }
+      // Noodwatervoorraad daalt niet als kraanwater nog beschikbaar is
+      if (k === 'water' && decay[k] < 0 && state.tapWaterAvailable) return;
+      // Voedselvoorraad daalt niet als winkels nog normaal open zijn
+      if (k === 'food' && decay[k] < 0 && state.shopsOpen) return;
       const max = k === 'phoneBattery' ? 100 : (k === 'water' || k === 'food') ? 999 : k === 'comfort' ? MAX_STAT_COMFORT : k === 'health' ? MAX_STAT_HEALTH : 5;
       // Pas de vervalwaarde toe maar houd de stat binnen het geldige bereik
       state[k] = Math.max(0, Math.min(max, state[k] + decay[k]));
@@ -1245,12 +714,13 @@ function renderScene() {
   // Markeer dag 2 als gestart zodra de ochtend van dag 3 begint
   if (scene.id === 'st_d2_morgen') state.day2Started = true;
   // Penalty: no water or food causes health and comfort to drop
-  if (state.water === 0) {
+  // Alleen van toepassing als kraan/winkels niet meer beschikbaar zijn
+  if (state.water === 0 && !state.tapWaterAvailable) {
     state.ranOutOfWater = true;
     state.health = Math.max(0, state.health - 1);
     state.comfort = Math.max(0, state.comfort - 1);
   }
-  if (state.food === 0) {
+  if (state.food === 0 && !state.shopsOpen) {
     state.ranOutOfFood = true;
     state.health = Math.max(0, state.health - 1);
     state.comfort = Math.max(0, state.comfort - 1);
@@ -1296,11 +766,11 @@ function renderScene() {
   const narrativeEl = document.getElementById('sc-narrative');
   if (narrativeEl) {
     narrativeEl.classList.remove('content-enter');
-    narrativeEl.innerHTML = scene.narrative;
+    narrativeEl.innerHTML = scene.narrative + (scene.afterword ? scene.afterword : '');
     void narrativeEl.offsetWidth; // force reflow so animation replays
     narrativeEl.classList.add('content-enter');
   }
-  // Clear afterword
+  // Afterword wordt nu direct in de narrative gerenderd; sc-afterword leegmaken
   const afterEl = document.getElementById('sc-afterword');
   if (afterEl) {
     afterEl.style.display = 'none';
@@ -1339,7 +809,6 @@ function renderScene() {
     _badgeMarkTimer = null;
     if (_newsCount)  markUnread('news',     _newsCount);
     if (_waCount)    markUnread('whatsapp', _waCount);
-    if (_ch.nlalert) playMessagePing(); // geluidssignaal voor NL-Alert popup
     if (_hasRadio)   markUnread('radio', 1);
     // Actieve tab heeft nooit een indicator nodig
     const activeTabEl = document.getElementById('tab-' + activeTab) || (activeTab === 'radio' ? document.getElementById('radio-tab') : null);
@@ -1351,11 +820,32 @@ function renderScene() {
 
   // Reset next-row animation so it re-fires each scene
   const nextRow = document.getElementById('sc-next-row');
-  if (nextRow) nextRow.style.animation = 'none';
+  if (nextRow) {
+    nextRow.style.animation = 'none';
+    nextRow.style.display = (scene.autoAdvanceMs || scene.hideContinue) ? 'none' : '';
+  }
 
   // Render choices or just a "verder" button
   renderChoices(scene);
   if (typeof renderInventory === 'function') renderInventory();
+
+  if (scene.autoAdvanceMs) {
+    _sceneAutoAdvanceTimer = setTimeout(() => {
+      _sceneAutoAdvanceTimer = null;
+      transitionToNextScene();
+    }, scene.autoAdvanceMs);
+  }
+
+  document.body.classList.toggle('scene-blackout', scene.id === 'na_alarm');
+
+  // Focus management: verplaats focus naar de eerste keuzeknop of de Verder-knop
+  requestAnimationFrame(() => {
+    if (scene.autoAdvanceMs || scene.hideContinue) return;
+    const firstChoice = document.querySelector('#sc-choices .choice-btn:not(:disabled)');
+    const nextBtn = document.querySelector('#sc-next-row .btn');
+    if (firstChoice) firstChoice.focus({ preventScroll: true });
+    else if (nextBtn) nextBtn.focus({ preventScroll: true });
+  });
 
   // Trigger NL-Alert overlay
   if (scene.channels.nlalert) {
@@ -1364,8 +854,11 @@ function renderScene() {
     }, 400); // korte vertraging zodat de scène-transitie eerst afgerond is
   }
 
-  // Ambient audio
+  // Ambient audio en scène-specifieke geluidseffecten
   Ambience.resumeForScene(scene.id);
+  if (scene.id === 'na_alarm') playSmokeAlarmSound();
+  else stopSmokeAlarmSound();
+  SceneEffects.playForScene(scene.id);
 
   // Scroll to top
   window.scrollTo({
@@ -1564,7 +1057,6 @@ function renderChannels(scene) {
       if (placeholder) placeholder.remove();
       waContainer.appendChild(div);
     });
-    playMessagePing();
     if (activeTab === 'whatsapp') {
       // Als de berichtentab al actief is, hoeft er geen ongelezen-indicator te zijn
       document.getElementById('tab-whatsapp')?.classList.remove('has-unread');
@@ -2207,6 +1699,9 @@ function pickChoice(idx) {
   if (state.food === 0) state.ranOutOfFood = true;
   renderStatusBars();
   if (typeof renderInventory === 'function') renderInventory();
+  Ambience.resumeForScene(scene.id);
+  if (scene.id === 'na_alarm') playSmokeAlarmSound();
+  else stopSmokeAlarmSound();
 
   // Floating stat delta indicators
   const statAnchorMap = {
@@ -2267,11 +1762,9 @@ function pickChoice(idx) {
   // Toon de consequentie met typewriter-effect; speler klikt zelf op "Verder →" om door te gaan
   Typewriter.run(consequenceText, twSpan, null);
 
-  // Show afterword if this scene has one (e.g. st_14 epilogue)
-  if (scene.afterword) {
-    const afterEl = document.getElementById('sc-afterword');
-    afterEl.innerHTML = scene.afterword;
-    afterEl.style.display = 'block';
+  // Speel keuze-specifiek geluidseffect af indien opgegeven
+  if (choice.sound && typeof SceneEffects !== 'undefined') {
+    SceneEffects._get(choice.sound).play();
   }
 }
 
@@ -2279,15 +1772,7 @@ function pickChoice(idx) {
    Gaat naar de volgende scène. Als de typewriter nog bezig is, wordt hij
    eerst overgeslagen. De overgang bevat een korte fade-out van de scène-zones.
 */
-function advanceScene() {
-  if (!pendingChoiceMade) {
-    Typewriter.skip(); // toon fail-tekst direct als typewriter nog loopt
-    return;            // maar ga niet verder naar volgende scène
-  }
-  if (Typewriter.isRunning()) {
-    Typewriter.skip(); // toon tekst direct, wacht op volgende klik
-    return;
-  }
+function transitionToNextScene() {
   Typewriter.cancel();
   const _zones = document.querySelector('.scenario-zones');
   if (_zones) {
@@ -2296,11 +1781,26 @@ function advanceScene() {
     setTimeout(() => {
       currentSceneIdx++;
       renderScene();
-    }, 320); // wacht tot de fade-out afgerond is
+    }, 480);
   } else {
     currentSceneIdx++;
     renderScene();
   }
+}
+
+function advanceScene() {
+  const visibleScenes = getActiveScenes();
+  const scene = visibleScenes[currentSceneIdx];
+  const hasChoices = scene && scene.choices && scene.choices.length > 0;
+  if (!pendingChoiceMade && hasChoices) {
+    Typewriter.skip(); // toon fail-tekst direct als typewriter nog loopt
+    return;            // maar ga niet verder naar volgende scène
+  }
+  if (Typewriter.isRunning()) {
+    Typewriter.skip(); // toon tekst direct, wacht op volgende klik
+    return;
+  }
+  transitionToNextScene();
 }
 
 // Navigeert één scène terug en herstelt de spelstatus en keuzegeschiedenis

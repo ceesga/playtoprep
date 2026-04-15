@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // Audio — Geluidseffecten, ambient loops en radio
 // Bevat: clock tick, audioEnabled toggle, Ambience (loops),
-//        RadioPlayer (mp3 + TTS fallback), speakRadio, pingMessage
+//        scene effects, RadioPlayer (mp3 + TTS fallback), speakRadio
 // Gebruikt: Howler.js voor mp3, Web Speech API als TTS fallback
 // ═══════════════════════════════════════════════════════════════
 
@@ -63,6 +63,21 @@ let audioEnabled = true;
 // Bevat de huidige radiotekst als HTML-string voor TTS-fallback.
 let currentRadioText = '';
 
+const AUDIO_PATHS = {
+  nlAlert: 'Audio/NL-Alert.mp3',
+  smokeAlarm: 'Audio/smoke_alarm.mp3',
+  rain: 'Audio/rain-loop.mp3',
+  fire: 'Audio/fire-loop.mp3',
+  forest: 'Audio/forest_sounds.mp3',
+  heartbeat: 'Audio/heartbeat.mp3',
+  siren: 'Audio/Brandweer_sirene.mp3',
+  coughing: 'Audio/coughing.mp3',
+  helicopter: 'Audio/helicopter.mp3',
+  radio(sceneId) {
+    return `Audio/radioberichten/radio_${sceneId}.mp3`;
+  }
+};
+
 // Wisselt geluid aan/uit. Past de UI-labels aan en stopt of hervat
 // ambient geluid afhankelijk van de nieuwe toestand.
 function toggleAudio() {
@@ -74,7 +89,6 @@ function toggleAudio() {
 
   // Pas de tekst en het icoon aan op basis van de nieuwe toestand
   if (label) label.textContent = audioEnabled ? 'Geluid aan' : 'Geluid uit';
-  if (icon)  icon.textContent  = audioEnabled ? '🔊' : '🔇';
 
   // Synchroniseer startscherm-knop
   const startAudioBtn = document.getElementById('start-audio-btn');
@@ -84,6 +98,8 @@ function toggleAudio() {
     // Geluid uitgeschakeld: stop spraaksynthese en ambient audio onmiddellijk
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     Ambience.stop();
+    stopSmokeAlarmSound();
+    SceneEffects.stopAll();
   } else {
     // Geluid ingeschakeld: hervat ambient audio voor de huidige scène
     const visibleScenes = getActiveScenes();
@@ -94,15 +110,93 @@ function toggleAudio() {
 
 // Howl-instantie voor het NL-Alert geluid — lazy aangemaakt bij eerste gebruik.
 let _nlAlertSound = null;
+let _smokeAlarmSound = null;
 
 // Speelt het NL-Alert geluid af als geluid ingeschakeld is.
 function playNLAlertSound() {
   if (!audioEnabled) return;
   if (!_nlAlertSound) {
-    _nlAlertSound = new Howl({ src: ['audio/NL-Alert.mp3'], volume: 1.0, html5: true });
+    _nlAlertSound = new Howl({ src: [AUDIO_PATHS.nlAlert], volume: 1.0, html5: true });
   }
+  _nlAlertSound.stop();
   _nlAlertSound.play();
 }
+
+// Speelt het rookalarm af voor de tussenscène in het nachtalarm-scenario.
+function playSmokeAlarmSound() {
+  if (!audioEnabled) return;
+  if (!_smokeAlarmSound) {
+    _smokeAlarmSound = new Howl({
+      src: [AUDIO_PATHS.smokeAlarm],
+      volume: 1.0,
+      html5: true,
+      onend: () => {
+        if (isCurrentScene('na_alarm') && typeof transitionToNextScene === 'function') {
+          transitionToNextScene();
+        }
+      }
+    });
+  }
+  _smokeAlarmSound.stop();
+  _smokeAlarmSound.play();
+}
+
+// Geeft true terug als de gevraagde scène de huidige zichtbare scène is.
+function isCurrentScene(sceneId) {
+  if (typeof getActiveScenes !== 'function') return false;
+  const visibleScenes = getActiveScenes();
+  const scene = visibleScenes[currentSceneIdx];
+  return !!(scene && scene.id === sceneId);
+}
+
+// Stopt het rookalarm als de speler doorgaat naar de volgende scène.
+function stopSmokeAlarmSound() {
+  if (_smokeAlarmSound && _smokeAlarmSound.playing()) _smokeAlarmSound.stop();
+}
+
+const SceneEffects = {
+  _lastSceneId: null,
+  _sounds: {},
+  _sceneMap: {
+    bf_2b: ['siren'],
+    bf_4: ['helicopter'],
+    bf_4d: ['coughing']
+  },
+  _configs: {
+    siren: { src: [AUDIO_PATHS.siren], volume: 0.25, html5: true },
+    coughing: { src: [AUDIO_PATHS.coughing], volume: 0.95, html5: true },
+    helicopter: { src: [AUDIO_PATHS.helicopter], volume: 0.25, html5: true }
+  },
+
+  _get(name) {
+    if (!this._sounds[name]) this._sounds[name] = new Howl(this._configs[name]);
+    return this._sounds[name];
+  },
+
+  playForScene(sceneId) {
+    if (this._lastSceneId === sceneId) return;
+    this._lastSceneId = sceneId;
+    if (!audioEnabled) return;
+
+    const fxList = this._sceneMap[sceneId] || [];
+    fxList.forEach(name => {
+      const snd = this._get(name);
+      snd.stop();
+      snd.play();
+    });
+  },
+
+  stopAll() {
+    Object.values(this._sounds).forEach(snd => {
+      if (snd.playing()) snd.stop();
+    });
+  },
+
+  reset() {
+    this._lastSceneId = null;
+    this.stopAll();
+  }
+};
 
 /* ───────────────────────────────────────────────────────────────
    AMBIENT AUDIO
@@ -117,8 +211,10 @@ const Ambience = {
 
   // Configuraties voor elke ambient track
   _configs: {
-    rain: { src: ['audio/rain-loop.mp3'], loop: true, volume: 0, html5: true },
-    fire: { src: ['audio/fire-loop.mp3'], loop: true, volume: 0, html5: true }
+    rain: { src: [AUDIO_PATHS.rain], loop: true, preload: true, volume: 0, targetVolume: 0.22 },
+    fire: { src: [AUDIO_PATHS.fire], loop: true, preload: true, volume: 0, targetVolume: 0.22 },
+    forest: { src: [AUDIO_PATHS.forest], loop: true, preload: true, volume: 0, targetVolume: 0.14 },
+    heartbeat: { src: [AUDIO_PATHS.heartbeat], loop: true, preload: true, volume: 0, targetVolume: 0.38 }
   },
 
   // Geeft de Howl-instantie voor de opgegeven track terug; maakt hem aan als hij nog niet bestaat.
@@ -135,8 +231,25 @@ const Ambience = {
 
   // Start een ambient track met fade-in. Fadt de vorige track uit
   // als die nog speelt. Doet niets als de gevraagde track al actief is.
-  play(name) {
-    if (!audioEnabled || this._current === name) return;
+  play(name, targetVolume) {
+    if (!audioEnabled || !name) return;
+
+    const snd = this._get(name);
+    const nextVolume = targetVolume ?? this._configs[name].targetVolume ?? this.TARGET_VOL;
+
+    if (this._current === name) {
+      if (!snd.playing()) {
+        snd.volume(0);
+        snd.once('play', () => snd.fade(0, nextVolume, this.FADE_IN));
+        snd.play();
+        return;
+      }
+      const currentVolume = snd.volume();
+      if (Math.abs(currentVolume - nextVolume) > 0.01) {
+        snd.fade(currentVolume, nextVolume, this.FADE_IN);
+      }
+      return;
+    }
 
     // Fade de huidige track uit en stop hem na de fade-duur
     if (this._current) {
@@ -149,13 +262,9 @@ const Ambience = {
     }
 
     this._current = name; // sla de nieuwe track op als actieve
-
-    if (name) {
-      const snd = this._get(name); // lazy-initialiseer bij eerste gebruik
-      snd.volume(0);
-      snd.once('play', () => snd.fade(0, this.TARGET_VOL, this.FADE_IN));
-      snd.play();
-    }
+    snd.volume(0);
+    snd.once('play', () => snd.fade(0, nextVolume, this.FADE_IN));
+    snd.play();
   },
 
   // Stopt de huidige ambient track met een fade-out.
@@ -174,13 +283,38 @@ const Ambience = {
   // Bepaalt op basis van het scène-ID welke ambient track geschikt is
   // en speelt die af, of stopt ambient audio als de scène er geen heeft.
   resumeForScene(sceneId) {
-    // scènes die beginnen met 'bf_' = bosbrand → vuur (pas vanaf bf_2, niet in bf_0/bf_0b/bf_1)
-    // scènes die beginnen met 'ov_' = overstroming → regen
-    const noFireYet = ['bf_0', 'bf_0b', 'bf_1'];
-    const name = (sceneId.startsWith('bf_') && !noFireYet.includes(sceneId)) ? 'fire' :
-      sceneId.startsWith('ov_') ? 'rain' :
-      null;
-    if (name) this.play(name);
+    const introScenesNachtalarm = ['na_intro', 'na_alarm'];
+    const forestScenes = new Set(['bf_0', 'bf_0b', 'bf_1']);
+    const fireVolumes = {
+      bf_2: 0.08,
+      bf_2b: 0.12,
+      bf_2c: 0.12,
+      bf_2d: 0.12,
+      bf_3: 0.16,
+      bf_3c: 0.18,
+      bf_4: 0.18,
+      bf_4b: 0.18,
+      bf_4c: 0.22,
+      bf_4d: 0.22,
+      bf_4e: 0.22
+    };
+
+    let ambient = null;
+    if (currentScenario === 'nachtalarm') {
+      ambient = !introScenesNachtalarm.includes(sceneId) && !state.evacuatedFire
+        ? { name: 'heartbeat', targetVolume: this._configs.heartbeat.targetVolume }
+        : null;
+    } else if (currentScenario === 'natuurbrand') {
+      ambient = forestScenes.has(sceneId)
+        ? { name: 'forest', targetVolume: this._configs.forest.targetVolume }
+        : fireVolumes[sceneId] !== undefined
+          ? { name: 'fire', targetVolume: fireVolumes[sceneId] }
+          : null;
+    } else if (sceneId.startsWith('ov_')) {
+      ambient = { name: 'rain', targetVolume: this._configs.rain.targetVolume };
+    }
+
+    if (ambient) this.play(ambient.name, ambient.targetVolume);
     else this.stop(); // geen passende ambient track: stop alles
   }
 };
@@ -188,6 +322,8 @@ const Ambience = {
 // Speelt een kort twee-toon ping-geluid af via de Web Audio API.
 // Wordt gebruikt als notificatiegeluid bij nieuwe berichten.
 function playMessagePing() {
+  return;
+
   if (!audioEnabled) return;
   try {
     // Maak een tijdelijke AudioContext aan (cross-browser compatibel)
@@ -265,7 +401,7 @@ const RadioPlayer = {
     if (!audioEnabled) return;
 
     // Bouw het pad op naar het scène-specifieke mp3-bestand
-    const src = `audio/radioberichten/radio_${sceneId}.mp3`;
+    const src = AUDIO_PATHS.radio(sceneId);
 
     // Verwijder een eventuele eerdere Howl-instantie volledig uit het geheugen
     if (RadioPlayer._sound) {
@@ -357,4 +493,12 @@ function updateRadioBtn(playing) {
   if (!btn) return;
   btn.textContent = playing ? '⏹ Stop' : '▶ Speel radiobericht';
   btn.classList.toggle('playing', playing); // voeg/verwijder CSS-klasse voor actieve stijl
+}
+
+function resetSceneAudioState() {
+  Ambience.stop();
+  stopSmokeAlarmSound();
+  SceneEffects.reset();
+  if (typeof RadioPlayer !== 'undefined') RadioPlayer.stop();
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
 }

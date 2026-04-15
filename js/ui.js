@@ -23,11 +23,11 @@ setInterval(tickGlobalClock, 1000);
 
 /* ── Prep-state: bereken indicatorwaarden uit profiel-antwoorden ── */
 function updatePrepState() {
-  state.water        = 1 + (profile.hasWater === 'ja' ? 3 : 0);
-  state.food         = 2 + (profile.hasKit === 'ja' ? 3 : 0);
+  state.water        = 0 + (profile.hasWater === 'ja' ? 3 : 0);
+  state.food         = 1 + (profile.hasKit === 'ja' ? 3 : 0);
   state.comfort      = 10;
   state.phoneBattery = 100;
-  state.cash         = 20 + (profile.hasCash === 'ja' ? 100 : 0) + (profile.hasEDCBag === 'ja' ? 100 : 0);
+  state.cash         = 20 + (profile.hasCash === 'ja' ? 100 : 0) + (profile.hasEDCCash === 'ja' ? 100 : 0);
   if (typeof renderStatusBars === 'function') renderStatusBars();
 }
 
@@ -234,7 +234,7 @@ document.getElementById('household-popup').addEventListener('click', function(e)
 function show(id) {
   // Verwijder 'active' van alle schermen
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  if (typeof closeInventory === 'function' && id !== 's-scenario') closeInventory();
+  if (typeof closeInventory === 'function' && id !== 's-scenario' && id !== 's-prep' && id !== 's-scenariokeuze') closeInventory();
 
   const screen = document.getElementById(id);
   screen.classList.add('active'); // activeer het gevraagde scherm
@@ -249,7 +249,7 @@ function show(id) {
 
   // Globale klok: verborgen op startpagina en scenario (scenario heeft eigen topbar-klok)
   const globalClock = document.getElementById('global-clock');
-  if (globalClock) globalClock.style.display = (id === 's-start' || id === 's-uitleg' || id === 's-scenario') ? 'none' : '';
+  if (globalClock) globalClock.style.display = (id === 's-uitleg' || id === 's-scenario') ? 'none' : '';
 
   // Sidebar: toon op prep en alle latere schermen
   const showSidebar = ['s-prep','s-scenariokeuze','s-commute','s-scenario','s-report'].includes(id);
@@ -415,7 +415,9 @@ function gearPage(n) {
     // Gebruik audioEnabled als die beschikbaar is, anders standaard aan
     const on = typeof audioEnabled !== 'undefined' ? audioEnabled : true;
     if (label) label.textContent = on ? 'Geluid aan' : 'Geluid uit';
-    if (icon)  icon.textContent  = on ? '🔊' : '🔇';
+    if (icon)  icon.innerHTML = on
+      ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>'
+      : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><line x1="2" y1="2" x2="22" y2="22"/></svg>';
   }
 
   // Dim laad-knop als er geen save is
@@ -595,9 +597,9 @@ function renderScenarioKeuze() {
 
   // Bepaal welke omgevingsspecifieke scenario's getoond worden:
   // - overstroming: alleen bij 'water'
-  // - natuurbrand:  alleen bij 'bos' of 'buitengebied'
+  // - natuurbrand:  alleen bij 'forest' of 'rural_area'
   const showOverstroming = loc.includes('water');
-  const showNatuurbrand  = loc.includes('bos') || loc.includes('buitengebied');
+  const showNatuurbrand  = loc.includes('forest') || loc.includes('rural_area');
 
   // Alle mogelijke scenario's, gesorteerd van korst naar langst.
   // active: false = wordt nooit getoond.

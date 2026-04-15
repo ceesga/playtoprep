@@ -17,6 +17,8 @@
   </head>
   <body>
     <a class="skip-link" href="#main-content">Naar hoofdinhoud</a>
+    <div id="bg-layer-a" class="bg-layer"></div>
+    <div id="bg-layer-b" class="bg-layer"></div>
     <div id="bg-darkness"></div>
     <video id="rain-overlay" src="rain-overlay.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
     <video id="fire-overlay" src="fire-overlay.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
@@ -24,9 +26,6 @@
 
       <!-- START SCREEN -->
       <div id="s-start" class="screen active">
-        <div class="ptp-logo-wrap">
-          <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="ptp-logo">
-        </div>
         <h1 class="start-title">Goed Voorbereid</h1>
         <p class="start-subtitle">oefenen met keuzes in een crisissituatie</p>
         <nav class="start-menu" aria-label="Hoofdmenu" id="start-menu">
@@ -55,8 +54,11 @@
             </button>
           </div>
         </nav>
-        <div class="start-logos">
+        <div class="start-credits">
+          <span class="start-credits-label">gemaakt door</span>
           <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="start-logo-ptp">
+          <span class="start-credits-sep">·</span>
+          <span class="start-credits-label">in samenwerking met</span>
           <div class="partner-logo-wrap">
             <img src="afbeelding/algemeen/logo-opsterland.png" alt="Gemeente Opsterland" class="partner-logo">
             <span class="partner-demo">DEMO</span>
@@ -261,22 +263,20 @@
 </div>
 </div>
 
+
+</div>
 <div class="scenario-inventory" id="scenario-inventory">
-  <div class="inventory-panel" id="inventory-panel" role="dialog" aria-modal="false" aria-labelledby="inventory-title" hidden>
+  <div class="inventory-panel" id="inventory-panel" role="dialog" aria-modal="true" aria-labelledby="inventory-title" hidden>
     <div class="inventory-panel-header">
-      <div>
-        <div class="inventory-kicker">Inventaris</div>
-        <h3 id="inventory-title">Wat je bij je hebt</h3>
-      </div>
+      <span class="inventory-title">Inventaris</span>
       <button type="button" class="inventory-close" onclick="closeInventory()" aria-label="Inventaris sluiten">✕</button>
     </div>
     <div class="inventory-panel-body" id="inventory-body"></div>
+    <div class="consequence-box inv-consequence-box" id="inv-consequence"></div>
   </div>
   <button type="button" class="inventory-fab" id="inventory-toggle" onclick="toggleInventory()" aria-label="Open inventaris" aria-haspopup="dialog" aria-expanded="false">
-    <span class="inventory-fab-icon" id="inventory-toggle-icon" aria-hidden="true"></span>
+    <img src="afbeelding/algemeen/backpack.png" alt="" aria-hidden="true" class="inventory-fab-img">
   </button>
-</div>
-
 </div>
 
 <!-- REPORT SCREEN -->
@@ -323,32 +323,20 @@
 
     <!-- Pagina 0: Hoofdmenu -->
     <div id="gear-p0" class="gear-page">
-      <button type="button" class="gear-row" onclick="gearPage(1)">
-        <span class="gear-row-icon">💾</span><span class="gear-row-label">Opslaan</span><span class="gear-arrow">›</span>
-      </button>
-      <button type="button" class="gear-row" onclick="gearPage(2)">
-        <span class="gear-row-icon">📂</span><span class="gear-row-label">Laden</span><span class="gear-arrow">›</span>
-      </button>
+      <button type="button" class="gear-row" onclick="gearPage(1)">Opslaan</button>
+      <button type="button" class="gear-row" onclick="gearPage(2)">Laden</button>
       <button type="button" class="gear-row" id="gear-audio-item" onclick="toggleAudio()">
-        <span class="gear-row-icon" id="gear-audio-icon">🔊</span><span class="gear-row-label" id="gear-audio-label">Geluid aan</span>
+        <span id="gear-audio-label">Geluid aan</span>
       </button>
-      <button type="button" class="gear-row" onclick="openHelp('scenario');closeGearMenu()">
-        <span class="gear-row-icon">❓</span><span class="gear-row-label">Uitleg</span>
-      </button>
-      <button type="button" class="gear-row" onclick="openOver();closeGearMenu()">
-        <span class="gear-row-icon">ℹ️</span><span class="gear-row-label">Over Goed Voorbereid</span>
-      </button>
+      <button type="button" class="gear-row" onclick="openHelp('scenario');closeGearMenu()">Uitleg</button>
+      <button type="button" class="gear-row" onclick="openOver();closeGearMenu()">Over Goed Voorbereid</button>
     </div>
 
     <!-- Pagina 1: Opslaan -->
     <div id="gear-p1" class="gear-page" style="display:none">
       <div id="gear-feedback" class="gear-feedback" style="display:none"></div>
-      <button type="button" class="gear-row" onclick="saveProfile()">
-        <span class="gear-row-icon">👤</span><span class="gear-row-label">Thuissituatie opslaan</span>
-      </button>
-      <button type="button" class="gear-row" onclick="saveGame()">
-        <span class="gear-row-icon">💾</span><span class="gear-row-label">Voortgang opslaan</span>
-      </button>
+      <button type="button" class="gear-row" onclick="saveProfile()">Thuissituatie opslaan</button>
+      <button type="button" class="gear-row" onclick="saveGame()">Voortgang opslaan</button>
     </div>
 
     <!-- Pagina 2: Laden -->
@@ -437,25 +425,25 @@
       <button type="button" class="help-close-x" onclick="closeHelp()" aria-label="Sluiten">✕</button>
     </div>
 <div class="help-page" id="help-p1">
-  <h3>🎯 Doel van het spel</h3>
+  <h3><span aria-hidden="true">🎯</span> Doel van het spel</h3>
   <p>Jij speelt een bewoner die in een noodsituatie terechtkomt, zoals een stroomstoring, natuurbrand, overstroming of een lastige weg naar huis.</p>
   <p>Je probeert jezelf en je huishouden zo goed mogelijk door de crisis heen te helpen. De keuzes die je maakt hebben echte gevolgen.</p>
   <p>Na afloop krijg je een persoonlijk rapport. Daarin zie je wat goed ging, wat beter kan en welke tips bij jou passen.</p>
 </div>
 <div class="help-page" id="help-p2" style="display:none">
-  <h3>🧭 Wat kun je doen in een scenario</h3>
+  <h3><span aria-hidden="true">🧭</span> Wat kun je doen in een scenario</h3>
   <ul>
-    <li><strong>📖 Wat je ervaart</strong>: Lees wat er gebeurt en kies wat jij doet.</li>
-    <li><strong>📰 Nieuws</strong>: Volg berichten over wat er in de regio speelt.</li>
-    <li><strong>💬 Berichten</strong>: Ontvang en stuur berichten naar buren en familie.</li>
-    <li><strong>📻 Radio</strong>: Luister naar noodberichten tijdens het scenario.</li>
-    <li><strong>🚨 NL-Alert</strong>: Officiële waarschuwingen verschijnen vanzelf.</li>
+    <li><strong><span aria-hidden="true">📖</span> Wat je ervaart</strong>: Lees wat er gebeurt en kies wat jij doet.</li>
+    <li><strong><span aria-hidden="true">📰</span> Nieuws</strong>: Volg berichten over wat er in de regio speelt.</li>
+    <li><strong><span aria-hidden="true">💬</span> Berichten</strong>: Ontvang en stuur berichten naar buren en familie.</li>
+    <li><strong><span aria-hidden="true">📻</span> Radio</strong>: Luister naar noodberichten tijdens het scenario.</li>
+    <li><strong><span aria-hidden="true">🚨</span> NL-Alert</strong>: Officiële waarschuwingen verschijnen vanzelf.</li>
   </ul>
-<p>Houd je <strong>water 💧, eten 🍞, comfort 🧣</strong> en <strong>gezondheid ❤️</strong> op peil. Je batterij 🔋 en contant geld 💶 spelen ook een rol.</p>
+<p>Houd je <strong>water <span aria-hidden="true">💧</span>, eten <span aria-hidden="true">🍞</span>, comfort <span aria-hidden="true">🧣</span></strong> en <strong>gezondheid <span aria-hidden="true">❤️</span></strong> op peil. Je batterij <span aria-hidden="true">🔋</span> en contant geld <span aria-hidden="true">💶</span> spelen ook een rol.</p>
 </div>
 <!-- Pagina 2: Uitleg over de eerste stappen (setup context) -->
 <div class="help-page" id="help-p2-setup" style="display:none">
-  <h3>📋 De eerste stappen</h3>
+  <h3><span aria-hidden="true">📋</span> De eerste stappen</h3>
   <ul>
     <li><strong>Stap 1: Jouw situatie</strong>: Vul eerlijk in wie er bij je woont, hoe je woont, welk vervoer je hebt en wat je al in huis hebt.</li>
     <li><strong>Stap 2: Kies je scenario</strong>: Kies een van de vier scenario's en doorloop de crisis van begin tot eind.</li>

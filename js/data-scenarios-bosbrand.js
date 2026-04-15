@@ -23,31 +23,14 @@ const scenes_natuurbrand = [{
   },
   get narrative() {
     const natuur = profile.location.includes('rural_area') || profile.location.includes('forest')
-      ? ' Je woont vlak bij natuurgebied, dus zulke waarschuwingen voelen meteen dichterbij.'
+      ? ' Vanuit je raam zie je de boomtoppen van het nabijgelegen natuurgebied staan te trillen in de hitte.'
       : '';
-    return 'Het is een gewone vrijdagmiddag. De tuin staat er wat dor bij na een lange periode zonder regen, maar verder is er weinig bijzonders. Het nieuws meldt dat morgen droog en winderig wordt, met een verhoogd risico op natuurbranden in de regio.' + natuur;
+    return 'Het is een warme vrijdagmiddag in augustus. Al weken heeft het nauwelijks geregend en de tuin staat er dor en droog bij. De lucht is zwaar van de hitte, en buiten klinkt alleen het geluid van krekels.' + natuur + ' Het voelt als een gewone zomerse dag — het soort dag waarop je niets anders wil dan van het weekend genieten.';
   },
   choices: [{
-    text: '🎒 Noodtas klaarzetten voor het geval dat',
-    consequence: 'Je pakt alvast een tas: paspoort, medicijnen, oplader, wat kleding. Zet hem bij de deur. Als het mis gaat, ben je klaar.',
-    stateChange: {
-      packedBag: true,
-      awarenessLevel: 1
-    }
-  }, {
-    text: '📰 Het nieuws extra in de gaten houden',
-    consequence: 'Je zet een nieuwsmelding aan voor de regio en checkt voor het slapengaan nog een keer het laatste bericht. Als het morgen erger wordt, ben je alert.',
-    stateChange: {
-      awarenessLevel: 1
-    }
-  }, {
-    text: '🌿 Brandbare materialen rondom het huis weghalen',
-    consequence: 'Je haalt droge bladhopen, tuinstoelen en andere brandbare spullen weg bij de buitenmuren en schutting. Het kost een half uur zweet, maar je woning is nu een stuk minder kwetsbaar als het vuur dichtbij komt.',
-    cat: 'cat-action',
-    stateChange: { madeFirebreak: true, awarenessLevel: 1 }
-  }, {
-    text: '🛌 Lekker slapen, morgen zien we wel',
-    consequence: 'Je legt de telefoon neer. Het weerbericht ziet er niet best uit, maar zo erg zal het toch niet worden. Je slaapt.',
+    text: '🌅 Lekker — eindelijk weekend',
+    consequence: 'Je sluit de laptop en stapt de tuin in. Het gras kraakt droog onder je voeten. Je pakt een koel drankje en laat de zomerse avond over je heen komen. Zo rustig en stil.',
+    cat: 'cat-neutral',
     stateChange: {}
   }]
 }, {
@@ -73,6 +56,18 @@ const scenes_natuurbrand = [{
     consequence: 'Je scrolt door het nieuws. Nog niets in de buurt, maar er is wel een KNMI-waarschuwing voor extreme droogte en hitte. Je besluit de situatie in de gaten te houden.',
     cat: 'cat-info',
     stateChange: { awarenessLevel: 1 }
+  }, {
+    text: '🎒 Noodtas klaarzetten voor het geval dat',
+    consequence: 'Je pakt alvast een tas: paspoort, medicijnen, oplader, wat kleding. Zet hem bij de deur. Als het mis gaat, ben je klaar.',
+    stateChange: {
+      packedBag: true,
+      awarenessLevel: 1
+    }
+  }, {
+    text: '🌿 Brandbare materialen rondom het huis weghalen',
+    consequence: 'Je haalt droge bladhopen, tuinstoelen en andere brandbare spullen weg bij de buitenmuren en schutting. Het kost een half uur zweet, maar je woning is nu een stuk minder kwetsbaar als het vuur dichtbij komt.',
+    cat: 'cat-action',
+    stateChange: { madeFirebreak: true, awarenessLevel: 1 }
   }, {
     text: '🙈 Het negeren, het zal wel meevallen',
     consequence: 'Je ruikt het nog even, en gaat dan verder met wat je aan het doen was. Misschien is het van ver. Misschien niks.',
@@ -422,7 +417,7 @@ const scenes_natuurbrand = [{
         ? (petsCount > 1 ? ' Je hebt je huisdieren bij je.' : ' Je hebt je huisdier bij je.')
         : (petsCount > 1 ? ' Je huisdieren laat je noodgedwongen achter.' : ' Je huisdier laat je noodgedwongen achter.')
       : '';
-    return 'Je verlaat het huis. De lucht is oranje-bruin en de rook is dik.' + (state.evacuatedEarly ? ' Omdat je vroeg bent vertrokken staat de weg nog vrij. Je ziet hoe de auto\'s achter je al beginnen op te stapelen.' : ' De straat staat vol met auto\'s die allemaal richting de uitvalswegen rijden.') + geenAuto + huisdier + ' Hoe ga je naar de noodopvang?';
+    return 'Je verlaat het huis. De lucht is oranje-bruin en de rook is dik. Boven de wijk dreunt een brandweerhelikopter.' + (state.evacuatedEarly ? ' Omdat je vroeg bent vertrokken staat de weg nog vrij. Je ziet hoe de auto\'s achter je al beginnen op te stapelen.' : ' De straat staat vol met auto\'s die allemaal richting de uitvalswegen rijden.') + geenAuto + huisdier + ' Hoe ga je naar de noodopvang?';
   },
   choices: [{
     conditionalOn: () => profile.hasCar,
@@ -955,3 +950,33 @@ const scenes_natuurbrand = [{
     }
   }]
 }];
+
+/* ─── SCENE ACHTERGRONDAFBEELDINGEN ─────────────────────────────────────────
+   Koppelt scène-ID aan achtergrondafbeelding voor dit scenario.
+   Wordt in engine.js samengevoegd tot sceneBgMap.
+*/
+const sceneImages_natuurbrand = {
+  bf_0:  'afbeelding/bosbrand/geen_bosbrand.png',
+  bf_0b: 'afbeelding/bosbrand/geen_bosbrand.png',
+  bf_1:  'afbeelding/bosbrand/bosbrand_stadium1.jpg',
+  bf_2:  'afbeelding/bosbrand/bosbrand_stadium1.jpg',
+  bf_2b: 'afbeelding/bosbrand/bosbrand_stadium2.png',
+  bf_2c: 'afbeelding/bosbrand/bosbrand_stadium2.png',
+  bf_2d: 'afbeelding/bosbrand/bosbrand_stadium2.png',
+  bf_3:  'afbeelding/bosbrand/bosbrand_stadium2.png',
+  bf_3c: 'afbeelding/bosbrand/bosbrand_stadium2b.png',
+  bf_4:  'afbeelding/bosbrand/bosbrand_stadium2b.png',
+  bf_4b: 'afbeelding/bosbrand/bosbrand_stadium2b.png',
+  bf_4c: 'afbeelding/bosbrand/bosbrand_stadium3.png',
+  bf_4d: 'afbeelding/bosbrand/bosbrand_stadium3.png',
+  bf_4e: 'afbeelding/bosbrand/bosbrand_stadium3.png',
+  bf_5:  'afbeelding/algemeen/noodopvang.jpg',
+  bf_5f: 'afbeelding/algemeen/noodopvang.jpg',
+  bf_5b: 'afbeelding/algemeen/noodopvang.jpg',
+  bf_5c: 'afbeelding/algemeen/noodopvang.jpg',
+  bf_5d: 'afbeelding/algemeen/noodopvang.jpg',
+  bf_5g: 'afbeelding/algemeen/noodopvang.jpg',
+  bf_6:  'afbeelding/bosbrand/bomen_afgebrand.png',
+  bf_6b: 'afbeelding/bosbrand/bomen_afgebrand.png',
+  bf_7:  'afbeelding/bosbrand/bomen_afgebrand.png',
+};

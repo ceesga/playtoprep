@@ -6,6 +6,32 @@
 
 // ─── ONDERWEG NAAR HUIS SCENARIO ─────────────────────────────────────────────
 const scenes_thuis_komen = [{
+  id: 'tk_0',
+  time: '08:15',
+  date: 'Donderdag 14 januari 2027',
+  dayBadge: 'Werk',
+  dayBadgeClass: '',
+  channels: {
+    news: [],
+    whatsapp: [],
+    nlalert: null,
+    radio: null
+  },
+  get narrative() {
+    const afstand = profile.commuteDistance === 'far'
+      ? ' Het is een flink eind reizen, maar je bent het gewend.'
+      : profile.commuteDistance === 'medium'
+      ? ' Een half uurtje onderweg, zoals elke dag.'
+      : ' Je bent er zo — het is vlakbij.';
+    return 'Een gewone donderdagochtend in januari. Buiten is het grijs en koud. Je vertrekt van huis richting kantoor.' + afstand + ' Geen bijzonderheden. Gewoon een werkdag.';
+  },
+  choices: [{
+    text: '💼 Gaan werken',
+    consequence: 'Je pakt je spullen en vertrekt. Op kantoor hangt de vertrouwde geur van koffie en werkende mensen. De dag begint.',
+    cat: 'cat-neutral',
+    stateChange: {}
+  }]
+}, {
   id: 'tk_1',
   time: '11:57',
   date: 'Donderdag 14 januari 2027',
@@ -677,3 +703,24 @@ const scenes_thuis_komen = [{
     conditionalOn: () => !profile.hasChildren || state.kidsPickedUp
   }]
 }, ];
+
+/* ─── SCENE ACHTERGRONDAFBEELDINGEN ─────────────────────────────────────────
+   Koppelt scène-ID aan achtergrondafbeelding voor dit scenario.
+   Wordt in engine.js samengevoegd tot sceneBgMap.
+*/
+const sceneImages_thuis_komen = {
+  tk_1:  'afbeelding/stroomstoring_onderweg/kantoor.png',
+  tk_2:  'afbeelding/stroomstoring_onderweg/kantoor.png',
+  tk_2b: 'afbeelding/stroomstoring_onderweg/kantoor.png',
+  tk_3b: 'afbeelding/stroomstoring_onderweg/kantoor.png',
+  tk_3:  'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+  tk_4a: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+  tk_4b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+  tk_4c: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+  tk_4d: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+  tk_4e: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+  tk_5:  'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+  tk_5m: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+  tk_5b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
+  tk_6:  'afbeelding/stroomstoring/Huis_winter1.png',
+};

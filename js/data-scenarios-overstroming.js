@@ -40,29 +40,10 @@ const scenes_overstroming = [{
     return 'Het is maandagavond. Buiten regent het gestaag en de grond is al de hele week verzadigd van al het water.' + locatie + kinderen;
   },
   choices: [{
-    text: '🎒 Noodtas inpakken en documenten waterdicht verpakken',
-    consequence: 'Je pakt een tas: paspoort, medicijnen, oplader, kleding. Documenten stop je in een ziplock. Als het bevel komt, ben je klaar.',
-    stateChange: {
-      packedBag: true,
-      awarenessLevel: 1
-    }
-  }, {
-    text: '📰 Hoogwaterbericht extra in de gaten houden',
-    consequence: 'Je zet meldingen aan voor jouw omgeving en leest het KNMI-bericht goed door. Als het morgen erger wordt, ben je alert.',
-    stateChange: {
-      awarenessLevel: 1
-    }
-  }, {
-    text: '🛌 Gewoon gaan slapen, het zal wel meevallen',
-    consequence: 'Code oranje is niet code rood. Je legt de telefoon neer. Het zal wel meevallen.',
+    text: '🛌 Gaan slapen',
+    consequence: 'Je legt de telefoon neer en doet het licht uit. Buiten klettert de regen tegen het raam. Morgen zien we wel.',
+    cat: 'cat-neutral',
     stateChange: {}
-  }, {
-    conditionalOn: () => profile.hasPets,
-    text: () => petsCount > 1 ? '🐾 Transportmanden alvast bij de deur zetten' : '🐾 Transportmand alvast bij de deur zetten',
-    consequence: () => petsCount > 1
-      ? 'Je zet de transportmanden klaar bij de deur. Als het bevel morgen komt, hoef je de dieren alleen nog erin te zetten en te gaan.'
-      : 'Je zet de transportmand klaar bij de deur. Als het bevel morgen komt, hoef je je huisdier alleen nog erin te zetten en te gaan.',
-    stateChange: { tookPets: true }
   }]
 }, {
   id: 'ov_1',
@@ -1168,3 +1149,35 @@ const scenes_overstroming = [{
     stateChange: {}
   }]
 }];
+
+/* ─── SCENE ACHTERGRONDAFBEELDINGEN ─────────────────────────────────────────
+   Koppelt scène-ID aan achtergrondafbeelding voor dit scenario.
+   Wordt in engine.js samengevoegd tot sceneBgMap.
+*/
+const sceneImages_overstroming = {
+  ov_0:  'afbeelding/overstroming/overstroming0_avond.png',
+  ov_1:  'afbeelding/overstroming/overstroming1_hoogwater.png',
+  ov_1b: 'afbeelding/overstroming/overstroming1_hoogwater.png',
+  ov_1d: 'afbeelding/overstroming/overstroming2_overstroming.jpg',
+  ov_2:  'afbeelding/overstroming/overstroming2_overstroming.jpg',
+  ov_2b: 'afbeelding/overstroming/overstroming2_overstroming.jpg',
+  ov_2c: 'afbeelding/overstroming/overstroming2_overstroming.jpg',
+  ov_3:  'afbeelding/overstroming/overstroming3_overstroming.png',
+  ov_3c: 'afbeelding/overstroming/overstroming3_overstroming.png',
+  ov_4a: 'afbeelding/overstroming/overstroming3_overstroming.png',
+  ov_4b: 'afbeelding/overstroming/auto_water.jpg',
+  ov_4c: 'afbeelding/overstroming/overstroming3_overstroming.png',
+  ov_5:  'afbeelding/overstroming/overstroming4_overstroming.png',
+  ov_5b: 'afbeelding/overstroming/overstroming4_overstroming.png',
+  ov_6:  'afbeelding/overstroming/reddingsboot.jpg',
+  ov_6e: 'afbeelding/overstroming/reddingsboot.jpg',
+  ov_6b: 'afbeelding/algemeen/noodopvang.jpg',
+  ov_6c: 'afbeelding/algemeen/noodopvang.jpg',
+  ov_6d: 'afbeelding/algemeen/noodopvang.jpg',
+  ov_6f: 'afbeelding/overstroming/overstroming4_overstroming.png',
+  ov_6g: 'afbeelding/overstroming/overstroming4_overstroming.png',
+  ov_7:  'afbeelding/overstroming/overstroming5_naderhand.png',
+  ov_7b: 'afbeelding/overstroming/overstroming5_naderhand.png',
+  ov_7c: 'afbeelding/overstroming/overstroming5_naderhand.png',
+  ov_8:  'afbeelding/overstroming/overstroming5_naderhand.png',
+};
