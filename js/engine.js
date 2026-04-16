@@ -437,6 +437,7 @@ function startScenario(scenarioId) {
   state.cutElectricity = false;
   state.travelMode = profile.commuteMode || 'car';
   state.reachedHome = false;
+  state.arriveHomeAt1743 = false;
   state.foundAlternative = false;
   state.helpedStranger = false;
   state.kidsPickedUp = false;
@@ -836,7 +837,8 @@ function renderScene() {
     }, scene.autoAdvanceMs);
   }
 
-  document.body.classList.toggle('scene-blackout', scene.id === 'na_alarm');
+  const isBlackoutScene = scene.id === 'na_alarm' || scene.id === 'tk_0b';
+  document.body.classList.toggle('scene-blackout', isBlackoutScene);
 
   // Focus management: verplaats focus naar de eerste keuzeknop of de Verder-knop
   requestAnimationFrame(() => {

@@ -5,6 +5,32 @@
 // ═══════════════════════════════════════════════════════════════
 
 // ─── ONDERWEG NAAR HUIS SCENARIO ─────────────────────────────────────────────
+const THUIS_KOMEN_VISUALS = {
+  office: 'afbeelding/stroomstoring_onderweg/kantoor.png',
+  walking: 'afbeelding/stroomstoring_onderweg/pedestrian.png',
+  bike: 'afbeelding/stroomstoring_onderweg/bicycle_path.jpg',
+  bus: 'afbeelding/stroomstoring_onderweg/Bus_station.png',
+  train: 'afbeelding/stroomstoring_onderweg/train_station.jpg',
+  car: 'afbeelding/stroomstoring_onderweg/Auto_Nweg.jpg',
+  home: 'afbeelding/stroomstoring/Huis_winter1.png'
+};
+
+function thuisKomenTravelImage(mode) {
+  switch (mode) {
+    case 'car':
+    case 'ride':
+      return THUIS_KOMEN_VISUALS.car;
+    case 'bike':
+      return THUIS_KOMEN_VISUALS.bike;
+    case 'ov':
+      return THUIS_KOMEN_VISUALS.bus;
+    case 'train':
+      return THUIS_KOMEN_VISUALS.train;
+    default:
+      return THUIS_KOMEN_VISUALS.walking;
+  }
+}
+
 const scenes_thuis_komen = [{
   id: 'tk_0',
   time: '08:15',
@@ -31,6 +57,25 @@ const scenes_thuis_komen = [{
     cat: 'cat-neutral',
     stateChange: {}
   }]
+}, {
+  id: 'tk_0b',
+  time: '11:57',
+  date: 'Donderdag 14 januari 2027',
+  dayBadge: 'Werk',
+  dayBadgeClass: '',
+  autoAdvanceMs: 1000,
+  hideContinue: true,
+  visuals: {
+    image: 'none'
+  },
+  channels: {
+    news: [],
+    whatsapp: [],
+    nlalert: null,
+    radio: null
+  },
+  narrative: '',
+  choices: []
 }, {
   id: 'tk_1',
   time: '11:57',
@@ -91,6 +136,12 @@ const scenes_thuis_komen = [{
         });
       }
       msgs.push({
+        from: 'Telefoon',
+        msg: '⚠️ Het netwerk is overbelast. Berichten kunnen vertraagd binnenkomen.',
+        time: '12:21',
+        outgoing: false
+      });
+      msgs.push({
         from: 'Baas',
         msg: 'Iedereen mag naar huis als dat lukt. Wij sluiten het gebouw. Vergeet je spullen niet en veilige reis gewenst!',
         time: '12:22',
@@ -101,7 +152,7 @@ const scenes_thuis_komen = [{
     nlalert: 'NL-Alert\n14 januari 2027 – 12:15\n\nGrote stroomstoring in heel Nederland. Duur onbekend. Verkeerslichten zijn uit. Treinen rijden niet. Blijf kalm en ga veilig naar huis. Update volgt.',
     radio: null
   },
-  narrative: 'Verkeerslichten zijn uit. Treinen staan stil. Je manager zegt: "Volgens mij kan iedereen beter naar huis gaan. Werken lukt vandaag toch niet meer." Om je heen pakken collega\'s hun spullen. <span style="background:#fff8e1;border-radius:var(--r-sm);padding:2px 6px;font-size:.82rem;color:#92400e">⚠️ Het netwerk is overbelast. Berichten kunnen vertraagd binnenkomen.</span>',
+  narrative: 'Verkeerslichten zijn uit. Treinen staan stil. Je manager zegt: "Volgens mij kan iedereen beter naar huis gaan. Werken lukt vandaag toch niet meer." Om je heen pakken collega\'s hun spullen.',
   choices: [{
     text: '🏃 Nu direct vertrekken, vóór het vastloopt',
     consequence: 'Je trekt je jas aan, pakt je spullen en vertrekt meteen. Buiten is het nog redelijk overzichtelijk. Je bent er vroeg bij.',
@@ -201,6 +252,9 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
+  visuals: {
+    image: THUIS_KOMEN_VISUALS.walking
+  },
   channels: {
     news: [],
     whatsapp: [],
@@ -262,6 +316,9 @@ const scenes_thuis_komen = [{
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelMode === 'car',
+  visuals: {
+    image: THUIS_KOMEN_VISUALS.car
+  },
   channels: {
     news: [{
       time: '13:05',
@@ -279,9 +336,9 @@ const scenes_thuis_komen = [{
   },
   choices: [{
     text: '🛤️ Sluiproute nemen via kleinere wegen',
-    consequence: 'Je kent de buurt en kiest kleinere straten. Het gaat langzamer, maar je blijft rijden. Na enkele uren ben je thuis.',
+    consequence: 'Je kent de buurt en kiest kleinere straten. Het gaat langzamer dan normaal, maar je blijft rijden. Tegen het einde van de middag duikt eindelijk je eigen wijk weer op.',
     stateChange: {
-      reachedHome: true
+      arriveHomeAt1743: true
     }
   }, {
     text: '📱 Telefoon opladen via de auto terwijl je rijdt',
@@ -309,6 +366,9 @@ const scenes_thuis_komen = [{
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelMode === 'train',
+  visuals: {
+    image: THUIS_KOMEN_VISUALS.train
+  },
   channels: {
     news: [{
       time: '13:00',
@@ -336,15 +396,15 @@ const scenes_thuis_komen = [{
   }, {
     text: '🚶 Te voet of met de fiets alvast vertrekken',
     consequence: () => profile.commuteDistance === 'near' ?
-      'Je woont dichtbij. Je besluit te lopen. Na anderhalf uur ben je thuis, moe maar voldaan.' :
+      'Je besluit te lopen. Het is een lange tocht tussen gestrande reizigers en donkere etalages, maar tegen het einde van de middag bereik je je straat.' :
       profile.commuteDistance === 'far' ?
       'Je woont ver weg. Lopen gaat je vandaag niet thuis brengen, maar stilstaan helpt ook niet. Je begint alvast en kijkt onderweg verder.' :
-      'Je woont op middellange afstand. Je besluit te lopen. Het is zwaar maar haalbaar.',
+      'Je woont op middellange afstand. Je besluit te lopen. Het is zwaar, maar tegen het einde van de middag zie je eindelijk je eigen buurt weer.',
     stateChange: () => profile.commuteDistance === 'far' ? {
       travelMode: 'walking'
     } : {
       travelMode: 'walking',
-      reachedHome: profile.commuteDistance === 'near'
+      arriveHomeAt1743: true
     }
   }]
 }, {
@@ -354,6 +414,11 @@ const scenes_thuis_komen = [{
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelMode === 'bike' || state.travelMode === 'walking',
+  get visuals() {
+    return {
+      image: state.travelMode === 'bike' ? THUIS_KOMEN_VISUALS.bike : THUIS_KOMEN_VISUALS.walking
+    };
+  },
   channels: {
     news: [],
     whatsapp: [],
@@ -369,28 +434,28 @@ const scenes_thuis_komen = [{
     text: () => state.travelMode === 'bike' ? '🚲 Direct doorrijden, zonder omwegen' : '🚶 Stevig doorlopen, zonder omwegen',
     consequence: () => profile.commuteDistance === 'far'
       ? (state.travelMode === 'bike' ? 'Je fietst. Na twee uur begin je te twijfelen. Je hebt nog meer dan de helft te gaan.' : 'Je loopt. Na twee uur begin je te twijfelen. Je hebt nog meer dan de helft te gaan.')
-      : (state.travelMode === 'bike' ? 'Je fietst stevig door. Na anderhalf uur ben je thuis. Moe maar voldaan.' : 'Je loopt stevig door. Na twee uur ben je thuis. Moe maar voldaan.'),
+      : (state.travelMode === 'bike' ? 'Je houdt een stevig tempo aan. Langs files en donkere kruispunten door kom je stap voor stap dichter bij huis. Tegen het einde van de middag bereik je je wijk.' : 'Je blijft stevig doorlopen. Het is zwaar, maar tegen het einde van de middag zie je eindelijk je straat weer.'),
     stateChange: () => profile.commuteDistance === 'far' ? {
       travelMode: state.travelMode
     } : {
-      reachedHome: true
+      arriveHomeAt1743: true
     }
   }, {
     text: '🛣️ Alternatieve route via rustige wegen',
     consequence: () => state.travelMode === 'bike'
-      ? 'Je neemt rustige fietsroutes. Minder gedoe met drukke kruispunten. Na twee uur ben je thuis.'
-      : 'Je kiest rustige straten en steegjes. Minder gedoe met drukke wegen en grote groepen mensen. Na twee uur ben je thuis.',
+      ? 'Je neemt rustige fietsroutes. Minder gedoe met drukke kruispunten en meer ruimte om door te rijden. Tegen het einde van de middag draai je je straat in.'
+      : 'Je kiest rustige straten en steegjes. Minder gedoe met drukke wegen en grote groepen mensen. Tegen het einde van de middag bereik je eindelijk je buurt.',
     stateChange: {
-      reachedHome: true
+      arriveHomeAt1743: true
     }
   }, {
     conditionalOn: () => profile.hasChildren && !state.kidsArranged,
     text: '🏘️ Omrijden om kinderen op te halen',
     consequence: () => state.travelMode === 'bike'
-      ? 'Je rijdt via school. De kinderen worden erbij gehaald en mogen met je mee. Samen fietsen jullie naar huis.'
-      : 'Je loopt via school. De kinderen worden erbij gehaald en gaan met je mee. Samen lopen jullie naar huis.',
+      ? 'Je rijdt via school. De kinderen worden erbij gehaald en mogen met je mee. Samen komen jullie tegen het einde van de middag thuis.'
+      : 'Je loopt via school. De kinderen worden erbij gehaald en gaan met je mee. Tegen het einde van de middag komen jullie samen thuis.',
     stateChange: {
-      reachedHome: true,
+      arriveHomeAt1743: true,
       kidsPickedUp: true,
       kidsArranged: true
     }
@@ -402,6 +467,9 @@ const scenes_thuis_komen = [{
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelMode === 'ov',
+  visuals: {
+    image: THUIS_KOMEN_VISUALS.bus
+  },
   channels: {
     news: [],
     whatsapp: [],
@@ -416,23 +484,20 @@ const scenes_thuis_komen = [{
   choices: [{
     text: '🚌 Een volgende bus pakken',
     consequence: () => profile.commuteDistance === 'near' ?
-      'Je koopt een nieuw kaartje voor €10 en wacht op de volgende bus. Die rijdt een stuk verder, maar eindigt ook voor jouw halte. Je stapt uit en loopt de rest.' :
-      'Je koopt een nieuw kaartje voor €10 en wacht op de volgende bus. Die rijdt je een flink stuk verder. De laatste kilometers loop je alsnog. Tegen de avond kom je thuis.',
-    stateChange: () => profile.commuteDistance === 'near' ? {
-      travelMode: 'walking',
-      reachedHome: false,
+      'Je koopt een nieuw kaartje voor €10 en wacht op de volgende bus. Die rijdt een stuk verder, maar eindigt ook voor jouw halte. De laatste meters leg je lopend af. Tegen het einde van de middag ben je thuis.' :
+      'Je koopt een nieuw kaartje voor €10 en wacht op de volgende bus. Die rijdt je een flink stuk verder. De laatste kilometers loop je alsnog. Tegen het einde van de middag kom je thuis.',
+    stateChange: () => ({
+      ...(profile.commuteDistance === 'near' ? { travelMode: 'walking' } : {}),
+      arriveHomeAt1743: true,
       cash: -10
-    } : {
-      reachedHome: true,
-      cash: -10
-    }
+    })
   }, {
     text: '🚶 Te voet verder',
     consequence: () => profile.commuteDistance === 'near' ?
-      'Je woont dichtbij. Na een uur lopen ben je thuis.' :
+      'Je besluit het laatste stuk te lopen. Het duurt langer dan je hoopte, maar tegen het einde van de middag bereik je je straat.' :
       'Je begint te lopen. Na een uur vraag je je af of je het thuis gaat halen.',
     stateChange: () => profile.commuteDistance === 'near' ? {
-      reachedHome: true
+      arriveHomeAt1743: true
     } : {
       travelMode: 'walking'
     }
@@ -445,11 +510,11 @@ const scenes_thuis_komen = [{
     },
     consequence: () => {
       const cost = profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110;
-      return `Je vindt een taxichauffeur die voor cash rijdt. Je betaalt €${cost} en rijdt naar huis.`;
+      return `Je vindt een taxichauffeur die voor cash rijdt. Je betaalt €${cost} en rijdt je alsnog naar huis.`;
     },
     stateChange: () => {
       const cost = profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110;
-      return { reachedHome: true, foundAlternative: true, cash: -cost };
+      return { arriveHomeAt1743: true, foundAlternative: true, cash: -cost };
     }
   }, {
     text: '🚘 Lift vragen aan voorbijrijdende auto\'s',
@@ -466,6 +531,9 @@ const scenes_thuis_komen = [{
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
   conditionalOn: () => state.travelMode === 'walking' && profile.commuteDistance === 'far',
+  visuals: {
+    image: THUIS_KOMEN_VISUALS.walking
+  },
   channels: {
     news: [],
     whatsapp: [],
@@ -505,7 +573,12 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
-  conditionalOn: () => !state.reachedHome && !state.travelingWithMartijn && !(state.travelMode === 'walking' && profile.commuteDistance === 'far'),
+  conditionalOn: () => !state.reachedHome && !state.arriveHomeAt1743 && !state.travelingWithMartijn && !(state.travelMode === 'walking' && profile.commuteDistance === 'far'),
+  get visuals() {
+    return {
+      image: thuisKomenTravelImage(state.travelMode)
+    };
+  },
   channels: {
     news: [],
     get whatsapp() {
@@ -538,19 +611,22 @@ const scenes_thuis_komen = [{
   },
   choices: [{
     text: '💪 Doorgaan, ik kom er wel',
-    consequence: 'Je blijft doorgaan. Het kost energie, maar je komt wel vooruit. Stap voor stap.',
-    stateChange: {}
+    consequence: 'Je blijft doorgaan. Het kost energie, maar je blijft meters maken. Net als het begint te schemeren draai je eindelijk je straat in.',
+    stateChange: {
+      arriveHomeAt1743: true
+    }
   }, {
     text: '🍎 Ergens stoppen voor eten',
     failCondition: () => state.cash < 10,
     failConsequence: 'Je stapt een bakker binnen, maar je hebt geen contant geld. De bakker wil niet anders. Je loopt met lege handen verder.',
-    consequence: 'Je stapt een bakker binnen. "Alleen contant." Je legt een tientje neer en krijgt een broodje en een fles water. Dat helpt meteen.',
-    stateChange: { food: 1, cash: -10 }
+    consequence: 'Je stapt een bakker binnen. "Alleen contant." Je legt een tientje neer en krijgt een broodje en een fles water. Dat helpt meteen. Daarna loop je door en haal je nog voor de avond je huis.',
+    stateChange: { food: 1, cash: -10, arriveHomeAt1743: true }
   }, {
     text: '🤝 De mevrouw bij het bushokje helpen',
-    consequence: 'Je loopt naar haar toe. Ze zit er al een uur en weet niet meer hoe ze thuis moet komen. Je helpt haar haar dochter te bereiken. Die komt haar ophalen. Het kost je twintig minuten, maar het voelt goed.',
+    consequence: 'Je loopt naar haar toe. Ze zit er al een uur en weet niet meer hoe ze thuis moet komen. Je helpt haar haar dochter te bereiken. Die komt haar ophalen. Het kost je tijd, maar daarna haal je nog net voor de avond je huis.',
     stateChange: {
-      helpedStranger: true
+      helpedStranger: true,
+      arriveHomeAt1743: true
     }
   }]
 }, {
@@ -559,7 +635,10 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
-  conditionalOn: () => state.travelingWithMartijn && !state.reachedHome,
+  conditionalOn: () => state.travelingWithMartijn && !state.reachedHome && !state.arriveHomeAt1743,
+  visuals: {
+    image: THUIS_KOMEN_VISUALS.walking
+  },
   channels: {
     news: [],
     get whatsapp() {
@@ -586,12 +665,86 @@ const scenes_thuis_komen = [{
   narrative: 'Onderweg kom je langs Martijns huis. "Loop even mee naar binnen," zegt hij. "Eerst een boterham, dan ga je weer verder." Zijn vrouw doet open. Zodra ze Martijn ziet, omhelst ze hem stevig. "Gelukkig ben je thuis." Ze zet kaarsjes op tafel en snijdt brood.',
   choices: [{
     text: '🥪 Even binnen zitten en een boterham eten',
-    consequence: 'Je zit even aan de keukentafel. Martijns vrouw schenkt thee en vraagt hoe het was. Midden in deze lange dag voelt dat als echte rust. Na twintig minuten sta je op en ga je verder.',
-    stateChange: { food: 1, comfort: 1 }
+    consequence: 'Je zit even aan de keukentafel. Martijns vrouw schenkt thee en vraagt hoe het was. Midden in deze lange dag voelt dat als echte rust. Daarna ga je verder en bereik je nog voor de avond je huis.',
+    stateChange: { food: 1, comfort: 1, arriveHomeAt1743: true }
   }, {
     text: '👋 Bedanken en meteen doorlopen',
-    consequence: 'Je bedankt hen beiden en gaat meteen verder. Nog even en je bent thuis.',
-    stateChange: {}
+    consequence: 'Je bedankt hen beiden en gaat meteen verder. Niet veel later draai je je eigen straat in.',
+    stateChange: {
+      arriveHomeAt1743: true
+    }
+  }]
+}, {
+  id: 'tk_5c',
+  time: '17:43',
+  date: 'Donderdag 14 januari 2027',
+  dayBadge: 'Thuis',
+  dayBadgeClass: 'green',
+  conditionalOn: () => state.arriveHomeAt1743,
+  channels: {
+    news: [],
+    get whatsapp() {
+      const msgs = [];
+      if (profile.adults > 1) msgs.push({
+        from: 'Partner',
+        msg: 'Waar blijf je? We hebben kaarsen aan en wachten op je.',
+        time: '17:28',
+        outgoing: false
+      });
+      if (profile.hasChildren && !state.kidsArranged && !state.kidsPickedUp) msgs.push({
+        from: 'School De Ster',
+        msg: 'We zijn nog open, maar sluiten vandaag om 18:00. Laat even weten als u eraan komt.',
+        time: '17:35',
+        outgoing: false
+      });
+      return msgs;
+    },
+    nlalert: null,
+    radio: null
+  },
+  get narrative() {
+    if (profile.adults > 1) {
+      return 'Het is 17:43 als je eindelijk je straat in draait. De voordeur gaat open nog voor je aanbelt. Binnen ruik je kaarsvet en warm eten. Je bent thuis, eerder dan je vanmiddag nog had durven hopen.';
+    }
+    return 'Het is 17:43 als je eindelijk je straat in draait. Je steekt de sleutel in het slot en stapt een donker maar vertrouwd huis binnen. Je bent thuis, eerder dan je vanmiddag nog had durven hopen.';
+  },
+  choices: [{
+    text: '🕯️ Eerst even zitten en op adem komen',
+    consequence: () => state.phoneBattery < 20
+      ? 'Je ploft neer. Je telefoon staat bijna leeg, maar jij bent thuis. Voor nu is dat genoeg.'
+      : 'Je ploft neer en voelt de spanning uit je schouders zakken. Je bent thuis.',
+    stateChange: {
+      reachedHome: true
+    }
+  }, {
+    text: () => profile.adults > 1 ? '📱 Partner en familie laten weten dat je veilig bent' : '📱 Familie laten weten dat je veilig bent',
+    consequence: () => state.phoneBattery > 0 ? 'Je stuurt snel een paar berichten. Iedereen was ongerust. Nu weten ze dat je veilig thuis bent.' : 'Je telefoon is leeg. Je kunt niemand meer bereiken, maar je bent wel veilig thuis.',
+    stateChange: {
+      reachedHome: true
+    }
+  }, {
+    text: '👶 Kinderen ophalen op de afgesproken plek',
+    consequence: 'Je zet je tas neer en gaat meteen weer op pad. Gelukkig ben je nog ruim op tijd. De kinderen zijn veilig opgevangen en opgelucht je te zien.',
+    stateChange: {
+      kidsPickedUp: true,
+      reachedHome: true
+    },
+    conditionalOn: () => profile.hasChildren && !state.kidsPickedUp && state.kidsArranged
+  }, {
+    text: '👶 Nu direct naar school of opvang gaan',
+    consequence: 'Je bent nog net op tijd. De leerkracht doet open en zegt opgelucht: "Fijn dat u er bent." Even later ga je met de kinderen weer naar huis.',
+    stateChange: {
+      kidsPickedUp: true,
+      reachedHome: true
+    },
+    conditionalOn: () => profile.hasChildren && !state.kidsPickedUp && !state.kidsArranged
+  }, {
+    text: '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
+    consequence: 'Je loopt een rustige ronde door het huis. Alles is in orde. De kaarsjes staan veilig en het gas is dicht.',
+    stateChange: {
+      reachedHome: true
+    },
+    conditionalOn: () => !profile.hasChildren || state.kidsPickedUp
   }]
 }, {
   id: 'tk_5b',
@@ -599,7 +752,12 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
-  conditionalOn: () => profile.commuteDistance === 'far' && !state.reachedHome && !state.foundAlternative && !state.travelingWithMartijn,
+  conditionalOn: () => profile.commuteDistance === 'far' && !state.reachedHome && !state.foundAlternative && !state.travelingWithMartijn && !state.arriveHomeAt1743,
+  get visuals() {
+    return {
+      image: thuisKomenTravelImage(state.travelMode)
+    };
+  },
   channels: {
     news: [],
     whatsapp: [],
@@ -638,6 +796,7 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Thuis',
   dayBadgeClass: 'green',
+  conditionalOn: () => !state.arriveHomeAt1743,
   channels: {
     news: [],
     get whatsapp() {
@@ -709,18 +868,19 @@ const scenes_thuis_komen = [{
    Wordt in engine.js samengevoegd tot sceneBgMap.
 */
 const sceneImages_thuis_komen = {
-  tk_1:  'afbeelding/stroomstoring_onderweg/kantoor.png',
-  tk_2:  'afbeelding/stroomstoring_onderweg/kantoor.png',
-  tk_2b: 'afbeelding/stroomstoring_onderweg/kantoor.png',
-  tk_3b: 'afbeelding/stroomstoring_onderweg/kantoor.png',
-  tk_3:  'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-  tk_4a: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-  tk_4b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-  tk_4c: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-  tk_4d: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-  tk_4e: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-  tk_5:  'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-  tk_5m: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-  tk_5b: 'afbeelding/stroomstoring_onderweg/stroomstoring_onderweg.png',
-  tk_6:  'afbeelding/stroomstoring/Huis_winter1.png',
+  tk_1:  THUIS_KOMEN_VISUALS.office,
+  tk_2:  THUIS_KOMEN_VISUALS.office,
+  tk_2b: THUIS_KOMEN_VISUALS.office,
+  tk_3b: THUIS_KOMEN_VISUALS.office,
+  tk_3:  THUIS_KOMEN_VISUALS.walking,
+  tk_4a: THUIS_KOMEN_VISUALS.car,
+  tk_4b: THUIS_KOMEN_VISUALS.train,
+  tk_4c: THUIS_KOMEN_VISUALS.bus,
+  tk_4d: THUIS_KOMEN_VISUALS.walking,
+  tk_4e: THUIS_KOMEN_VISUALS.walking,
+  tk_5:  THUIS_KOMEN_VISUALS.walking,
+  tk_5m: THUIS_KOMEN_VISUALS.walking,
+  tk_5c: THUIS_KOMEN_VISUALS.home,
+  tk_5b: THUIS_KOMEN_VISUALS.walking,
+  tk_6:  THUIS_KOMEN_VISUALS.home,
 };

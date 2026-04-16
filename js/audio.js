@@ -70,6 +70,7 @@ const AUDIO_PATHS = {
   fire: 'Audio/fire-loop.mp3',
   forest: 'Audio/forest_sounds.mp3',
   heartbeat: 'Audio/heartbeat.mp3',
+  computerHum: 'Audio/computer_hum.mp3',
   siren: 'Audio/Brandweer_sirene.mp3',
   coughing: 'Audio/coughing.mp3',
   helicopter: 'Audio/helicopter.mp3',
@@ -214,7 +215,8 @@ const Ambience = {
     rain: { src: [AUDIO_PATHS.rain], loop: true, preload: true, volume: 0, targetVolume: 0.22 },
     fire: { src: [AUDIO_PATHS.fire], loop: true, preload: true, volume: 0, targetVolume: 0.22 },
     forest: { src: [AUDIO_PATHS.forest], loop: true, preload: true, volume: 0, targetVolume: 0.14 },
-    heartbeat: { src: [AUDIO_PATHS.heartbeat], loop: true, preload: true, volume: 0, targetVolume: 0.38 }
+    heartbeat: { src: [AUDIO_PATHS.heartbeat], loop: true, preload: true, volume: 0, targetVolume: 0.38 },
+    computerHum: { src: [AUDIO_PATHS.computerHum], loop: true, preload: true, volume: 0, targetVolume: 0.16 }
   },
 
   // Geeft de Howl-instantie voor de opgegeven track terug; maakt hem aan als hij nog niet bestaat.
@@ -280,6 +282,14 @@ const Ambience = {
     this._current = null;
   },
 
+  stopImmediate(name) {
+    const target = name || this._current;
+    if (!target) return;
+    const snd = this._sounds[target];
+    if (snd && snd.playing()) snd.stop();
+    if (!name || this._current === target) this._current = null;
+  },
+
   // Bepaalt op basis van het scène-ID welke ambient track geschikt is
   // en speelt die af, of stopt ambient audio als de scène er geen heeft.
   resumeForScene(sceneId) {
@@ -300,7 +310,13 @@ const Ambience = {
     };
 
     let ambient = null;
-    if (currentScenario === 'nachtalarm') {
+    if (this._current === 'computerHum' && sceneId !== 'tk_0') {
+      this.stopImmediate('computerHum');
+    }
+
+    if (sceneId === 'tk_0') {
+      ambient = { name: 'computerHum', targetVolume: this._configs.computerHum.targetVolume };
+    } else if (currentScenario === 'nachtalarm') {
       ambient = !introScenesNachtalarm.includes(sceneId) && !state.evacuatedFire
         ? { name: 'heartbeat', targetVolume: this._configs.heartbeat.targetVolume }
         : null;
