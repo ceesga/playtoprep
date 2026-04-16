@@ -6,20 +6,6 @@
 //        commuteNext/Prev
 // ═══════════════════════════════════════════════════════════════
 
-/* ─── SCENE ACHTERGRONDAFBEELDINGEN ──────────────────────────────────────────
-   Samengestelde mapping van scène-ID naar achtergrondafbeelding.
-   De per-scenario maps worden gedefinieerd in de respectievelijke data-bestanden.
-*/
-const sceneBgMap = Object.assign(
-  {},
-  sceneImages_stroom,
-  sceneImages_natuurbrand,
-  sceneImages_overstroming,
-  sceneImages_thuis_komen,
-  sceneImages_drinkwater,
-  sceneImages_nachtalarm
-);
-
 /* ─── STATUSBALKEN WEERGAVE ────────────────────────────────────────────────────
    Werkt de visuele statusbalken bij in zowel de zijbalk als de mobiele balk
    onderaan het scherm. Verwerkt water, voedsel, comfort, telefoonbatterij,
@@ -141,21 +127,30 @@ function updateBattery(fillId, pctId, emptyId, val) {
   }
 }
 
-/* ─── ACHTERGRONDAFBEELDING & OVERLAYS PER SCÈNE ──────────────────────────────
-   Stelt de achtergrondafbeelding van de pagina in op basis van de huidige scène.
-   Past ook vuur-, regen- en duisternis-overlays aan om het tijdstip en de
-   ernst van de situatie te weerspiegelen.
+/* ─── SCENE VISUALS ───────────────────────────────────────────────────────────
+   Render achtergrond, overlays en duisternis via de scenarioregistratie,
+   zodat de engine geen scenario-specifieke beeldtabellen meer hoeft te kennen.
 */
+function applySceneOverlay(el, opacity) {
+  if (!el) return;
+  if (opacity > 0) {
+    el.style.display = 'block';
+    setTimeout(() => {
+      el.style.opacity = String(opacity);
+    }, 50);
+  } else {
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.style.display = 'none';
+    }, 1200);
+  }
+}
+
 // Bijhoudt welke achtergrondlaag momenteel zichtbaar is (voor crossfade)
 let _bgActiveLayer = 'a';
 
 function renderSceneVisual(scene) {
-  // Gebruik een scène-specifieke override als die is meegegeven, anders de standaard achtergrond
-  const hasVisualOverride = scene.visuals && Object.prototype.hasOwnProperty.call(scene.visuals, 'image');
-  const bgImg = hasVisualOverride
-    ? scene.visuals.image
-    : (sceneBgMap[scene.id] || 'afbeelding/algemeen/huis_normaal.png');
-
+  const bgImg = resolveSceneBackgroundAsset(scene, currentScenario);
   const layerA = document.getElementById('bg-layer-a');
   const layerB = document.getElementById('bg-layer-b');
   const nextId = _bgActiveLayer === 'a' ? 'b' : 'a';
@@ -169,86 +164,19 @@ function renderSceneVisual(scene) {
     nextLayer.style.backgroundImage = 'none';
     nextLayer.style.backgroundColor = '#050505';
   }
-  // Crossfade: nieuwe laag in, oude laag uit
+
   nextLayer.style.opacity = '1';
   prevLayer.style.opacity = '0';
   _bgActiveLayer = nextId;
 
-  // Situatie-overlays — opacity per scène (0 = uit)
-  // Hoe verder de brand/overstroming vordert, hoe hoger de opacity van de overlay
-  const fireOpacity = {
-    bf_2: 0.30,
-    bf_2b: 0.35,
-    bf_3: 0.40,
-    bf_3b: 0.45,
-    bf_4: 0.50,
-    bf_4b: 0.50,
-    bf_4c: 0.55,
-    bf_4d: 0.55,
-  };
-  const rainOpacity = {
-    ov_1: 0.20,
-    ov_1b: 0.25,
-    ov_2: 0.35,
-    ov_2b: 0.35,
-    ov_3: 0.45,
-    ov_4a: 0.50,
-    ov_4b: 0.50,
-    ov_5: 0.55,
-    ov_5b: 0.55,
-    ov_6: 0.40,
-    ov_6b: 0.25,
-  };
+  const overlays = resolveSceneOverlayState(scene, currentScenario);
+  applySceneOverlay(document.getElementById('fire-overlay'), overlays.fire);
+  applySceneOverlay(document.getElementById('rain-overlay'), overlays.rain);
 
-  // Toont of verbergt een overlay-element met een vloeiende CSS-overgang.
-  // Bij opacity > 0 wordt het element eerst zichtbaar gemaakt (display:block),
-  // dan na een korte vertraging gefaded in. Bij 0 wordt het gefaded out en
-  // daarna verborgen.
-  function applyOverlay(el, opacity) {
-    if (!el) return;
-    if (opacity > 0) {
-      el.style.display = 'block';
-      setTimeout(() => {
-        el.style.opacity = String(opacity);
-      }, 50); // korte vertraging zodat de CSS-transitie op display:block kan starten
-    } else {
-      el.style.opacity = '0';
-      setTimeout(() => {
-        el.style.display = 'none';
-      }, 1200); // wacht tot de fade-out klaar is voordat het element verborgen wordt
-    }
-  }
-
-  applyOverlay(document.getElementById('fire-overlay'), fireOpacity[scene.id] || 0);
-  applyOverlay(document.getElementById('rain-overlay'), rainOpacity[scene.id] || 0);
-
-  // Brightness overlay based on time of day and scenario
-  // Nachtalarm-fotos zijn al donker van zichzelf; geen filter nodig.
-  const darknessOverride = { na_intro: 0, na_alarm: 0.72, na_0: 0, na_1: 0, na_2: 0, na_2b: 0, na_3: 0, na_4: 0, na_5: 0 };
   const darkness = document.getElementById('bg-darkness');
   if (darkness) {
-    // Haal het uur op uit het tijdstip van de scène (standaard: 12:00 = overdag)
-    const [h] = (scene.time || '12:00').split(':').map(Number);
-    let bg, opacity;
-    if (scene.id in darknessOverride) {
-      // Handmatige overschrijving voor specifieke scènes
-      bg = '#000';
-      opacity = darknessOverride[scene.id];
-    } else if (h >= 22 || h < 6) {
-      // Nacht: bijna volledig donker
-      bg = '#000';
-      opacity = 0.88;
-    } else if (h < 9 || h >= 18) {
-      // Schemering (ochtend of avond): gedeeltelijk donker
-      bg = '#000';
-      opacity = 0.68;
-    } else {
-      // Overdag: geen duisternis-overlay
-      bg = '#000';
-      opacity = 0;
-    }
-    darkness.style.background = bg;
-    darkness.style.opacity = opacity;
+    darkness.style.background = '#000';
+    darkness.style.opacity = resolveSceneDarkness(scene, currentScenario);
   }
 }
 
@@ -385,107 +313,12 @@ function commutePrev() {
    reset alle spelstatus-vlaggen, verwerkt de profielinstellingen van de speler
    (water/eten/cash/powerbank) en rendert de eerste scène.
 */
-function startScenario(scenarioId) {
-  // Verwijder eventuele lopende tick-timers van een eerder scenario
-  if (typeof clearAllTicks === 'function') clearAllTicks();
-  if (typeof resetSceneAudioState === 'function') resetSceneAudioState();
-  // Als thuis_komen wordt gekozen maar de reismodus nog niet is ingevuld,
-  // stuur de speler eerst naar het woon-werkverkeer-formulier
-  if (scenarioId === 'thuis_komen' && !profile.commuteMode) {
-    currentScenario = 'thuis_komen';
-    gotoCommuteQs();
-    return;
-  }
-  currentScenario = scenarioId || 'stroom';
-
-  // Set scenes and decay for selected scenario
-  if (currentScenario === 'stroom') {
-    scenes = scenes_stroom;
-    sceneDecay = sceneDecay_stroom;
-  } else if (currentScenario === 'natuurbrand') {
-    scenes = scenes_natuurbrand;
-    sceneDecay = sceneDecay_natuurbrand;
-  } else if (currentScenario === 'overstroming') {
-    scenes = scenes_overstroming;
-    sceneDecay = sceneDecay_overstroming;
-  } else if (currentScenario === 'thuis_komen') {
-    scenes = scenes_thuis_komen;
-    sceneDecay = sceneDecay_thuis_komen;
-  } else if (currentScenario === 'drinkwater') {
-    scenes = scenes_drinkwater;
-    sceneDecay = sceneDecay_drinkwater;
-  } else if (currentScenario === 'nachtalarm') {
-    scenes = scenes_nachtalarm;
-    sceneDecay = sceneDecay_nachtalarm;
-  }
-
-  // Reset all scenario-specific state flags
-  state.evacuated = false;
-  state.packedBag = false;
-  state.madeFirebreak = false;
-  state.bfTravelMode = '';
-  state.returnedHome = false;
-  state.tookPets = false;
-  state.kidsEvacuated = false;
-  state.wentUpstairs = null;
-  state.evacuatedFlood = false;
-  state.carMovedHigher = false;
-  state.savedItems = false;
-  state.calledRescue = false;
-  state.kidsWithYou = false;
-  state.sentKidsToSchool = false;
-  state.cutElectricity = false;
-  state.travelMode = profile.commuteMode || 'car';
-  state.reachedHome = false;
-  state.arriveHomeAt1743 = false;
-  state.foundAlternative = false;
-  state.helpedStranger = false;
-  state.kidsPickedUp = false;
-  state.kidsArranged = false;
-  state.kidsNoodpakket = false;
-  state.kidsKeptHome = false;
-  state.hadEDCBag = profile.hasEDCBag;
-
-  // Merge profile prep answers into state
-  if (profile.hasCash === 'ja') state.hasCash = true;
-  if (profile.hasFlashlight === 'ja') state.hasFlashlight = true;
-  if (profile.hasWater === 'ja') state.hasWater = true;
-
-  // Initialize survival stats from profile
-  state.water = 1 + (profile.hasWater === 'ja' ? 3 : 0); // basisvoorraad 1 dag + 3 extra bij noodpakket
-  state.food  = 2 + ((profile.hasKit === 'ja' || profile.hasExtraFood) ? 3 : 0); // basis 2 dagen + 3 extra bij noodpakket
-  state.comfort = START_COMFORT;
-  state.health  = START_HEALTH;
-  // Bij thuis_komen ben je onderweg: alleen zakgeld + reistasje, noodpakket is thuis
-  const homeCash = currentScenario === 'thuis_komen' ? 0 : (profile.hasCash === 'ja' ? 100 : 0);
-  // Startbedrag: basisbedrag + eventueel contant geld thuis + EDC-tas bonusgeld
-  state.cash = 20 + homeCash + (profile.hasEDCBag === 'ja' ? 100 : 0);
-  state.powerbank = profile.hasPowerbank === 'ja' ? 5 : 0;
-  state.phoneBattery = 80; // telefoon start op 80% batterij
-  state.hasCampingStove = false;
-  state.knowsNeighbors = false;
-  state.evacuatedEarly = false;
-  state.warnedKevin = false;
-  state.sealedHome = false;
-  state.contactedAns = false;
-  state.takingAns = false;
-  state.day2Started = false;
-  state.tookAlarmSeriously = false;
-  state.warnedHousemates = false;
-  state.didntUseWaterOnFire = false;
-  state.evacuatedFire = false;
-  state.called112PreExit = false;
-  state.called112 = false;
-  state.stayedOutside = false;
-  state.delayedEvacuation = false;
-  state.travelingWithMartijn = false;
-  state.hasCarRadio = false;
-  state.airplaneMode = false;
-  state.followedOfficialAdvice = false;
-  state.inventory = {};
+function resetScenarioRuntimeState(scenarioId) {
+  resetObjectToDefaults(state, buildScenarioStartState(scenarioId));
   if (typeof ensureInventoryState === 'function') ensureInventoryState();
+}
 
-  // Reset scène-index en alle kanaal- en geschiedenisbuffers
+function resetScenarioSessionState() {
   currentSceneIdx = 0;
   channels.news = [];
   channels.whatsapp = [];
@@ -501,20 +334,23 @@ function startScenario(scenarioId) {
   waPage = 0;
   newsLoggedIdxs.clear();
   waLoggedIdxs.clear();
-  // Preload achtergrondafbeeldingen voor het actieve scenario
-  const _imgMaps = {
-    stroom: sceneImages_stroom,
-    natuurbrand: sceneImages_natuurbrand,
-    overstroming: sceneImages_overstroming,
-    thuis_komen: sceneImages_thuis_komen,
-    drinkwater: sceneImages_drinkwater,
-    nachtalarm: sceneImages_nachtalarm
-  };
-  const _activeImgMap = _imgMaps[currentScenario];
-  if (_activeImgMap) {
-    const _uniqueImgs = [...new Set(Object.values(_activeImgMap))];
-    _uniqueImgs.forEach(src => { const img = new Image(); img.src = src; });
+}
+
+function startScenario(scenarioId) {
+  if (typeof clearAllTicks === 'function') clearAllTicks();
+  if (typeof resetSceneAudioState === 'function') resetSceneAudioState();
+
+  if (scenarioId === 'thuis_komen' && !profile.commuteMode) {
+    currentScenario = 'thuis_komen';
+    gotoCommuteQs();
+    return;
   }
+
+  const config = activateScenarioConfig(scenarioId || 'stroom');
+  resetScenarioRuntimeState(config.id);
+  resetScenarioSessionState();
+  preloadScenarioAssets(config.id);
+
   show('s-scenario');
   renderScene();
 }
@@ -565,34 +401,25 @@ function loadGame() {
   if (typeof resetSceneAudioState === 'function') resetSceneAudioState();
   const d = JSON.parse(raw);
 
-  // Herstel state en profiel
-  Object.assign(state, d.state);
+  resetObjectToDefaults(profile, PROFILE_DEFAULTS);
   Object.assign(profile, d.profile);
+  resetObjectToDefaults(state, STATE_DEFAULTS);
+  Object.assign(state, d.state);
   if (typeof ensureInventoryState === 'function') ensureInventoryState();
 
-  // Herstel scenario + scenes
-  currentScenario = d.currentScenario;
-  if (currentScenario === 'stroom')          { scenes = scenes_stroom;       sceneDecay = sceneDecay_stroom; }
-  else if (currentScenario === 'natuurbrand') { scenes = scenes_natuurbrand;   sceneDecay = sceneDecay_natuurbrand; }
-  else if (currentScenario === 'overstroming'){ scenes = scenes_overstroming;  sceneDecay = sceneDecay_overstroming; }
-  else if (currentScenario === 'thuis_komen') { scenes = scenes_thuis_komen;   sceneDecay = sceneDecay_thuis_komen; }
-  else if (currentScenario === 'drinkwater')  { scenes = scenes_drinkwater;    sceneDecay = sceneDecay_drinkwater; }
-  else if (currentScenario === 'nachtalarm')  { scenes = scenes_nachtalarm;    sceneDecay = sceneDecay_nachtalarm; }
+  activateScenarioConfig(d.currentScenario);
   currentSceneIdx = d.currentSceneIdx;
 
-  // Herstel geschiedenis
   choiceHistory.splice(0, Infinity, ...d.choiceHistory);
   newsLog.splice(0, Infinity, ...d.newsLog);
   waLog.splice(0, Infinity, ...d.waLog);
   radioUnlocked = d.radioUnlocked;
   activeTab = d.activeTab || 'buiten';
 
-  // Markeer al gelogde scenes zodat renderScene ze niet opnieuw toevoegt
   stateSnapshots.length = 0;
   historySnapshots.length = 0;
   newsLoggedIdxs.clear();
   waLoggedIdxs.clear();
-  // Vul de Set met alle scène-indexes die al zijn opgeslagen in de logs
   newsLog.forEach(e => newsLoggedIdxs.add(e.sceneIdx));
   waLog.forEach(e => waLoggedIdxs.add(e.sceneIdx));
   channels.news = [];
@@ -602,7 +429,6 @@ function loadGame() {
   newsPage = 0;
   waPage = 0;
 
-  // Herstel huishoudensvariabelen voor portret-fallback
   adultsCount = d.adultsCount || 1;
   childrenCount = d.childrenCount || 0;
   slechtTerBeenCount = d.slechtTerBeenCount || 0;
@@ -615,7 +441,6 @@ function loadGame() {
   show('s-scenario');
   renderScene();
   renderStatusBars();
-  // Herstel actieve tab na render
   if (d.activeTab && typeof switchTab === 'function') switchTab(d.activeTab);
 }
 
@@ -661,6 +486,22 @@ function markUnread(name, increment) {
   tab.classList.add('has-unread');
 }
 
+function applySceneDecayChange(decayChange) {
+  Object.keys(decayChange).forEach(key => {
+    const value = decayChange[key];
+
+    if (key === 'phoneBattery' && state.airplaneMode) return;
+    if (key === 'water' && value < 0 && state.tapWaterAvailable) return;
+    if (key === 'food' && value < 0 && state.shopsOpen) return;
+    if (typeof value === 'boolean') {
+      state[key] = value;
+      return;
+    }
+
+    applyStateChange(state, { [key]: value });
+  });
+}
+
 /* ─── SCÈNE RENDEREN ──────────────────────────────────────────────────────────
    Hoofdfunctie die de volledige UI bijwerkt voor de huidige scène:
    - Annuleert de typewriter en wist ongelezen-indicatoren
@@ -697,21 +538,7 @@ function renderScene() {
 
   // Apply scene decay (automatic stat reductions)
   const decay = sceneDecay[scene.id];
-  if (decay) {
-    Object.keys(decay).forEach(k => {
-      // Vliegtuigmodus: telefoonbatterij daalt niet door verval
-      if (k === 'phoneBattery' && state.airplaneMode) return;
-      // Boolean flags direct toewijzen
-      if (typeof decay[k] === 'boolean') { state[k] = decay[k]; return; }
-      // Noodwatervoorraad daalt niet als kraanwater nog beschikbaar is
-      if (k === 'water' && decay[k] < 0 && state.tapWaterAvailable) return;
-      // Voedselvoorraad daalt niet als winkels nog normaal open zijn
-      if (k === 'food' && decay[k] < 0 && state.shopsOpen) return;
-      const max = k === 'phoneBattery' ? 100 : (k === 'water' || k === 'food') ? 999 : k === 'comfort' ? MAX_STAT_COMFORT : k === 'health' ? MAX_STAT_HEALTH : 5;
-      // Pas de vervalwaarde toe maar houd de stat binnen het geldige bereik
-      state[k] = Math.max(0, Math.min(max, state[k] + decay[k]));
-    });
-  }
+  if (decay) applySceneDecayChange(decay);
   // Markeer dag 2 als gestart zodra de ochtend van dag 3 begint
   if (scene.id === 'st_d2_morgen') state.day2Started = true;
   // Penalty: no water or food causes health and comfort to drop
@@ -1678,23 +1505,11 @@ function pickChoice(idx) {
   // Apply state changes (stateChange may be a function or object)
   const rawSc = typeof choice.stateChange === 'function' ? choice.stateChange() : choice.stateChange;
   const sc = rawSc || {};
-  const STAT_KEYS = new Set(['water', 'food', 'comfort', 'health']);
-  // Sleutels waarvoor de waarde als delta (verschil) wordt toegepast
-  const DELTA_KEYS = new Set(['water', 'food', 'comfort', 'health', 'cash', 'phoneBattery']);
-  Object.keys(sc).forEach(k => {
-    if (k === 'awarenessLevel') {
-      // awarenessLevel kan alleen omhoog gaan, nooit omlaag
-      state[k] = Math.max(state[k], sc[k]);
-    } else if (DELTA_KEYS.has(k)) {
-      // Begrens de statwaarde tot het geldige bereik [0, max]
-      const max = k === 'cash' ? 9999 : k === 'phoneBattery' ? 100 : (k === 'water' || k === 'food') ? 999 : k === 'comfort' ? MAX_STAT_COMFORT : k === 'health' ? MAX_STAT_HEALTH : 5;
-      state[k] = Math.max(0, Math.min(max, state[k] + sc[k]));
-    } else if (Array.isArray(sc[k])) {
-      // Kopieer arrays om referentieproblemen te vermijden
-      state[k] = sc[k].slice();
-    } else {
-      // Directe toewijzing voor booleaanse vlaggen en overige waarden
-      state[k] = sc[k];
+  applyStateChange(state, sc, {
+    customHandlers: {
+      awarenessLevel(target, value) {
+        target.awarenessLevel = Math.max(target.awarenessLevel, value);
+      }
     }
   });
   if (state.water === 0) state.ranOutOfWater = true;

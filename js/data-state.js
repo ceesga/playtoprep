@@ -26,23 +26,27 @@ const MAX_HOUSEHOLD = 8;
 const MAX_PETS      = 4;
 
 // ─── PROFILE ──────────────────────────────────────────────────────────────────
-const profile = {
+const PROFILE_DEFAULTS = {
   playerName: '',
   houseType: '',
   houseSubType: '', // sub-type bij 'overige': 'caravan', 'tiny_house' of 'woonboot'
   ouderenCount: 0,
-  hasElderly: false,
+  adults: 1,
   members: 1,
+  childrenCount: 0,
+  region: '',
   hasChildren: false,
   hasElderly: false,
   hasMobilityImpaired: false,
   hasPets: false,
+  hasMedNeeds: false,
   location: [],
   hasCar: false,
   hasBike: false,
   hasKit: false,
   hasWater: false,
   hasFood: false,
+  hasExtraFood: false,
   hasFirstAid: false,
   hasFlashlight: false,
   hasRadio: false,
@@ -53,6 +57,8 @@ const profile = {
   hasGasStove: false,
   hasPersonalSupplies: false,
   hasEDCReady: false,
+  hasBOBBag: false,
+  hasBOBWater: false,
   commuteMode: '',
   commuteDistance: '',
   hasEDCBag: false,
@@ -63,8 +69,36 @@ const profile = {
   hasEDCKnife: false
 };
 
+function cloneDefaultValue(value) {
+  if (Array.isArray(value)) return value.map(cloneDefaultValue);
+  if (value && typeof value === 'object') {
+    const cloned = {};
+    Object.keys(value).forEach(key => {
+      cloned[key] = cloneDefaultValue(value[key]);
+    });
+    return cloned;
+  }
+  return value;
+}
+
+function createDefaults(defaults) {
+  return cloneDefaultValue(defaults);
+}
+
+function resetObjectToDefaults(target, defaults) {
+  Object.keys(target).forEach(key => {
+    if (!Object.prototype.hasOwnProperty.call(defaults, key)) delete target[key];
+  });
+  Object.keys(defaults).forEach(key => {
+    target[key] = cloneDefaultValue(defaults[key]);
+  });
+  return target;
+}
+
+const profile = createDefaults(PROFILE_DEFAULTS);
+
 // ─── GAME STATE ───────────────────────────────────────────────────────────────
-const state = {
+const STATE_DEFAULTS = {
   awarenessLevel: 0,
   tapWaterAvailable: true,
   shopsOpen: true,
@@ -81,14 +115,14 @@ const state = {
   wentToFoodDist: false,
   hasCampingStove: false,
   knowsNeighbors: false,
-  water:        START_WATER,
-  food:         START_FOOD,
-  comfort:      START_COMFORT,
+  water: START_WATER,
+  food: START_FOOD,
+  comfort: START_COMFORT,
   ranOutOfWater: false,
-  ranOutOfFood:  false,
-  health:       START_HEALTH,
-  cash:         START_CASH,
-  powerbank:    0,
+  ranOutOfFood: false,
+  health: START_HEALTH,
+  cash: START_CASH,
+  powerbank: 0,
   phoneBattery: START_PHONE_BATTERY,
   carMovedHigher: false,
   tookAlarmSeriously: false,
@@ -100,8 +134,113 @@ const state = {
   stayedOutside: false,
   delayedEvacuation: false,
   travelingWithMartijn: false,
+  evacuated: false,
+  packedBag: false,
+  madeFirebreak: false,
+  bfTravelMode: '',
+  returnedHome: false,
+  tookPets: false,
+  kidsEvacuated: false,
+  wentUpstairs: null,
+  evacuatedFlood: false,
+  savedItems: false,
+  calledRescue: false,
+  kidsWithYou: false,
+  sentKidsToSchool: false,
+  cutElectricity: false,
+  travelMode: 'car',
+  reachedHome: false,
+  arriveHomeAt1743: false,
+  foundAlternative: false,
+  helpedStranger: false,
+  kidsPickedUp: false,
+  kidsArranged: false,
+  kidsNoodpakket: false,
+  kidsKeptHome: false,
+  hadEDCBag: false,
+  evacuatedEarly: false,
+  warnedKevin: false,
+  sealedHome: false,
+  contactedAnnie: false,
+  contactedAns: false,
+  takingAns: false,
+  day2Started: false,
+  hasCarRadio: false,
+  airplaneMode: false,
+  leftEarly: false,
   inventory: {}
 };
+
+const state = createDefaults(STATE_DEFAULTS);
+
+const STATE_VALUE_LIMITS = {
+  water: MAX_STAT_WATER,
+  food: MAX_STAT_FOOD,
+  comfort: MAX_STAT_COMFORT,
+  health: MAX_STAT_HEALTH,
+  cash: 9999,
+  phoneBattery: 100,
+  powerbank: 100
+};
+
+const STATE_DELTA_KEYS = new Set(Object.keys(STATE_VALUE_LIMITS));
+
+function getStateValueLimit(key) {
+  return Object.prototype.hasOwnProperty.call(STATE_VALUE_LIMITS, key)
+    ? STATE_VALUE_LIMITS[key]
+    : null;
+}
+
+function applyStateChange(target, change, options) {
+  if (!change) return target;
+  const opts = options || {};
+  const deltaKeys = opts.deltaKeys || STATE_DELTA_KEYS;
+  const customHandlers = opts.customHandlers || {};
+
+  Object.keys(change).forEach(key => {
+    const value = change[key];
+
+    if (customHandlers[key]) {
+      customHandlers[key](target, value, change);
+      return;
+    }
+
+    if (deltaKeys.has(key) && typeof value === 'number') {
+      const current = Number(target[key]) || 0;
+      const max = getStateValueLimit(key);
+      const next = current + value;
+      target[key] = max === null ? next : Math.max(0, Math.min(max, next));
+      return;
+    }
+
+    target[key] = cloneDefaultValue(value);
+  });
+
+  return target;
+}
+
+function buildScenarioStartState(scenarioId) {
+  const nextState = createDefaults(STATE_DEFAULTS);
+  const hasPrepCash = profile.hasCash === 'ja';
+  const hasPrepFlashlight = profile.hasFlashlight === 'ja';
+  const hasPrepWater = profile.hasWater === 'ja';
+  const hasPrepKit = profile.hasKit === 'ja';
+  const hasEDCBag = profile.hasEDCBag === 'ja';
+  const homeCash = scenarioId === 'thuis_komen' ? 0 : (hasPrepCash ? 100 : 0);
+
+  nextState.hasCash = hasPrepCash;
+  nextState.hasFlashlight = hasPrepFlashlight;
+  nextState.hasWater = hasPrepWater;
+  nextState.travelMode = profile.commuteMode || 'car';
+  nextState.hadEDCBag = hasEDCBag;
+  nextState.water = 1 + (hasPrepWater ? 3 : 0);
+  nextState.food = 2 + ((hasPrepKit || profile.hasExtraFood) ? 3 : 0);
+  nextState.cash = 20 + homeCash + (hasEDCBag ? 100 : 0);
+  nextState.powerbank = profile.hasPowerbank === 'ja' ? 5 : 0;
+  nextState.phoneBattery = 80;
+
+  return nextState;
+}
 
 // Scene decay — automatic stat reductions when a scene is entered
 // Water & food: only once per day (at morning scenes)
@@ -302,7 +441,7 @@ const sceneDecay_nachtalarm = {
 const channels = {
   news: [],
   whatsapp: [],
-
+  alerts: [],
   radio: []
 };
 

@@ -107,28 +107,7 @@ function getRadioAvailableInContext(ctx) {
 
 function applyInventoryStateChange(sc) {
   if (!sc) return;
-  const DELTA_KEYS = new Set(['water', 'food', 'comfort', 'health', 'cash', 'phoneBattery']);
-  Object.keys(sc).forEach(key => {
-    const value = sc[key];
-    if (DELTA_KEYS.has(key)) {
-      const max = key === 'cash'
-        ? 9999
-        : key === 'phoneBattery'
-          ? 100
-          : key === 'comfort'
-            ? MAX_STAT_COMFORT
-            : key === 'health'
-              ? MAX_STAT_HEALTH
-              : 999;
-      state[key] = Math.max(0, Math.min(max, state[key] + value));
-      return;
-    }
-    if (Array.isArray(value)) {
-      state[key] = value.slice();
-      return;
-    }
-    state[key] = value;
-  });
+  applyStateChange(state, sc);
 }
 
 function showInventoryConsequence(text) {

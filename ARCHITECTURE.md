@@ -1,336 +1,310 @@
 # Architecture — PlayToPrep Noodscenario Simulator
 
-> Dit is een levend document. Pas het aan zodra de architectuur verandert.
+> Dit document beschrijft de actuele architectuur van het spel na de refactor van april 2026.
 
----
+## 1. Doel Van De Architectuur
 
-## 1. Project Structure
+De codebase is opgezet als een client-side scenario-engine zonder framework. De refactor heeft drie doelen centraal gezet:
 
-```
-playtoprep/
-├── index.html                        # Alle schermen als <div id="s-*"> in één HTML-bestand
-├── style.css                         # Alle CSS (geen preprocessor)
+- scenario's moeten via een uniforme registratielaag worden geactiveerd
+- runtime-state mag niet lekken tussen scenario-runs
+- gelijksoortige logica voor state, visuals, audio en rapportage moet dezelfde opbouw gebruiken
+
+De architectuur is bewust data-first: scenario-inhoud blijft declaratief in scenariofiles, terwijl runtime-beleid in centrale helpers en registries staat.
+
+## 2. Projectstructuur
+
+```text
+playtoprepGH/
+├── index.html
+├── style.css
 ├── js/
-│   ├── data-state.js                 # Globale staat: profile, state, channels, choiceHistory,
-│   │                                 # constanten, intakeVars, alle sceneDecay-objecten
-│   ├── data-scenarios-stroom.js      # 26 scenes, scenario 'stroom' (3+ dagen)
-│   ├── data-scenarios-bosbrand.js    # Scenario 'natuurbrand'
-│   ├── data-scenarios-overstroming.js# Scenario 'overstroming'
-│   ├── data-scenarios-thuiskomen.js  # Scenario 'thuis_komen'
-│   ├── data-scenarios-drinkwater.js  # Scenario 'drinkwater'
-│   ├── data-scenarios-nachtalarm.js  # Scenario 'nachtalarm' (kort, ~10 min)
-│   ├── intake.js                     # Intake-flow: naam, huishouden, woning, voertuigen, omgeving
-│   ├── prep.js                       # Noodpakket-vragen (voorbereiding)
-│   ├── audio.js                      # Audio via Howler.js (CDN); Howl-instanties lazy aangemaakt
-│   ├── engine.js                     # Kern spellogica: startScenario, renderScene, pickChoice,
-│   │                                 # advanceScene, sceneDecay, sidebar-updates
-│   ├── report.js                     # Rapportscherm: tijdlijn, badges, tips
-│   ├── ui.js                         # Schermnavigatie show(), NL-Alert, Help, Huishoudenportret
-│   └── icons-data.js                 # 60+ Lucide SVG's als inline data (geen CDN)
-├── icons/                            # Lucide SVG-bronbestanden
-├── afbeelding/                       # Afbeeldingen per scenario:
-│   ├── algemeen/                     # Logo's, achtergronden
-│   ├── avatars/                      # Personen, huisdieren, omgeving
-│   ├── bosbrand/
-│   ├── overstroming/
-│   ├── stroomstoring/
-│   └── stroomstoring_onderweg/
-├── Audio/                            # NL-Alert.mp3, fire-loop.mp3, rain-loop.mp3,
-│   └── radioberichten/               # MP3's voor radioscènes per scenario
-├── STIJLGIDS.md                      # Schrijfstijl: B1-niveau, toonregels per kanaal
-├── CLAUDE.md                         # Werkinstructies, conventies, gotchas voor Claude
-└── architecture.md                   # Dit bestand
+│   ├── icons-data.js
+│   ├── data-state.js
+│   ├── data-scenarios-stroom.js
+│   ├── data-scenarios-bosbrand.js
+│   ├── data-scenarios-overstroming.js
+│   ├── data-scenarios-thuiskomen.js
+│   ├── data-scenarios-drinkwater.js
+│   ├── data-scenarios-nachtalarm.js
+│   ├── scenario-registry.js
+│   ├── intake.js
+│   ├── prep.js
+│   ├── inventory.js
+│   ├── audio.js
+│   ├── engine.js
+│   ├── report.js
+│   └── ui.js
+├── afbeelding/
+├── Audio/
+├── CLAUDE.md
+└── ARCHITECTURE.md
 ```
 
-### Script-laadvolgorde in index.html
+## 3. Scriptvolgorde
 
-Scripts worden geladen in deze vaste volgorde:
+De runtime is afhankelijk van laadvolgorde. De actuele volgorde in `index.html` is:
 
-```
-icons-data.js → data-state.js → [scenario-data bestanden] → intake.js → prep.js → audio.js → engine.js → report.js → ui.js
-```
-
-Verander deze volgorde nooit zonder expliciete toestemming. Nieuwe scripts? Respecteer de afhankelijkheden.
-
----
-
-## 2. High-Level System Diagram
-
-```
-[Browser]
-   |
-   └── index.html  (één pagina, alle schermen als <div id="s-*">)
-          |
-          ├── style.css          (presentatie)
-          └── js/ (volgorde bepaalt laadafhankelijkheden)
-               ├── icons-data.js    → inline SVG-data
-               ├── data-state.js    → globale toestand + sceneDecay-objecten
-               ├── data-scenarios-* → scenariocontent (statische JS-arrays)
-               ├── intake.js        → intake-flow
-               ├── prep.js          → noodpakketvragen
-               ├── audio.js         → Howler.js audio-management
-               ├── engine.js        → spellogica (startScenario, renderScene, pickChoice)
-               ├── report.js        → rapport-generatie
-               └── ui.js            → navigatie + hulpfuncties
+```text
+icons-data.js
+→ data-state.js
+→ data-scenarios-*.js
+→ scenario-registry.js
+→ intake.js
+→ prep.js
+→ inventory.js
+→ audio.js
+→ engine.js
+→ report.js
+→ ui.js
 ```
 
-Geen server, geen API, geen framework. Alles draait puur client-side. Opslag via `localStorage`.
+Waarom dit logisch is:
 
----
+- `data-state.js` levert defaults, globale state en state-helpers.
+- `data-scenarios-*.js` leveren alleen scenedata en scene-image-maps.
+- `scenario-registry.js` bindt die losse scenedata samen tot een uniforme runtime-configuratie.
+- `inventory.js`, `audio.js`, `engine.js` en `report.js` lezen daarna allemaal dezelfde centrale registratielaag.
 
-## 3. Core Components
+## 4. Modules En Verantwoordelijkheden
 
-### 3.1. Game Engine (`engine.js`)
+### 4.1 `data-state.js`
 
-**Verantwoordelijkheid:** Kern spellogica.
+Verantwoordelijkheid:
 
-Sleutelfuncties:
-- `startScenario(key)` — laadt scenario, reset state, wijst `sceneDecay` toe
-- `renderScene(scene)` — rendert narrative, keuzes, sidebar, channels
-- `pickChoice(idx)` — verwerkt keuze, past state aan, toont consequentie
-- `advanceScene()` — gaat naar volgende (zichtbare) scene
-- `CHOICE_ICON_MAP` — emoji-prefix → Lucide-icon + kleurcategorie mapping
+- defaults voor `profile` en `state`
+- centrale mutable runtime-objecten
+- intake- en prep-constanten
+- scene-decay-tabellen
+- gedeelde state-helpers
 
-### 3.2. State Management (`data-state.js`)
+Belangrijke exports via globals:
 
-**Verantwoordelijkheid:** Alle gedeelde toestand tussen modules.
+- `PROFILE_DEFAULTS`
+- `STATE_DEFAULTS`
+- `profile`
+- `state`
+- `applyStateChange()`
+- `buildScenarioStartState()`
+- `resetObjectToDefaults()`
 
-Globale objecten (altijd beschikbaar):
-| Object | Type | Inhoud |
-|---|---|---|
-| `profile` | object | Spelersinstellingen: huis, huishouden, voertuigen, noodpakket |
-| `state` | object | Spelstatus: stats + boolean/integer flags |
-| `channels` | object | Actuele inhoud nieuws/berichten/radio per scene |
-| `choiceHistory` | array | Alle gemaakte keuzes (voor rapport) |
-| `sceneDecay` | object | Automatische stat-wijzigingen per scene-ID (dynamisch overschreven) |
-| `adultsCount` | integer | Uit intake: aantal volwassenen |
-| `childrenCount` | integer | Uit intake: aantal kinderen |
-| `slechtTerBeenCount` | integer | Uit intake: slecht-ter-been personen |
-| `petsCount` | integer | Uit intake: huisdieren |
+Architectuurrol:
 
-**Stat-keys in `state`:** `water`, `food`, `comfort`, `health`, `cash`, `phoneBattery`
+- dit is de enige bron van waarheid voor runtime-defaults
+- alle modules muteren dezelfde state via dezelfde basishulp
 
-### 3.3. Scenario Data (`data-scenarios-*.js`)
+### 4.2 `data-scenarios-*.js`
 
-Elk bestand exporteert een array van scene-objecten voor één scenario. Geen sceneDecay in deze bestanden — die staat in `data-state.js`.
+Verantwoordelijkheid:
 
-**Beschikbare scenario's:**
-| Sleutel | Bestand | Omschrijving |
-|---|---|---|
-| `stroom` | `data-scenarios-stroom.js` | Stroomstoring, 3+ dagen, 26 scenes |
-| `natuurbrand` | `data-scenarios-bosbrand.js` | Bosbrand, evacuatie |
-| `overstroming` | `data-scenarios-overstroming.js` | Overstroming |
-| `thuis_komen` | `data-scenarios-thuiskomen.js` | Thuis komen tijdens crisis; heeft extra commute-scherm |
-| `drinkwater` | `data-scenarios-drinkwater.js` | Drinkwatercrisis |
-| `nachtalarm` | `data-scenarios-nachtalarm.js` | Brand thuis, kort (~10 min) |
+- scenedata in declaratieve scene-arrays
+- scene-specifieke achtergrondmaps
 
-### 3.4. UI & Navigatie (`ui.js`)
+Pattern:
 
-**Verantwoordelijkheid:** Schermnavigatie, NL-Alert popup, hulpoverlays, huishoudportret.
+- scenes beschrijven inhoud, keuzes, voorwaarden en kanalen
+- scenes bevatten geen engine-logica voor activatie of routing
 
-Sleutelfunctie: `show(id)` — toont scherm met gegeven ID, verbergt alle andere.
+### 4.3 `scenario-registry.js`
 
-### 3.5. Rapport (`report.js`)
+Verantwoordelijkheid:
 
-**Verantwoordelijkheid:** Genereer persoonlijk rapport na afloop van een scenario.
+- centrale registratielaag per scenario
+- koppeling tussen scenes, decay, visuals, audio-meta en report-meta
+- uniforme helperfuncties voor scenario-activatie en runtime lookup
 
-`showReport()` bepaalt uitkomst op basis van:
-1. **Uitkomstscore** — gemiddelde van: `ranOutOfWater` (0 of 1), `ranOutOfFood` (0 of 1), en `comfort / MAX_STAT_COMFORT`
-   - ≥ 0.7 → `outcome-good` (groen)
-   - ≥ 0.4 → `outcome-mid` (geel)
-   - < 0.4 → `outcome-bad` (rood)
-2. **Statusbadges** — per scenario een eigen set flags uit `state`
-3. **Tijdlijn** — alle entries in `choiceHistory`
+Belangrijke helpers:
 
----
+- `getScenarioConfig(id)`
+- `activateScenarioConfig(id)`
+- `resolveSceneBackgroundAsset(scene, scenarioId)`
+- `resolveSceneOverlayState(scene, scenarioId)`
+- `resolveSceneDarkness(scene, scenarioId)`
+- `resolveScenarioAmbient(sceneId, scenarioId)`
+- `preloadScenarioAssets(scenarioId)`
+- `getScenarioReportConfig(scenarioId)`
 
-## 4. Data Model
+Architectuurrol:
 
-### 4.1. Scene-datastructuur
+- deze module vervangt verspreide `if/else`-ketens door configuratiegestuurde lookup
+- scenario-specifiek runtime-beleid staat niet meer in `engine.js`, `audio.js` en `report.js` verspreid
 
-```js
-{
-  id: 'st_1',
-  time: '11:30',
-  date: 'Maandag ...',
-  dayBadge: 'DAG 1',
-  dayBadgeClass: 'blue', // of 'orange', 'red'
-  channels: {
-    news: [{ time, headline, body }],
-    whatsapp: [{ from, msg, time, outgoing }],  // let op: 'msg', niet 'text'
-    nlalert: 'tekst of null',
-    radio: 'tekst of null'
-  },
-  narrative: 'Wat de speler ervaart...',  // of: get narrative() { ... } voor dynamische tekst
-  choices: [{
-    text: '🔦 Keuzetekst',               // emoji-prefix is functioneel (zie CHOICE_ICON_MAP)
-    consequence: 'Gevolg...',             // mag ook een functie zijn: consequence: () => '...'
-    cat: 'cat-social',                    // optioneel: overschrijft de emoji-gebaseerde categorie
-    stateChange: { food: -1, awarenessLevel: 1 }, // mag ook een functie zijn: () => ({...})
-    conditionalOn: () => profile.hasChildren      // optioneel: verbergt keuze als false
-  }],
-  conditionalOn: () => state.someFlag    // optioneel: verbergt hele scene als false
-}
+### 4.4 `engine.js`
+
+Verantwoordelijkheid:
+
+- scenario-run lifecycle
+- scene-rendering
+- keuzeverwerking
+- kanaalopbouw en sceneprogressie
+- UI-synchronisatie tijdens actieve gameplay
+
+Belangrijke patterns:
+
+- `startScenario()` activeert altijd via `activateScenarioConfig()`
+- runtime-state wordt altijd opnieuw opgebouwd via `buildScenarioStartState()`
+- choice state changes gebruiken `applyStateChange()`
+- scene decay gebruikt een aparte helper met scenario-onafhankelijke mutatie-logica
+- visuals worden gerenderd via registry-helpers in plaats van lokale scenariotabellen
+
+### 4.5 `inventory.js`
+
+Verantwoordelijkheid:
+
+- contextafhankelijke inventaris
+- item-visibility en item-use gedrag
+- lichte runtime-consequenties zonder scenewissel
+
+Architectuurrol:
+
+- inventaris gebruikt nu dezelfde `applyStateChange()` helper als normale scenekeuzes
+- daardoor is er nog maar een patroon voor delta-mutaties in de runtime
+
+### 4.6 `audio.js`
+
+Verantwoordelijkheid:
+
+- ambience
+- scene-effects
+- radio-audio en TTS fallback
+- globale audio toggle
+
+Architectuurrol:
+
+- ambient-selectie leest nu scenario-audiobeleid uit `scenario-registry.js`
+- daardoor staat scenario-audio niet meer hardcoded in de audio-engine zelf
+
+### 4.7 `report.js`
+
+Verantwoordelijkheid:
+
+- eindrapport renderen
+- statusbadges, tijdlijn, sterke punten en verbeterpunten tonen
+
+Architectuurrol:
+
+- report-intro en scoremodus komen nu uit de scenarioregistratie
+- rendering blijft generiek, scenario-meta wordt centraal opgehaald
+
+### 4.8 `ui.js`
+
+Verantwoordelijkheid:
+
+- schermnavigatie
+- overlays en modals
+- hulp- en profielweergave
+
+## 5. Datastromen
+
+### 5.1 Scenario Start
+
+```text
+scenariokeuze
+→ startScenario(scenarioId)
+→ activateScenarioConfig(scenarioId)
+→ buildScenarioStartState(scenarioId)
+→ resetObjectToDefaults(state, ...)
+→ preloadScenarioAssets(scenarioId)
+→ renderScene()
 ```
 
-`channels` mag ook een getter zijn (`get channels() { ... }`) voor dynamische inhoud op basis van profiel of state.
+### 5.2 Scene Render
 
-### 4.2. SceneDecay patroon
-
-Elk scenario heeft een eigen `sceneDecay_{naam}` object in `data-state.js`. In `startScenario()` wordt dit toegewezen aan `sceneDecay`. Decay-entries bevatten delta's:
-
-```js
-{ water: -1, phoneBattery: -15 }  // negatief = verlies, positief = herstel
+```text
+renderScene()
+→ getActiveScenes()
+→ applySceneDecayChange()
+→ renderStatusBars()
+→ renderSceneVisual()
+→ renderChannels()
+→ renderChoices()
+→ renderInventory()
+→ Ambience.resumeForScene()
 ```
 
-### 4.3. Opslaan/laden — `ptp_savegame` structuur
+### 5.3 Keuzeverwerking
 
-`saveGame()` slaat op in localStorage als JSON:
-
-```js
-{
-  version: 1,
-  savedAt: <timestamp>,
-  currentScenario, currentSceneIdx,
-  state, profile, choiceHistory,
-  newsLog, waLog,
-  radioUnlocked, activeTab,
-  adultsCount, childrenCount, slechtTerBeenCount, petsCount,
-  selectedHouseType, selectedVehicles, selectedEnvironment,
-  avatarSelections
-}
+```text
+pickChoice(idx)
+→ choice.stateChange
+→ applyStateChange(state, change)
+→ renderStatusBars()
+→ renderInventory()
+→ history + consequence + next scene
 ```
 
-Functies: `saveGame()`, `loadGame()`, `clearSave()`. LocalStorage-sleutel: `ptp_savegame`.
+### 5.4 Rapportage
 
----
+```text
+showReport()
+→ getScenarioReportConfig(currentScenario)
+→ scoreberekening
+→ generieke render van intro, status, eindstats en tips
+```
 
-## 5. Schermen & Navigatie
+## 6. Gelijkgetrokken Patronen
 
-Alle schermen zijn `<div id="s-*">` in `index.html`. Navigatie via `show(id)`.
+Dit is expliciet gelijk getrokken in de refactor:
 
-| ID | Scherm |
-|---|---|
-| `s-start` | Startscherm |
-| `s-uitleg` | Introductie |
-| `s-intake` | Huishoudeninvoer |
-| `s-prep` | Noodpakketvragen |
-| `s-scenariokeuze` | Scenariokiezer |
-| `s-commute` | Woon-werkvragen (alleen 'thuis_komen') |
-| `s-scenario` | Actief scenario |
-| `s-report` | Persoonlijk rapport |
+- Scenario-selectie: `startScenario()` en `loadGame()` gebruikten beide een eigen lange `if/else`-keten. Dat is vervangen door dezelfde registry lookup.
+  Waarom: minder drift, makkelijker uitbreiden met nieuwe scenario's.
 
----
+- Scenario-visuals: achtergrond, overlays en darkness zaten hardcoded in `engine.js`.
+  Waarom gelijkgetrokken: visuals horen bij scenario-configuratie, niet bij renderflow.
 
-## 6. State Flags
+- Scenario-audio: ambient-keuze zat als losse scenariologica in `audio.js`.
+  Waarom gelijkgetrokken: audio volgt nu hetzelfde configuratiepatroon als visuals.
 
-Naast de stat-keys gebruikt `state` ook boolean/integer flags:
+- Scenario-startstate: runtime-reset was handmatig en onvolledig.
+  Waarom gelijkgetrokken: alle scenario-runs starten nu vanuit `STATE_DEFAULTS` plus een scenario-startbuilder. Dit voorkomt state leakage tussen runs.
 
-| Flag | Type | Gebruik |
-|---|---|---|
-| `awarenessLevel` | integer 0–3 | Bewustzijnsniveau speler; hoger = beter gealarmeerd |
-| `helpedNeighbor` | boolean | Buren actief geholpen (sociaal badge) |
-| `knowsNeighbors` | boolean | Buren aangesproken of gewaarschuwd |
-| `hasCash` | boolean | Contant geld in huis of bij je |
-| `hasWater` | boolean | Noodwater opgeslagen |
-| `hasFlashlight` | boolean | Zaklamp of kaarsen in huis |
-| `houseLocked` | boolean | Deuren en ramen afgesloten |
-| `hasCampingStove` | boolean | Campingkooktoestel gebruikt |
-| `handledSewage` | boolean | Afvoeren afgesloten bij riolering |
-| `wentToFoodDist` | boolean | Voedseluitdeling bezocht |
-| `hasExtraFood` | boolean | Voedsel vooraf ingeslagen |
-| `ranOutOfWater` | boolean | Speler is zonder water geraakt |
-| `ranOutOfFood` | boolean | Speler is zonder voedsel geraakt |
-| `packedBag` | boolean | Noodtas ingepakt (bosbrand/overstroming) |
-| `evacuated` | boolean | Op tijd geëvacueerd (bosbrand) |
-| `evacuatedFlood` | boolean | Op tijd geëvacueerd (overstroming) |
-| `wentUpstairs` | boolean | Naar hogere verdieping gegaan (overstroming) |
-| `cutElectricity` | boolean | Meterkast afgesloten (overstroming/nachtalarm) |
-| `savedItems` | boolean | Essentials meegenomen (overstroming/nachtalarm) |
-| `calledRescue` | boolean | Hulpdiensten gebeld (overstroming) |
-| `returnedHome` | boolean | Veilig teruggekeerd (bosbrand/overstroming) |
-| `tookPets` | boolean | Huisdier meegenomen (bosbrand) |
-| `kidsEvacuated` | boolean | Kinderen/kwetsbare huisgenoten veilig gesteld (bosbrand/nachtalarm) |
-| `reachedHome` | boolean | Thuis aangekomen (thuis_komen) |
-| `foundAlternative` | boolean | Alternatief vervoer gevonden (thuis_komen) |
-| `hadEDCBag` | boolean | Noodtas bij je gehad (thuis_komen) |
-| `kidsPickedUp` | boolean | Kinderen opgehaald of geregeld (thuis_komen) |
-| `helpedStranger` | boolean | Iemand onderweg geholpen (thuis_komen) |
-| `tookAlarmSeriously` | boolean | Brandalarm direct serieus genomen (nachtalarm) |
-| `warnedHousemates` | boolean | Huisgenoten gewaarschuwd (nachtalarm) |
-| `didntUseWaterOnFire` | boolean | Geen water op elektrische brand gegooid (nachtalarm) |
-| `evacuatedFire` | boolean | Op tijd naar buiten gegaan (nachtalarm) |
-| `called112` | boolean | 112 gebeld (nachtalarm) |
-| `stayedOutside` | boolean | Buiten gebleven na evacuatie (nachtalarm) |
+- State-mutaties: scenekeuzes en inventory-items hadden elk een eigen delta-implementatie.
+  Waarom gelijkgetrokken: `applyStateChange()` is nu de gedeelde mutatielaag.
 
----
+- Report-meta: introtekst en scoremodus waren losse conditionele takken in `report.js`.
+  Waarom gelijkgetrokken: scenario-meta staat nu centraal in de registratielaag.
 
-## 7. Keuze-categorieën
+## 7. Belangrijkste Risico Dat Is Weggenomen
 
-De kleur en het Lucide-icon van keuzes worden bepaald door het emoji-prefix in `text`, via `CHOICE_ICON_MAP` in `engine.js`.
+Voor de refactor bestond er een reeel risico dat flags uit een eerder scenario in een nieuw scenario bleven hangen, omdat resets verspreid en onvolledig waren. Voorbeelden daarvan waren onder meer vervoersflags, buurcontact-flags, thuis-komflags en meerdere crisisstatussen.
 
-| Klasse | Kleur | Gebruik |
-|---|---|---|
-| `cat-action` | blauw | Actie of maatregel die de speler neemt |
-| `cat-social` | groen | Sociale keuze: buren/familie helpen of overleggen |
-| `cat-supply` | oranje | Iets verzamelen, inslaan of bevoorraden |
-| `cat-info` | grijs | Nieuws volgen, afwachten of niets doen |
-| `cat-risk` | rood | Risicovolle of gevaarlijke actie |
+De nieuwe aanpak voorkomt dat door:
 
-Override met `cat: 'cat-social'` (of andere klasse) in het keuze-object.
+- altijd te resetten vanaf `STATE_DEFAULTS`
+- alleen scenario-startspecifieke overrides toe te voegen via `buildScenarioStartState()`
+- savegames te hydrateren bovenop defaults in plaats van op mogelijk verouderde objectvormen
 
----
+## 8. Waarom Deze Architectuur Schaalbaarder Is
 
-## 8. Deployment & Omgeving
+Een nieuw scenario toevoegen vraagt nu in principe om drie dingen:
 
-- **Type:** Vanilla HTML/CSS/JS, geen framework, geen build-stap, geen npm
-- **Hosting:** Statisch — bestanden direct in browser openen of via HTTP-server
-- **Lokaal draaien:**
-  ```bash
-  cd /Users/ceesgauw/claude_projecten/playtoprepGH
-  python3 -m http.server 8080
-  # Open: http://localhost:8080
-  ```
-- **Audio:** Werkt beter via HTTP dan file://-protocol
-- **Geen tests, geen package.json, geen linter**
+1. een nieuw `data-scenarios-*.js` bestand of scene-array
+2. een nieuw item in `SCENARIO_REGISTRY`
+3. optioneel scenario-specifieke reportstatus of sceneteksten
 
----
+De engine, audioflow en visual pipeline hoeven daarvoor niet opnieuw vertakt te worden. Dat maakt groei gecontroleerd en voorspelbaar.
 
-## 9. Nieuw scenario toevoegen — checklist
+## 9. Bewuste Grenzen
 
-1. Maak `data-scenarios-{naam}.js` aan met scenes-array. Geen sceneDecay in dit bestand.
-2. Voeg `sceneDecay_{naam}` toe aan `data-state.js`.
-3. Voeg nieuwe state-flags toe aan het `state`-object in `data-state.js`.
-4. Koppel in `engine.js` → `startScenario()`: voeg `else if`-tak toe die `scenes` en `sceneDecay` toewijst, en reset de nieuwe flags.
-5. Koppel in `engine.js` → `loadGame()`: zelfde `else if`-tak toevoegen.
-6. Voeg `const sceneImages_{naam} = { sceneId: 'padNaarAfbeelding', ... }` toe aan het einde van `data-scenarios-{naam}.js`. Voeg `sceneImages_{naam}` toe aan `sceneBgMap` in `engine.js`.
-7. Voeg `<script src="js/data-scenarios-{naam}.js">` toe aan `index.html` vóór `engine.js`.
-8. Voeg scenario-optie toe aan het scenariokeuze-scherm in `index.html` (`s-scenariokeuze`).
-9. Voeg intro-tekst toe in `showReport()` in `report.js`.
-10. Definieer `statusItems` voor het nieuwe scenario in `showReport()`.
-11. Scene-ID prefix kiezen en vastleggen in de naamgeving-sectie van `CLAUDE.md`.
+Niet alles is naar configuratie verplaatst. Deze onderdelen zijn bewust nog codegedreven gebleven:
 
----
+- complexe rapportinhoud voor `goed gedaan` en `verbeterpunten`
+- UI-rendering van keuzes, kanalen en statusbalken
+- scenario-inhoud en dynamische narratieven in scene-arrays
 
-## 10. Project Identification
+Reden:
 
-- **Project Name:** PlayToPrep Noodscenario Simulator
-- **Type:** Nederlandstalige crisistraining-simulator (single-page app)
-- **Repository:** `/Users/ceesgauw/claude_projecten/playtoprepGH`
-- **Date of Last Update:** 2026-04-12
+- deze onderdelen bevatten veel tekstuele of UI-specifieke nuance
+- volledige abstractie zou nu meer risico en complexiteit toevoegen dan waarde opleveren
 
----
+## 10. Samenvatting
 
-## 11. Glossary
+De huidige architectuur heeft nu een duidelijkere scheiding:
 
-| Term | Uitleg |
-|---|---|
-| `sceneDecay` | Object met automatische stat-wijzigingen per scene-ID; per scenario overschreven in `startScenario()` |
-| `state` | Spelstatus tijdens een scenario: numerieke stats + boolean/integer flags |
-| `profile` | Spelersinstellingen uit de intake: huishouden, woning, voertuigen, noodpakket |
-| `channels` | Sidebar-content per scene: news, whatsapp, nlalert, radio |
-| `choiceHistory` | Lijst van alle gemaakte keuzes; basis voor het rapport |
-| `CHOICE_ICON_MAP` | Mapping in `engine.js`: emoji-prefix → Lucide-iconnaam + kleurcategorie |
-| `conditionalOn` | Optionele functie op scene of keuze die bepaalt of het element zichtbaar is |
-| NL-Alert | Landelijk alarmsysteem; gesimuleerd via popup en `nlalert`-veld in channels |
-| B1-Nederlands | Taalniveau voor zichtbare teksten: eenvoudig, begrijpelijk voor brede doelgroep |
+- `data-state.js` beheert defaults en state-mutaties
+- `data-scenarios-*.js` beheren content
+- `scenario-registry.js` beheert scenario-configuratie
+- `engine.js` beheert runtime-flow
+- `inventory.js`, `audio.js` en `report.js` gebruiken dezelfde centrale scenario- en state-laag
+
+Daarmee is de code consistenter, beter uitlegbaar en veiliger uit te breiden zonder regressies in bestaande scenario's.

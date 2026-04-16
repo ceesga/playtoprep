@@ -290,48 +290,17 @@ const Ambience = {
     if (!name || this._current === target) this._current = null;
   },
 
-  // Bepaalt op basis van het scène-ID welke ambient track geschikt is
+  // Bepaalt op basis van de scenarioregistratie welke ambient track past
   // en speelt die af, of stopt ambient audio als de scène er geen heeft.
   resumeForScene(sceneId) {
-    const introScenesNachtalarm = ['na_intro', 'na_alarm'];
-    const forestScenes = new Set(['bf_0', 'bf_0b', 'bf_1']);
-    const fireVolumes = {
-      bf_2: 0.08,
-      bf_2b: 0.12,
-      bf_2c: 0.12,
-      bf_2d: 0.12,
-      bf_3: 0.16,
-      bf_3c: 0.18,
-      bf_4: 0.18,
-      bf_4b: 0.18,
-      bf_4c: 0.22,
-      bf_4d: 0.22,
-      bf_4e: 0.22
-    };
+    const ambient = resolveScenarioAmbient(sceneId, currentScenario);
 
-    let ambient = null;
-    if (this._current === 'computerHum' && sceneId !== 'tk_0') {
+    if (this._current === 'computerHum' && (!ambient || ambient.name !== 'computerHum')) {
       this.stopImmediate('computerHum');
     }
 
-    if (sceneId === 'tk_0') {
-      ambient = { name: 'computerHum', targetVolume: this._configs.computerHum.targetVolume };
-    } else if (currentScenario === 'nachtalarm') {
-      ambient = !introScenesNachtalarm.includes(sceneId) && !state.evacuatedFire
-        ? { name: 'heartbeat', targetVolume: this._configs.heartbeat.targetVolume }
-        : null;
-    } else if (currentScenario === 'natuurbrand') {
-      ambient = forestScenes.has(sceneId)
-        ? { name: 'forest', targetVolume: this._configs.forest.targetVolume }
-        : fireVolumes[sceneId] !== undefined
-          ? { name: 'fire', targetVolume: fireVolumes[sceneId] }
-          : null;
-    } else if (sceneId.startsWith('ov_')) {
-      ambient = { name: 'rain', targetVolume: this._configs.rain.targetVolume };
-    }
-
     if (ambient) this.play(ambient.name, ambient.targetVolume);
-    else this.stop(); // geen passende ambient track: stop alles
+    else this.stop();
   }
 };
 

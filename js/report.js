@@ -23,33 +23,17 @@ function showReport() {
   }
 
   // Intro (met naam)
-  // Pas de aanspreekvorm aan op basis van of de naam bekend is
   const naam = profile.playerName;
-  const jij = naam ? `${naam}, je` : 'Je';
-  let intro = '';
-  // Kies de introductietekst op basis van het actieve scenario
-  if (currentScenario === 'stroom') {
-    intro = `${jij} hebt het stroomstoringsscenario van een paar dagen gespeeld. Hieronder zie je wat je koos, wat goed ging en wat beter kan.`;
-  } else if (currentScenario === 'natuurbrand') {
-    intro = `${jij} hebt het natuurbrandscenario gespeeld. Als een brand snel dichterbij komt, moet je snel kiezen. Hieronder zie je hoe jij reageerde.`;
-  } else if (currentScenario === 'overstroming') {
-    intro = `${jij} hebt het overstromingsscenario gespeeld. Stijgend water geeft weinig tijd. Hieronder zie je welke keuzes jij maakte.`;
-  } else if (currentScenario === 'thuis_komen') {
-    intro = `${jij} hebt het scenario Onderweg naar huis gespeeld. Hoe kom je thuis als alles uitvalt? Hieronder zie je jouw route en keuzes.`;
-  } else if (currentScenario === 'drinkwater') {
-    intro = `${jij} hebt het scenario Vervuild drinkwater gespeeld. Bij een kookadvies draait het om zuinig plannen, officiële informatie volgen en schoon water op tijd apart zetten.`;
-  } else if (currentScenario === 'nachtalarm') {
-    intro = `${jij} hebt het scenario Alarm in de nacht gespeeld. De eerste minuten bij brand zijn bepalend. Hieronder zie je hoe jij reageerde.`;
-  }
-  document.getElementById('rep-intro').textContent = intro;
+  const reportConfig = getScenarioReportConfig(currentScenario);
+  document.getElementById('rep-intro').textContent = reportConfig.intro(naam);
 
   // Uitkomstheadline
-  // Bereken een gemiddelde eindscore op basis van water, voedsel en comfort
+  // Bereken een gemiddelde eindscore op basis van de scenario-configuratie
   const scoreW = state.ranOutOfWater ? 0 : 1;          // 0 als water op was, anders 1
   const scoreF = state.ranOutOfFood  ? 0 : 1;          // 0 als voedsel op was, anders 1
   const scoreC = state.comfort / MAX_STAT_COMFORT;     // Comfort als fractie van het maximum
   const scoreH = state.health / MAX_STAT_HEALTH;       // Gezondheid als fractie van het maximum
-  const avgScore = currentScenario === 'drinkwater'
+  const avgScore = reportConfig.scoreMode === 'water-health'
     ? (scoreW + scoreH + scoreC) / 3
     : (scoreW + scoreF + scoreC) / 3;
   let outcomeText, outcomeClass;
