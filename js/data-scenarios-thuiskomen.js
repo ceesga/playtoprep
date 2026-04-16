@@ -43,14 +43,14 @@ const scenes_thuis_komen = [{
     nlalert: null,
     radio: null
   },
-  narrative: 'Op een gewone donderdagochtend worden de beeldschermen op kantoor ineens zwart. Het licht valt uit. De ventilatie stopt. Opeens is het stil. Daarna hoor je alleen verbaasde stemmen en korte vragen. Je telefoon doet het nog op 4G, maar het signaal hapert.',
+  narrative: 'Ineens worden de beeldschermen zwart. Het licht valt uit. De ventilatie stopt. Het is stil... Daarna hoor je alleen verbaasde stemmen en korte vragen. Je telefoon doet het nog, maar het signaal is zwak.',
   choices: [{
     text: '💻 Doorwerken op laptopbatterij',
     consequence: 'Je klapt je laptop open. Batterij op 62%. De wifi is weg, dus je verbindt via je telefoon. Het werkt, maar traag. Het netwerk raakt vol. Na een kwartier geef je het op. Dit schiet niet op.',
     stateChange: {}
   }, {
     text: '📱 Telefoon eerst opladen via de laptop',
-    consequence: 'Slimme prioriteit. Je sluit je telefoon via USB aan op de laptop. Terwijl je op nieuws wacht, laadt hij rustig bij. De laptop heeft nog genoeg accu om daarbij te helpen.',
+    consequence: 'Je sluit je telefoon via USB aan op de laptop. Terwijl je op nieuws wacht, laadt hij rustig bij. De laptop heeft nog genoeg accu om daarbij te helpen.',
     stateChange: () => ({
       phoneBattery: Math.min(100, state.phoneBattery + 30) - state.phoneBattery
     })
@@ -71,7 +71,7 @@ const scenes_thuis_komen = [{
     news: [{
       time: '12:15',
       headline: 'Grote stroomstoring treft heel Nederland, duur onbekend',
-      body: 'Er is een grote stroomstoring in vrijwel heel Nederland. De oorzaak wordt onderzocht. Treinen rijden niet meer. Verkeerslichten zijn uit. De overheid vraagt iedereen kalm te blijven.'
+      body: 'Er is een grote stroomstoring gaande in vrijwel heel Nederland. De oorzaak wordt onderzocht. Treinen rijden niet meer. Verkeerslichten zijn uit. De overheid vraagt iedereen kalm te blijven.'
     }],
     get whatsapp() {
       const msgs = [];
@@ -92,7 +92,7 @@ const scenes_thuis_komen = [{
       }
       msgs.push({
         from: 'Baas',
-        msg: 'Iedereen mag naar huis als dat lukt. Wij sluiten het gebouw. Vergeet uw spullen niet.',
+        msg: 'Iedereen mag naar huis als dat lukt. Wij sluiten het gebouw. Vergeet je spullen niet en veilige reis gewenst!',
         time: '12:22',
         outgoing: false
       });
@@ -101,7 +101,7 @@ const scenes_thuis_komen = [{
     nlalert: 'NL-Alert\n14 januari 2027 – 12:15\n\nGrote stroomstoring in heel Nederland. Duur onbekend. Verkeerslichten zijn uit. Treinen rijden niet. Blijf kalm en ga veilig naar huis. Update volgt.',
     radio: null
   },
-  narrative: 'Verkeerslichten zijn uit. Treinen staan stil. Je baas zegt: "Volgens mij kan iedereen beter naar huis gaan. Werken lukt vandaag toch niet meer." Om je heen pakken collega\'s hun spullen. <span style="background:#fff8e1;border-radius:var(--r-sm);padding:2px 6px;font-size:.82rem;color:#92400e">⚠️ Het netwerk raakt overbelast. Berichten kunnen vertraagd binnenkomen.</span>',
+  narrative: 'Verkeerslichten zijn uit. Treinen staan stil. Je manager zegt: "Volgens mij kan iedereen beter naar huis gaan. Werken lukt vandaag toch niet meer." Om je heen pakken collega\'s hun spullen. <span style="background:#fff8e1;border-radius:var(--r-sm);padding:2px 6px;font-size:.82rem;color:#92400e">⚠️ Het netwerk is overbelast. Berichten kunnen vertraagd binnenkomen.</span>',
   choices: [{
     text: '🏃 Nu direct vertrekken, vóór het vastloopt',
     consequence: 'Je trekt je jas aan, pakt je spullen en vertrekt meteen. Buiten is het nog redelijk overzichtelijk. Je bent er vroeg bij.',
@@ -115,7 +115,7 @@ const scenes_thuis_komen = [{
   }, {
     conditionalOn: () => profile.adults > 1,
     text: '📱 Partner bellen om af te stemmen',
-    consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, het netwerk zit vol. Je stuurt een bericht: "Ik kom naar huis, duur onbekend." Pas veel later zie je een leesteken. Meer contact lukt voorlopig niet.' : 'Je telefoon is leeg. Je kunt je partner niet bereiken.',
+    consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, het netwerk zit vol. Je stuurt een bericht: "Ik kom naar huis, geen idee hoe laat ik aankom." Pas veel later zie je een leesteken. Meer contact lukt voorlopig niet.' : 'Je telefoon is leeg. Je kunt je partner niet bereiken.',
     stateChange: {}
   }]
 }, {
@@ -129,7 +129,7 @@ const scenes_thuis_komen = [{
     news: [],
     whatsapp: [{
       from: 'School De Ster',
-      msg: 'De stroom is op school uitgevallen. Wij vangen kinderen op, maar vragen u uw kind zo snel mogelijk op te halen. We blijven open tot 18:00.',
+      msg: 'De stroom is op school uitgevallen. Wij vangen kinderen op, maar vragen u uw kind zo snel mogelijk op te halen. Aangezien sommige ouders van ver moeten komen blijven we sowieso open tot 18:00.',
       time: '12:28',
       outgoing: false
     }],
@@ -138,14 +138,14 @@ const scenes_thuis_komen = [{
   },
   get narrative() {
     const context = state.leftEarly
-      ? 'Je bent al onderweg als je telefoon trilt. School stuurt een bericht. De school zit bij jullie in de buurt, maar teruggaan lukt nu niet.'
+      ? 'Je bent onderweg naar de uitgang als je telefoon trilt. School stuurt een bericht. De school zit bij jullie huis in de buurt, en snel je kinderen oppikken lukt nu niet.'
       : 'Je telefoon trilt. School stuurt een bericht. Je bent nog op je werk en de school zit bij jullie thuis in de buurt. Even op en neer gaan lukt niet.';
     return context + ' Buiten op straat loopt het verkeer nu al vast.';
   },
   choices: [{
     text: '📱 Vragen of de kinderen bij een vriendje kunnen blijven',
     consequence: () => state.phoneBattery > 0 ?
-      'Je belt of stuurt snel een bericht naar een andere ouder. Na wat heen en weer is er iemand die ze wil opvangen. De kinderen zijn veilig. Je haalt ze later op.' :
+      'Je belt of stuurt snel een bericht naar een andere ouders. Na wat heen en weer is er iemand die ze wil opvangen. De kinderen zijn veilig. Je haalt ze later op.' :
       'Je telefoon is leeg. Je kunt niemand bereiken. Je moet het later regelen.',
     stateChange: () => state.phoneBattery > 0 ? {
       kidsArranged: true
@@ -157,7 +157,7 @@ const scenes_thuis_komen = [{
       kidsArranged: true
     } : {}
   }, {
-    text: '🏫 School kan ze opvangen tot 18:00, later regelen',
+    text: '🏫 School kan ze opvangen tot 18:00, hopelijk is dat genoeg',
     consequence: 'Je laat school de opvang voorlopig doen. De kinderen zijn veilig. Eerst moet jij thuiskomen.',
     stateChange: {
       kidsArranged: false
@@ -210,7 +210,7 @@ const scenes_thuis_komen = [{
   get narrative() {
     const vehicle = profile.commuteMode === 'car' ? 'Je auto staat op de parkeerplaats.' : profile.commuteMode === 'bike' ? 'Je fiets staat bij de ingang.' : 'Je bent zonder auto of fiets.';
     const intro = state.leftEarly
-      ? 'Je bent al een tijdje onderweg. Treinen en trams liggen stil. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Reken er niet op dat het openbaar vervoer je hele reis kan overnemen.'
+      ? 'Je bent net onderweg. Treinen en trams liggen stil. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Reken er niet op dat het openbaar vervoer je hele reis kan overnemen.'
       : 'Je staat buiten. Treinen en trams liggen stil, want die hebben stroom nodig. Sommige bussen rijden nog, maar veel lijnen hebben vertraging, een kortere route of vallen uit. Reken er niet op dat het openbaar vervoer je hele reis kan overnemen.';
     return `${intro} ${vehicle}`;
   },
@@ -242,7 +242,7 @@ const scenes_thuis_komen = [{
     conditionalOn: () => profile.commuteMode === 'bike',
     text: '🚲 Met de fiets',
     consequence: () => state.leftEarly
-      ? 'Je bent al op de fiets. Geen files, geen afhankelijkheid van systemen.'
+      ? 'Je bent op de fiets. Geen files, geen afhankelijkheid van systemen.'
       : 'Je haalt je fiets bij de ingang. Geen files, geen afhankelijkheid van systemen. Je begint te rijden.',
     stateChange: {
       travelMode: 'bike'
@@ -279,20 +279,20 @@ const scenes_thuis_komen = [{
   },
   choices: [{
     text: '🛤️ Sluiproute nemen via kleinere wegen',
-    consequence: 'Je kent de buurt en kiest kleinere straten. Het gaat langzamer, maar je blijft rijden. Na twee uur ben je thuis.',
+    consequence: 'Je kent de buurt en kiest kleinere straten. Het gaat langzamer, maar je blijft rijden. Na enkele uren ben je thuis.',
     stateChange: {
       reachedHome: true
     }
   }, {
     text: '📱 Telefoon opladen via de auto terwijl je rijdt',
-    consequence: 'Je sluit je telefoon aan op de USB-poort van de auto. Terwijl je stapvoets vooruitgaat, laadt hij langzaam op. Elke procent telt.',
+    consequence: 'Je sluit je telefoon aan op de USB-poort van de auto. Terwijl je stapvoets vooruitgaat, laadt hij langzaam op.',
     stateChange: () => ({
       phoneBattery: Math.min(100, state.phoneBattery + 30) - state.phoneBattery
     })
   }, {
     text: '⛽ Tanken bij een tankstation',
     failCondition: () => state.cash < 75,
-    failConsequence: () => `Je rijdt een tankstation op. Bij de kassa: "Alleen contant." Je hebt €${state.cash} bij je — niet genoeg voor €75. Je rijdt verder op wat je nog hebt. Kies een andere optie.`,
+    failConsequence: () => `Je rijdt een tankstation op. Bij de kassa hangt een briefje: "Alleen contant." Je hebt €${state.cash} bij je — niet genoeg voor €75. Je rijdt verder op wat je nog hebt. Kies een andere optie.`,
     consequence: 'Je rijdt een tankstation op. Bij de kassa zegt iemand: "Alleen contant." Je telt je geld en tankt vol voor €75.',
     stateChange: { comfort: 1, cash: -75 }
   }, {
@@ -313,7 +313,7 @@ const scenes_thuis_komen = [{
     news: [{
       time: '13:00',
       headline: 'NS: alle treinen rijden niet, stations worden gesloten',
-      body: 'NS heeft alle treinverbindingen stilgelegd vanwege de stroomstoring. Stations worden gesloten. Reizigers worden verzocht het station te verlaten.'
+      body: 'NS heeft alle treinverbindingen stilgelegd vanwege de stroomstoring. De NS heeft helaas niet genoeg capaciteit om bussen in te zetten.'
     }],
     whatsapp: [],
     nlalert: null,
@@ -437,7 +437,7 @@ const scenes_thuis_komen = [{
       travelMode: 'walking'
     }
   }, {
-    text: '🚕 Taxi of deelfiets zoeken',
+    text: '🚕 Taxi zoeken',
     failCondition: () => state.cash < (profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110),
     failConsequence: () => {
       const cost = profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110;
@@ -567,7 +567,7 @@ const scenes_thuis_komen = [{
       if (profile.adults > 1) {
         msgs.push({
           from: 'Partner',
-          msg: 'Ben je al onderweg? Alles ok thuis, kaarsje aan. Wacht op je.',
+          msg: 'Ben je al onderweg? Alles oke thuis, kaarsje aan. Wacht op je.',
           time: '15:45',
           outgoing: false
         });
