@@ -29,6 +29,9 @@ const MAX_PETS      = 4;
 const profile = {
   playerName: '',
   houseType: '',
+  houseSubType: '', // sub-type bij 'overige': 'caravan', 'tiny_house' of 'woonboot'
+  ouderenCount: 0,
+  hasElderly: false,
   members: 1,
   hasChildren: false,
   hasElderly: false,
@@ -312,31 +315,49 @@ let intakeAnswers = {};
 let adultsCount = 1;
 let childrenCount = 0;
 let slechtTerBeenCount = 0;
+let ouderenCount = 0;
 let petsCount = 0;
 let avatarSelections = {
   adults: [],
   children: [],
   slechtTerBeen: [],
+  ouderen: [],
   pets: []
 };
 let avatarPickerTarget = null; // { index, type }
 let selectedHouseType = null;
+let selectedOverigeSubType = null; // sub-type van 'overige': 'caravan', 'tiny_house', 'woonboot'
 let selectedVehicles = []; // ['auto'], ['fiets'], of beide
 let selectedEnvironment = [];
 
 const HOUSE_TYPES = [{
-  val: 'appartement',
-  label: 'Appartement'
+  val: 'hoogbouw',
+  label: 'Hoogbouw (met lift)'
 }, {
-  val: 'rijtjeshuis',
-  label: 'Rijtjeshuis'
+  val: 'laagbouw',
+  label: 'Laagbouw (appartementen)',
+  img: 'appartement'
+}, {
+  val: 'rijwoning',
+  label: 'Rijwoningen'
 }, {
   val: 'vrijstaande-woning',
-  label: 'Vrijstaande woning'
+  label: 'Vrijstaande woningen'
 }, {
-  val: 'boerderij',
-  label: 'Boerderij'
-}, ];
+  val: 'overige',
+  label: 'Overige woningen'
+}];
+
+const OVERIGE_TYPES = [{
+  val: 'caravan',
+  label: 'Caravan'
+}, {
+  val: 'tiny_house',
+  label: 'Tiny house'
+}, {
+  val: 'woonboot',
+  label: 'Woonboot'
+}];
 
 const intakeQs = [];
 

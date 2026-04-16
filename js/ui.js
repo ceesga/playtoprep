@@ -187,7 +187,10 @@ function openHouseholdPortrait() {
     // Fallback (bijv. bij file://-protocol): bouw collage opnieuw op uit state
 
     // Bouw het pad op naar de afbeelding van het geselecteerde woningtype
-    const houseSrc = selectedHouseType ? `afbeelding/avatars/woningtype/${selectedHouseType}.png` : '';
+    const _htObj = selectedHouseType ? HOUSE_TYPES.find(h => h.val === selectedHouseType) : null;
+    const houseSrc = selectedHouseType === 'overige'
+      ? (selectedOverigeSubType ? `afbeelding/avatars/woningtype/${selectedOverigeSubType}.png` : '')
+      : (_htObj ? `afbeelding/avatars/woningtype/${_htObj.img || _htObj.val}.png` : '');
 
     // Hoogte-lookup-tabel op basis van aantal personen (index = persoonsnummer)
     const ht = [0, 140, 132, 124, 116, 110, 104, 99, 94, 90, 86, 82, 78];
@@ -199,7 +202,7 @@ function openHouseholdPortrait() {
     // Stel de volledige collage samen als HTML
     stage.innerHTML = `
       ${buildEnvOverlay(selectedEnvironment)}
-      <img class="hh-portrait-house${selectedHouseType ? ' visible' : ''}${selectedHouseType === 'appartement' ? ' house-appartement' : ''}" src="${houseSrc}" alt="">
+      <img class="hh-portrait-house${selectedHouseType ? ' visible' : ''}${houseStijlKlasse(selectedHouseType) ? ' ' + houseStijlKlasse(selectedHouseType) : ''}" src="${houseSrc}" alt="">
       <img class="hh-portrait-vehicle left"  src="afbeelding/avatars/vehicles/fiets.png" alt="" style="display:${selectedVehicles.includes('fiets')?'block':'none'}">
       <img class="hh-portrait-vehicle right" src="afbeelding/avatars/vehicles/auto.png"  alt="" style="display:${selectedVehicles.includes('auto')?'block':'none'}">
       <div style="position:relative;z-index:3;display:flex;align-items:flex-end;justify-content:center;gap:4px;width:100%">${figures}</div>

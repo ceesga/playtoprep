@@ -102,14 +102,17 @@ function gotoIntake() {
   adultsCount = 1;     // Minimaal één volwassene
   childrenCount = 0;
   slechtTerBeenCount = 0;
+  ouderenCount = 0;
   petsCount = 0;
   selectedHouseType = null;
+  selectedOverigeSubType = null;
   selectedVehicles = [];
   selectedEnvironment = [];
   avatarSelections = {
     adults: [],
     children: [],
     slechtTerBeen: [],
+    ouderen: [],
     pets: []
   };
   portraitSnapshot = null; // Reset snapshot bij nieuwe intake
@@ -294,6 +297,11 @@ function defaultStbAvatar(i) {
   return STB_AVATARS[i % STB_AVATARS.length];
 }
 
+// Geeft de standaard avatar-naam voor een oudere op index i (afwisselend oma/opa)
+function defaultOuderenAvatar(i) {
+  return OUDEREN_AVATARS[i % OUDEREN_AVATARS.length];
+}
+
 /* ─── FIGURE RENDERING HELPER ──────────────────────────────────────────────────
    Hulpconstanten en -functies voor het renderen van de personenfiguren in de stage.
 */
@@ -315,7 +323,7 @@ const PET_SCALE = {
    @param clickable    als true, worden figuren klikbaar voor avatar-selectie
 */
 function buildFigures(heightTable, clickable = false) {
-  const totalPersons = adultsCount + childrenCount + slechtTerBeenCount;
+  const totalPersons = adultsCount + childrenCount + slechtTerBeenCount + ouderenCount;
   const total = totalPersons + petsCount;
   // Hoogte van volwassene neemt af naarmate er meer personen zijn
   const adultH = heightTable[Math.min(total, heightTable.length - 1)];
@@ -327,6 +335,7 @@ function buildFigures(heightTable, clickable = false) {
   for (let i = 0; i < adultsCount; i++) figList.push({ type: 'adult', idx: i });
   for (let i = 0; i < childrenCount; i++) figList.push({ type: 'child', idx: i });
   for (let i = 0; i < slechtTerBeenCount; i++) figList.push({ type: 'slechtTerBeen', idx: i });
+  for (let i = 0; i < ouderenCount; i++) figList.push({ type: 'ouderen', idx: i });
 
   return figList.map((fig, pos) => {
     // Figuren dichter bij het midden krijgen een hogere z-index (staan voor de anderen)
@@ -335,18 +344,23 @@ function buildFigures(heightTable, clickable = false) {
     // Alle figuren behalve de eerste schuiven gedeeltelijk over de vorige heen
     const ml = pos === 0 ? 0 : -FIGURE_OVERLAP_PX;
     // Bepaal de juiste submap voor de afbeelding
-    const folder = fig.type === 'adult' ? 'adult' : fig.type === 'child' ? 'child' : 'slecht%20ter%20been';
+    const folder = fig.type === 'adult' ? 'adult' : fig.type === 'child' ? 'child' :
+      fig.type === 'ouderen' ? 'Ouderen' : 'slecht%20ter%20been';
     // Haal de geselecteerde avatar op voor dit figuur
     const av = fig.type === 'adult' ? avatarSelections.adults[fig.idx] :
       fig.type === 'child' ? avatarSelections.children[fig.idx] :
+      fig.type === 'ouderen' ? avatarSelections.ouderen[fig.idx] :
       avatarSelections.slechtTerBeen[fig.idx];
     // Rollende/zittende STB-avatars (manx-2 / womanx-2) hebben kind-hoogte
     const isSitting = fig.type === 'slechtTerBeen' && (av === 'manx-2' || av === 'womanx-2');
     const h = (fig.type === 'child' || isSitting) ? childH : adultH;
-    const label = fig.type === 'adult' ? 'Volwassene aanpassen' : fig.type === 'child' ? 'Kind aanpassen' : 'Persoon met beperkte mobiliteit aanpassen';
+    const label = fig.type === 'adult' ? 'Volwassene aanpassen' : fig.type === 'child' ? 'Kind aanpassen' :
+      fig.type === 'ouderen' ? 'Oudere aanpassen' : 'Beperkt mobiel persoon aanpassen';
+    const altText = fig.type === 'adult' ? 'Volwassen persoon' : fig.type === 'child' ? 'Kind' :
+      fig.type === 'ouderen' ? 'Oudere' : 'Beperkt mobiel persoon';
     const click = clickable ? ` role="button" tabindex="0" aria-label="${label}" onclick="openAvatarPicker(${fig.idx},'${fig.type}')" onkeydown="handlePickerTriggerKey(event,${fig.idx},'${fig.type}')" title="Klik om te wijzigen"` : '';
     return `<div class="char-fig ${fig.type}"${click} style="z-index:${zIndex};margin-left:${ml}px">
-      <img src="afbeelding/avatars/${folder}/${av}.png" alt="${fig.type === 'adult' ? 'Volwassen persoon' : fig.type === 'child' ? 'Kind' : 'Persoon met beperkte mobiliteit'}" style="height:${h}px;width:auto">
+      <img src="afbeelding/avatars/${folder}/${av}.png" alt="${altText}" style="height:${h}px;width:auto">
     </div>`;
   }).join('');
 }
@@ -389,12 +403,14 @@ function renderHouseholdStep() {
   while (avatarSelections.pets.length < petsCount) avatarSelections.pets.push(PET_AVATARS[avatarSelections.pets.length % PET_AVATARS.length]);
   avatarSelections.slechtTerBeen = avatarSelections.slechtTerBeen.slice(0, slechtTerBeenCount);
   while (avatarSelections.slechtTerBeen.length < slechtTerBeenCount) avatarSelections.slechtTerBeen.push(defaultStbAvatar(avatarSelections.slechtTerBeen.length));
+  avatarSelections.ouderen = avatarSelections.ouderen.slice(0, ouderenCount);
+  while (avatarSelections.ouderen.length < ouderenCount) avatarSelections.ouderen.push(defaultOuderenAvatar(avatarSelections.ouderen.length));
 
   // Hoogtetabel: index = totaal aantal personen+dieren, waarde = hoogte in px van een volwassene
   const ht = [190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190];
   const figures    = buildFigures(ht, true);    // Figuren zijn klikbaar in deze stap
   const petOverlay = buildPetOverlay(ht, true); // Huisdieren ook klikbaar
-  const totalPersons = adultsCount + childrenCount + slechtTerBeenCount;
+  const totalPersons = adultsCount + childrenCount + slechtTerBeenCount + ouderenCount;
 
   // Blokkeer de + knoppen zodra het maximum aantal huishoudsleden bereikt is
   const atMax = totalPersons >= MAX_HOUSEHOLD;
@@ -426,11 +442,19 @@ function renderHouseholdStep() {
         </div>
       </div>
       <div class="hh-counter">
-        <span class="hh-label">Slecht ter been</span>
+        <span class="hh-label">Ouderen</span>
         <div class="hh-btns">
-          <button class="hh-btn" onclick="changeCount('slechtTerBeen',-1)" ${slechtTerBeenCount<=0?'disabled':''} aria-label="Minder personen slecht ter been">−</button>
+          <button class="hh-btn" onclick="changeCount('ouderen',-1)" ${ouderenCount<=0?'disabled':''} aria-label="Minder ouderen">−</button>
+          <span class="hh-count">${ouderenCount}</span>
+          <button class="hh-btn" onclick="changeCount('ouderen',1)" ${atMax?'disabled':''} aria-label="Meer ouderen">+</button>
+        </div>
+      </div>
+      <div class="hh-counter">
+        <span class="hh-label">Beperkt mobiel</span>
+        <div class="hh-btns">
+          <button class="hh-btn" onclick="changeCount('slechtTerBeen',-1)" ${slechtTerBeenCount<=0?'disabled':''} aria-label="Minder personen beperkt mobiel">−</button>
           <span class="hh-count">${slechtTerBeenCount}</span>
-          <button class="hh-btn" onclick="changeCount('slechtTerBeen',1)" ${atMax?'disabled':''} aria-label="Meer personen slecht ter been">+</button>
+          <button class="hh-btn" onclick="changeCount('slechtTerBeen',1)" ${atMax?'disabled':''} aria-label="Meer personen beperkt mobiel">+</button>
         </div>
       </div>
       <div class="hh-counter">
@@ -447,53 +471,134 @@ function renderHouseholdStep() {
 /* ─── WONINGSTAP ──────────────────────────────────────────────────────────────
    Rendert stap -3: kies het woningtype. Toont een grid met woningtype-opties
    en een live preview van het geselecteerde woningtype als achtergrond in de stage.
+   Bij 'Overige woningen' verschijnt een sub-picker voor caravan, tiny house of woonboot.
 */
+function houseImgSrc(houseTypeObj) {
+  // Geeft het afbeeldingspad terug; sommige types hebben een afwijkende bestandsnaam (img-veld)
+  return `afbeelding/avatars/woningtype/${houseTypeObj.img || houseTypeObj.val}.png`;
+}
+
+function houseStijlKlasse(val) {
+  // Geeft de extra CSS-klasse terug voor de achtergrondafbeelding
+  if (val === 'hoogbouw') return 'house-hoogbouw';
+  if (val === 'laagbouw') return 'house-appartement';
+  if (val === 'overige') return 'house-overige';
+  if (val === 'rijwoning') return 'house-rijwoning';
+  return '';
+}
+
 function renderHouseStep() {
   const ht = [160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160];
   const figures    = buildFigures(ht);    // Figuren niet klikbaar in deze stap
   const petOverlay = buildPetOverlay(ht);
 
   // Bouw de woningtype-keuze-opties
-  const houseOpts = HOUSE_TYPES.map(h =>
-    `<div class="hh-house-opt${selectedHouseType === h.val ? ' selected' : ''}" data-val="${h.val}" role="button" tabindex="0" aria-pressed="${selectedHouseType === h.val}" aria-label="${h.label}" onclick="selectHouseType('${h.val}')" onkeydown="handleSetupOptionKey(event,'house','${h.val}')">
-      <img src="afbeelding/avatars/woningtype/${h.val}.png" alt="${h.label}">
+  // De overige-kaart toont standaard tiny_house; klikken opent een picker (net als personen)
+  const houseOpts = HOUSE_TYPES.map(h => {
+    const isSelected = selectedHouseType === h.val;
+    if (h.val === 'overige') {
+      const subImg = (isSelected && selectedOverigeSubType) ? selectedOverigeSubType : 'tiny_house';
+      const thumb = `<img src="afbeelding/avatars/woningtype/${subImg}.png" alt="${h.label}">`;
+      const hint = isSelected ? `<div class="hh-change-hint">wijzigen</div>` : '';
+      return `<div class="hh-house-opt${isSelected ? ' selected' : ''}" data-val="${h.val}" role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="${h.label}" onclick="handleOverigeKaartKlik()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();handleOverigeKaartKlik()}">
+        <div class="hh-overige-thumb">${thumb}${hint}</div>
+        <span>${h.label}</span>
+      </div>`;
+    }
+    return `<div class="hh-house-opt${isSelected ? ' selected' : ''}" data-val="${h.val}" role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="${h.label}" onclick="selectHouseType('${h.val}')" onkeydown="handleSetupOptionKey(event,'house','${h.val}')">
+      <img src="${houseImgSrc(h)}" alt="${h.label}">
       <span>${h.label}</span>
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
 
-  // Laad achtergrondafbeelding alleen als er al een keuze is gemaakt
-  const houseSrc = selectedHouseType ? `afbeelding/avatars/woningtype/${selectedHouseType}.png` : '';
+  // Bepaal de achtergrondafbeelding op basis van het geselecteerde type
+  let houseSrc = '';
+  if (selectedHouseType === 'overige') {
+    houseSrc = selectedOverigeSubType ? `afbeelding/avatars/woningtype/${selectedOverigeSubType}.png` : '';
+  } else if (selectedHouseType) {
+    const typeObj = HOUSE_TYPES.find(h => h.val === selectedHouseType);
+    houseSrc = typeObj ? houseImgSrc(typeObj) : '';
+  }
+  const _stijl = houseStijlKlasse(selectedHouseType);
+  const bgClass = `${houseSrc ? 'visible' : ''}${_stijl ? ' ' + _stijl : ''}`.trim();
+
+  // Bouw de overige-picker (zit als overlay in de stage, vergelijkbaar met #hh-avatar-picker)
+  const overigePickerHtml = `
+    <div id="hh-overige-picker" style="display:none">
+      ${OVERIGE_TYPES.map(o =>
+        `<div class="hh-overige-opt${selectedOverigeSubType === o.val ? ' active' : ''}" role="button" tabindex="0" aria-label="${o.label}" onclick="selectOverigeSubType('${o.val}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectOverigeSubType('${o.val}')}">
+          <img src="afbeelding/avatars/woningtype/${o.val}.png" alt="${o.label}">
+          <span>${o.label}</span>
+        </div>`
+      ).join('')}
+      <button id="hh-overige-close" onclick="sluitOverigePicker()" aria-label="Sluiten">&#x2715;</button>
+    </div>`;
 
   document.getElementById('intake-household').innerHTML = `
     <div id="hh-stage">
-      <img id="hh-house-bg" src="${houseSrc}" alt="" class="${selectedHouseType ? 'visible' : ''}${selectedHouseType === 'appartement' ? ' house-appartement' : ''}">
+      <img id="hh-house-bg" src="${houseSrc}" alt="" class="${bgClass}">
       <div id="hh-char-figures">${figures}</div>
       <div class="hh-pet-overlay">${petOverlay}</div>
       <div id="hh-avatar-picker" style="display:none"></div>
+      ${overigePickerHtml}
     </div>`;
   const intakeControlsHouse = document.getElementById('intake-controls');
   if (intakeControlsHouse) intakeControlsHouse.innerHTML = `<div id="hh-house-grid">${houseOpts}</div>`;
 }
 
-/* Verwerkt een klik op een woningtype-optie.
-   Werkt de achtergrondafbeelding in de stage bij en schakelt de Volgende-knop in.
+/* Verwerkt een klik op een regulier woningtype-optie (niet overige).
+   Reset de overige-subkeuze en rendert opnieuw.
 */
 function selectHouseType(val) {
   selectedHouseType = val;
-  const bg = document.getElementById('hh-house-bg');
-  if (bg) {
-    bg.src = `afbeelding/avatars/woningtype/${val}.png`;
-    bg.classList.add('visible');
-    // Appartement-klasse geeft een afwijkende positionering van de achtergrond
-    bg.classList.toggle('house-appartement', val === 'appartement');
+  selectedOverigeSubType = null; // Reset sub-type bij overstap naar ander type
+  renderHouseStep();
+  document.getElementById('intake-next').disabled = false;
+}
+
+/* Verwerkt een klik op de overige-kaart.
+   Eerste klik: selecteer overige + stel tiny_house in als standaard.
+   Volgende klikken: open de picker om het sub-type te wijzigen.
+*/
+function handleOverigeKaartKlik() {
+  if (selectedHouseType !== 'overige') {
+    // Eerste keer: selecteer overige met tiny_house als standaard
+    selectedHouseType = 'overige';
+    selectedOverigeSubType = 'tiny_house';
+    renderHouseStep();
+    document.getElementById('intake-next').disabled = false;
+  } else {
+    // Al geselecteerd: open de picker om het type te wijzigen
+    openOverigePicker();
   }
-  // Markeer de geselecteerde optie in het grid
-  document.querySelectorAll('.hh-house-opt').forEach(el => {
-    const isSelected = el.dataset.val === val;
-    el.classList.toggle('selected', isSelected);
-    el.setAttribute('aria-pressed', String(isSelected));
-  });
-  document.getElementById('intake-next').disabled = false; // Keuze gemaakt, Volgende inschakelen
+}
+
+/* Toont de overige-picker als overlay in de stage (net als hh-avatar-picker).
+   Sluit via een klik buiten de picker of de sluitknop.
+*/
+function openOverigePicker() {
+  const picker = document.getElementById('hh-overige-picker');
+  if (!picker) return;
+  picker.style.display = 'flex';
+  setTimeout(() => document.addEventListener('click', sluitOverigePickerBuiten, { once: true }), 10);
+}
+
+function sluitOverigePicker() {
+  const picker = document.getElementById('hh-overige-picker');
+  if (picker) picker.style.display = 'none';
+}
+
+function sluitOverigePickerBuiten(e) {
+  const picker = document.getElementById('hh-overige-picker');
+  if (picker && !picker.contains(e.target)) picker.style.display = 'none';
+}
+
+/* Slaat het gekozen overige-subtype op, sluit de picker en herrendert de stap. */
+function selectOverigeSubType(val) {
+  selectedOverigeSubType = val;
+  sluitOverigePicker();
+  renderHouseStep(); // Herbouw zodat thumbnail en achtergrond bijgewerkt worden
+  document.getElementById('intake-next').disabled = false;
 }
 
 /* ─── VERVOERSTAP ─────────────────────────────────────────────────────────────
@@ -504,7 +609,10 @@ function renderVehicleStep() {
   const ht = [160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160];
   const figures    = buildFigures(ht);
   const petOverlay = buildPetOverlay(ht);
-  const houseSrc = selectedHouseType ? `afbeelding/avatars/woningtype/${selectedHouseType}.png` : '';
+  const _houseTypeObj = selectedHouseType ? HOUSE_TYPES.find(h => h.val === selectedHouseType) : null;
+  const houseSrc = selectedHouseType === 'overige'
+    ? (selectedOverigeSubType ? `afbeelding/avatars/woningtype/${selectedOverigeSubType}.png` : '')
+    : (_houseTypeObj ? houseImgSrc(_houseTypeObj) : '');
 
   // Bouw de twee vervoersopties (auto en fiets)
   const vehicleOpts = ['auto', 'fiets'].map(v =>
@@ -516,7 +624,7 @@ function renderVehicleStep() {
 
   document.getElementById('intake-household').innerHTML = `
     <div id="hh-stage">
-      <img id="hh-house-bg" src="${houseSrc}" alt="" class="${selectedHouseType ? 'visible' : ''}${selectedHouseType === 'appartement' ? ' house-appartement' : ''}">
+      <img id="hh-house-bg" src="${houseSrc}" alt="" class="${selectedHouseType ? 'visible' : ''}${houseStijlKlasse(selectedHouseType) ? ' ' + houseStijlKlasse(selectedHouseType) : ''}">
       <img class="hh-stage-vehicle left" data-val="fiets" src="afbeelding/avatars/vehicles/fiets.png" alt="" style="display:${selectedVehicles.includes('fiets')?'block':'none'}">
       <img class="hh-stage-vehicle right" data-val="auto" src="afbeelding/avatars/vehicles/auto.png" alt="" style="display:${selectedVehicles.includes('auto')?'block':'none'}">
       <div id="hh-char-figures">${figures}</div>
@@ -563,7 +671,10 @@ function renderEnvironmentStep() {
   const ht = [160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160];
   const figures    = buildFigures(ht);
   const petOverlay = buildPetOverlay(ht);
-  const houseSrc = selectedHouseType ? `afbeelding/avatars/woningtype/${selectedHouseType}.png` : '';
+  const _houseTypeObj = selectedHouseType ? HOUSE_TYPES.find(h => h.val === selectedHouseType) : null;
+  const houseSrc = selectedHouseType === 'overige'
+    ? (selectedOverigeSubType ? `afbeelding/avatars/woningtype/${selectedOverigeSubType}.png` : '')
+    : (_houseTypeObj ? houseImgSrc(_houseTypeObj) : '');
   // Bouw de omgevings-keuze-opties
   const envOpts = ENVIRONMENT_TYPES.map(e =>
     `<div class="hh-env-opt${selectedEnvironment.includes(e.val) ? ' selected' : ''}" data-val="${e.val}" role="button" tabindex="0" aria-pressed="${selectedEnvironment.includes(e.val)}" aria-label="${e.label}" onclick="selectEnvironment('${e.val}')" onkeydown="handleSetupOptionKey(event,'environment','${e.val}')">
@@ -575,7 +686,7 @@ function renderEnvironmentStep() {
   document.getElementById('intake-household').innerHTML = `
     <div id="hh-stage">
       ${buildEnvOverlay(selectedEnvironment)}
-      <img id="hh-house-bg" src="${houseSrc}" alt="" class="${selectedHouseType ? 'visible' : ''}${selectedHouseType === 'appartement' ? ' house-appartement' : ''}">
+      <img id="hh-house-bg" src="${houseSrc}" alt="" class="${selectedHouseType ? 'visible' : ''}${houseStijlKlasse(selectedHouseType) ? ' ' + houseStijlKlasse(selectedHouseType) : ''}">
       <img class="hh-stage-vehicle left" data-val="fiets" src="afbeelding/avatars/vehicles/fiets.png" alt="" style="display:${selectedVehicles.includes('fiets')?'block':'none'}">
       <img class="hh-stage-vehicle right" data-val="auto" src="afbeelding/avatars/vehicles/auto.png" alt="" style="display:${selectedVehicles.includes('auto')?'block':'none'}">
       <div id="hh-char-figures">${figures}</div>
@@ -637,12 +748,13 @@ function toggleVehicle(val) {
    Het totale aantal personen mag MAX_HOUSEHOLD niet overschrijden.
 */
 function changeCount(type, delta) {
-  const totalPersons = adultsCount + childrenCount + slechtTerBeenCount;
+  const totalPersons = adultsCount + childrenCount + slechtTerBeenCount + ouderenCount;
   // Blokkeer verhoging van persoonstellingen als het maximum bereikt is
   if (delta > 0 && type !== 'pets' && totalPersons >= 6) return;
   if (type === 'adults') adultsCount = Math.max(1, adultsCount + delta);
   else if (type === 'children') childrenCount = Math.max(0, childrenCount + delta);
   else if (type === 'slechtTerBeen') slechtTerBeenCount = Math.max(0, slechtTerBeenCount + delta);
+  else if (type === 'ouderen') ouderenCount = Math.max(0, ouderenCount + delta);
   else if (type === 'pets') petsCount = Math.max(0, Math.min(MAX_PETS, petsCount + delta));
   renderHouseholdStep(); // Herbouw de stap met de nieuwe teller-waarden
 }
@@ -709,7 +821,7 @@ function renderHouseholdIndicator() {
     `<img src="${avatarPath}" alt="">` :
     '<span>👤</span>';
 
-  const totalAdults = adultsCount + slechtTerBeenCount;
+  const totalAdults = adultsCount + slechtTerBeenCount + ouderenCount;
   const parts = [];
   if (totalAdults > 0)  parts.push(totalAdults  === 1 ? '1 volwassene'  : `${totalAdults} volwassenen`);
   if (childrenCount > 0) parts.push(childrenCount === 1 ? '1 kind'        : `${childrenCount} kinderen`);
@@ -729,7 +841,8 @@ const ADULT_AVATARS = ['man-1', 'man-3', 'man-4', 'man-5', 'man-6',
   'woman-1', 'woman-3', 'woman-4', 'woman-5', 'woman-6'
 ];
 const CHILD_AVATARS = ['boy-1', 'boy-2', 'girl-1', 'girl-2', 'girl-3'];
-const STB_AVATARS = ['manx-1', 'womanx-1', 'manx-2', 'womanx-2']; // Slecht-ter-been avatars
+const STB_AVATARS = ['womanx-1', 'manx-2', 'womanx-2']; // Slecht-ter-been avatars (manx-1 verwijderd)
+const OUDEREN_AVATARS = ['old_woman', 'old_man']; // Ouderen avatars
 const PET_AVATARS = ['hond', 'kat', 'konijn', 'hamster', 'paard'];
 
 /* ─── AVATAR PICKER ───────────────────────────────────────────────────────────
@@ -752,13 +865,14 @@ function openAvatarPicker(index, type) {
 
   // Bepaal de lijst en submap op basis van het type figuur
   const list = type === 'adult' ? ADULT_AVATARS : type === 'child' ? CHILD_AVATARS :
-    type === 'slechtTerBeen' ? STB_AVATARS : PET_AVATARS;
+    type === 'slechtTerBeen' ? STB_AVATARS : type === 'ouderen' ? OUDEREN_AVATARS : PET_AVATARS;
   const folder = type === 'adult' ? 'adult' : type === 'child' ? 'child' :
-    type === 'slechtTerBeen' ? 'slecht%20ter%20been' : 'pets';
+    type === 'slechtTerBeen' ? 'slecht%20ter%20been' : type === 'ouderen' ? 'Ouderen' : 'pets';
   // Haal de huidig geselecteerde avatar op voor dit figuur
   const current = type === 'adult' ? avatarSelections.adults[index] :
     type === 'child' ? avatarSelections.children[index] :
     type === 'slechtTerBeen' ? avatarSelections.slechtTerBeen[index] :
+    type === 'ouderen' ? avatarSelections.ouderen[index] :
     avatarSelections.pets[index];
 
   // Bouw een rij thumbnail-afbeeldingen; de actieve avatar krijgt de klasse 'active'
@@ -789,6 +903,7 @@ function selectAvatar(av) {
   if (type === 'adult') avatarSelections.adults[index] = av;
   else if (type === 'child') avatarSelections.children[index] = av;
   else if (type === 'slechtTerBeen') avatarSelections.slechtTerBeen[index] = av;
+  else if (type === 'ouderen') avatarSelections.ouderen[index] = av;
   else avatarSelections.pets[index] = av;
   const isHousehold = intakeStep <= -1;
   if (isHousehold) {
@@ -844,11 +959,12 @@ function intakeNext() {
   // Stap -4: mensen → stap -3: woning
   // Sla huishoud-samenstelling op in het profile-object
   if (intakeStep === -4) {
-    profile.members = adultsCount + childrenCount + slechtTerBeenCount; // Totaal aantal personen
-    profile.adults = adultsCount + slechtTerBeenCount; // Slecht-ter-been telt mee als volwassene
+    profile.members = adultsCount + childrenCount + slechtTerBeenCount + ouderenCount;
+    profile.adults = adultsCount + slechtTerBeenCount + ouderenCount; // Ouderen tellen mee als volwassene
     profile.hasChildren = childrenCount > 0;
     profile.childrenCount = childrenCount;
-    profile.hasElderly = slechtTerBeenCount > 0;          // Alias voor mobiliteitsbeperking
+    profile.hasElderly = ouderenCount > 0;            // Echte ouderen-categorie
+    profile.ouderenCount = ouderenCount;
     profile.hasMobilityImpaired = slechtTerBeenCount > 0;
     profile.hasPets = petsCount > 0;
     intakeStep = -3;
@@ -859,6 +975,7 @@ function intakeNext() {
   // Stap -3: woning → stap -2: voertuigen
   if (intakeStep === -3) {
     profile.houseType = selectedHouseType;
+    profile.houseSubType = selectedHouseType === 'overige' ? selectedOverigeSubType : '';
     intakeStep = -2;
     renderIntake();
     return;

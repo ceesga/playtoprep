@@ -158,7 +158,7 @@ const scenes_stroom = [
       radio: 'Radio 1. We ontvangen meldingen van een stroomstoring in meerdere provincies. Netbeheerder Liander doet onderzoek. Houd uw radio bij de hand voor verdere updates. We melden meer zodra we het weten.'
     },
     get narrative() {
-      const lift = profile.houseType === 'appartement' ? ' De lift doet het niet meer. Je loopt de trap.' : '';
+      const lift = profile.houseType === 'hoogbouw' ? ' De lift doet het niet meer. Je loopt de trap.' : '';
       return 'Midden op de ochtend valt ineens de stroom uit. Alles wordt stil: de koelkast, de verwarming en het wifi-lampje. Alleen je telefoon doet het nog via mobiel bereik. Buiten zie je buren naar buiten komen om te kijken wat er aan de hand is. De stilte voelt vreemd, alsof iemand in één keer al het geluid heeft uitgezet.' + lift;
     },
     choices: [{
@@ -178,12 +178,19 @@ const scenes_stroom = [
       consequence: 'Je wacht. Niets aan de hand. Zulke kleine storingen zijn er wel vaker.',
       stateChange: {}
     }, {
-      conditionalOn: () => profile.houseType === 'appartement',
+      conditionalOn: () => profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw',
       text: '🏢 Even in de gang kijken, hoe reageren de andere bewoners?',
-      consequence: 'Op de gang staan drie buren. Niemand weet wat er aan de hand is. Iemand probeert de deur van de meterkast te openen. Een oudere dame vraagt of jij misschien weet wanneer de lift het weer doet.',
+      consequence: () => profile.houseType === 'hoogbouw'
+        ? 'Op de gang staan drie buren. Niemand weet wat er aan de hand is. Iemand probeert de deur van de meterkast te openen. Een oudere dame vraagt of jij misschien weet wanneer de lift het weer doet.'
+        : 'Op de gang staan drie buren. Niemand weet wat er aan de hand is. Iemand probeert de deur van de meterkast te openen.',
       stateChange: {
         knowsNeighbors: true
       }
+    }, {
+      conditionalOn: () => profile.hasElderly,
+      text: '🧓 Even bij de ouderen in huis kijken, hoe gaat het met ze?',
+      consequence: 'Je klopt aan en vraagt hoe het gaat. Ze maken het goed, maar zijn wel wat onrustig. Je belooft ze op de hoogte te houden en zegt dat je terugkomt als er nieuws is. Goed dat je dit even deed.',
+      stateChange: { knowsNeighbors: true }
     }]
   },
   // SCENE 4 — Stroom terug, info-only
@@ -557,11 +564,13 @@ const scenes_stroom = [
       radio: 'Radio 1. Het is half drie. De stroomstoring duurt voort. Winkels en tankstations blijven op veel plekken dicht. Hulpdiensten hebben het druk. Blijf binnenshuis en bel 112 alleen bij levensgevaar.'
     },
     get narrative() {
-      const view = profile.houseType === 'appartement' ?
+      const isFlat = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+      const view = isFlat ?
         'naar de gevel van het tegenoverliggende gebouw kijkt' :
         'naar de tuin van de overburen kijkt';
-      const mob = profile.hasMobilityImpaired ? (profile.houseType === 'appartement' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
-      return 'Je wordt wakker van glasgerinkel buiten. Als je voorzichtig naar het raam loopt en ' + view + ', zie je twee mensen met zaklampen langs auto\'s en tuinen lopen. Ze voelen aan een paar deurklinken en lopen dan weer door. Het is donker, stil en ijskoud. Je hart bonkt.' + mob;
+      const mob = profile.hasMobilityImpaired ? (profile.houseType === 'hoogbouw' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
+      const oud = profile.hasElderly ? ' Je denkt ook aan de ouderen in huis: de kou is voor hen zwaarder.' : '';
+      return 'Je wordt wakker van glasgerinkel buiten. Als je voorzichtig naar het raam loopt en ' + view + ', zie je twee mensen met zaklampen langs auto\'s en tuinen lopen. Ze voelen aan een paar deurklinken en lopen dan weer door. Het is donker, stil en ijskoud. Je hart bonkt.' + mob + oud;
     },
     choices: [{
       text: '📱 112 bellen',
@@ -703,7 +712,7 @@ const scenes_stroom = [
     choices: [{
       text: '🔭 Door het raam kijken, wat zie je buiten?',
       consequence: () => {
-        const buren = profile.houseType === 'appartement' ? 'Twee buren staan op de stoep voor het gebouw te praten' : 'Twee buren staan bij het tuinhek te praten';
+        const buren = (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw') ? 'Twee buren staan op de stoep voor het gebouw te praten' : 'Twee buren staan bij het tuinhek te praten';
         return 'Een man loopt langzaam met een hond. ' + buren + ' en wijzen af en toe naar de straat. Op de hoek staat iemand lang naar zijn telefoon te staren. Er rijdt bijna niets. De stilte voelt onwerkelijk.';
       },
       stateChange: {}
@@ -733,8 +742,9 @@ const scenes_stroom = [
       radio: 'Radio 1. Rioolgemalen in meerdere gemeenten vallen uit door stroomgebrek. Bewoners kunnen last krijgen van terugstromend rioolwater. Sluit afvoeropeningen af en gebruik zo min mogelijk water. Kook kraanwater voor u het drinkt.'
     },
     get narrative() {
-      const mob = profile.hasMobilityImpaired ? (profile.houseType === 'appartement' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
-      return 'Als je de wc gebruikt en doortrekt, merk je dat het water nauwelijks wegstroomt. Even later borrelt de afvoer van de wasbak en stinkt het naar riool. De waterdruk van de kraan is ook sterk verminderd. In deze wijk zit een rioolgemaal dat het afvalwater wegpompt. Zonder stroom werkt dat niet meer goed.' + mob;
+      const mob = profile.hasMobilityImpaired ? (profile.houseType === 'hoogbouw' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
+      const oud = profile.hasElderly ? ' Voor ouderen is de kou en het ongemak extra zwaar. Houd ze goed in de gaten.' : '';
+      return 'Als je de wc gebruikt en doortrekt, merk je dat het water nauwelijks wegstroomt. Even later borrelt de afvoer van de wasbak en stinkt het naar riool. De waterdruk van de kraan is ook sterk verminderd. In deze wijk zit een rioolgemaal dat het afvalwater wegpompt. Zonder stroom werkt dat niet meer goed.' + mob + oud;
     },
     choices: [{
       text: '🚫 Waterafvoer afsluiten en zo min mogelijk water gebruiken',
@@ -743,14 +753,14 @@ const scenes_stroom = [
         handledSewage: true
       }
     }, {
-      conditionalOn: () => profile.houseType !== 'appartement',
+      conditionalOn: () => profile.houseType !== 'hoogbouw' && profile.houseType !== 'laagbouw',
       text: '🌳 Naar de achtertuin gaan (schep en vuilniszak)',
       consequence: 'Buiten, in de hoek van de tuin. Je graaft een klein gat, doet wat je moet doen en gooit er aarde over. Primitief. Effectief. Minder erg dan je dacht.',
       stateChange: {
         comfort: -1
       }
     }, {
-      conditionalOn: () => profile.houseType === 'appartement',
+      conditionalOn: () => profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw',
       text: '🪣 Emmer en vuilniszakken klaarleggen, er is geen tuin',
       consequence: 'Je zoekt een grote emmer op en legt vuilniszakken klaar. Niet ideaal, maar wel werkbaar. Zo heb je tenminste een plan voor de komende dagen.',
       stateChange: {

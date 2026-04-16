@@ -68,7 +68,14 @@ function showReport() {
 
   // Context-samenvatting
   // Vertaaltabellen van interne sleutels naar leesbare labels
-  const houseLabels = { 'appartement': 'Appartement', 'rijtjeshuis': 'Rijtjeshuis', 'vrijstaande-woning': 'Vrijstaande woning', 'boerderij': 'Boerderij' };
+  const houseSubLabels = { 'caravan': 'Caravan', 'tiny_house': 'Tiny house', 'woonboot': 'Woonboot' };
+  const houseLabels = {
+    'hoogbouw': 'Hoogbouw (met lift)',
+    'laagbouw': 'Laagbouw (appartementen)',
+    'rijwoning': 'Rijwoning',
+    'vrijstaande-woning': 'Vrijstaande woning',
+    'overige': profile.houseSubType ? `Overige woning (${houseSubLabels[profile.houseSubType] || profile.houseSubType})` : 'Overige woning'
+  };
   const envLabels = { 'water': 'Nabij water', 'forest': 'Bos of natuur', 'rural_area': 'Buitengebied', 'city': 'Stedelijk' };
   // Totaal aantal personen in het huishouden
   const persons = adultsCount + childrenCount + slechtTerBeenCount;
@@ -773,12 +780,17 @@ function showReport() {
     });
   }
 
-  // House type
-  // Specifieke tip voor bewoners van een appartement (liften, wateropslag)
-  if (profile.houseType === 'appartement') {
+  // House type — tips per woningtype
+  if (profile.houseType === 'hoogbouw') {
     personalTips.push({
       icon: '🏢',
-      text: '<b>Appartement</b>. Zet grote jerrycans, flessen of emmers klaar met kraanwater, minimaal 2 liter per persoon per dag voor 3 dagen. De lift werkt niet bij stroomuitval. Houd daar rekening mee als je beperkt mobiel bent.'
+      text: '<b>Hoogbouw</b>. Bij stroomuitval werkt de lift niet. Houd daar rekening mee, zeker als iemand in het huishouden beperkt mobiel is. Zet voldoende water op voorraad: minimaal 2 liter per persoon per dag voor 3 dagen.'
+    });
+  }
+  if (profile.houseType === 'laagbouw') {
+    personalTips.push({
+      icon: '🏢',
+      text: '<b>Laagbouw (appartementen)</b>. Zet grote jerrycans, flessen of emmers klaar met kraanwater, minimaal 2 liter per persoon per dag voor 3 dagen. Bewaar essentiële spullen op een plek die je snel kunt pakken.'
     });
   }
 

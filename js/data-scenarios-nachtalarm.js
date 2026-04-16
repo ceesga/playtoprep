@@ -111,7 +111,7 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
-      if (profile.houseType === 'appartement') {
+      if (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw') {
         return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. In de hal van het appartement hangt al een grauwe waas. Vanuit de woonkamer trekt rook richting voordeur. Verder is het stil. Alleen de rookmelder piept. Het is meteen duidelijk dat er iets mis is.';
       }
       return 'Je doet de slaapkamerdeur open. Meteen ruik je rook. Vanaf de trap hangt een grauwe waas in de hal. Het is stil in huis, op de rookmelder na. Het is meteen duidelijk dat er iets mis is.';
@@ -151,7 +151,7 @@ const scenes_nachtalarm = [
       radio: null
     },
     get narrative() {
-      if (profile.houseType === 'appartement') {
+      if (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw') {
         return 'In de woonkamer hangt een dichte, grijze rooklaag. Bij de muur zie je een stopcontact met een zwarte kring eromheen. De lucht ruikt scherp naar verbrand plastic. Bij de voordeur hangt de rook al lager. Je beseft dat het trappenhuis je enige route naar buiten is, en dat elke seconde telt.';
       }
       return 'In de woonkamer hangt een dichte, grijze rooklaag. Bij de muur zie je een stopcontact met een zwarte kring eromheen. De lucht ruikt scherp naar verbrand plastic en ergens klinkt zacht geknetter. Grote vlammen zie je nog niet, maar de rook is dik en benauwend.';
@@ -311,7 +311,7 @@ const scenes_nachtalarm = [
       const delayedNote = state.delayedEvacuation
         ? ' Als je buiten komt, slaat er nu duidelijk meer rook uit de woning. Je beseft dat die verloren halve minuut veel uitmaakt.'
         : '';
-      if (profile.houseType === 'appartement') {
+      if (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw') {
         return hasHousemates()
           ? 'Je staat buiten je appartement, op de galerij of in het portiek. Vanuit de woning komt nog rook. Naast je staat iedereen half aangekleed en geschrokken bij elkaar. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.' + delayedNote
           : 'Je staat buiten je appartement, op de galerij of in het portiek. Vanuit de woning komt nog rook. Het is koud en je vraagt je af of je toch nog even terug moet voor extra kleren.' + delayedNote;
@@ -343,8 +343,8 @@ const scenes_nachtalarm = [
       },
       {
         text: '🏘️ Naar de buren gaan om te zeggen dat er brand is in jouw woning',
-        consequence: () => profile.houseType === 'appartement'
-          ? 'Je klopt hard aan bij de directe buren op de gang en roept dat er brand is in jouw appartement. Slaperige gezichten, dan geschrokken ogen. Ze gaan meteen naar buiten. Goed dat je dit deed, in een appartementsgebouw kan rook snel naar andere woningen trekken.'
+        consequence: () => (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+          ? 'Je klopt hard aan bij de directe buren op de gang en roept dat er brand is in jouw woning. Slaperige gezichten, dan geschrokken ogen. Ze gaan meteen naar buiten. Goed dat je dit deed, in een flatgebouw kan rook snel naar andere woningen trekken.'
           : 'Je loopt snel naar de buren en klopt aan. Even later staan ze in de deuropening. Je legt kort uit wat er aan de hand is. Ze bellen 112 en houden een oogje in het zeil. Je bent blij dat je dit even gedaan hebt.',
         cat: 'cat-social',
         stateChange: { stayedOutside: true, knowsNeighbors: true }
