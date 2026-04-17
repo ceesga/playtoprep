@@ -162,20 +162,8 @@ const scenes_stroom = [
       return 'Midden op de ochtend valt ineens de stroom uit. Alles wordt stil: de koelkast, de verwarming en het wifi-lampje. Alleen je telefoon doet het nog via mobiel bereik. Buiten zie je buren naar buiten komen om te kijken wat er aan de hand is. De stilte voelt vreemd, alsof iemand in één keer al het geluid heeft uitgezet.' + lift;
     },
     choices: [{
-      text: '📱 Nieuws checken op mijn telefoon, wat is er aan de hand?',
-      consequence: 'Op NOS lees je dat er een brand is bij een knooppunt bij Dronten en dat die vermoedelijk verband houdt met de storing. De precieze oorzaak is nog onduidelijk. Er staat niet bij hoe lang het gaat duren. Meer kun je nu niet doen dan afwachten.',
-      stateChange: {}
-    }, {
       text: '🔌 Alle grote apparaten uitschakelen en de zekering uitzetten',
       consequence: 'Je loopt door het huis en zet alles handmatig uit: wasmachine, oven, verwarming. Zo verklein je de kans op schade als de stroom later terugkomt.',
-      stateChange: {}
-    }, {
-      text: '☕ Even koffie zetten op het gasfornuis en rustig afwachten',
-      consequence: 'Het gasfornuis werkt gelukkig nog. Je zet koffie en probeert rustig te blijven. Misschien is het zo weer voorbij.',
-      stateChange: {}
-    }, {
-      text: '🤷 Gewoon doorgaan, dit is toch zo opgelost',
-      consequence: 'Je wacht. Niets aan de hand. Zulke kleine storingen zijn er wel vaker.',
       stateChange: {}
     }, {
       conditionalOn: () => profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw',
@@ -187,10 +175,22 @@ const scenes_stroom = [
         knowsNeighbors: true
       }
     }, {
+      text: '📱 Nieuws checken op mijn telefoon, wat is er aan de hand?',
+      consequence: 'Op NOS lees je dat er een brand is bij een knooppunt bij Dronten en dat die vermoedelijk verband houdt met de storing. De precieze oorzaak is nog onduidelijk. Er staat niet bij hoe lang het gaat duren. Meer kun je nu niet doen dan afwachten.',
+      stateChange: {}
+    }, {
       conditionalOn: () => profile.hasElderly,
       text: '🧓 Even bij de ouderen in huis kijken, hoe gaat het met ze?',
       consequence: 'Je klopt aan en vraagt hoe het gaat. Ze maken het goed, maar zijn wel wat onrustig. Je belooft ze op de hoogte te houden en zegt dat je terugkomt als er nieuws is. Goed dat je dit even deed.',
       stateChange: { knowsNeighbors: true }
+    }, {
+      text: '☕ Even koffie zetten op het gasfornuis en rustig afwachten',
+      consequence: 'Het gasfornuis werkt gelukkig nog. Je zet koffie en probeert rustig te blijven. Misschien is het zo weer voorbij.',
+      stateChange: {}
+    }, {
+      text: '🤷 Gewoon doorgaan, dit is toch zo opgelost',
+      consequence: 'Je wacht. Niets aan de hand. Zulke kleine storingen zijn er wel vaker.',
+      stateChange: {}
     }]
   },
   // SCENE 4 — Stroom terug, info-only
@@ -282,13 +282,6 @@ const scenes_stroom = [
         water: 2
       }
     }, {
-      conditionalOn: () => profile.hasRadio === 'ja',
-      text: '📻 Batterijradio aanzetten voor nieuws',
-      consequence: 'Je zet de radio aan. Radio 1 zendt nog uit en vertelt dat de storing groot is en lang kan duren. Vanaf nu is de radio je belangrijkste bron van informatie.',
-      stateChange: {
-        hasCarRadio: true
-      }
-    }, {
       conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
       text: '🚗 Naar de auto en de radio aanzetten',
       consequence: 'Je loopt naar de auto en zet de radio aan. Radio 1 is nog in de lucht en vertelt dat de storing groot is en lang kan duren. De radio wordt nu je belangrijkste bron van informatie.',
@@ -299,6 +292,13 @@ const scenes_stroom = [
       text: '📞 Proberen mama terug te bellen',
       consequence: () => state.phoneBattery > 0 ? "Je probeert te bellen, maar het netwerk is overbelast. Eerst hoor je een toon, daarna niets meer. Je stuurt een sms: \"Alles goed hier. Wacht even af.\" Of die aankomt weet je niet." : 'Je telefoon is leeg. Je kunt niemand bereiken.',
       stateChange: {}
+    }, {
+      conditionalOn: () => profile.hasRadio === 'ja',
+      text: '📻 Batterijradio aanzetten voor nieuws',
+      consequence: 'Je zet de radio aan. Radio 1 zendt nog uit en vertelt dat de storing groot is en lang kan duren. Vanaf nu is de radio je belangrijkste bron van informatie.',
+      stateChange: {
+        hasCarRadio: true
+      }
     }, {
       text: '🤷 Niets doen, ik wacht af wat er gaat gebeuren',
       consequence: 'Je zit op de bank en wacht. Er komt geen stroom. Je accu loopt langzaam verder leeg. Buiten klinkt een sirene.',
@@ -460,6 +460,13 @@ const scenes_stroom = [
         water: 2
       }
     }, {
+      conditionalOn: () => profile.hasCar,
+      text: '🔋 Telefoon en apparaten opladen via de auto',
+      consequence: 'Je loopt naar de auto, start hem op en sluit de telefoon aan via USB. Na een halfuur: +40%. De auto als noodgenerator.',
+      stateChange: {
+        phoneBattery: 40
+      }
+    }, {
       text: '🌡️ Alle kamers afsluiten behalve de woonkamer, warmte bewaren',
       consequence: 'Je sluit alle deuren. Eén kamer warm houden kost veel minder energie dan het hele huis. Je trekt een extra trui aan.',
       stateChange: {}
@@ -467,13 +474,6 @@ const scenes_stroom = [
       text: '👴 Bij buurvrouw Annie aanbellen en vragen of ze het redt',
       consequence: 'Je loopt naar buurvrouw Annie. Ze staat al bij de deur en ziet er onrustig uit. "Ik probeer mijn dochter te bellen, maar ik krijg haar niet te pakken", zegt ze. Je helpt haar een sms te sturen. Dat stelt haar zichtbaar gerust.',
       stateChange: {}
-    }, {
-      conditionalOn: () => profile.hasCar,
-      text: '🔋 Telefoon en apparaten opladen via de auto',
-      consequence: 'Je loopt naar de auto, start hem op en sluit de telefoon aan via USB. Na een halfuur: +40%. De auto als noodgenerator.',
-      stateChange: {
-        phoneBattery: 40
-      }
     }, {
       text: '😶 Niets doen, de overheid zal het snel oplossen',
       consequence: 'Je gaat op de bank zitten en wacht. Het huis wordt kouder. Er komt geen stroom. Geen water opgeslagen, geen extra warmte geregeld. Je hoopt maar dat het snel voorbij is.',
@@ -639,9 +639,12 @@ const scenes_stroom = [
     },
     narrative: 'Je staat voor de deur van Annie. Ze doet open, wit weggetrokken van schrik. Achter haar ligt Jan op de bank met een wond op zijn hoofd. Je moet snel beslissen hoe je het best kunt helpen.',
     choices: [{
-      text: '🩺 Direct naar Jan kijken en zijn toestand beoordelen',
-      consequence: 'Je loopt naar binnen. Jan reageert wel, maar is duizelig en in de war. Hij is waarschijnlijk gevallen in het donker. Je controleert zijn ademhaling, maakt de wond zo goed mogelijk schoon en zorgt dat hij warm blijft.',
+      text: '🍞 Wat eten uit je eigen voorraad aan hen geven',
+      consequence: 'Je haalt crackers en een blik soep uit je eigen voorraad en geeft dat aan Annie. Haar ogen zijn rood van het huilen. Ze kijkt je aan alsof ze niet weet wat ze moet zeggen.',
+      cat: 'cat-social',
       stateChange: {
+        food: -1,
+        water: -1,
         helpedNeighbor: true
       }
     }, {
@@ -651,12 +654,9 @@ const scenes_stroom = [
         helpedNeighbor: true
       } : {}
     }, {
-      text: '🍞 Wat eten uit je eigen voorraad aan hen geven',
-      consequence: 'Je haalt crackers en een blik soep uit je eigen voorraad en geeft dat aan Annie. Haar ogen zijn rood van het huilen. Ze kijkt je aan alsof ze niet weet wat ze moet zeggen.',
-      cat: 'cat-social',
+      text: '🩺 Direct naar Jan kijken en zijn toestand beoordelen',
+      consequence: 'Je loopt naar binnen. Jan reageert wel, maar is duizelig en in de war. Hij is waarschijnlijk gevallen in het donker. Je controleert zijn ademhaling, maakt de wond zo goed mogelijk schoon en zorgt dat hij warm blijft.',
       stateChange: {
-        food: -1,
-        water: -1,
         helpedNeighbor: true
       }
     }, {
@@ -747,12 +747,6 @@ const scenes_stroom = [
       return 'Als je de wc gebruikt en doortrekt, merk je dat het water nauwelijks wegstroomt. Even later borrelt de afvoer van de wasbak en stinkt het naar riool. De waterdruk van de kraan is ook sterk verminderd. In deze wijk zit een rioolgemaal dat het afvalwater wegpompt. Zonder stroom werkt dat niet meer goed.' + mob + oud;
     },
     choices: [{
-      text: '🚫 Waterafvoer afsluiten en zo min mogelijk water gebruiken',
-      consequence: 'Je stopt de afvoeropeningen af met doppen of plastiek. Zo voorkom je dat rioolwater terugstroomt in huis.',
-      stateChange: {
-        handledSewage: true
-      }
-    }, {
       conditionalOn: () => profile.houseType !== 'hoogbouw' && profile.houseType !== 'laagbouw',
       text: '🌳 Naar de achtertuin gaan (schep en vuilniszak)',
       consequence: 'Buiten, in de hoek van de tuin. Je graaft een klein gat, doet wat je moet doen en gooit er aarde over. Primitief. Effectief. Minder erg dan je dacht.',
@@ -765,6 +759,12 @@ const scenes_stroom = [
       consequence: 'Je zoekt een grote emmer op en legt vuilniszakken klaar. Niet ideaal, maar wel werkbaar. Zo heb je tenminste een plan voor de komende dagen.',
       stateChange: {
         comfort: -1
+      }
+    }, {
+      text: '🚫 Waterafvoer afsluiten en zo min mogelijk water gebruiken',
+      consequence: 'Je stopt de afvoeropeningen af met doppen of plastiek. Zo voorkom je dat rioolwater terugstroomt in huis.',
+      stateChange: {
+        handledSewage: true
       }
     }, {
       text: '🚽 Een noodemmer inrichten als wc',
@@ -841,6 +841,12 @@ const scenes_stroom = [
         hasWater: true
       }
     }, {
+      text: '🍞 Vragen of er ook eten is bij de tafel',
+      consequence: 'Je loopt naar de tafel met noodbiscuits. Er zijn kleine pakketjes. Je neemt er één mee. Bescheiden, maar het scheelt. Water moet je elders vandaan halen.',
+      stateChange: {
+        food: 1
+      }
+    }, {
       conditionalOn: () => !profile.location.includes('city') && profile.hasBike,
       text: '🚲 Met de fiets naar de wateruitdeling',
       consequence: 'Je pakt de fiets en rijdt naar het dorp. Een kwartier fietsen, maar de rij is korter dan je had verwacht. Met twee volle jerrycans op de bagagedrager rij je terug.',
@@ -849,6 +855,10 @@ const scenes_stroom = [
         hasWater: true
       }
     }, {
+      text: '🏠 Terugkeren zonder te wachten, de rij is te lang',
+      consequence: 'Je kijkt naar de rij en schat: nog een uur. Je draait om. Misschien later. Misschien morgen.',
+      stateChange: {}
+    }, {
       text: '🤝 Water halen én een extra fles meebrengen voor Annie',
       consequence: 'Je vertelt dat je ook voor een oudere buurvrouw haalt. De medewerker knikt en geeft je een extra fles. "Eén extra, meer mag niet." Bij Annie thuis is ze sprakeloos van dankbaarheid.',
       stateChange: {
@@ -856,16 +866,6 @@ const scenes_stroom = [
         hasWater: true,
         helpedNeighbor: true
       }
-    }, {
-      text: '🍞 Vragen of er ook eten is bij de tafel',
-      consequence: 'Je loopt naar de tafel met noodbiscuits. Er zijn kleine pakketjes. Je neemt er één mee. Bescheiden, maar het scheelt. Water moet je elders vandaan halen.',
-      stateChange: {
-        food: 1
-      }
-    }, {
-      text: '🏠 Terugkeren zonder te wachten, de rij is te lang',
-      consequence: 'Je kijkt naar de rij en schat: nog een uur. Je draait om. Misschien later. Misschien morgen.',
-      stateChange: {}
     }]
   },
   // SCENE 10b — Rob aan de deur
@@ -888,16 +888,16 @@ const scenes_stroom = [
     },
     narrative: 'Dan een klopje op de deur. Rob, je buurman. Hij houdt een lege fles vast en kijkt je aan. "Heb jij nog wat water over? Ik heb al een paar dagen niet veel meer in huis."',
     choices: [{
+      text: '💧 Niets geven — je hebt zelf ook niet genoeg',
+      consequence: 'Je legt uit dat je zelf ook weinig water meer hebt. Rob knikt, een beetje teleurgesteld, en loopt terug. Het voelt ongemakkelijk, maar je eigen voorraad is ook niet onbeperkt.',
+      stateChange: {}
+    }, {
       text: '🤝 Water delen met buurman Rob',
       consequence: 'Je loopt naar de deur. Rob staat buiten met een lege fles. Zijn gezicht zegt genoeg. Je kijkt naar je eigen voorraad, die ook niet eindeloos is. Toch geef je hem een fles. Dat voelt tegelijk goed en ongemakkelijk, want iedere liter telt.',
       stateChange: {
         water: -1,
         knowsNeighbors: true
       }
-    }, {
-      text: '💧 Niets geven — je hebt zelf ook niet genoeg',
-      consequence: 'Je legt uit dat je zelf ook weinig water meer hebt. Rob knikt, een beetje teleurgesteld, en loopt terug. Het voelt ongemakkelijk, maar je eigen voorraad is ook niet onbeperkt.',
-      stateChange: {}
     }]
   },
   // SCENE 12b — Wat nu?
@@ -915,10 +915,6 @@ const scenes_stroom = [
     },
     narrative: 'De dag vordert en het wordt steeds duidelijker dat dit niet morgen opgelost is. Buiten rijden af en toe politiewagens langs, langzamer dan normaal. Op straat zie je bijna niemand meer. Het is 9°C in huis. Wat doe je nu?',
     choices: [{
-      text: '🏘️ De buren bij elkaar roepen, samen sta je sterker',
-      consequence: 'Je klopt bij Rob, Annie en nog twee buren aan. Jullie spreken af om eten te delen, elkaar op de hoogte te houden en om beurten een oogje in het zeil te houden. Dat voelt een stuk beter dan ieder voor zich.',
-      stateChange: {}
-    }, {
       text: '📦 Alle voedsel en water inventariseren en rantsoeneren',
       consequence: 'Je legt alles wat je hebt op de keukentafel. Daarna verdeel je het zo eerlijk en realistisch mogelijk over de komende dagen.',
       stateChange: {}
@@ -926,6 +922,10 @@ const scenes_stroom = [
       conditionalOn: () => profile.hasCar,
       text: '🚗 Je besluit de auto te pakken en de stad te gaan verkennen',
       consequence: 'Je rijdt voorzichtig richting het centrum. Bij enkele winkels en tankstations is het druk en onoverzichtelijk. Op een paar kruispunten regelt de politie het verkeer met zaklampen. Je draait om. Dit kost nu vooral brandstof en levert weinig op.',
+      stateChange: {}
+    }, {
+      text: '🏘️ De buren bij elkaar roepen, samen sta je sterker',
+      consequence: 'Je klopt bij Rob, Annie en nog twee buren aan. Jullie spreken af om eten te delen, elkaar op de hoogte te houden en om beurten een oogje in het zeil te houden. Dat voelt een stuk beter dan ieder voor zich.',
       stateChange: {}
     }, {
       text: '🎲 Een bordspel pakken met het huishouden',
@@ -962,16 +962,16 @@ const scenes_stroom = [
         hasCampingStove: true
       }
     }, {
-      text: '🥫 Koude maaltijd uit blik met crackers',
-      consequence: 'Je eet koud. Het vult wel, maar bij 7°C voelt koud eten extra guur. Je lichaam kan die warmte juist goed gebruiken.',
-      stateChange: {}
-    }, {
       text: '🥄 Zuinig koken, kleine portie en voorraad sparen',
       consequence: 'Je maakt een halve portie, net genoeg om de ergste honger weg te nemen. De rest bewaar je. Zo houd je meer over voor de dagen erna, al knort je buik daarna nog steeds.',
       stateChange: {
         food: 1,
         comfort: -1
       }
+    }, {
+      text: '🥫 Koude maaltijd uit blik met crackers',
+      consequence: 'Je eet koud. Het vult wel, maar bij 7°C voelt koud eten extra guur. Je lichaam kan die warmte juist goed gebruiken.',
+      stateChange: {}
     }]
   },
   // SCENE 13 — Fire from improvised cooking or heating
@@ -1100,6 +1100,10 @@ const scenes_stroom = [
         wentToFoodDist: true
       }
     }, {
+      text: '📄 De flyer weggooien, ik weet het al wel',
+      consequence: 'Je legt de flyer opzij. Misschien stond er toch iets nuttigs in, maar dat zul je nu niet meer weten.',
+      stateChange: {}
+    }, {
       text: '🤝 De flyer ook bij buren brengen die hem misschien niet hebben',
       consequence: 'Je loopt de straat in en stopt de flyer bij drie huizen in de bus waarvan je weet dat er ouderen wonen. Buurvrouw Annie geef je hem persoonlijk. Meteen vertel je haar ook over de voedseluitdeling.',
       stateChange: {}
@@ -1110,10 +1114,6 @@ const scenes_stroom = [
         comfort: 1,
         knowsNeighbors: true
       }
-    }, {
-      text: '📄 De flyer weggooien, ik weet het al wel',
-      consequence: 'Je legt de flyer opzij. Misschien stond er toch iets nuttigs in, maar dat zul je nu niet meer weten.',
-      stateChange: {}
     }]
   },
   // SCENE COOK_D2 — Day 2 evening cooking, 18:00
@@ -1224,20 +1224,20 @@ const scenes_stroom = [
     },
     narrative: 'Bij het uitgiftepunt is het druk. Medewerkers delen per huishouden een beperkte hoeveelheid water en eten uit, zodat iedereen iets mee kan krijgen. De rij schuifelt langzaam maar geordend op. In jouw pakket zitten een kilo rijst, een blik tomaten, een paar appels en een brood. Terwijl je wacht, raken de mensen om je heen aan de praat.',
     choices: [{
-      text: '💬 Praten met de mensen in de rij, informatie verzamelen',
-      consequence: 'Iemand vertelt dat in Amsterdam-Noord de stroom al even terug was. Een ander zegt dat de overheid het net misschien per regio wil herstellen. Het zijn geruchten, maar ze geven wel hoop.',
-      stateChange: {}
-    }, {
-      text: '👴 Een oudere man voor me laten gaan, hij staat te trillen van de kou',
-      consequence: 'Je laat hem voorgaan. Hij bedankt je met een knik. Zijn vrouw pakt heel even je hand. Op dit soort momenten tellen kleine gebaren zwaar mee.',
-      stateChange: {}
-    }, {
       text: '🎒 Extra vragen of ze ook wat voor de zieke buurman hebben',
       consequence: 'Je vraagt aan de medewerker of er extra is voor een zieke buurman. Ze kijken elkaar aan. Na een korte aarzeling geven ze je een tweede klein pakketje. "Eén extra, meer kunnen we niet."',
       stateChange: {}
     }, {
       text: '⚡ Snel naar huis, ik wil niet te lang weg zijn',
       consequence: 'Je pakt je tasje en loopt meteen terug. Je bent 45 minuten weggeweest. Thuis is alles nog zoals je het hebt achtergelaten.',
+      stateChange: {}
+    }, {
+      text: '💬 Praten met de mensen in de rij, informatie verzamelen',
+      consequence: 'Iemand vertelt dat in Amsterdam-Noord de stroom al even terug was. Een ander zegt dat de overheid het net misschien per regio wil herstellen. Het zijn geruchten, maar ze geven wel hoop.',
+      stateChange: {}
+    }, {
+      text: '👴 Een oudere man voor me laten gaan, hij staat te trillen van de kou',
+      consequence: 'Je laat hem voorgaan. Hij bedankt je met een knik. Zijn vrouw pakt heel even je hand. Op dit soort momenten tellen kleine gebaren zwaar mee.',
       stateChange: {}
     }, {
       text: '💬👴🎒 Praten, iemand voorgaan laten en extra vragen voor de buurman',
@@ -1260,24 +1260,24 @@ const scenes_stroom = [
     },
     narrative: 'Dan flakkert het licht onverwacht aan. De koelkast begint te zoemen. De wasmachine, die je vergeten was uit te zetten, schiet ineens weer aan. Uit de televisie komt een branderige geur. Eén lamp knalt. Buiten hoor je de buren juichen. Het ergste lijkt voorbij. Toch is niet alles meteen normaal: de CV moet nog op gang komen en de rioollucht hangt nog in huis. Maar er is weer licht.',
     choices: [{
+      text: '🛁 Het water laten lopen om de leidingen door te spoelen',
+      consequence: 'Je draait de kraan open. Eerst komt er bruin water uit, daarna wordt het helderder. Na even spoelen komt er weer schoon water uit de kraan.',
+      stateChange: {}
+    }, {
       text: '⚡ Alle apparaten uitschakelen voordat er stroompieken schade aanrichten',
       consequence: 'Je loopt door het huis en zet alles handmatig uit. Daarna zet je apparaat voor apparaat langzaam terug aan. De TV ruikt wat gebrand, maar werkt nog.',
+      stateChange: {}
+    }, {
+      text: '⚡ Alles direct aanpakken: apparaten uit, leidingen doorspoelen, mama bellen',
+      consequence: 'Je werkt snel. Eerst schakel je alle apparaten handmatig uit, lamp voor lamp en stekker voor stekker. Daarna zet je de kraan open: eerst komt er bruin water, daarna helder. De leidingen zijn weer schoon. Dan bel je mama. Ze neemt direct op. "Ik heb me zo ongerust gemaakt." Jullie praten bij terwijl de koelkast zachtjes zoemt.',
       stateChange: {}
     }, {
       text: '📱 Als eerste mama bellen, ze weet vast niets van ons',
       consequence: 'Je belt. Ze neemt direct op en barst bijna in tranen uit. "Ik heb me zo ongerust gemaakt. Jullie zijn toch goed?" Jullie praten tien minuten lang bij.',
       stateChange: {}
     }, {
-      text: '🛁 Het water laten lopen om de leidingen door te spoelen',
-      consequence: 'Je draait de kraan open. Eerst komt er bruin water uit, daarna wordt het helderder. Na even spoelen komt er weer schoon water uit de kraan.',
-      stateChange: {}
-    }, {
       text: '🤝 Bij Annie en Rob aanbellen om het nieuws te vieren',
       consequence: 'Je loopt de straat op. Rob staat al in de deuropening te zwaaien. Bij Annie is het stiller. Ze zijn blij dat de stroom terug is, maar Jan is nog steeds niet de oude en heeft medische aandacht nodig.',
-      stateChange: {}
-    }, {
-      text: '⚡ Alles direct aanpakken: apparaten uit, leidingen doorspoelen, mama bellen',
-      consequence: 'Je werkt snel. Eerst schakel je alle apparaten handmatig uit, lamp voor lamp en stekker voor stekker. Daarna zet je de kraan open: eerst komt er bruin water, daarna helder. De leidingen zijn weer schoon. Dan bel je mama. Ze neemt direct op. "Ik heb me zo ongerust gemaakt." Jullie praten bij terwijl de koelkast zachtjes zoemt.',
       stateChange: {}
     }],
     get afterword() {

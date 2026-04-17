@@ -47,6 +47,13 @@ const scenes_natuurbrand = [{
   },
   narrative: 'Je bent \'s ochtends bezig met je ochtendritueel als je opeens een vage rooklucht opmerkt. Zwak, maar onmiskenbaar. Je stopt even en snuift de lucht op. Verbrand hout? Of iets anders? Je vraagt je af waar die geur vandaan komt.',
   choices: [{
+    text: '🎒 Noodtas klaarzetten voor het geval dat',
+    consequence: 'Je pakt alvast een tas: paspoort, medicijnen, oplader, wat kleding. Zet hem bij de deur. Als het mis gaat, ben je klaar.',
+    stateChange: {
+      packedBag: true,
+      awarenessLevel: 1
+    }
+  }, {
     text: '🔍 Naar buiten gaan om te kijken waar de geur vandaan komt',
     consequence: 'Je stapt de deur uit en kijkt om je heen. De lucht hangt stil en warm. In de richting van het bos zie je heel vaag een lichte waas boven de boomtoppen. Niet veel. Maar genoeg om onrustig van te worden.',
     cat: 'cat-action',
@@ -56,13 +63,6 @@ const scenes_natuurbrand = [{
     consequence: 'Je scrolt door het nieuws. Nog niets in de buurt, maar er is wel een KNMI-waarschuwing voor extreme droogte en hitte. Je besluit de situatie in de gaten te houden.',
     cat: 'cat-info',
     stateChange: { awarenessLevel: 1 }
-  }, {
-    text: '🎒 Noodtas klaarzetten voor het geval dat',
-    consequence: 'Je pakt alvast een tas: paspoort, medicijnen, oplader, wat kleding. Zet hem bij de deur. Als het mis gaat, ben je klaar.',
-    stateChange: {
-      packedBag: true,
-      awarenessLevel: 1
-    }
   }, {
     text: '🌿 Brandbare materialen rondom het huis weghalen',
     consequence: 'Je haalt droge bladhopen, tuinstoelen en andere brandbare spullen weg bij de buitenmuren en schutting. Het kost een half uur zweet, maar je woning is nu een stuk minder kwetsbaar als het vuur dichtbij komt.',
@@ -221,19 +221,19 @@ const scenes_natuurbrand = [{
       'De lucht is al een tijd oranje. De kinderen staan buiten stil bij het hek en kijken naar de rookwolk aan de horizon. Ze spelen niet meer en zeggen niets. Ze voelen dat er iets mis is.';
   },
   choices: [{
-    text: () => profile.childrenCount === 1 ? '📢 Naar buiten en je kind meteen naar binnen roepen' : '📢 Naar buiten en de kinderen meteen naar binnen roepen',
-    consequence: () => profile.childrenCount === 1 ? 'Je roept vanuit de deur. Je kind draait zich om en komt meteen naar je toe. Je kind stelt geen vragen en voelt zelf ook dat dit serieus is.' : 'Je roept vanuit de deur. De kinderen draaien zich om en komen meteen naar je toe. Ze stellen geen vragen. Ze voelen zelf ook dat dit serieus is.',
-    stateChange: {
-      kidsWithYou: true,
-      kidsKeptHome: true
-    }
-  }, {
     text: () => profile.childrenCount === 1 ? '🚶 Naar buiten lopen en even naast je kind gaan staan' : '🚶 Naar buiten lopen en even naast de kinderen gaan staan',
     consequence: () => profile.childrenCount === 1 ? 'Je loopt de tuin in en gaat naast je kind staan. Jullie kijken even samen naar de horizon. Daarna zeg je rustig dat jullie naar binnen gaan. Je kind loopt zonder gedoe met je mee.' : 'Je loopt de tuin in en gaat naast de kinderen staan. Jullie kijken even samen naar de horizon. Daarna zeg je rustig dat jullie naar binnen gaan. Ze lopen zonder gedoe met je mee.',
     stateChange: {
       kidsWithYou: true,
       kidsKeptHome: true,
       comfort: 1
+    }
+  }, {
+    text: () => profile.childrenCount === 1 ? '📢 Naar buiten en je kind meteen naar binnen roepen' : '📢 Naar buiten en de kinderen meteen naar binnen roepen',
+    consequence: () => profile.childrenCount === 1 ? 'Je roept vanuit de deur. Je kind draait zich om en komt meteen naar je toe. Je kind stelt geen vragen en voelt zelf ook dat dit serieus is.' : 'Je roept vanuit de deur. De kinderen draaien zich om en komen meteen naar je toe. Ze stellen geen vragen. Ze voelen zelf ook dat dit serieus is.',
+    stateChange: {
+      kidsWithYou: true,
+      kidsKeptHome: true
     }
   }, {
     text: () => profile.childrenCount === 1 ? '⏳ Je kind nog even laten staan terwijl jij doorgaat' : '⏳ De kinderen nog even laten staan terwijl jij doorgaat',
@@ -269,15 +269,15 @@ const scenes_natuurbrand = [{
       kidsNoodpakket: true
     }
   }, {
-    text: '🗣️ Stoppen en rustig uitleggen wat er aan de hand is',
+    text: () => profile.childrenCount === 1 ? '📺 Je kind even op de telefoon laten kijken zodat jij verder kunt' : '📺 De kinderen even op de telefoon laten kijken zodat jij verder kunt',
+    consequence: () => profile.childrenCount === 1 ? 'Je kind gaat zitten, maar kijkt steeds weer op van het scherm. Het scherm leidt af, maar neemt de onrust niet weg. Jij werkt door, maar het voelt niet goed.' : 'De kinderen gaan zitten, maar kijken steeds weer op van het scherm. Het scherm leidt af, maar neemt de onrust niet weg. Jij werkt door, maar het voelt niet goed.',
+    stateChange: {}
+  }, {
+    text: '💬 Stoppen en rustig uitleggen wat er aan de hand is',
     consequence: () => profile.childrenCount === 1 ? '"Er is een natuurbrand in de buurt. We gaan zo naar een veilige plek. Jij hoeft alleen bij mij te blijven." Je kind knikt. Het weet waar het aan toe is en dat helpt meteen.' : '"Er is een natuurbrand in de buurt. We gaan zo naar een veilige plek. Jullie hoeven alleen bij mij te blijven." Ze knikken. Ze weten waar ze aan toe zijn en dat helpt meteen.',
     stateChange: {
       comfort: 1
     }
-  }, {
-    text: () => profile.childrenCount === 1 ? '📺 Je kind even op de telefoon laten kijken zodat jij verder kunt' : '📺 De kinderen even op de telefoon laten kijken zodat jij verder kunt',
-    consequence: () => profile.childrenCount === 1 ? 'Je kind gaat zitten, maar kijkt steeds weer op van het scherm. Het scherm leidt af, maar neemt de onrust niet weg. Jij werkt door, maar het voelt niet goed.' : 'De kinderen gaan zitten, maar kijken steeds weer op van het scherm. Het scherm leidt af, maar neemt de onrust niet weg. Jij werkt door, maar het voelt niet goed.',
-    stateChange: {}
   }]
 }, {
   id: 'bf_3',
@@ -309,6 +309,12 @@ const scenes_natuurbrand = [{
       packedBag: true
     }
   }, {
+    text: '⚡ Nu direct weg, niets meenemen',
+    consequence: 'Je pakt niets en loopt direct de deur uit. Geen tas, geen documenten. Je verlaat het huis en gaat zo snel mogelijk weg.',
+    stateChange: {
+      evacuated: true
+    }
+  }, {
     conditionalOn: () => profile.hasPets && !state.tookPets,
     text: '🐕 Eerst huisdier veiligstellen',
     consequence: 'Je pakt de transportmand en roept je huisdier. Het is bang en wil niet mee. Na anderhalve minuut heb je hem. Je verlaat het huis samen.',
@@ -322,12 +328,6 @@ const scenes_natuurbrand = [{
     stateChange: {
       packedBag: false,
       comfort: -1
-    }
-  }, {
-    text: '⚡ Nu direct weg, niets meenemen',
-    consequence: 'Je pakt niets en loopt direct de deur uit. Geen tas, geen documenten. Je verlaat het huis en gaat zo snel mogelijk weg.',
-    stateChange: {
-      evacuated: true
     }
   }]
 }, {
@@ -373,12 +373,6 @@ const scenes_natuurbrand = [{
       comfort: -1
     }
   }, {
-    text: () => profile.childrenCount === 1 ? '🗣️ Je kind aanspreken dat bevroren lijkt van de schrik' : '🗣️ De oudste aanspreken die bevroren is bij de deur',
-    consequence: () => profile.childrenCount === 1 ? 'Je pakt je kind bij de hand: "Ik snap dat je niet weet wat je moet doen. Ik ben bij je. We gaan samen." Het stopt met staren en loopt mee.' : 'Je pakt zijn hand: "Ik snap dat je niet weet wat je moet doen. Ik ben bij je. We gaan samen." Hij stopt met staren en loopt mee. De jongste volgt automatisch als ze hem ziet bewegen.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
     text: () => profile.hasPets ? '🐾 Even teruggaan voor het huisdier' : '🧸 Even teruggaan voor de knuffel',
     consequence: () => profile.hasPets
       ? 'Je rent toch nog naar binnen om het huisdier te pakken. Dat lukt, maar de weg is nu drukker. Jullie verliezen kostbare minuten.'
@@ -390,6 +384,12 @@ const scenes_natuurbrand = [{
   }, {
     text: '📋 Herinneren aan jullie vaste gezinsplan',
     consequence: () => profile.childrenCount === 1 ? '"Weet je nog wat we hadden afgesproken als er iets ernstigs gebeurt?" Je kind knikt en loopt meteen mee. Het kent het plan.' : '"Weet je nog wat we hadden afgesproken als er iets ernstigs gebeurt?" De oudste knikt en begint te lopen. De jongste volgt meteen. Ze kennen het plan.',
+    stateChange: {
+      comfort: 1
+    }
+  }, {
+    text: () => profile.childrenCount === 1 ? '💬 Je kind aanspreken dat bevroren lijkt van de schrik' : '💬 De oudste aanspreken die bevroren is bij de deur',
+    consequence: () => profile.childrenCount === 1 ? 'Je pakt je kind bij de hand: "Ik snap dat je niet weet wat je moet doen. Ik ben bij je. We gaan samen." Het stopt met staren en loopt mee.' : 'Je pakt zijn hand: "Ik snap dat je niet weet wat je moet doen. Ik ben bij je. We gaan samen." Hij stopt met staren en loopt mee. De jongste volgt automatisch als ze hem ziet bewegen.',
     stateChange: {
       comfort: 1
     }
@@ -512,12 +512,6 @@ const scenes_natuurbrand = [{
   },
   narrative: 'Je fietst via de achterpaden. De straten zijn leeg, want bijna iedereen zit in de auto. Alleen hangt de rook hier juist laag tussen de bomen. Je rijdt langs de bosrand, de geur van verbrand hout is scherp en je ogen prikken. De fiets is snel, maar je longen protesteren.',
   choices: [{
-    text: '😤 Doorrijden, bijna er',
-    consequence: 'Je houdt je shirt voor je neus en trapt door. Na een kwartier kom je aan bij de noodopvang, buiten adem maar ongedeerd.',
-    stateChange: {
-      evacuated: true
-    }
-  }, {
     text: '🔀 Omrijden via de doorgaande weg',
     consequence: 'Je kiest een langere route met minder bosrand. Meer verkeer, maar schonere lucht. Na 25 minuten ben je er.',
     stateChange: {
@@ -526,6 +520,12 @@ const scenes_natuurbrand = [{
   }, {
     text: '🚶 Fiets laten staan en te voet een stuk',
     consequence: 'Je zet de fiets tegen een hek en loopt het laatste stuk. De weg is hier breed genoeg om de rook te vermijden. Je komt aan.',
+    stateChange: {
+      evacuated: true
+    }
+  }, {
+    text: '😤 Doorrijden, bijna er',
+    consequence: 'Je houdt je shirt voor je neus en trapt door. Na een kwartier kom je aan bij de noodopvang, buiten adem maar ongedeerd.',
     stateChange: {
       evacuated: true
     }
@@ -545,6 +545,12 @@ const scenes_natuurbrand = [{
   },
   narrative: 'Je loopt. Op straat rennen mensen, terwijl auto\'s zich stapvoets vooruitduwen. De rook hangt laag boven de weg. Drie kilometer is normaal gesproken 35 minuten, maar nu voelt het veel langer. De lucht is zwaar en overal hoor je mensen hoesten.',
   choices: [{
+    text: '🧣 Natte doek voor de mond, en rustig aan',
+    consequence: 'Je maakt je shirt nat en houdt het voor je neus. Je loopt rustig maar gestaag verder. Het duurt langer, maar ademen gaat beter.',
+    stateChange: {
+      evacuated: true
+    }
+  }, {
     text: '🚶 Stevig doorlopen, kop naar beneden',
     consequence: 'Je houdt je jas voor je mond en loopt in een stevig tempo door. Na 40 minuten kom je aan bij de noodopvang, bezweet en met tranende ogen.',
     stateChange: {
@@ -553,12 +559,6 @@ const scenes_natuurbrand = [{
   }, {
     text: '🚗 Lift vragen aan een langsrijdende auto',
     consequence: 'Je steekt je hand op. Een gezin stopt. "Stap in, we gaan ook naar de noodopvang." Je bent er in tien minuten.',
-    stateChange: {
-      evacuated: true
-    }
-  }, {
-    text: '🧣 Natte doek voor de mond, en rustig aan',
-    consequence: 'Je maakt je shirt nat en houdt het voor je neus. Je loopt rustig maar gestaag verder. Het duurt langer, maar ademen gaat beter.',
     stateChange: {
       evacuated: true
     }
@@ -587,15 +587,15 @@ const scenes_natuurbrand = [{
     consequence: () => profile.childrenCount === 1 ? 'Je trekt je eigen shirt omhoog en laat zien hoe het moet. Je kind doet het na. Het helpt niet perfect, maar wel een beetje. En het geeft je kind iets om op te letten.' : 'Je trekt je eigen shirt omhoog en laat zien hoe het moet. De kinderen doen het na. Het helpt niet perfect, maar wel een beetje. En het geeft ze iets om op te letten.',
     stateChange: {}
   }, {
+    text: () => profile.childrenCount === 1 ? '🏃 Doorgaan, hand pakken en doorlopen' : '🏃 Doorgaan, handen pakken en doorlopen',
+    consequence: () => profile.childrenCount === 1 ? 'Je pakt de hand van je kind en loopt snel door. Er is nu geen tijd voor een lange uitleg. Eerst moeten jullie veilig aankomen.' : 'Je pakt beide handen vast en loopt snel door. Er is nu geen tijd voor een lange uitleg. Eerst moeten jullie veilig aankomen.',
+    stateChange: {}
+  }, {
     text: () => profile.childrenCount === 1 ? '💬 Even stoppen, knielen, rustig uitleggen dat het bijna voorbij is' : '💬 Even stoppen, knielen, rustig uitleggen dat het bijna voorbij is',
     consequence: () => profile.childrenCount === 1 ? '"We zijn er bijna. De noodopvang is om de hoek." Je kind knikt. Even stilstaan en uitleggen helpt meer dan doorrennen zonder woorden.' : '"We zijn er bijna. De noodopvang is om de hoek." De kinderen kijken je aan. Even stilstaan en uitleggen helpt meer dan doorrennen zonder woorden.',
     stateChange: {
       comfort: 1
     }
-  }, {
-    text: () => profile.childrenCount === 1 ? '🏃 Doorgaan, hand pakken en doorlopen' : '🏃 Doorgaan, handen pakken en doorlopen',
-    consequence: () => profile.childrenCount === 1 ? 'Je pakt de hand van je kind en loopt snel door. Er is nu geen tijd voor een lange uitleg. Eerst moeten jullie veilig aankomen.' : 'Je pakt beide handen vast en loopt snel door. Er is nu geen tijd voor een lange uitleg. Eerst moeten jullie veilig aankomen.',
-    stateChange: {}
   }]
 }, {
   id: 'bf_5',
@@ -661,6 +661,13 @@ const scenes_natuurbrand = [{
       'In de sporthal grijpt de jongste jouw hand vast. De oudste staat een stap achter je en kijkt rond naar de slaapmatten, de mensen en de herrie. "Slapen we hier?" vraagt de jongste.';
   },
   choices: [{
+    conditionalOn: () => state.kidsNoodpakket,
+    text: () => profile.childrenCount === 1 ? '🎒 Rugzakje openmaken en kijken wat je kind heeft meegenomen' : '🎒 Rugzakjes openmaken en kijken wat ze hebben meegenomen',
+    consequence: () => profile.childrenCount === 1 ? 'Je kind opent zijn rugzakje. Er zitten een knuffel, een boek en kaarten in. Het kijkt er trots naar. Dan zie je hoe belangrijk voorbereiding ineens wordt.' : 'De kinderen openen hun rugzakjes. De een heeft een knuffel, de ander een boek. Ze kijken er trots naar. Dan zie je hoe belangrijk voorbereiding ineens wordt.',
+    stateChange: {
+      comfort: 1
+    }
+  }, {
     text: () => profile.childrenCount === 1 ? '🗺️ Samen de hal verkennen en een plek zoeken' : '🗺️ Samen de hal verkennen en een plek zoeken',
     consequence: () => profile.childrenCount === 1 ? 'Je loopt met je kind door de hal en wijst dingen aan. De drinkwaterpost, de toiletten en de kinderhoek. Je kind onthoudt het. Dat geeft meteen meer rust.' : 'Je loopt met de kinderen door de hal en wijst dingen aan. De drinkwaterpost, de toiletten en de kinderhoek. Ze onthouden het. Dat geeft meteen meer rust.',
     stateChange: {
@@ -669,13 +676,6 @@ const scenes_natuurbrand = [{
   }, {
     text: () => profile.childrenCount === 1 ? '🛏️ Snel een rustige plek zoeken en die claimen' : '🛏️ Snel een rustige plek zoeken en die claimen',
     consequence: () => profile.childrenCount === 1 ? 'Je vindt een hoekje bij de muur, ver van de deur. Je legt er je jas neer. Je kind kruipt ernaast. Even is de chaos buiten jullie bubbel.' : 'Je vindt een hoekje bij de muur, ver van de deur. Je legt er je jas neer. De kinderen kruipen ernaast. Even is de chaos buiten jullie bubbel.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    conditionalOn: () => state.kidsNoodpakket,
-    text: () => profile.childrenCount === 1 ? '🎒 Rugzakje openmaken en kijken wat je kind heeft meegenomen' : '🎒 Rugzakjes openmaken en kijken wat ze hebben meegenomen',
-    consequence: () => profile.childrenCount === 1 ? 'Je kind opent zijn rugzakje. Er zitten een knuffel, een boek en kaarten in. Het kijkt er trots naar. Dan zie je hoe belangrijk voorbereiding ineens wordt.' : 'De kinderen openen hun rugzakjes. De een heeft een knuffel, de ander een boek. Ze kijken er trots naar. Dan zie je hoe belangrijk voorbereiding ineens wordt.',
     stateChange: {
       comfort: 1
     }
@@ -701,10 +701,10 @@ const scenes_natuurbrand = [{
       phoneBattery: 30
     }
   }, {
-    text: '🛏️ Slaapplek regelen voor de nacht',
-    consequence: 'Je vraagt een vrijwilliger om een slaapmat en deken. Er zijn er nog maar een paar. Je krijgt er net op tijd eentje. Je hangt je oplader in het stopcontact naast je plek.',
+    conditionalOn: () => !state.packedBag,
+    text: '🔌 Vragen of er een stopcontact vrij is, en een oplader lenen',
+    consequence: 'In de hoek ligt een stekkerdoos. Je vraagt een vrouw of ze een oplader heeft die past. Zonder aarzelen geeft ze die aan je. Na twintig minuten laadt je telefoon merkbaar op. Gelukkig is er in de noodopvang nog stroom.',
     stateChange: {
-      comfort: 1,
       phoneBattery: 30
     }
   }, {
@@ -715,10 +715,10 @@ const scenes_natuurbrand = [{
       phoneBattery: 30
     }
   }, {
-    conditionalOn: () => !state.packedBag,
-    text: '🔌 Vragen of er een stopcontact vrij is, en een oplader lenen',
-    consequence: 'In de hoek ligt een stekkerdoos. Je vraagt een vrouw of ze een oplader heeft die past. Zonder aarzelen geeft ze die aan je. Na twintig minuten laadt je telefoon merkbaar op. Gelukkig is er in de noodopvang nog stroom.',
+    text: '🛏️ Slaapplek regelen voor de nacht',
+    consequence: 'Je vraagt een vrijwilliger om een slaapmat en deken. Er zijn er nog maar een paar. Je krijgt er net op tijd eentje. Je hangt je oplader in het stopcontact naast je plek.',
     stateChange: {
+      comfort: 1,
       phoneBattery: 30
     }
   }]
@@ -770,21 +770,21 @@ const scenes_natuurbrand = [{
   },
   narrative: 'De avond valt. In de sporthal wordt het stil. Mensen proberen te slapen op slaapmatten en gebruiken hun jassen als kussen. Je vraagt je af of je huis er nog staat.',
   choices: [{
-    text: '😴 Proberen te slapen, morgen is een lange dag',
-    consequence: 'Je sluit je ogen. Het is lawaaiig, maar uiteindelijk val je toch in slaap. Niet ideaal, wel nodig.',
-    stateChange: {}
-  }, {
     text: '📻 Nieuws volgen via iemands radio',
     consequence: 'Iemand naast je heeft een radio aan. Je luistert mee. De brand is 80% onder controle. Morgenochtend mogelijk terug.',
     stateChange: {
       awarenessLevel: 1
     }
   }, {
-    text: '🗣️ Gesprek aangaan met andere evacuees',
+    text: '💬 Gesprek aangaan met andere evacuees',
     consequence: 'Je raakt in gesprek met een gezin uit dezelfde straat. Ze hebben een kind dat bang is. Jullie wisselen telefoonnummers uit. In crisis zijn banden snel gelegd.',
     stateChange: {
       knowsNeighbors: true
     }
+  }, {
+    text: '😴 Proberen te slapen, morgen is een lange dag',
+    consequence: 'Je sluit je ogen. Het is lawaaiig, maar uiteindelijk val je toch in slaap. Niet ideaal, wel nodig.',
+    stateChange: {}
   }]
 }, {
   id: 'bf_5g',
@@ -889,15 +889,11 @@ const scenes_natuurbrand = [{
     }
   },
   choices: [{
-    text: () => profile.childrenCount === 1 ? '🗣️ Eerlijk antwoorden waarom ons huis er nog staat' : '🗣️ Eerlijk antwoorden waarom ons huis er nog staat',
+    text: () => profile.childrenCount === 1 ? '💬 Eerlijk antwoorden waarom ons huis er nog staat' : '💬 Eerlijk antwoorden waarom ons huis er nog staat',
     consequence: () => profile.childrenCount === 1 ? '"Dat weet niemand precies. Wind, toeval, de route van het vuur." Je kind knikt langzaam. Soms is het antwoord: we hebben geluk gehad. Dat is ook een antwoord.' : '"Dat weet niemand precies. Wind, toeval, de route van het vuur." De oudste knikt langzaam. De jongste kijkt naar de overkant. Soms is het antwoord: we hebben geluk gehad. Dat is ook een antwoord.',
     stateChange: {
       comfort: 1
     }
-  }, {
-    text: () => profile.childrenCount === 1 ? '🌳 Samen de tuin in lopen en rustig rondkijken' : '🌳 Samen de tuin in lopen en rustig rondkijken',
-    consequence: () => profile.childrenCount === 1 ? 'De boom staat er nog. Het speelgoed ligt er ook nog, maar alles ruikt naar as en verbrand hout. Je kind benoemt wat het ziet. Zo begint het verwerken.' : 'De boom staat er nog. Het speelgoed ligt er ook nog, maar alles ruikt naar as en verbrand hout. De kinderen benoemen wat ze zien. Zo begint het verwerken.',
-    stateChange: {}
   }, {
     conditionalOn: () => state.kidsNoodpakket,
     text: () => profile.childrenCount === 1 ? '💬 Terugvragen wat het moeilijkste moment was' : '💬 Terugvragen wat het moeilijkste moment was',
@@ -905,6 +901,10 @@ const scenes_natuurbrand = [{
     stateChange: {
       comfort: 1
     }
+  }, {
+    text: () => profile.childrenCount === 1 ? '🌳 Samen de tuin in lopen en rustig rondkijken' : '🌳 Samen de tuin in lopen en rustig rondkijken',
+    consequence: () => profile.childrenCount === 1 ? 'De boom staat er nog. Het speelgoed ligt er ook nog, maar alles ruikt naar as en verbrand hout. Je kind benoemt wat het ziet. Zo begint het verwerken.' : 'De boom staat er nog. Het speelgoed ligt er ook nog, maar alles ruikt naar as en verbrand hout. De kinderen benoemen wat ze zien. Zo begint het verwerken.',
+    stateChange: {}
   }]
 }, {
   id: 'bf_7',

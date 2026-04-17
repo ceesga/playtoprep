@@ -178,13 +178,15 @@ Architectuurrol:
 
 Verantwoordelijkheid:
 
-- eindrapport renderen
-- statusbadges, tijdlijn, sterke punten en verbeterpunten tonen
+- eindrapport renderen in zes professionele secties
+- samenvatting, thuissituatie, voorbereiding, scenario-analyse, persoonlijke tips en afsluiting
 
 Architectuurrol:
 
-- report-intro en scoremodus komen nu uit de scenarioregistratie
-- rendering blijft generiek, scenario-meta wordt centraal opgehaald
+- rapport-HTML gebruikt zes sectie-IDs: `rep-s1` t/m `rep-s6`
+- `showReport()` roept interne renderfuncties aan per sectie
+- goodItems, improveItems en personalTips zijn interne arrays; rendering is nu tekstgebaseerd (geen icons)
+- scoremodus komt uit de scenarioregistratie via `getScenarioReportConfig()`
 
 ### 4.8 `ui.js`
 

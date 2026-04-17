@@ -83,16 +83,16 @@ const scenes_overstroming = [{
       packedBag: true
     }
   }, {
+    text: '🙈 Afwachten, het regelt zichzelf wel',
+    consequence: 'Je gaat door met je ochtendroutine. Buiten stijgt het water al licht. Je merkt het pas als je naar de brievenbus loopt en natte voeten krijgt.',
+    stateChange: {}
+  }, {
     conditionalOn: () => profile.hasPets && !state.tookPets,
     text: () => petsCount > 1 ? '🐾 Transportmanden alvast bij de deur zetten' : '🐾 Transportmand alvast bij de deur zetten',
     consequence: () => petsCount > 1
       ? 'Je zet de transportmanden klaar bij de deur. Als het bevel morgen komt, hoef je de dieren alleen nog erin te zetten en te gaan.'
       : 'Je zet de transportmand klaar bij de deur. Als het bevel komt, hoef je je huisdier alleen nog erin te zetten en te gaan.',
     stateChange: { tookPets: true }
-  }, {
-    text: '🙈 Afwachten, het regelt zichzelf wel',
-    consequence: 'Je gaat door met je ochtendroutine. Buiten stijgt het water al licht. Je merkt het pas als je naar de brievenbus loopt en natte voeten krijgt.',
-    stateChange: {}
   }]
 }, {
   id: 'ov_1b',
@@ -168,7 +168,7 @@ const scenes_overstroming = [{
     consequence: () => profile.childrenCount === 1 ? 'Je kind gaat zitten en jij werkt door. Toch kijkt het steeds weer op van het scherm. Je merkt dat het de spanning voelt, ook zonder vragen te stellen.' : 'De kinderen gaan zitten en jij werkt door. Toch kijken ze steeds weer op van het scherm. Je merkt dat ze de spanning voelen, ook zonder veel te zeggen.',
     stateChange: {}
   }, {
-    text: () => profile.childrenCount === 1 ? '🗣️ Stoppen en rustig uitleggen wat er aan de hand is' : '🗣️ Stoppen en rustig uitleggen wat er aan de hand is',
+    text: () => profile.childrenCount === 1 ? '💬 Stoppen en rustig uitleggen wat er aan de hand is' : '💬 Stoppen en rustig uitleggen wat er aan de hand is',
     consequence: () => profile.childrenCount === 1 ? '"Er komt veel water. We gaan straks naar een veilige plek. Jij hoeft alleen bij mij te blijven." Je kind knikt. Het weet nu beter wat er gebeurt en dat helpt meteen.' : '"Er komt veel water. We gaan straks naar een veilige plek. Jullie hoeven alleen bij mij te blijven." Ze knikken. Ze weten nu beter wat er gebeurt en dat helpt meteen.',
     stateChange: {
       comfort: 1
@@ -255,18 +255,18 @@ const scenes_overstroming = [{
       sentKidsToSchool: false
     }
   }, {
+    text: () => profile.childrenCount === 1 ? '📱 Iemand anders vragen je kind op te halen' : '📱 Iemand anders vragen de kinderen op te halen',
+    consequence: () => state.phoneBattery > 0 ? (profile.childrenCount === 1 ? 'Je belt oma. Zij woont dichtbij en kan direct gaan. Ze haalt je kind op en brengt het naar een veilig adres.' : 'Je belt oma. Zij woont dichtbij en kan direct gaan. Ze haalt de kinderen op en brengt ze naar een veilig adres.') : 'Je telefoon is leeg. Je kunt niemand bellen om op te halen.',
+    stateChange: () => state.phoneBattery > 0 ? {
+      kidsWithYou: false
+    } : {}
+  }, {
     text: '⏳ Even wachten en straks tegelijk ophalen en spullen pakken',
     consequence: 'Je wacht een kwartier. Als je rijdt, staat de weg al half blank. Je komt er nog, maar het was spannend.',
     stateChange: {
       kidsWithYou: true,
       sentKidsToSchool: false
     }
-  }, {
-    text: () => profile.childrenCount === 1 ? '📱 Iemand anders vragen je kind op te halen' : '📱 Iemand anders vragen de kinderen op te halen',
-    consequence: () => state.phoneBattery > 0 ? (profile.childrenCount === 1 ? 'Je belt oma. Zij woont dichtbij en kan direct gaan. Ze haalt je kind op en brengt het naar een veilig adres.' : 'Je belt oma. Zij woont dichtbij en kan direct gaan. Ze haalt de kinderen op en brengt ze naar een veilig adres.') : 'Je telefoon is leeg. Je kunt niemand bellen om op te halen.',
-    stateChange: () => state.phoneBattery > 0 ? {
-      kidsWithYou: false
-    } : {}
   }]
 }, {
   id: 'ov_2c',
@@ -297,17 +297,17 @@ const scenes_overstroming = [{
       comfort: -1
     }
   }, {
-    text: () => profile.childrenCount === 1 ? '🗣️ Je kind aanspreken dat verstijfd bij het raam staat' : '🗣️ De oudste aanspreken die verstijfd bij het raam staat',
-    consequence: () => profile.childrenCount === 1 ? 'Je knielt naast je kind en vraagt wat het ziet. "Komt ons huis vol water?" vraagt het. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.' : 'Je knielt naast hem en vraagt wat hij ziet. "Komt ons huis vol water?" vraagt hij. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.',
-    stateChange: {
-      phoneBattery: -5
-    }
-  }, {
     conditionalOn: () => profile.childrenCount > 1,
     text: '🛑🗣️ Beide kinderen aanpakken: jongste tegenhouden én oudste aanspreken',
     consequence: 'Je houdt de jongste stevig vast en legt uit waarom ze niet terug mag. Dan kniel je naast de oudste: "Wat zie je?" vraag je. "Komt ons huis vol water?" vraagt hij. Je legt het uit. Langzaam komen allebei tot rust.',
     stateChange: {
       comfort: -1
+    }
+  }, {
+    text: () => profile.childrenCount === 1 ? '💬 Je kind aanspreken dat verstijfd bij het raam staat' : '💬 De oudste aanspreken die verstijfd bij het raam staat',
+    consequence: () => profile.childrenCount === 1 ? 'Je knielt naast je kind en vraagt wat het ziet. "Komt ons huis vol water?" vraagt het. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.' : 'Je knielt naast hem en vraagt wat hij ziet. "Komt ons huis vol water?" vraagt hij. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.',
+    stateChange: {
+      phoneBattery: -5
     }
   }, ]
 }, {
@@ -353,15 +353,6 @@ const scenes_overstroming = [{
       wentUpstairs: true
     }
   }, {
-    conditionalOn: () => profile.hasMobilityImpaired,
-    text: '🆘 Hulp vragen om naar een hogere verdieping te komen',
-    consequence: 'Je belt aan bij de buren en vraagt hulp. Met twee mensen lukt het om naar boven te komen. Het kost kostbare tijd. Het water staat al in de gang.',
-    stateChange: {
-      health: -1,
-      comfort: -1,
-      wentUpstairs: true
-    }
-  }, {
     conditionalOn: () => state.contactedAns && !profile.hasChildren,
     text: '📞 Ans vragen naar jou toe te komen en samen boven te blijven',
     consequence: 'Je appt Ans: "Kom nu, de straat is nog wadbaar." Tien minuten later staat ze voor de deur, kletsnat maar opgelucht. Samen ga je naar boven.',
@@ -382,13 +373,6 @@ const scenes_overstroming = [{
       evacuatedFlood: false
     }
   }, {
-    conditionalOn: () => profile.hasPets && !state.tookPets,
-    text: () => petsCount > 1 ? '🐾 Huisdieren veiligstellen voor je vertrekt' : '🐾 Huisdier veiligstellen voor je vertrekt',
-    consequence: () => petsCount > 1
-      ? 'Je pakt de manden en roept de dieren. Ze zijn bang van het water en werken niet mee. Na een paar minuten heb je ze. Je vertrekt samen — maar kostbare tijd ben je kwijt.'
-      : 'Je pakt de transportmand en roept je huisdier. Het is bang en wil niet mee. Na anderhalve minuut heb je het. Je vertrekt samen — maar kostbare tijd ben je kwijt.',
-    stateChange: { tookPets: true, comfort: -1 }
-  }, {
     conditionalOn: () => !profile.hasCar && !profile.hasMobilityImpaired,
     text: '🚶 Te voet wegwaden nu het nog kan',
     consequence: profile.hasBike
@@ -399,6 +383,22 @@ const scenes_overstroming = [{
       comfort: -2,
       health: -1
     }
+  }, {
+    conditionalOn: () => profile.hasMobilityImpaired,
+    text: '🆘 Hulp vragen om naar een hogere verdieping te komen',
+    consequence: 'Je belt aan bij de buren en vraagt hulp. Met twee mensen lukt het om naar boven te komen. Het kost kostbare tijd. Het water staat al in de gang.',
+    stateChange: {
+      health: -1,
+      comfort: -1,
+      wentUpstairs: true
+    }
+  }, {
+    conditionalOn: () => profile.hasPets && !state.tookPets,
+    text: () => petsCount > 1 ? '🐾 Huisdieren veiligstellen voor je vertrekt' : '🐾 Huisdier veiligstellen voor je vertrekt',
+    consequence: () => petsCount > 1
+      ? 'Je pakt de manden en roept de dieren. Ze zijn bang van het water en werken niet mee. Na een paar minuten heb je ze. Je vertrekt samen — maar kostbare tijd ben je kwijt.'
+      : 'Je pakt de transportmand en roept je huisdier. Het is bang en wil niet mee. Na anderhalve minuut heb je het. Je vertrekt samen — maar kostbare tijd ben je kwijt.',
+    stateChange: { tookPets: true, comfort: -1 }
   }]
 }, {
   id: 'ov_3c',
@@ -420,8 +420,9 @@ const scenes_overstroming = [{
       'Je klimt de trap op met de kinderen. De jongste stopt halverwege en wil terug: haar tekeningen liggen nog op de keukentafel. De oudste staat boven al stil bij het raam en reageert nergens meer op. "Gaat ons huis kapot?" vraagt hij zacht.';
   },
   choices: [{
-    text: () => profile.childrenCount === 1 ? '🗣️ Knielen en eerlijk zeggen: "Het huis kan nat worden, maar wij redden het samen"' : '🗣️ Bij de oudste knielen en eerlijk zeggen: "Het huis kan nat worden, maar wij redden het samen"',
-    consequence: () => profile.childrenCount === 1 ? 'Je kind kijkt je aan. Even is het stil. Daarna loopt het weer mee de trap op. Het weet nu beter wat er gebeurt.' : 'De oudste knikt langzaam en loopt mee. De jongste ziet dat en volgt vanzelf. Ze weten nu beter wat er gebeurt.',
+    conditionalOn: () => profile.childrenCount > 1,
+    text: '🏃 Beide kinderen meenemen en zelf kalm blijven',
+    consequence: 'Je loopt rustig maar doelgericht. Er zit geen paniek in je stem. De kinderen letten op jouw gedrag en blijven daardoor ook rustiger.',
     stateChange: {
       comfort: 1
     }
@@ -430,9 +431,8 @@ const scenes_overstroming = [{
     consequence: () => profile.childrenCount === 1 ? 'Je pakt de hand van je kind en loopt door. Het protesteert even, maar komt mee. Boven heb je meer tijd voor vragen.' : 'Je pakt de jongste vast en loopt door. Ze protesteert even, maar komt mee. Boven heb je meer tijd voor vragen.',
     stateChange: {}
   }, {
-    conditionalOn: () => profile.childrenCount > 1,
-    text: '🏃 Beide kinderen meenemen en zelf kalm blijven',
-    consequence: 'Je loopt rustig maar doelgericht. Er zit geen paniek in je stem. De kinderen letten op jouw gedrag en blijven daardoor ook rustiger.',
+    text: () => profile.childrenCount === 1 ? '💬 Knielen en eerlijk zeggen: "Het huis kan nat worden, maar wij redden het samen"' : '💬 Bij de oudste knielen en eerlijk zeggen: "Het huis kan nat worden, maar wij redden het samen"',
+    consequence: () => profile.childrenCount === 1 ? 'Je kind kijkt je aan. Even is het stil. Daarna loopt het weer mee de trap op. Het weet nu beter wat er gebeurt.' : 'De oudste knikt langzaam en loopt mee. De jongste ziet dat en volgt vanzelf. Ze weten nu beter wat er gebeurt.',
     stateChange: {
       comfort: 1
     }
@@ -466,18 +466,18 @@ const scenes_overstroming = [{
       food: 1
     }
   }, {
+    text: '📱 Partner of familie laten weten dat jullie boven zitten',
+    consequence: 'Je belt of stuurt een bericht: "We zitten boven, water staat in huis." Iemand weet nu waar jullie zijn. Als jouw telefoon straks leeg is, heeft iemand anders de situatie in de gaten.',
+    stateChange: {
+      knowsNeighbors: true
+    }
+  }, {
     conditionalOn: () => !state.cutElectricity,
     text: '⚡ Meterkast afsluiten voor de veiligheid',
     consequence: 'Je loopt naar de meterkast beneden, die al half onder water staat. Je gooit de hoofdschakelaar eruit. Water en stroom zijn hier een gevaarlijke combinatie.',
     stateChange: {
       cutElectricity: true,
       savedItems: true
-    }
-  }, {
-    text: '📱 Partner of familie laten weten dat jullie boven zitten',
-    consequence: 'Je belt of stuurt een bericht: "We zitten boven, water staat in huis." Iemand weet nu waar jullie zijn. Als jouw telefoon straks leeg is, heeft iemand anders de situatie in de gaten.',
-    stateChange: {
-      knowsNeighbors: true
     }
   }, {
     conditionalOn: () => !state.cutElectricity,
@@ -510,19 +510,19 @@ const scenes_overstroming = [{
       wentUpstairs: true
     }
   }, {
-    text: '🆘 Hulp vragen aan voorbijrijdende boot of buren',
-    consequence: 'Je roept. Een buurman met een roeiboot vaart voorbij en pikt je op. Je wordt naar hoger gelegen terrein gebracht.',
-    stateChange: {
-      evacuatedFlood: true,
-      calledRescue: true
-    }
-  }, {
     text: '📱 112 bellen',
     consequence: () => state.phoneBattery > 0 ? 'Je belt 112. "Blijf op uw auto staan, niet lopen." Na 40 minuten komt een reddingsboot. Je bent gered, maar de auto is verloren.' : 'Je telefoon is leeg. Je kunt 112 niet bereiken. Je wacht en hoopt dat iemand je ziet.',
     stateChange: () => state.phoneBattery > 0 ? {
       evacuatedFlood: true,
       calledRescue: true
     } : {}
+  }, {
+    text: '🆘 Hulp vragen aan voorbijrijdende boot of buren',
+    consequence: 'Je roept. Een buurman met een roeiboot vaart voorbij en pikt je op. Je wordt naar hoger gelegen terrein gebracht.',
+    stateChange: {
+      evacuatedFlood: true,
+      calledRescue: true
+    }
   }]
 }, {
   id: 'ov_4d',
@@ -550,14 +550,14 @@ const scenes_overstroming = [{
     }
   },
   choices: [{
-    text: () => profile.childrenCount === 1 ? '🎲 Een spelletje verzinnen of verhaal vertellen om de tijd door te komen' : '🎲 Een spelletje verzinnen of verhaal vertellen om de tijd door te komen',
-    consequence: () => profile.childrenCount === 1 ? 'Je begint een verzonnen verhaal over een avonturier die door het water vaart. Je kind gaat liggen en luistert. Even is de wereld kleiner dan de slaapkamer.' : 'Je begint een verzonnen verhaal over een avonturier die door het water vaart. De jongste kruipt naast je, de oudste doet alsof hij niet luistert maar luistert toch. Even is de wereld kleiner dan de slaapkamer.',
+    text: () => profile.childrenCount === 1 ? '🪟 Samen door het raam kijken en benoemen wat je ziet' : '🪟 Samen door het raam kijken en benoemen wat je ziet',
+    consequence: () => profile.childrenCount === 1 ? '"Daar drijft een fiets." "Dat is een reddingsboot." "Dat is de buurman zijn auto." Je kind wijst en benoemt. Het verwerkt door te kijken en te praten. Dat helpt.' : '"Daar drijft een fiets." "Dat is een reddingsboot." "Dat is de buurman zijn auto." De kinderen wijzen en benoemen. Ze verwerken door te kijken en te praten. Dat helpt.',
     stateChange: {
       comfort: 1
     }
   }, {
-    text: () => profile.childrenCount === 1 ? '🪟 Samen door het raam kijken en benoemen wat je ziet' : '🪟 Samen door het raam kijken en benoemen wat je ziet',
-    consequence: () => profile.childrenCount === 1 ? '"Daar drijft een fiets." "Dat is een reddingsboot." "Dat is de buurman zijn auto." Je kind wijst en benoemt. Het verwerkt door te kijken en te praten. Dat helpt.' : '"Daar drijft een fiets." "Dat is een reddingsboot." "Dat is de buurman zijn auto." De kinderen wijzen en benoemen. Ze verwerken door te kijken en te praten. Dat helpt.',
+    text: () => profile.childrenCount === 1 ? '🎲 Een spelletje verzinnen of verhaal vertellen om de tijd door te komen' : '🎲 Een spelletje verzinnen of verhaal vertellen om de tijd door te komen',
+    consequence: () => profile.childrenCount === 1 ? 'Je begint een verzonnen verhaal over een avonturier die door het water vaart. Je kind gaat liggen en luistert. Even is de wereld kleiner dan de slaapkamer.' : 'Je begint een verzonnen verhaal over een avonturier die door het water vaart. De jongste kruipt naast je, de oudste doet alsof hij niet luistert maar luistert toch. Even is de wereld kleiner dan de slaapkamer.',
     stateChange: {
       comfort: 1
     }
@@ -591,22 +591,18 @@ const scenes_overstroming = [{
   },
   narrative: 'Beneden hoor je het water kabbelen. De onderkant van de trapleuning staat al onder water. Je bent boven en voorlopig veilig, maar het stijgt nog steeds.',
   choices: [{
-    conditionalOn: () => !state.cutElectricity,
-    text: '⚡ Alsnog de elektriciteit afsluiten bij de meterkast',
-    consequence: 'Je wacht op het juiste moment en loopt snel naar de meterkast. Beneden staat het water tot je enkels. Je gooit de hoofdschakelaar om. Zo voorkom je kortsluiting.',
-    stateChange: {
-      cutElectricity: true
-    }
-  }, {
     text: '🪟 Vanuit het raam om hulp seinen',
     consequence: 'Je hangt een laken uit het raam. Een reddingsboot ziet je en noteert je locatie. Ze komen later terug.',
     stateChange: {
       calledRescue: true
     }
   }, {
-    text: '⏳ Afwachten en batterij sparen',
-    consequence: 'Je doet even niets en spaart de batterij. Maar beneden borrelt het water door. Als de meterkast nat wordt, kan het misgaan.',
-    stateChange: {}
+    conditionalOn: () => !state.cutElectricity,
+    text: '⚡ Alsnog de elektriciteit afsluiten bij de meterkast',
+    consequence: 'Je wacht op het juiste moment en loopt snel naar de meterkast. Beneden staat het water tot je enkels. Je gooit de hoofdschakelaar om. Zo voorkom je kortsluiting.',
+    stateChange: {
+      cutElectricity: true
+    }
   }, {
     conditionalOn: () => !state.cutElectricity,
     text: '⚡🪟 Elektriciteit afsluiten en een teken geven',
@@ -615,6 +611,10 @@ const scenes_overstroming = [{
       cutElectricity: true,
       calledRescue: true
     }
+  }, {
+    text: '⏳ Afwachten en batterij sparen',
+    consequence: 'Je doet even niets en spaart de batterij. Maar beneden borrelt het water door. Als de meterkast nat wordt, kan het misgaan.',
+    stateChange: {}
   }]
 }, {
   id: 'ov_5b',
@@ -758,6 +758,13 @@ const scenes_overstroming = [{
     return aankomst + ansZin + ' Het is er druk. Overal zie je natte mensen en uitgeputte gezichten. Bij de ingang staat een vrijwilliger: "Wilt u zich eerst aanmelden bij de registratiebalie? Dan weten we dat u veilig bent." Je wacht tien minuten in de rij. Je meldt je aan. Nu weet de gemeente waar je bent. Hier is ook stroom, dus je telefoon kan opladen. Wat doe je daarna?';
   },
   choices: [{
+    text: '🍲 Warm eten halen en even bijkomen',
+    consequence: 'Je schuift aan bij de rij voor eten. Soep en brood. Je gaat zitten. Het is het eerste moment vandaag dat je stilzit. Dat voelt vreemd en goed tegelijk.',
+    stateChange: {
+      comfort: 1,
+      food: 1
+    }
+  }, {
     text: '📱 Familie bellen zodat ze weten dat je veilig bent',
     consequence: () => state.phoneBattery > 0 ? 'Je zoekt een hoek met een stopcontact en laadt je telefoon op terwijl je belt. Aan de andere kant hoor je vooral opluchting. Ze wisten niet waar je was.' : 'Je telefoon is leeg. Je vraagt of je iemands telefoon even mag lenen om een bericht te sturen. Een vrouw naast je helpt meteen.',
     stateChange: { phoneBattery: 20 }
@@ -765,13 +772,6 @@ const scenes_overstroming = [{
     text: '🛏️ Een slaapplek regelen voordat alles vol is',
     consequence: 'Je loopt de hal in en vindt een rustig hoekje. Je legt er je jas neer. Een uur later zijn de meeste plekken in de hal bezet.',
     stateChange: { comfort: 1, phoneBattery: 20 }
-  }, {
-    text: '🍲 Warm eten halen en even bijkomen',
-    consequence: 'Je schuift aan bij de rij voor eten. Soep en brood. Je gaat zitten. Het is het eerste moment vandaag dat je stilzit. Dat voelt vreemd en goed tegelijk.',
-    stateChange: {
-      comfort: 1,
-      food: 1
-    }
   }]
 }, {
   id: 'ov_6g',
@@ -794,20 +794,6 @@ const scenes_overstroming = [{
     return basis + kids + ' Het is tijd om iets te eten.';
   },
   choices: [{
-    conditionalOn: () => profile.hasGasStove && (state.savedItems || state.food > 2),
-    text: '🍲 Gasstelletje aansteken en iets warms koken',
-    get consequence() {
-      const kids = profile.hasChildren && state.kidsWithYou;
-      const kidsZin = kids ?
-        (profile.childrenCount === 1 ? ' Je kind kruipt naast je aan. Warm eten maakt alles net iets draaglijker.' : ' De kinderen schuiven dichterbij. De warmte en de geur veranderen de sfeer meteen.') :
-        ' De warmte en geur veranderen de sfeer direct. Even lijkt de situatie minder zwaar.';
-      return 'Je haalt het gasstelletje tevoorschijn en zet een pan soep op.' + kidsZin;
-    },
-    stateChange: {
-      food: -1,
-      comfort: 1
-    }
-  }, {
     conditionalOn: () => !profile.hasGasStove && (state.savedItems || profile.hasKit === 'ja'),
     get text() {
       return profile.hasKit === 'ja' ? '🎒 Noodpakket openmaken en koud eten' : '📦 Blikjes en crackers koud eten';
@@ -824,6 +810,20 @@ const scenes_overstroming = [{
     },
     stateChange: {
       food: -1
+    }
+  }, {
+    conditionalOn: () => profile.hasGasStove && (state.savedItems || state.food > 2),
+    text: '🍲 Gasstelletje aansteken en iets warms koken',
+    get consequence() {
+      const kids = profile.hasChildren && state.kidsWithYou;
+      const kidsZin = kids ?
+        (profile.childrenCount === 1 ? ' Je kind kruipt naast je aan. Warm eten maakt alles net iets draaglijker.' : ' De kinderen schuiven dichterbij. De warmte en de geur veranderen de sfeer meteen.') :
+        ' De warmte en geur veranderen de sfeer direct. Even lijkt de situatie minder zwaar.';
+      return 'Je haalt het gasstelletje tevoorschijn en zet een pan soep op.' + kidsZin;
+    },
+    stateChange: {
+      food: -1,
+      comfort: 1
     }
   }, {
     text: '🍫 Zoeken wat er nog in de keuken staat',
@@ -865,13 +865,20 @@ const scenes_overstroming = [{
     }
   },
   choices: [{
+    conditionalOn: () => state.kidsNoodpakket,
+    text: '📋 Samen terugkijken op wat goed ging met het plan',
+    consequence: () => profile.childrenCount === 1 ? '"Ik wist wat ik moest doen," zegt je kind. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.' : '"We wisten wat we moesten doen," zegt de oudste. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.',
+    stateChange: {
+      comfort: 1
+    }
+  }, {
     text: () => profile.childrenCount === 1 ? '🫂 Je kind dicht bij je houden en samen blijven' : '🫂 De jongste dicht bij je houden en samen blijven',
     consequence: () => profile.childrenCount === 1 ? 'Je laat het toe. Je kind blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.' : 'Je laat het toe. De jongste blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.',
     stateChange: {
       comfort: 1
     }
   }, {
-    text: () => profile.childrenCount === 1 ? '🗣️ Uitleggen dat het hier veilig is en dat je niet weggaat' : '🗣️ Jongste uitleggen dat het hier veilig is en dat je niet weggaat',
+    text: () => profile.childrenCount === 1 ? '💬 Uitleggen dat het hier veilig is en dat je niet weggaat' : '💬 Jongste uitleggen dat het hier veilig is en dat je niet weggaat',
     consequence: () => profile.childrenCount === 1 ? '"Ik ga niet weg. We zijn hier samen en het is veilig." Je kind kijkt je aan. Het gelooft het half. Maar de greep wordt iets losser.' : '"Ik ga niet weg. We zijn hier samen en het is veilig." De jongste kijkt je aan. Het gelooft het half. Maar de greep wordt iets losser.',
     stateChange: {
       comfort: 1
@@ -886,13 +893,6 @@ const scenes_overstroming = [{
   }, {
     text: '🤝 Met andere ouders vergelijken hoe hun kinderen reageren',
     consequence: '"Die van mij laat me geen seconde los," zeg jij. "Die van mij rent al een uur rond," zegt een vader. "Allebei normaal," zegt een vrijwilliger. Dat helpt.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    conditionalOn: () => state.kidsNoodpakket,
-    text: '📋 Samen terugkijken op wat goed ging met het plan',
-    consequence: () => profile.childrenCount === 1 ? '"Ik wist wat ik moest doen," zegt je kind. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.' : '"We wisten wat we moesten doen," zegt de oudste. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.',
     stateChange: {
       comfort: 1
     }
@@ -956,14 +956,14 @@ const scenes_overstroming = [{
   },
   narrative: 'Het is avond. In de sporthal is het rustiger geworden en het licht is gedimd. Overal liggen mensen op slaapmatten en opgerolde jassen. Je telefoon laadt op. Buiten regent het nog steeds, maar het ergste lijkt achter de rug.',
   choices: [{
-    text: '😴 Proberen te slapen, morgen is er genoeg te doen',
-    consequence: 'Je rolt je jas op als kussen en doet je ogen dicht. Het is druk en lawaaierig, maar de vermoeidheid wint het. Je slaapt.',
+    text: '💬 Met andere geëvacueerden praten',
+    consequence: 'Een man naast je vertelt over zijn kelder vol water. Een vrouw heeft haar fotoalbum gered. Je deelt verhalen in het halfduister. Even geen eenzaamheid.',
     stateChange: {
       comfort: 1
     }
   }, {
-    text: '💬 Met andere geëvacueerden praten',
-    consequence: 'Een man naast je vertelt over zijn kelder vol water. Een vrouw heeft haar fotoalbum gered. Je deelt verhalen in het halfduister. Even geen eenzaamheid.',
+    text: '😴 Proberen te slapen, morgen is er genoeg te doen',
+    consequence: 'Je rolt je jas op als kussen en doet je ogen dicht. Het is druk en lawaaierig, maar de vermoeidheid wint het. Je slaapt.',
     stateChange: {
       comfort: 1
     }
@@ -1004,18 +1004,18 @@ const scenes_overstroming = [{
           returnedHome: true
         }
       }, {
-        text: '🤝 Met buren of gemeente afstemmen wanneer kort naar binnen mag',
-        consequence: 'Je spreekt met een paar buren en belt de gemeente. Er is een aanspreekpunt voor geëvacueerden. Zij geven aan wanneer het veilig is voor een korte inspectie en wat je moet controleren.',
-        stateChange: {
-          returnedHome: true,
-          helpedNeighbor: true
-        }
-      }, {
         text: '📸 Alleen kort terug voor foto\'s en noodzakelijke spullen',
         consequence: 'Je gaat kort naar binnen met laarzen en handschoenen. Geen elektra aanzetten. Je documenteert de schade systematisch en pakt het hoognoodzakelijke mee. Dan meteen weer weg.',
         stateChange: {
           returnedHome: true,
           savedItems: true
+        }
+      }, {
+        text: '🤝 Met buren of gemeente afstemmen wanneer kort naar binnen mag',
+        consequence: 'Je spreekt met een paar buren en belt de gemeente. Er is een aanspreekpunt voor geëvacueerden. Zij geven aan wanneer het veilig is voor een korte inspectie en wat je moet controleren.',
+        stateChange: {
+          returnedHome: true,
+          helpedNeighbor: true
         }
       }];
     } else {
@@ -1094,16 +1094,16 @@ const scenes_overstroming = [{
     }
   },
   choices: [{
-    text: () => profile.childrenCount === 1 ? '🗣️ Uitleggen dat dit nog steeds thuis is en dat het beter wordt' : '🗣️ Uitleggen dat dit nog steeds thuis is en dat het beter wordt',
-    consequence: () => profile.childrenCount === 1 ? '"Dit is nog steeds ons huis. Het ziet er nu anders uit, maar we maken het weer goed." Je kind kijkt om zich heen. "Mijn kamer ook?" vraagt het. "Jouw kamer ook," zeg je.' : '"Dit is nog steeds ons huis. Het ziet er nu anders uit, maar we maken het weer goed." De jongste snuft. "Mijn kamer ook?" vraagt ze. "Jouw kamer ook," zeg je. Ze knikt.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
     text: () => profile.childrenCount === 1 ? '📸 Je kind laten meehelpen met fotograferen voor de verzekering' : '📸 De oudste laten meehelpen met fotograferen voor de verzekering',
     consequence: () => profile.childrenCount === 1 ? 'Je geeft je kind de telefoon en vraagt foto\'s te maken van de schade. Het loopt ernstig door de kamers. Even later kom je samen terug met veertig foto\'s. Betrokkenheid helpt bij verwerken.' : 'Je geeft de oudste de telefoon en vraagt foto\'s te maken van de schade. Hij loopt ernstig door de kamers. Even later kom je samen terug met veertig foto\'s. Betrokkenheid helpt bij verwerken.',
     stateChange: {
       savedItems: true
+    }
+  }, {
+    text: () => profile.childrenCount === 1 ? '💬 Uitleggen dat dit nog steeds thuis is en dat het beter wordt' : '💬 Uitleggen dat dit nog steeds thuis is en dat het beter wordt',
+    consequence: () => profile.childrenCount === 1 ? '"Dit is nog steeds ons huis. Het ziet er nu anders uit, maar we maken het weer goed." Je kind kijkt om zich heen. "Mijn kamer ook?" vraagt het. "Jouw kamer ook," zeg je.' : '"Dit is nog steeds ons huis. Het ziet er nu anders uit, maar we maken het weer goed." De jongste snuft. "Mijn kamer ook?" vraagt ze. "Jouw kamer ook," zeg je. Ze knikt.',
+    stateChange: {
+      comfort: 1
     }
   }, {
     conditionalOn: () => state.kidsNoodpakket,
@@ -1131,17 +1131,17 @@ const scenes_overstroming = [{
   },
   narrative: 'Je mag kort terug de woning in om schade vast te leggen en noodzakelijke spullen te halen. Het ruikt naar modder en riool. Alles is nat. Overnachten of alles opruimen is nog niet verstandig.',
   choices: [{
-    text: '📸 Eerst schade vastleggen',
-    consequence: 'Je documenteert alles: de waterlijn op de muur, omgevallen kasten, kapotte apparaten. Cruciale stap voor de schadeclaim. Je verzekeraar zal je er later dankbaar voor zijn.',
-    stateChange: {
-      savedItems: true
-    }
-  }, {
     text: '📦 Alleen noodzakelijke spullen meenemen',
     consequence: 'Je pakt medicijnen, paspoorten en kleding voor een paar dagen. Alles wat je nu niet echt nodig hebt laat je staan. Het huis moet eerst gekeurd worden voor je echt terugkeert.',
     stateChange: {
       savedItems: true,
       comfort: 1
+    }
+  }, {
+    text: '📸 Eerst schade vastleggen',
+    consequence: 'Je documenteert alles: de waterlijn op de muur, omgevallen kasten, kapotte apparaten. Cruciale stap voor de schadeclaim. Je verzekeraar zal je er later dankbaar voor zijn.',
+    stateChange: {
+      savedItems: true
     }
   }, {
     text: '⚡ Keuring regelen voordat je echt terugkomt',

@@ -1075,7 +1075,7 @@ const CHOICE_ICON_MAP = {
   },
   '📞': {
     icon: 'phone',
-    cat: 'cat-social'
+    cat: 'cat-action'
   },
   '🤝': {
     icon: 'handshake',
@@ -1095,7 +1095,7 @@ const CHOICE_ICON_MAP = {
   },
   '🗣️': {
     icon: 'mic',
-    cat: 'cat-social'
+    cat: 'cat-action'
   },
   '🏘️': {
     icon: 'house',
@@ -1172,7 +1172,7 @@ const CHOICE_ICON_MAP = {
   },
   '🕯️': {
     icon: 'flame',
-    cat: 'cat-action'
+    cat: 'cat-supply'
   },
   // Actie / beweging
   '💼': {
@@ -1265,7 +1265,7 @@ const CHOICE_ICON_MAP = {
   },
   '🔦': {
     icon: 'zap',
-    cat: 'cat-action'
+    cat: 'cat-supply'
   },
   '🔌': {
     icon: 'plug',
@@ -1289,7 +1289,7 @@ const CHOICE_ICON_MAP = {
   },
   '🏕️': {
     icon: 'tent',
-    cat: 'cat-action'
+    cat: 'cat-supply'
   },
   '🌳': {
     icon: 'tree-pine',
@@ -1297,7 +1297,7 @@ const CHOICE_ICON_MAP = {
   },
   '🪣': {
     icon: 'droplets',
-    cat: 'cat-action'
+    cat: 'cat-supply'
   },
   '🚽': {
     icon: 'x-circle',
@@ -1305,7 +1305,7 @@ const CHOICE_ICON_MAP = {
   },
   '🛁': {
     icon: 'droplets',
-    cat: 'cat-action'
+    cat: 'cat-supply'
   },
   '🧺': {
     icon: 'wind',
@@ -1444,7 +1444,7 @@ const CHOICE_ICON_MAP = {
   },
   '🔔': {
     icon: 'bell',
-    cat: 'cat-social'
+    cat: 'cat-action'
   },
   '🧸': {
     icon: 'heart',
@@ -1484,7 +1484,7 @@ const CHOICE_ICON_MAP = {
   },
   '🌿': {
     icon: 'tree-pine',
-    cat: 'cat-neutral'
+    cat: 'cat-supply'
   },
   '💎': {
     icon: 'award',

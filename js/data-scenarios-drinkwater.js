@@ -40,17 +40,17 @@ const scenes_drinkwater = [{
     return 'Je draait de kraan open om iets te drinken te pakken. Het water is niet helder. Het is lichtbruin en ruikt anders dan normaal. Je zet de kraan meteen uit. Je telefoon geeft een melding van het waterbedrijf.' + kook + afgelegen + kinderen;
   },
   choices: [{
-    text: '📱 Online zoeken wat er aan de hand is',
-    consequence: 'Op de website van Vitens staat een kort bericht: meldingen van troebel kraanwater, oorzaak wordt onderzocht. De gemeente verwijst naar dezelfde pagina. Er is nog geen kookadvies, maar het advies is voorzichtig te zijn.',
-    stateChange: {
-      awarenessLevel: 1
-    }
-  }, {
     text: '🍶 Alvast flessen en pannen vullen met kraanwater',
     consequence: 'Het water dat nu uit de kraan komt is troebel, maar er loopt wel wat. Je vult een paar flessen en zet ze apart. Later kun je het koken als dat nodig is, voor het geval de waterdruk straks wegvalt.',
     stateChange: {
       water: 2,
       hasWater: true
+    }
+  }, {
+    text: '📱 Online zoeken wat er aan de hand is',
+    consequence: 'Op de website van Vitens staat een kort bericht: meldingen van troebel kraanwater, oorzaak wordt onderzocht. De gemeente verwijst naar dezelfde pagina. Er is nog geen kookadvies, maar het advies is voorzichtig te zijn.',
+    stateChange: {
+      awarenessLevel: 1
     }
   }, {
     text: '🤷 Doorwerken, het zal wel meevallen',
@@ -188,17 +188,17 @@ const scenes_drinkwater = [{
       followedOfficialAdvice: true
     }
   }, {
-    text: '😰 Zelf aannemen dat het wel weer goed zal zijn',
-    consequence: 'Het ziet er helder uit, dus het zal wel in orde zijn. Je gebruikt het water ongekookt. Later begrijp je dat uiterlijk niets zegt over of het water veilig is.',
-    stateChange: {
-      health: -1
-    }
-  }, {
     text: '💬 In de buurtapp delen dat iedereen het officiële bericht moet afwachten',
     consequence: 'Je typt een kort berichtje in de buurtapp: "Kookadvies geldt nog steeds, ook al ziet het water er beter uit. Wacht op bericht van Vitens." Meerdere mensen reageren met een duim omhoog.',
     cat: 'cat-social',
     stateChange: {
       followedOfficialAdvice: true
+    }
+  }, {
+    text: '😰 Zelf aannemen dat het wel weer goed zal zijn',
+    consequence: 'Het ziet er helder uit, dus het zal wel in orde zijn. Je gebruikt het water ongekookt. Later begrijp je dat uiterlijk niets zegt over of het water veilig is.',
+    stateChange: {
+      health: -1
     }
   }]
 }, {
@@ -231,15 +231,15 @@ const scenes_drinkwater = [{
     return 'Je denkt na over je voorraad voor vanavond en morgenochtend. De supermarkt is nog open, maar meer mensen hebben hetzelfde idee.' + auto;
   },
   choices: [{
-    text: '🏠 Thuis blijven en zuinig omgaan met wat je al hebt',
-    consequence: 'Je bekijkt je voorraad. Er is genoeg voor vanavond als je zuinig omgaat met wat je hebt. Kraanwater koken kost tijd, maar het werkt. Je blijft thuis.',
-    stateChange: {}
-  }, {
     text: '🛒 Toch naar de supermarkt gaan',
     consequence: 'Je loopt naar de supermarkt. De schappen met flessenwater zijn leeg. Wel koop je een paar pakken appelsap en een extra blik soep. Niet ideaal, maar het helpt.',
     stateChange: {
       food: 1
     }
+  }, {
+    text: '🏠 Thuis blijven en zuinig omgaan met wat je al hebt',
+    consequence: 'Je bekijkt je voorraad. Er is genoeg voor vanavond als je zuinig omgaat met wat je hebt. Kraanwater koken kost tijd, maar het werkt. Je blijft thuis.',
+    stateChange: {}
   }, {
     text: '🤝 Een buur vragen of jullie samen slim kunnen verdelen',
     consequence: 'Je klopt bij Ans aan. Samen bekijken jullie wat jullie in huis hebben. Ans heeft nog een grote kan schoon water. Jij hebt meer eten. Je spreekt af dat jullie vanavond samen koken.',
@@ -308,6 +308,12 @@ const scenes_drinkwater = [{
     return 'Het water loopt nog wel, maar je gebruikt het nu anders dan normaal. ' + eigen + ' Dan stuurt Ans een appje.';
   },
   choices: [{
+    text: '🏠 Niets geven, je hebt zelf ook niet veel',
+    consequence: 'Je legt de telefoon neer. Je hebt zelf ook niet genoeg. Ans redt zich wel. Maar het voelt niet prettig.',
+    stateChange: {
+      comfort: -1
+    }
+  }, {
     text: '🤝 Een fles meegeven als je dat kunt missen',
     consequence: 'Je neemt een gevulde fles mee naar Ans. Ze is opgelucht. "Ik kook zelf ook wel," zegt ze, "maar zo\'n volle fles is fijn voor vanavond." Je eigen voorraad is wat kleiner, maar je weet dat je meer kunt koken.',
     cat: 'cat-social',
@@ -321,12 +327,6 @@ const scenes_drinkwater = [{
     cat: 'cat-social',
     stateChange: {
       helpedNeighbor: true
-    }
-  }, {
-    text: '🏠 Niets geven, je hebt zelf ook niet veel',
-    consequence: 'Je legt de telefoon neer. Je hebt zelf ook niet genoeg. Ans redt zich wel. Maar het voelt niet prettig.',
-    stateChange: {
-      comfort: -1
     }
   }]
 }, {

@@ -90,6 +90,12 @@ const scenes_thuis_komen = [{
   },
   narrative: 'Ineens worden de beeldschermen zwart. Het licht valt uit. De ventilatie stopt. Het is stil... Daarna hoor je alleen verbaasde stemmen en korte vragen. Je telefoon doet het nog, maar het signaal is zwak.',
   choices: [{
+    text: '🚗 Spullen bij elkaar zoeken zodat je weg kunt',
+    consequence: 'Je begint je spullen te verzamelen. Laptop in de tas, jas aan. Je weet nog niet wanneer je vertrekt, maar je wilt klaar zijn als het nodig is.',
+    stateChange: {
+      awarenessLevel: 1
+    }
+  }, {
     text: '💻 Doorwerken op laptopbatterij',
     consequence: 'Je klapt je laptop open. Batterij op 62%. De wifi is weg, dus je verbindt via je telefoon. Het werkt, maar traag. Het netwerk raakt vol. Na een kwartier geef je het op. Dit schiet niet op.',
     stateChange: {}
@@ -99,12 +105,6 @@ const scenes_thuis_komen = [{
     stateChange: () => ({
       phoneBattery: Math.min(100, state.phoneBattery + 30) - state.phoneBattery
     })
-  }, {
-    text: '🚗 Spullen bij elkaar zoeken zodat je weg kunt',
-    consequence: 'Je begint je spullen te verzamelen. Laptop in de tas, jas aan. Je weet nog niet wanneer je vertrekt, maar je wilt klaar zijn als het nodig is.',
-    stateChange: {
-      awarenessLevel: 1
-    }
   }]
 }, {
   id: 'tk_2',
@@ -160,13 +160,13 @@ const scenes_thuis_komen = [{
       leftEarly: true
     }
   }, {
-    text: '⏳ Nog even op kantoor afwachten wat er gaat komen',
-    consequence: 'Je blijft nog even. Een collega heeft een powerbank, dus je laadt je telefoon bij. Om 13:00 vertrek je alsnog, maar dan staat alles vast.',
-    stateChange: {}
-  }, {
     conditionalOn: () => profile.adults > 1,
     text: '📱 Partner bellen om af te stemmen',
     consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, het netwerk zit vol. Je stuurt een bericht: "Ik kom naar huis, geen idee hoe laat ik aankom." Pas veel later zie je een leesteken. Meer contact lukt voorlopig niet.' : 'Je telefoon is leeg. Je kunt je partner niet bereiken.',
+    stateChange: {}
+  }, {
+    text: '⏳ Nog even op kantoor afwachten wat er gaat komen',
+    consequence: 'Je blijft nog even. Een collega heeft een powerbank, dus je laadt je telefoon bij. Om 13:00 vertrek je alsnog, maar dan staat alles vast.',
     stateChange: {}
   }]
 }, {
@@ -194,6 +194,12 @@ const scenes_thuis_komen = [{
     return context + ' Buiten op straat loopt het verkeer nu al vast.';
   },
   choices: [{
+    text: '🏫 School kan ze opvangen tot 18:00, hopelijk is dat genoeg',
+    consequence: 'Je laat school de opvang voorlopig doen. De kinderen zijn veilig. Eerst moet jij thuiskomen.',
+    stateChange: {
+      kidsArranged: false
+    }
+  }, {
     text: '📱 Vragen of de kinderen bij een vriendje kunnen blijven',
     consequence: () => state.phoneBattery > 0 ?
       'Je belt of stuurt snel een bericht naar een andere ouders. Na wat heen en weer is er iemand die ze wil opvangen. De kinderen zijn veilig. Je haalt ze later op.' :
@@ -207,12 +213,6 @@ const scenes_thuis_komen = [{
     stateChange: () => state.phoneBattery > 0 ? {
       kidsArranged: true
     } : {}
-  }, {
-    text: '🏫 School kan ze opvangen tot 18:00, hopelijk is dat genoeg',
-    consequence: 'Je laat school de opvang voorlopig doen. De kinderen zijn veilig. Eerst moet jij thuiskomen.',
-    stateChange: {
-      kidsArranged: false
-    }
   }]
 }, {
   id: 'tk_3b',
@@ -341,12 +341,6 @@ const scenes_thuis_komen = [{
       arriveHomeAt1743: true
     }
   }, {
-    text: '📱 Telefoon opladen via de auto terwijl je rijdt',
-    consequence: 'Je sluit je telefoon aan op de USB-poort van de auto. Terwijl je stapvoets vooruitgaat, laadt hij langzaam op.',
-    stateChange: () => ({
-      phoneBattery: Math.min(100, state.phoneBattery + 30) - state.phoneBattery
-    })
-  }, {
     text: '⛽ Tanken bij een tankstation',
     failCondition: () => state.cash < 75,
     failConsequence: () => `Je rijdt een tankstation op. Bij de kassa hangt een briefje: "Alleen contant." Je hebt €${state.cash} bij je — niet genoeg voor €75. Je rijdt verder op wat je nog hebt. Kies een andere optie.`,
@@ -358,6 +352,12 @@ const scenes_thuis_komen = [{
     stateChange: {
       travelMode: 'walking'
     }
+  }, {
+    text: '📱 Telefoon opladen via de auto terwijl je rijdt',
+    consequence: 'Je sluit je telefoon aan op de USB-poort van de auto. Terwijl je stapvoets vooruitgaat, laadt hij langzaam op.',
+    stateChange: () => ({
+      phoneBattery: Math.min(100, state.phoneBattery + 30) - state.phoneBattery
+    })
   }]
 }, {
   id: 'tk_4c',
@@ -381,12 +381,6 @@ const scenes_thuis_komen = [{
   },
   narrative: 'Het station staat vol met mensen. Honderden reizigers wachten bij de gesloten poortjes. Een NS-medewerker roept door een megafoon: "Er rijden vandaag geen treinen. Verlaat het station." Meteen ontstaat er onrust.',
   choices: [{
-    text: '⏳ Wachten, misschien gaan er later toch treinen rijden',
-    consequence: 'Je wacht twee uur. Er gebeurt niets. Die tijd ben je kwijt. Daarna moet je alsnog een alternatief zoeken.',
-    stateChange: {
-      travelMode: 'searching'
-    }
-  }, {
     text: '🚌 Alternatief zoeken met bus, taxi of lift',
     consequence: 'Je loopt het station uit en kijkt rond. Buiten vragen mensen wie welke kant op moet. Je kunt meerijden met iemand die dezelfde richting op gaat.',
     stateChange: {
@@ -405,6 +399,12 @@ const scenes_thuis_komen = [{
     } : {
       travelMode: 'walking',
       arriveHomeAt1743: true
+    }
+  }, {
+    text: '⏳ Wachten, misschien gaan er later toch treinen rijden',
+    consequence: 'Je wacht twee uur. Er gebeurt niets. Die tijd ben je kwijt. Daarna moet je alsnog een alternatief zoeken.',
+    stateChange: {
+      travelMode: 'searching'
     }
   }]
 }, {
@@ -492,16 +492,6 @@ const scenes_thuis_komen = [{
       cash: -10
     })
   }, {
-    text: '🚶 Te voet verder',
-    consequence: () => profile.commuteDistance === 'near' ?
-      'Je besluit het laatste stuk te lopen. Het duurt langer dan je hoopte, maar tegen het einde van de middag bereik je je straat.' :
-      'Je begint te lopen. Na een uur vraag je je af of je het thuis gaat halen.',
-    stateChange: () => profile.commuteDistance === 'near' ? {
-      arriveHomeAt1743: true
-    } : {
-      travelMode: 'walking'
-    }
-  }, {
     text: '🚕 Taxi zoeken',
     failCondition: () => state.cash < (profile.commuteDistance === 'near' ? 50 : profile.commuteDistance === 'far' ? 180 : 110),
     failConsequence: () => {
@@ -522,6 +512,16 @@ const scenes_thuis_komen = [{
     stateChange: {
       foundAlternative: true,
       travelMode: 'ride'
+    }
+  }, {
+    text: '🚶 Te voet verder',
+    consequence: () => profile.commuteDistance === 'near' ?
+      'Je besluit het laatste stuk te lopen. Het duurt langer dan je hoopte, maar tegen het einde van de middag bereik je je straat.' :
+      'Je begint te lopen. Na een uur vraag je je af of je het thuis gaat halen.',
+    stateChange: () => profile.commuteDistance === 'near' ? {
+      arriveHomeAt1743: true
+    } : {
+      travelMode: 'walking'
     }
   }]
 }, {
@@ -610,17 +610,17 @@ const scenes_thuis_komen = [{
     return 'Je bent al een tijd onderweg. Je bent moe, maar je komt wel vooruit. Nog een uur of twee.' + busStopNote;
   },
   choices: [{
-    text: '💪 Doorgaan, ik kom er wel',
-    consequence: 'Je blijft doorgaan. Het kost energie, maar je blijft meters maken. Net als het begint te schemeren draai je eindelijk je straat in.',
-    stateChange: {
-      arriveHomeAt1743: true
-    }
-  }, {
     text: '🍎 Ergens stoppen voor eten',
     failCondition: () => state.cash < 10,
     failConsequence: 'Je stapt een bakker binnen, maar je hebt geen contant geld. De bakker wil niet anders. Je loopt met lege handen verder.',
     consequence: 'Je stapt een bakker binnen. "Alleen contant." Je legt een tientje neer en krijgt een broodje en een fles water. Dat helpt meteen. Daarna loop je door en haal je nog voor de avond je huis.',
     stateChange: { food: 1, cash: -10, arriveHomeAt1743: true }
+  }, {
+    text: '💪 Doorgaan, ik kom er wel',
+    consequence: 'Je blijft doorgaan. Het kost energie, maar je blijft meters maken. Net als het begint te schemeren draai je eindelijk je straat in.',
+    stateChange: {
+      arriveHomeAt1743: true
+    }
   }, {
     text: '🤝 De mevrouw bij het bushokje helpen',
     consequence: 'Je loopt naar haar toe. Ze zit er al een uur en weet niet meer hoe ze thuis moet komen. Je helpt haar haar dochter te bereiken. Die komt haar ophalen. Het kost je tijd, maar daarna haal je nog net voor de avond je huis.',
@@ -717,11 +717,12 @@ const scenes_thuis_komen = [{
       reachedHome: true
     }
   }, {
-    text: () => profile.adults > 1 ? '📱 Partner en familie laten weten dat je veilig bent' : '📱 Familie laten weten dat je veilig bent',
-    consequence: () => state.phoneBattery > 0 ? 'Je stuurt snel een paar berichten. Iedereen was ongerust. Nu weten ze dat je veilig thuis bent.' : 'Je telefoon is leeg. Je kunt niemand meer bereiken, maar je bent wel veilig thuis.',
+    text: '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
+    consequence: 'Je loopt een rustige ronde door het huis. Alles is in orde. De kaarsjes staan veilig en het gas is dicht.',
     stateChange: {
       reachedHome: true
-    }
+    },
+    conditionalOn: () => !profile.hasChildren || state.kidsPickedUp
   }, {
     text: '👶 Kinderen ophalen op de afgesproken plek',
     consequence: 'Je zet je tas neer en gaat meteen weer op pad. Gelukkig ben je nog ruim op tijd. De kinderen zijn veilig opgevangen en opgelucht je te zien.',
@@ -739,12 +740,11 @@ const scenes_thuis_komen = [{
     },
     conditionalOn: () => profile.hasChildren && !state.kidsPickedUp && !state.kidsArranged
   }, {
-    text: '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
-    consequence: 'Je loopt een rustige ronde door het huis. Alles is in orde. De kaarsjes staan veilig en het gas is dicht.',
+    text: () => profile.adults > 1 ? '📱 Partner en familie laten weten dat je veilig bent' : '📱 Familie laten weten dat je veilig bent',
+    consequence: () => state.phoneBattery > 0 ? 'Je stuurt snel een paar berichten. Iedereen was ongerust. Nu weten ze dat je veilig thuis bent.' : 'Je telefoon is leeg. Je kunt niemand meer bereiken, maar je bent wel veilig thuis.',
     stateChange: {
       reachedHome: true
-    },
-    conditionalOn: () => !profile.hasChildren || state.kidsPickedUp
+    }
   }]
 }, {
   id: 'tk_5b',
@@ -834,11 +834,12 @@ const scenes_thuis_komen = [{
       reachedHome: true
     }
   }, {
-    text: () => profile.adults > 1 ? '📱 Partner en familie laten weten dat je veilig bent' : '📱 Familie laten weten dat je veilig bent',
-    consequence: () => state.phoneBattery > 0 ? 'Je stuurt berichten. Iedereen was ongerust. Nu weten ze dat je veilig thuis bent.' : 'Je telefoon is leeg. Je kunt niemand bereiken.',
+    text: '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
+    consequence: 'Je loopt door het huis. Alles is in orde. De kaarsjes staan veilig in houders en het gas is dicht.',
     stateChange: {
       reachedHome: true
-    }
+    },
+    conditionalOn: () => !profile.hasChildren || state.kidsPickedUp
   }, {
     text: '👶 Kinderen ophalen op de afgesproken plek',
     consequence: 'Je zet je tas neer en gaat er direct weer op uit. De kinderen zijn veilig opgevangen en blij je te zien zodra je aankomt.',
@@ -854,12 +855,11 @@ const scenes_thuis_komen = [{
     },
     conditionalOn: () => profile.hasChildren && !state.kidsPickedUp && !state.kidsArranged
   }, {
-    text: '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
-    consequence: 'Je loopt door het huis. Alles is in orde. De kaarsjes staan veilig in houders en het gas is dicht.',
+    text: () => profile.adults > 1 ? '📱 Partner en familie laten weten dat je veilig bent' : '📱 Familie laten weten dat je veilig bent',
+    consequence: () => state.phoneBattery > 0 ? 'Je stuurt berichten. Iedereen was ongerust. Nu weten ze dat je veilig thuis bent.' : 'Je telefoon is leeg. Je kunt niemand bereiken.',
     stateChange: {
       reachedHome: true
-    },
-    conditionalOn: () => !profile.hasChildren || state.kidsPickedUp
+    }
   }]
 }, ];
 
