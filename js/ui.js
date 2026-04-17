@@ -74,8 +74,8 @@ function triggerAlert(text) {
   const timeLine  = lines[1] || '';
   const bodyLines = lines.slice(2);
 
-  // Stel de volledige weergavetekst samen: titel + tijdstip + berichttekst
-  const fullText = 'NL-Alert ' + timeLine + '\n\n' + bodyLines.join('\n').trim();
+  // Stel de berichttekst samen: tijdstip + berichttekst (titel staat als vaste subtitle in HTML)
+  const fullText = 'NL-Alert ' + timeLine + '\n' + bodyLines.join('\n').trim();
   document.getElementById('overlay-text').textContent = fullText;
 
   // Sla het huidige focuselement op voor herstel na sluiten

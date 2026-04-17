@@ -310,7 +310,7 @@ const scenes_thuis_komen = [{
     }
   }]
 }, {
-  id: 'tk_4a',
+  id: 'tk_4b',
   time: '13:15',
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
@@ -360,7 +360,7 @@ const scenes_thuis_komen = [{
     }
   }]
 }, {
-  id: 'tk_4b',
+  id: 'tk_4c',
   time: '13:15',
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
@@ -408,7 +408,7 @@ const scenes_thuis_komen = [{
     }
   }]
 }, {
-  id: 'tk_4d',
+  id: 'tk_4e',
   time: '13:15',
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
@@ -461,7 +461,7 @@ const scenes_thuis_komen = [{
     }
   }]
 }, {
-  id: 'tk_4c',
+  id: 'tk_4d',
   time: '14:15',
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
@@ -525,7 +525,7 @@ const scenes_thuis_komen = [{
     }
   }]
 }, {
-  id: 'tk_4e',
+  id: 'tk_4f',
   time: '15:30',
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
@@ -630,7 +630,7 @@ const scenes_thuis_komen = [{
     }
   }]
 }, {
-  id: 'tk_5m',
+  id: 'tk_5d',
   time: '15:30',
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
@@ -873,13 +873,13 @@ const sceneImages_thuis_komen = {
   tk_2b: THUIS_KOMEN_VISUALS.office,
   tk_3b: THUIS_KOMEN_VISUALS.office,
   tk_3:  THUIS_KOMEN_VISUALS.walking,
-  tk_4a: THUIS_KOMEN_VISUALS.car,
-  tk_4b: THUIS_KOMEN_VISUALS.train,
-  tk_4c: THUIS_KOMEN_VISUALS.bus,
-  tk_4d: THUIS_KOMEN_VISUALS.walking,
+  tk_4b: THUIS_KOMEN_VISUALS.car,
+  tk_4c: THUIS_KOMEN_VISUALS.train,
+  tk_4d: THUIS_KOMEN_VISUALS.bus,
   tk_4e: THUIS_KOMEN_VISUALS.walking,
+  tk_4f: THUIS_KOMEN_VISUALS.walking,
   tk_5:  THUIS_KOMEN_VISUALS.walking,
-  tk_5m: THUIS_KOMEN_VISUALS.walking,
+  tk_5d: THUIS_KOMEN_VISUALS.walking,
   tk_5c: THUIS_KOMEN_VISUALS.home,
   tk_5b: THUIS_KOMEN_VISUALS.walking,
   tk_6:  THUIS_KOMEN_VISUALS.home,

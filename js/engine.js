@@ -1028,6 +1028,10 @@ const CHOICE_ICON_MAP = {
     icon: 'lightbulb',
     cat: 'cat-info'
   },
+  '💻': {
+    icon: 'laptop',
+    cat: 'cat-info'
+  },
   '📱': {
     icon: 'smartphone',
     cat: 'cat-info'
@@ -1097,6 +1101,14 @@ const CHOICE_ICON_MAP = {
     icon: 'house',
     cat: 'cat-social'
   },
+  '👋': {
+    icon: 'users',
+    cat: 'cat-social'
+  },
+  '🧓': {
+    icon: 'user',
+    cat: 'cat-social'
+  },
   // Voorraden
   '💵': {
     icon: 'banknote',
@@ -1163,7 +1175,19 @@ const CHOICE_ICON_MAP = {
     cat: 'cat-action'
   },
   // Actie / beweging
+  '💼': {
+    icon: 'briefcase',
+    cat: 'cat-neutral'
+  },
   '🚗': {
+    icon: 'car',
+    cat: 'cat-action'
+  },
+  '🚕': {
+    icon: 'car',
+    cat: 'cat-action'
+  },
+  '🚘': {
     icon: 'car',
     cat: 'cat-action'
   },
@@ -1190,6 +1214,30 @@ const CHOICE_ICON_MAP = {
   '🚂': {
     icon: 'train',
     cat: 'cat-action'
+  },
+  '⛽': {
+    icon: 'zap',
+    cat: 'cat-action'
+  },
+  '🛣️': {
+    icon: 'footprints',
+    cat: 'cat-action'
+  },
+  '💪': {
+    icon: 'arrow-right',
+    cat: 'cat-action'
+  },
+  '🍎': {
+    icon: 'utensils',
+    cat: 'cat-supply'
+  },
+  '🥪': {
+    icon: 'utensils',
+    cat: 'cat-supply'
+  },
+  '👶': {
+    icon: 'user',
+    cat: 'cat-social'
   },
   '🏠': {
     icon: 'house',
@@ -1425,6 +1473,34 @@ const CHOICE_ICON_MAP = {
   '🏫': {
     icon: 'building-2',
     cat: 'cat-action'
+  },
+  '⏭️': {
+    icon: 'arrow-right',
+    cat: 'cat-action'
+  },
+  '🌅': {
+    icon: 'clock',
+    cat: 'cat-neutral'
+  },
+  '🌿': {
+    icon: 'tree-pine',
+    cat: 'cat-neutral'
+  },
+  '💎': {
+    icon: 'award',
+    cat: 'cat-neutral'
+  },
+  '📸': {
+    icon: 'eye',
+    cat: 'cat-info'
+  },
+  '🛏️': {
+    icon: 'moon',
+    cat: 'cat-neutral'
+  },
+  '🧣': {
+    icon: 'heart',
+    cat: 'cat-supply'
   },
 };
 

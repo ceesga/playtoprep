@@ -868,9 +868,9 @@ const scenes_stroom = [
       stateChange: {}
     }]
   },
-  // SCENE 12a — Rob aan de deur
+  // SCENE 10b — Rob aan de deur
   {
-    id: 'st_10a',
+    id: 'st_10b',
     time: '14:15',
     date: 'Maandag 1 februari 2027',
     dayBadge: 'Dag 2',
@@ -1314,7 +1314,7 @@ const sceneImages_stroom = {
   st_9:        'afbeelding/stroomstoring/Huis_winter2.png',
   st_autolaad: 'afbeelding/stroomstoring/Huis_winter2.png',
   st_watertruck:'afbeelding/stroomstoring/Huis_winter2.png',
-  st_10a:      'afbeelding/stroomstoring/Huis_winter2.png',
+  st_10b:      'afbeelding/stroomstoring/Huis_winter2.png',
   st_10:       'afbeelding/stroomstoring/Huis_winter2.png',
   st_d1_avond: 'afbeelding/stroomstoring/Huis_winter2.png',
   st_11:       'afbeelding/stroomstoring/Huis_winter2.png',
