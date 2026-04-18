@@ -276,6 +276,18 @@ De nieuwe aanpak voorkomt dat door:
 - alleen scenario-startspecifieke overrides toe te voegen via `buildScenarioStartState()`
 - savegames te hydrateren bovenop defaults in plaats van op mogelijk verouderde objectvormen
 
+## 8. Voertuiggroepen (april 2026)
+
+De intake-voertuigstap werkt met twee groepen; binnen elke groep kan maximaal één voertuig geselecteerd worden:
+
+| Groep | Voertuigen | Scenario-capabilities |
+|---|---|---|
+| Motorvoertuig | `auto`, `motor` | radio in voertuig, USB-opladen, tankstation |
+| Licht voertuig | `fiets`, `scooter`, `e-bike` | geen radio/oplader; achterpaden mogelijk |
+
+Profile-flags: `hasCar`, `hasMotorcycle`, `hasScooter`, `hasEbike`, `hasBike`.
+Scenario-code gebruikt `profile.hasCar \|\| profile.hasMotorcycle` als "heeft motorvoertuig"-check.
+
 ## 8. Waarom Deze Architectuur Schaalbaarder Is
 
 Een nieuw scenario toevoegen vraagt nu in principe om drie dingen:

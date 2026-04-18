@@ -614,19 +614,37 @@ function renderVehicleStep() {
     ? (selectedOverigeSubType ? `afbeelding/avatars/woningtype/${selectedOverigeSubType}.png` : '')
     : (_houseTypeObj ? houseImgSrc(_houseTypeObj) : '');
 
-  // Bouw de twee vervoersopties (auto en fiets)
-  const vehicleOpts = ['auto', 'fiets'].map(v =>
-    `<div class="hh-vehicle-opt${selectedVehicles.includes(v) ? ' selected' : ''}" data-val="${v}" role="button" tabindex="0" aria-pressed="${selectedVehicles.includes(v)}" aria-label="${v.charAt(0).toUpperCase() + v.slice(1)}" onclick="toggleVehicle('${v}')" onkeydown="handleSetupOptionKey(event,'vehicle','${v}')">
-      <img src="afbeelding/avatars/vehicles/${v}.png" alt="${v}">
-      <span>${v.charAt(0).toUpperCase() + v.slice(1)}</span>
-    </div>`
-  ).join('');
+  const motorGroep = [
+    { val: 'auto',  label: 'Auto' },
+    { val: 'motor', label: 'Motor', src: 'motor_cycle' }
+  ];
+  const fietsGroep = [
+    { val: 'fiets',  label: 'Fiets' },
+    { val: 'scooter', label: 'Scooter' },
+    { val: 'e-bike', label: 'E-bike' }
+  ];
+
+  function buildVehicleGroup(label, items) {
+    const opts = items.map(({ val, label: lbl, src }) => {
+      const imgSrc = src || val;
+      return `<div class="hh-vehicle-opt${selectedVehicles.includes(val) ? ' selected' : ''}" data-val="${val}" role="button" tabindex="0" aria-pressed="${selectedVehicles.includes(val)}" aria-label="${lbl}" onclick="toggleVehicle('${val}')" onkeydown="handleSetupOptionKey(event,'vehicle','${val}')">
+        <img src="afbeelding/avatars/vehicles/${imgSrc}.png" alt="${lbl}">
+        <span>${lbl}</span>
+      </div>`;
+    }).join('');
+    return `<div class="hh-vehicle-group"><div class="hh-vehicle-group-label">${label}</div><div class="hh-vehicle-group-row">${opts}</div></div>`;
+  }
+
+  const vehicleOpts = buildVehicleGroup('Motorvoertuig', motorGroep) + buildVehicleGroup('Licht voertuig', fietsGroep);
 
   document.getElementById('intake-household').innerHTML = `
     <div id="hh-stage">
       <img id="hh-house-bg" src="${houseSrc}" alt="" class="${selectedHouseType ? 'visible' : ''}${houseStijlKlasse(selectedHouseType) ? ' ' + houseStijlKlasse(selectedHouseType) : ''}">
-      <img class="hh-stage-vehicle left" data-val="fiets" src="afbeelding/avatars/vehicles/fiets.png" alt="" style="display:${selectedVehicles.includes('fiets')?'block':'none'}">
-      <img class="hh-stage-vehicle right" data-val="auto" src="afbeelding/avatars/vehicles/auto.png" alt="" style="display:${selectedVehicles.includes('auto')?'block':'none'}">
+      <img class="hh-stage-vehicle left" data-val="fiets"   src="afbeelding/avatars/vehicles/fiets.png"       alt="" style="display:${selectedVehicles.includes('fiets')?'block':'none'}">
+      <img class="hh-stage-vehicle left" data-val="scooter" src="afbeelding/avatars/vehicles/scooter.png"     alt="" style="display:${selectedVehicles.includes('scooter')?'block':'none'}">
+      <img class="hh-stage-vehicle left" data-val="e-bike"  src="afbeelding/avatars/vehicles/e-bike.png"      alt="" style="display:${selectedVehicles.includes('e-bike')?'block':'none'}">
+      <img class="hh-stage-vehicle right" data-val="auto"   src="afbeelding/avatars/vehicles/auto.png"        alt="" style="display:${selectedVehicles.includes('auto')?'block':'none'}">
+      <img class="hh-stage-vehicle right" data-val="motor"  src="afbeelding/avatars/vehicles/motor_cycle.png" alt="" style="display:${selectedVehicles.includes('motor')?'block':'none'}">
       <div id="hh-char-figures">${figures}</div>
       <div class="hh-pet-overlay">${petOverlay}</div>
       <div id="hh-avatar-picker" style="display:none"></div>
@@ -687,8 +705,11 @@ function renderEnvironmentStep() {
     <div id="hh-stage">
       ${buildEnvOverlay(selectedEnvironment)}
       <img id="hh-house-bg" src="${houseSrc}" alt="" class="${selectedHouseType ? 'visible' : ''}${houseStijlKlasse(selectedHouseType) ? ' ' + houseStijlKlasse(selectedHouseType) : ''}">
-      <img class="hh-stage-vehicle left" data-val="fiets" src="afbeelding/avatars/vehicles/fiets.png" alt="" style="display:${selectedVehicles.includes('fiets')?'block':'none'}">
-      <img class="hh-stage-vehicle right" data-val="auto" src="afbeelding/avatars/vehicles/auto.png" alt="" style="display:${selectedVehicles.includes('auto')?'block':'none'}">
+      <img class="hh-stage-vehicle left" data-val="fiets"   src="afbeelding/avatars/vehicles/fiets.png"       alt="" style="display:${selectedVehicles.includes('fiets')?'block':'none'}">
+      <img class="hh-stage-vehicle left" data-val="scooter" src="afbeelding/avatars/vehicles/scooter.png"     alt="" style="display:${selectedVehicles.includes('scooter')?'block':'none'}">
+      <img class="hh-stage-vehicle left" data-val="e-bike"  src="afbeelding/avatars/vehicles/e-bike.png"      alt="" style="display:${selectedVehicles.includes('e-bike')?'block':'none'}">
+      <img class="hh-stage-vehicle right" data-val="auto"   src="afbeelding/avatars/vehicles/auto.png"        alt="" style="display:${selectedVehicles.includes('auto')?'block':'none'}">
+      <img class="hh-stage-vehicle right" data-val="motor"  src="afbeelding/avatars/vehicles/motor_cycle.png" alt="" style="display:${selectedVehicles.includes('motor')?'block':'none'}">
       <div id="hh-char-figures">${figures}</div>
       <div class="hh-pet-overlay">${petOverlay}</div>
       <div id="hh-avatar-picker" style="display:none"></div>
@@ -725,9 +746,21 @@ function selectEnvironment(val) {
    zonder de hele stap te herbouwen.
 */
 function toggleVehicle(val) {
+  const motorGroepVals = ['auto', 'motor'];
+  const fietsGroepVals = ['fiets', 'scooter', 'e-bike'];
+  const groep = motorGroepVals.includes(val) ? motorGroepVals : fietsGroepVals;
+
   const idx = selectedVehicles.indexOf(val);
-  if (idx > -1) selectedVehicles.splice(idx, 1); // Al geselecteerd: verwijder
-  else selectedVehicles.push(val);               // Nog niet geselecteerd: voeg toe
+  if (idx > -1) {
+    selectedVehicles.splice(idx, 1); // Al geselecteerd: verwijder
+  } else {
+    // Verwijder eventueel ander geselecteerd voertuig uit dezelfde groep
+    groep.forEach(v => {
+      const i = selectedVehicles.indexOf(v);
+      if (i > -1) selectedVehicles.splice(i, 1);
+    });
+    selectedVehicles.push(val);
+  }
   // Toon of verberg de voertuigafbeeldingen in de stage op basis van selectie
   document.querySelectorAll('.hh-stage-vehicle').forEach(el =>
     el.style.display = selectedVehicles.includes(el.dataset.val) ? 'block' : 'none'
@@ -983,8 +1016,11 @@ function intakeNext() {
 
   // Stap -2: voertuigen → stap -1: omgeving
   if (intakeStep === -2) {
-    profile.hasCar = selectedVehicles.includes('auto');
-    profile.hasBike = selectedVehicles.includes('fiets');
+    profile.hasCar        = selectedVehicles.includes('auto');
+    profile.hasBike       = selectedVehicles.includes('fiets');
+    profile.hasMotorcycle = selectedVehicles.includes('motor');
+    profile.hasScooter    = selectedVehicles.includes('scooter');
+    profile.hasEbike      = selectedVehicles.includes('e-bike');
     intakeStep = -1;
     renderIntake();
     return;

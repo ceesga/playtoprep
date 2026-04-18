@@ -350,14 +350,18 @@ const scenes_natuurbrand = [{
   },
   get narrative() {
     const een = profile.childrenCount === 1;
+    const heeftMotorV = profile.hasCar || profile.hasMotorcycle;
+    const heeftFietsV = profile.hasBike || profile.hasScooter || profile.hasEbike;
     const vertrek = profile.hasCar
       ? 'De auto staat klaar.'
-      : profile.hasBike
-      ? 'De fietsen staan klaar.'
+      : profile.hasMotorcycle
+      ? 'De motor staat klaar.'
+      : heeftFietsV
+      ? `De ${profile.hasBike ? 'fietsen' : profile.hasScooter ? 'scooter' : 'e-bike'} staat klaar.`
       : 'Jullie staan klaar om te vertrekken.';
     const reden = profile.hasPets ? 'voor het huisdier' : 'voor een knuffel';
-    const buur = profile.hasCar
-      ? ' Je buurman toetert vanuit zijn auto.'
+    const buur = heeftMotorV
+      ? ` Je buurman toetert vanuit zijn ${profile.hasCar ? 'auto' : 'motor'}.`
       : ' Je buurman roept dat jullie moeten opschieten.';
     return een
       ? 'Je gaat evacueren. ' + vertrek + ' Maar bij de voordeur stokt het. Je kind wil terug naar binnen ' + reden + '. Tegelijk staat het stil naar de oranje lucht te kijken.' + buur
@@ -407,9 +411,12 @@ const scenes_natuurbrand = [{
     radio: null
   },
   get narrative() {
-    const geenAuto = !profile.hasCar
-      ? profile.hasBike
-        ? ' Je hebt geen auto, maar wel een fiets. De achterpaden zijn vrij van files.'
+    const heeftMotorVbf = profile.hasCar || profile.hasMotorcycle;
+    const heeftFietsVbf = profile.hasBike || profile.hasScooter || profile.hasEbike;
+    const fietsnaamBf   = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+    const geenAuto = !heeftMotorVbf
+      ? heeftFietsVbf
+        ? ` Je hebt geen auto, maar wel een ${fietsnaamBf}. De achterpaden zijn vrij van files.`
         : ' Je hebt geen auto en geen fiets. Je gaat te voet — drie kilometer door de rook.'
       : '';
     const huisdier = profile.hasPets
@@ -420,18 +427,27 @@ const scenes_natuurbrand = [{
     return 'Je verlaat het huis. De lucht is oranje-bruin en de rook is dik. Boven de wijk dreunt een brandweerhelikopter.' + (state.evacuatedEarly ? ' Omdat je vroeg bent vertrokken staat de weg nog vrij. Je ziet hoe de auto\'s achter je al beginnen op te stapelen.' : ' De straat staat vol met auto\'s die allemaal richting de uitvalswegen rijden.') + geenAuto + huisdier + ' Hoe ga je naar de noodopvang?';
   },
   choices: [{
-    conditionalOn: () => profile.hasCar,
-    text: '🚗 Met de auto via de hoofdweg',
-    consequence: () => state.evacuatedEarly
-      ? 'Je stapt in en voegt vroeg in op de hoofdweg. Het verkeer rijdt nog door, maar achter je wordt het snel drukker.'
-      : 'Je rijdt naar de hoofdweg. Daar staat nu al een file van twee kilometer. Iedereen heeft hetzelfde idee gehad.',
+    conditionalOn: () => profile.hasCar || profile.hasMotorcycle,
+    text: () => profile.hasCar ? '🚗 Met de auto via de hoofdweg' : '🚗 Met de motor via de hoofdweg',
+    consequence: () => {
+      const v = profile.hasCar ? 'auto' : 'motor';
+      return state.evacuatedEarly
+        ? `Je stapt op je ${v} en voegt vroeg in op de hoofdweg. Het verkeer rijdt nog door, maar achter je wordt het snel drukker.`
+        : `Je rijdt op je ${v} naar de hoofdweg. Daar staat nu al een file van twee kilometer. Iedereen heeft hetzelfde idee gehad.`;
+    },
     stateChange: {
       bfTravelMode: 'car'
     }
   }, {
-    conditionalOn: () => profile.hasBike && !profile.hasMobilityImpaired,
-    text: '🚲 Met de fiets via de achterpaden',
-    consequence: 'Je pakt de fiets. De achterpaden zijn vrij van auto\'s, maar de rook hangt er laag tussen de bomen.',
+    conditionalOn: () => (profile.hasBike || profile.hasScooter || profile.hasEbike) && !profile.hasMobilityImpaired,
+    text: () => {
+      const naam = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+      return `🚲 Met de ${naam} via de achterpaden`;
+    },
+    consequence: () => {
+      const naam = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+      return `Je pakt de ${naam}. De achterpaden zijn vrij van auto's, maar de rook hangt er laag tussen de bomen.`;
+    },
     stateChange: {
       bfTravelMode: 'bike'
     }
@@ -851,7 +867,11 @@ const scenes_natuurbrand = [{
       returnedHome: true
     }
   }, {
-    text: () => profile.hasCar ? '🚗 Alvast zelf gaan kijken bij de woning' : profile.hasBike ? '🚲 Alvast zelf gaan kijken bij de woning' : '🚶 Alvast zelf gaan kijken bij de woning',
+    text: () => {
+      if (profile.hasCar || profile.hasMotorcycle) return profile.hasCar ? '🚗 Alvast zelf gaan kijken bij de woning' : '🚗 Alvast zelf gaan kijken bij de woning';
+      if (profile.hasBike || profile.hasScooter || profile.hasEbike) return '🚲 Alvast zelf gaan kijken bij de woning';
+      return '🚶 Alvast zelf gaan kijken bij de woning';
+    },
     consequence: 'Je gaat alvast voorzichtig terug. Een politieagent bij de ingang laat je door. Het sein veilig is net gegeven. Je woning staat er nog.',
     stateChange: {
       returnedHome: true

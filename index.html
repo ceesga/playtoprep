@@ -268,7 +268,7 @@
 <div class="scenario-inventory" id="scenario-inventory">
   <div class="inventory-panel" id="inventory-panel" role="dialog" aria-modal="true" aria-labelledby="inventory-title" hidden>
     <div class="inventory-panel-header">
-      <span class="inventory-title">Inventaris</span>
+      <span class="inventory-title" id="inventory-title">Inventaris</span>
       <button type="button" class="inventory-close" onclick="closeInventory()" aria-label="Inventaris sluiten">✕</button>
     </div>
     <div class="inventory-panel-body" id="inventory-body"></div>
@@ -356,7 +356,7 @@
 </button>
 
 <!-- Globale klok — reële tijd, zichtbaar vanaf intake (niet op start/scenario) -->
-<div id="global-clock" class="sc-topbar-left global-clock-fixed" style="display:none" aria-live="polite" aria-label="Huidige tijd">
+<div id="global-clock" class="sc-topbar-left global-clock-fixed" style="display:none" aria-live="off" aria-label="Huidige tijd">
   <div class="sc-time-row">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sc-clock-icon" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
     <span class="time-big" id="global-clock-time">12:00</span>

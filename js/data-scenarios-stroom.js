@@ -269,8 +269,9 @@ const scenes_stroom = [
           ? ' Meteen denk je: school morgen, eten, hoe leg je dit uit aan een kind?'
           : ' Meteen denk je: school morgen, eten, hoe leg je dit uit aan de kinderen?')
         : '';
-      const afgelegen = !profile.hasCar && !profile.location.includes('city')
-        ? ' Je woont buiten het centrum en hebt geen auto. Als je ergens naartoe moet, ben je afhankelijk van je eigen benen of je fiets.'
+      const heeftMotorVoertuig = profile.hasCar || profile.hasMotorcycle;
+      const afgelegen = !heeftMotorVoertuig && !profile.location.includes('city')
+        ? ' Je woont buiten het centrum en hebt geen motorvoertuig. Als je ergens naartoe moet, ben je afhankelijk van je eigen benen of je fiets.'
         : '';
       return 'De stroom valt opnieuw uit. Alles wordt stil. Dit keer voelt het anders — geen gezoem van apparaten, geen standby-lampjes, niets. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.' + kinderen + afgelegen;
     },
@@ -282,9 +283,12 @@ const scenes_stroom = [
         water: 2
       }
     }, {
-      conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
-      text: '🚗 Naar de auto en de radio aanzetten',
-      consequence: 'Je loopt naar de auto en zet de radio aan. Radio 1 is nog in de lucht en vertelt dat de storing groot is en lang kan duren. De radio wordt nu je belangrijkste bron van informatie.',
+      conditionalOn: () => profile.hasRadio !== 'ja' && (profile.hasCar || profile.hasMotorcycle),
+      text: () => profile.hasCar ? '🚗 Naar de auto en de radio aanzetten' : '🚗 Naar de motor en de radio aanzetten',
+      consequence: () => {
+        const v = profile.hasCar ? 'auto' : 'motor';
+        return `Je loopt naar de ${v} en zet de radio aan. Radio 1 is nog in de lucht en vertelt dat de storing groot is en lang kan duren. De radio wordt nu je belangrijkste bron van informatie.`;
+      },
       stateChange: {
         hasCarRadio: true
       }
@@ -359,9 +363,12 @@ const scenes_stroom = [
       consequence: 'Je maakt een overzicht: wat ligt er in de vriezer, de kelder, de kast? Je weet nu wat je hebt.',
       stateChange: {}
     }, {
-      conditionalOn: () => profile.hasCar,
-      text: '🚗 Met de auto naar een tankstation voor benzine',
-      consequence: 'Bij het tankstation staat een rij van 40 auto\'s. Na een uur wachten krijg je te horen: "Alleen voor hulpdiensten." Teleurgesteld rij je terug. Je hebt gezien hoe gespannen de sfeer buiten is.',
+      conditionalOn: () => profile.hasCar || profile.hasMotorcycle,
+      text: () => profile.hasCar ? '🚗 Met de auto naar een tankstation voor benzine' : '🚗 Met de motor naar een tankstation voor benzine',
+      consequence: () => {
+        const v = profile.hasCar ? 'auto' : 'motor';
+        return `Bij het tankstation staat een rij. Na een uur wachten krijg je te horen: "Alleen voor hulpdiensten." Teleurgesteld rij je terug op je ${v}. Je hebt gezien hoe gespannen de sfeer buiten is.`;
+      },
       stateChange: {}
     }, {
       text: '👴 Even bij de buren langs of alles goed is',
@@ -389,9 +396,12 @@ const scenes_stroom = [
       const kinderen = profile.hasChildren
         ? ' Je zet de kinderen op je mentale lijstje: genoeg eten voor de komende dagen, en iets voor als ze zich vervelen zonder licht of scherm.'
         : '';
-      const vervoer = !profile.hasCar
-        ? profile.hasBike
-          ? ' Je bent met de fiets. Je kunt niet zoveel meenemen — je moet kiezen wat je pakt.'
+      const heeftMotorV = profile.hasCar || profile.hasMotorcycle;
+      const heeftFietsV = profile.hasBike || profile.hasScooter || profile.hasEbike;
+      const fietsnaamV  = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+      const vervoer = !heeftMotorV
+        ? heeftFietsV
+          ? ` Je bent met de ${fietsnaamV}. Je kunt niet zoveel meenemen — je moet kiezen wat je pakt.`
           : ' Je bent te voet gekomen. Je kunt niet veel sjouwen — je kiest verstandig.'
         : '';
       return 'Je staat in de rij bij de supermarkt. Er staan minstens 60 mensen voor je. Iedereen praat zachtjes of staart naar hun telefoon. Een vrouw vooraan begint hard te schreeuwen dat ze voordringt omdat ze kleine kinderen heeft. Er ontstaat een discussie. Een beveiliger doet zijn best maar is duidelijk nerveus. Als je eindelijk binnen bent: de schappen zijn al behoorlijk uitgedund. Drinkwater is uitverkocht. Hetzelfde geldt voor wc-papier, olie, benzine en lucifers. Honing en blikopeners zijn ook al weg.' + kinderen + vervoer;
@@ -446,8 +456,8 @@ const scenes_stroom = [
           ? ' School morgen? Kinderopvang? Je weet het niet. Je kind merkt dat er iets mis is.'
           : ' School morgen? Kinderopvang? Je weet het niet. De kinderen merken dat er iets mis is.')
         : '';
-      const geenAuto = !profile.hasCar && !profile.location.includes('city')
-        ? ' Zonder auto is alles buiten je directe buurt ineens ver weg.'
+      const geenAuto = !(profile.hasCar || profile.hasMotorcycle) && !profile.location.includes('city')
+        ? ' Zonder motorvoertuig is alles buiten je directe buurt ineens ver weg.'
         : '';
       return 'Het begint door te dringen: dit is geen storing van een uur. ' + supermarkt + ' Buiten hoor je meer sirenes. Je ziet een auto voorbijrijden die heel langzaam rijdt, alsof de bestuurder ook niet weet wat te doen.' + kinderen + geenAuto;
     },
@@ -460,9 +470,12 @@ const scenes_stroom = [
         water: 2
       }
     }, {
-      conditionalOn: () => profile.hasCar,
-      text: '🔋 Telefoon en apparaten opladen via de auto',
-      consequence: 'Je loopt naar de auto, start hem op en sluit de telefoon aan via USB. Na een halfuur: +40%. De auto als noodgenerator.',
+      conditionalOn: () => profile.hasCar || profile.hasMotorcycle,
+      text: () => profile.hasCar ? '🔋 Telefoon en apparaten opladen via de auto' : '🔋 Telefoon en apparaten opladen via de motor',
+      consequence: () => {
+        const v = profile.hasCar ? 'auto' : 'motor';
+        return `Je loopt naar de ${v}, start hem op en sluit de telefoon aan via USB. Na een halfuur: +40%. De ${v} als noodgenerator.`;
+      },
       stateChange: {
         phoneBattery: 40
       }
@@ -722,9 +735,12 @@ const scenes_stroom = [
       consequence: 'Op de radio hoor je: "De stroomstoring duurt voort. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Herstel wordt niet voor morgennacht verwacht." Morgennacht dus.',
       stateChange: {}
     }, {
-      conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
-      text: '🚗 Zet de radio aan voor nieuws',
-      consequence: 'Je loopt naar de auto en zet de radio aan. Op de radio hoor je: "De stroomstoring duurt voort. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Herstel wordt niet voor morgennacht verwacht." Morgennacht dus.',
+      conditionalOn: () => profile.hasRadio !== 'ja' && (profile.hasCar || profile.hasMotorcycle),
+      text: () => profile.hasCar ? '🚗 Zet de radio aan voor nieuws' : '🚗 Zet de radio op de motor aan voor nieuws',
+      consequence: () => {
+        const v = profile.hasCar ? 'auto' : 'motor';
+        return `Je loopt naar de ${v} en zet de radio aan. Op de radio hoor je: "De stroomstoring duurt voort. In sommige plaatsen was het vannacht onrustig. Winkels sloten eerder en de politie is extra aanwezig op drukke plekken. Herstel wordt niet voor morgennacht verwacht." Morgennacht dus.`;
+      },
       stateChange: {}
     }]
   },
@@ -785,7 +801,7 @@ const scenes_stroom = [
     date: 'Maandag 1 februari 2027',
     dayBadge: 'Dag 2',
     dayBadgeClass: '',
-    conditionalOn: () => profile.hasCar && state.phoneBattery <= 25,
+    conditionalOn: () => (profile.hasCar || profile.hasMotorcycle) && state.phoneBattery <= 25,
     channels: {
       news: [],
       whatsapp: [],
@@ -793,13 +809,18 @@ const scenes_stroom = [
       radio: null
     },
     get narrative() {
-      return 'Je telefoon geeft een waarschuwing: de batterij staat op ' + state.phoneBattery + '%. Zonder oplader, zonder stroom. Dan schiet je iets te binnen: je auto staat buiten. De accu van de auto werkt nog. Via de sigarettenaansteker kun je je telefoon opladen — langzaam, maar het werkt.';
+      const v = profile.hasCar ? 'auto' : 'motor';
+      return `Je telefoon geeft een waarschuwing: de batterij staat op ${state.phoneBattery}%. Zonder oplader, zonder stroom. Dan schiet je iets te binnen: je ${v} staat buiten. De accu van de ${v} werkt nog. Via de USB-aansluiting kun je je telefoon opladen — langzaam, maar het werkt.`;
     },
     choices: [{
-      text: '🚗 Naar de auto om de telefoon op te laden',
+      text: () => profile.hasCar ? '🚗 Naar de auto om de telefoon op te laden' : '🚗 Naar de motor om de telefoon op te laden',
       consequence: () => {
         const koud = profile.location.includes('city') ? 'Op straat is het ijskoud.' : 'Buiten waait een scherpe wind.';
-        return koud + ' Je loopt naar de auto, stapt in en sluit de deur. Je sluit de telefoon aan op de oplader in de middenconsole. De display springt aan. Je laat hem een half uur opladen terwijl je luistert naar het geluid van de straat. Als je terugkomt, staat hij op 60%.';
+        const v = profile.hasCar ? 'auto' : 'motor';
+        const desc = profile.hasCar
+          ? `Je loopt naar de ${v}, stapt in en sluit de deur. Je sluit de telefoon aan op de oplader in de middenconsole. De display springt aan. Je laat hem een half uur opladen terwijl je luistert naar het geluid van de straat. Als je terugkomt, staat hij op 60%.`
+          : `Je loopt naar de ${v} en sluit de telefoon aan op de USB-oplader. De display springt aan. Na een half uur laden staat hij op 60%.`;
+        return koud + ' ' + desc;
       },
       stateChange: () => ({ phoneBattery: 60 - state.phoneBattery })
     }, {
@@ -847,9 +868,15 @@ const scenes_stroom = [
         food: 1
       }
     }, {
-      conditionalOn: () => !profile.location.includes('city') && profile.hasBike,
-      text: '🚲 Met de fiets naar de wateruitdeling',
-      consequence: 'Je pakt de fiets en rijdt naar het dorp. Een kwartier fietsen, maar de rij is korter dan je had verwacht. Met twee volle jerrycans op de bagagedrager rij je terug.',
+      conditionalOn: () => !profile.location.includes('city') && (profile.hasBike || profile.hasScooter || profile.hasEbike),
+      text: () => {
+        const naam = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+        return `🚲 Met de ${naam} naar de wateruitdeling`;
+      },
+      consequence: () => {
+        const naam = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+        return `Je pakt de ${naam} en rijdt naar het dorp. Een kwartier rijden, maar de rij is korter dan je had verwacht. Met twee volle jerrycans rij je terug.`;
+      },
       stateChange: {
         water: 2,
         hasWater: true
@@ -919,9 +946,12 @@ const scenes_stroom = [
       consequence: 'Je legt alles wat je hebt op de keukentafel. Daarna verdeel je het zo eerlijk en realistisch mogelijk over de komende dagen.',
       stateChange: {}
     }, {
-      conditionalOn: () => profile.hasCar,
-      text: '🚗 Je besluit de auto te pakken en de stad te gaan verkennen',
-      consequence: 'Je rijdt voorzichtig richting het centrum. Bij enkele winkels en tankstations is het druk en onoverzichtelijk. Op een paar kruispunten regelt de politie het verkeer met zaklampen. Je draait om. Dit kost nu vooral brandstof en levert weinig op.',
+      conditionalOn: () => profile.hasCar || profile.hasMotorcycle,
+      text: () => profile.hasCar ? '🚗 Je besluit de auto te pakken en de stad te gaan verkennen' : '🚗 Je besluit de motor te pakken en de stad te gaan verkennen',
+      consequence: () => {
+        const v = profile.hasCar ? 'auto' : 'motor';
+        return `Je rijdt voorzichtig richting het centrum op je ${v}. Bij enkele winkels en tankstations is het druk en onoverzichtelijk. Op een paar kruispunten regelt de politie het verkeer met zaklampen. Je draait om. Dit kost nu vooral brandstof en levert weinig op.`;
+      },
       stateChange: {}
     }, {
       text: '🏘️ De buren bij elkaar roepen, samen sta je sterker',
@@ -1051,9 +1081,12 @@ const scenes_stroom = [
       consequence: 'Op de radio: "Delen van Duitsland en Oostenrijk hebben stroom gekregen. Herstel in Nederland wordt verwacht binnen 24 uur." 24 uur. Dat is lang. Maar het is iets.',
       stateChange: {}
     }, {
-      conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
-      text: '🚗 Zet de radio aan voor nieuws',
-      consequence: 'Je loopt naar de auto en zet de radio aan. Op de radio: "Delen van Duitsland en Oostenrijk hebben stroom gekregen. Herstel in Nederland wordt verwacht binnen 24 uur." 24 uur. Dat is lang. Maar het is iets.',
+      conditionalOn: () => profile.hasRadio !== 'ja' && (profile.hasCar || profile.hasMotorcycle),
+      text: () => profile.hasCar ? '🚗 Zet de radio aan voor nieuws' : '🚗 Zet de radio op de motor aan voor nieuws',
+      consequence: () => {
+        const v = profile.hasCar ? 'auto' : 'motor';
+        return `Je loopt naar de ${v} en zet de radio aan. Op de radio: "Delen van Duitsland en Oostenrijk hebben stroom gekregen. Herstel in Nederland wordt verwacht binnen 24 uur." 24 uur. Dat is lang. Maar het is iets.`;
+      },
       stateChange: {}
     }, {
       text: '🤝 Naar Rob of Annie gaan voor informatie',
@@ -1188,9 +1221,12 @@ const scenes_stroom = [
       consequence: 'Op de AM-radio: "De herstelwerkzaamheden zijn in de afrondende fase. We verwachten dat het stroomnet stapsgewijs wordt hersteld vandaag. Houd apparaten uitgeschakeld bij herstel om stroompieken te voorkomen." Je houdt je adem in.',
       stateChange: {}
     }, {
-      conditionalOn: () => profile.hasRadio !== 'ja' && profile.hasCar,
-      text: '🚗 Zet de radio aan voor het laatste nieuws',
-      consequence: 'Je loopt naar de auto en zet de radio aan. Op de AM-radio: "De herstelwerkzaamheden zijn in de afrondende fase. We verwachten dat het stroomnet stapsgewijs wordt hersteld vandaag. Houd apparaten uitgeschakeld bij herstel om stroompieken te voorkomen." Je houdt je adem in.',
+      conditionalOn: () => profile.hasRadio !== 'ja' && (profile.hasCar || profile.hasMotorcycle),
+      text: () => profile.hasCar ? '🚗 Zet de radio aan voor het laatste nieuws' : '🚗 Zet de radio op de motor aan voor het laatste nieuws',
+      consequence: () => {
+        const v = profile.hasCar ? 'auto' : 'motor';
+        return `Je loopt naar de ${v} en zet de radio aan. Op de AM-radio: "De herstelwerkzaamheden zijn in de afrondende fase. We verwachten dat het stroomnet stapsgewijs wordt hersteld vandaag. Houd apparaten uitgeschakeld bij herstel om stroompieken te voorkomen." Je houdt je adem in.`;
+      },
       stateChange: {}
     }, {
       text: '🍽️ Een klein ontbijtje van de laatste resten',

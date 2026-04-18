@@ -203,8 +203,8 @@ const scenes_overstroming = [{
       sealedHome: true
     }
   }, {
-    conditionalOn: () => profile.hasCar,
-    text: '🚗 De auto alvast hoger wegzetten zolang de route nog open is',
+    conditionalOn: () => profile.hasCar || profile.hasMotorcycle,
+    text: () => profile.hasCar ? '🚗 De auto alvast hoger wegzetten zolang de route nog open is' : '🚗 De motor alvast hoger wegzetten zolang de route nog open is',
     consequence: 'Je rijdt de auto naar een hoger deel van de wijk en loopt terug. Dat kost tijd, maar als evacueren later nodig wordt, ben je je auto niet meteen kwijt.',
     stateChange: {
       carMovedHigher: true,
@@ -338,9 +338,12 @@ const scenes_overstroming = [{
     const tas = !state.packedBag
       ? ' Je hebt niets klaargelegd. Je moet nu alles tegelijk: pakken én gaan.'
       : ' Je tas staat klaar bij de deur. Dat scheelt nu veel tijd.';
-    const geenAuto = !profile.hasCar
-      ? profile.hasBike
-        ? ' Je hebt geen auto, maar wel een fiets. Als je weg wilt, ga je op de fiets.'
+    const heeftMotorVov = profile.hasCar || profile.hasMotorcycle;
+    const heeftFietsVov = profile.hasBike || profile.hasScooter || profile.hasEbike;
+    const fietsnaamOv   = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+    const geenAuto = !heeftMotorVov
+      ? heeftFietsVov
+        ? ` Je hebt geen auto, maar wel een ${fietsnaamOv}. Als je weg wilt, ga je op de ${fietsnaamOv}.`
         : ' Je hebt geen auto en geen fiets. Weggaan betekent te voet door het water.'
       : '';
     return 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Het evacuatieadvies is duidelijk: ga nu weg als dat nog kan, of ga naar boven.' + tas + geenAuto + ' Wat doe je?';
@@ -361,11 +364,16 @@ const scenes_overstroming = [{
       wentUpstairs: true
     }
   }, {
-    conditionalOn: () => profile.hasCar,
-    text: '🚗 Toch proberen weg te rijden',
-    consequence: () => state.carMovedHigher ?
-      'Je auto stond al hoger geparkeerd. Daardoor kom je nu nog weg via de omleiding. Je rijdt langzaam maar gestaag naar een droog deel van de stad.' :
-      'Je stapt in de auto. Het water staat al bijna aan de drempel. Rijden in 30 cm water is gevaarlijk, want auto\'s kunnen bij 60 cm al gaan drijven. Je rijdt voorzichtig, maar komt na 100 meter vast te staan.',
+    conditionalOn: () => profile.hasCar || profile.hasMotorcycle,
+    text: () => profile.hasCar ? '🚗 Toch proberen weg te rijden' : '🚗 Toch proberen weg te rijden op de motor',
+    consequence: () => {
+      const v = profile.hasCar ? 'auto' : 'motor';
+      return state.carMovedHigher
+        ? `Je ${v} stond al hoger geparkeerd. Daardoor kom je nu nog weg via de omleiding. Je rijdt langzaam maar gestaag naar een droog deel van de stad.`
+        : profile.hasCar
+          ? `Je stapt in de auto. Het water staat al bijna aan de drempel. Rijden in 30 cm water is gevaarlijk, want auto's kunnen bij 60 cm al gaan drijven. Je rijdt voorzichtig, maar komt na 100 meter vast te staan.`
+          : `Je stapt op de motor. Het water staat al hoog. Een motor kan door ondiep water rijden, maar de kans dat de motor uitvalt is groot. Na 50 meter sputtert de motor en kom je vast te staan.`;
+    },
     stateChange: () => state.carMovedHigher ? {
       evacuatedFlood: true
     } : {
@@ -373,11 +381,15 @@ const scenes_overstroming = [{
       evacuatedFlood: false
     }
   }, {
-    conditionalOn: () => !profile.hasCar && !profile.hasMobilityImpaired,
+    conditionalOn: () => !(profile.hasCar || profile.hasMotorcycle) && !profile.hasMobilityImpaired,
     text: '🚶 Te voet wegwaden nu het nog kan',
-    consequence: profile.hasBike
-      ? 'Je pakt je fiets en rijdt langzaam door het water. Het staat al tot je knieën, maar je fiets houdt je op de been. Via de omweg bereik je een droog stuk weg.'
-      : 'Je trekt laarzen aan en waadt naar buiten. Het water staat bijna tot je knieën. Het is zwaar en koud, maar je werkt je door de straat heen en bereikt een droog stuk weg verderop.',
+    consequence: () => {
+      const heeftFietsOv = profile.hasBike || profile.hasScooter || profile.hasEbike;
+      const naamFietsOv  = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+      return heeftFietsOv
+        ? `Je pakt je ${naamFietsOv} en rijdt langzaam door het water. Het staat al tot je knieën, maar de ${naamFietsOv} houdt je overeind. Via de omweg bereik je een droog stuk weg.`
+        : 'Je trekt laarzen aan en waadt naar buiten. Het water staat bijna tot je knieën. Het is zwaar en koud, maar je werkt je door de straat heen en bereikt een droog stuk weg verderop.';
+    },
     stateChange: {
       evacuatedFlood: true,
       comfort: -2,

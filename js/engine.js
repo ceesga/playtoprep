@@ -29,7 +29,7 @@ function renderStatusBars() {
     // Progress bar (comfort)
     if (segId === 'stat-comfort') {
       const fillEl = document.getElementById('ss-fill-comfort');
-      if (fillEl) fillEl.style.width = Math.round(val / MAX_STAT_COMFORT * 100) + '%';
+      if (fillEl) fillEl.style.transform = 'scaleX(' + (val / MAX_STAT_COMFORT) + ')';
     }
     const isWaterOrFood = segId === 'stat-water' || segId === 'stat-food';
     const wrap = document.getElementById(wrapId);
@@ -117,7 +117,7 @@ function updateBattery(fillId, pctId, emptyId, val) {
   }
   // Progress bar
   const battFill = document.getElementById('ss-fill-battery');
-  if (battFill) battFill.style.width = pct + '%';
+  if (battFill) battFill.style.transform = 'scaleX(' + (pct / 100) + ')';
   // Kleurklassen op de ss-battery stat-kaart
   const battStat = document.getElementById('ss-battery');
   if (battStat) {
@@ -383,7 +383,7 @@ function saveGame() {
     selectedHouseType,
     selectedVehicles: [...selectedVehicles],
     selectedEnvironment: [...selectedEnvironment],
-    avatarSelections: JSON.parse(JSON.stringify(avatarSelections))
+    avatarSelections: structuredClone(avatarSelections)
   };
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
@@ -533,7 +533,7 @@ function renderScene() {
   }
 
   // Save state snapshot for back navigation
-  stateSnapshots[currentSceneIdx] = JSON.parse(JSON.stringify(state));
+  stateSnapshots[currentSceneIdx] = structuredClone(state);
   historySnapshots[currentSceneIdx] = choiceHistory.length;
 
   // Apply scene decay (automatic stat reductions)
@@ -873,6 +873,11 @@ function renderChannels(scene) {
   // Berichten direct tonen, gelijk met nieuws en radio
   if (newWa.length > 0) {
     const waContainer = document.getElementById('wa-content');
+    // Verwijder placeholder éénmalig voor het batch-toevoegen
+    const placeholder = waContainer.querySelector('p');
+    if (placeholder) placeholder.remove();
+    // Bouw alle berichten in een fragment, dan één DOM-write
+    const fragment = document.createDocumentFragment();
     // Keer de volgorde om zodat het nieuwste bericht onderaan staat (chat-stijl)
     [...newWa].reverse().forEach(m => {
       const isOut = m.outgoing;
@@ -881,11 +886,9 @@ function renderChannels(scene) {
       div.innerHTML = `${!isOut ? `<div class="wa-from">${m.from}</div>` : ''}
         <div class="wa-bubble">${m.msg}</div>
         <div class="wa-time">${m.time}</div>`;
-      // Verwijder de 'geen berichten'-placeholder als die er nog staat
-      const placeholder = waContainer.querySelector('p');
-      if (placeholder) placeholder.remove();
-      waContainer.appendChild(div);
+      fragment.appendChild(div);
     });
+    waContainer.appendChild(fragment);
     if (activeTab === 'whatsapp') {
       // Als de berichtentab al actief is, hoeft er geen ongelezen-indicator te zijn
       document.getElementById('tab-whatsapp')?.classList.remove('has-unread');
@@ -1704,7 +1707,7 @@ function goBack() {
   // Restore state and history to before this scene was entered
   const snap = stateSnapshots[currentSceneIdx];
   if (snap) {
-    const deepSnap = JSON.parse(JSON.stringify(snap));
+    const deepSnap = structuredClone(snap);
     Object.keys(deepSnap).forEach(k => { state[k] = deepSnap[k]; });
   }
   const histLen = historySnapshots[currentSceneIdx];

@@ -29,6 +29,10 @@ const EDC_ITEMS = ['hasEDCBag', 'hasEDCCash', 'hasEDCSnacks', 'hasEDCCharger', '
      onlyIf       — ID in profile dat 'truthy' moet zijn om de vraag te tonen
 */
 const prepQs = [{
+  id: 'hasNoodplan',
+  headerToggle: true,
+  section: 'Persoonlijk noodplan (communicatieplan, evacuatieplan, gezin weet wat te doen)'
+}, {
   id: 'hasBOBBag',
   headerToggle: true,
   collapsible: true,

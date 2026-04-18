@@ -223,9 +223,12 @@ const scenes_drinkwater = [{
     radio: 'Bij de supermarkt is het druk. Mensen halen vooral houdbaar eten, batterijen en kaarsen. Flessenwater en sommige basisproducten zijn bijna op. Als u nog schoon water in huis heeft, gebruik dat dan zuinig.'
   },
   get narrative() {
-    const auto = !profile.hasCar
-      ? profile.hasBike
-        ? ' Je hebt geen auto, maar wel een fiets — handig als je toch naar de winkel wilt.'
+    const heeftMotorVwd = profile.hasCar || profile.hasMotorcycle;
+    const heeftFietsVwd = profile.hasBike || profile.hasScooter || profile.hasEbike;
+    const fietsnaamWd   = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+    const auto = !heeftMotorVwd
+      ? heeftFietsVwd
+        ? ` Je hebt geen auto, maar wel een ${fietsnaamWd} — handig als je toch naar de winkel wilt.`
         : ' Je hebt geen auto en geen fiets. Als de winkel leeg is, ben je aangewezen op wat je thuis hebt of op de buren.'
       : '';
     return 'Je denkt na over je voorraad voor vanavond en morgenochtend. De supermarkt is nog open, maar meer mensen hebben hetzelfde idee.' + auto;
