@@ -158,7 +158,13 @@ const scenes_stroom = [
       radio: 'Radio 1. We ontvangen meldingen van een stroomstoring in meerdere provincies. Netbeheerder Liander doet onderzoek. Houd uw radio bij de hand voor verdere updates. We melden meer zodra we het weten.'
     },
     get narrative() {
-      const lift = profile.houseType === 'hoogbouw' ? ' De lift doet het niet meer. Je loopt de trap.' : '';
+      const lift = profile.houseType === 'hoogbouw'
+        ? profile.playerIsMobilityImpaired
+          ? ' De lift doet het niet meer. Voor jou als beperkt mobiel persoon is dat direct een groot probleem. Je zit vast op je verdieping.'
+          : profile.playerIsElderly
+          ? ' De lift doet het niet meer. Traplopen is zwaar op jouw leeftijd, zeker bij een langdurige storing.'
+          : ' De lift doet het niet meer. Je loopt de trap.'
+        : '';
       return 'Midden op de ochtend valt ineens de stroom uit. Alles wordt stil: de koelkast, de verwarming en het wifi-lampje. Alleen je telefoon doet het nog via mobiel bereik. Buiten zie je buren naar buiten komen om te kijken wat er aan de hand is. De stilte voelt vreemd, alsof iemand in één keer al het geluid heeft uitgezet.' + lift;
     },
     choices: [{
@@ -694,7 +700,13 @@ const scenes_stroom = [
         state.comfort >= 2 ?
         'Je hebt slecht geslapen. Alles voelt zwaarder dan normaal.' :
         'Je bent uitgeput. De spanning van gisterennacht, de kou en alle geluiden buiten beginnen echt door te wegen.';
-      const mob = profile.hasMobilityImpaired ? ' De trap valt zwaar; zonder lift is elke verdieping een opgave.' : '';
+      const mob = profile.playerIsMobilityImpaired
+        ? ' Zonder lift en stroom is elke trap een opgave voor jou. Je beweegt langzaam en voorzichtig.'
+        : profile.playerIsElderly
+        ? ' Op jouw leeftijd is de combinatie van kou en slaaptekort extra slopend. Je voelt je stijf en moe.'
+        : profile.hasMobilityImpaired
+        ? ' De trap valt zwaar; zonder lift is elke verdieping een opgave.'
+        : '';
       const water = !state.hasWater
         ? ' Je had gisteren geen water opgeslagen. Je hebt nu weinig te drinken.'
         : ' Gelukkig heb je gisteren water opgeslagen. Dat scheelt nu al.';
@@ -1361,4 +1373,39 @@ const sceneImages_stroom = {
   st_13:       'afbeelding/stroomstoring/Huis_winter3.png',
   st_14:       'afbeelding/stroomstoring/Huis_winter3.png',
   st_4b:       'afbeelding/algemeen/supermarkt.jpg',
+};
+
+// Appartement-varianten (hoogbouw / laagbouw): zelfde fase-indeling als huis_winter,
+// maar specifiek voor een flatgebouw-interieur.
+const sceneImages_stroom_appartement = {
+  // Fase 0 — stroom werkt nog
+  st_pre_d2:    'afbeelding/stroomstoring/Appartement_winter_0.png',
+  st_pre_d1:    'afbeelding/stroomstoring/Appartement_winter_0.png',
+  st_d0_morgen: 'afbeelding/stroomstoring/Appartement_winter_0.png',
+  st_2:         'afbeelding/stroomstoring/Appartement_winter_0.png',
+  // Fase 1 — stroom uitgevallen
+  st_1:         'afbeelding/stroomstoring/Appartement_winter_1.png',
+  st_3:         'afbeelding/stroomstoring/Appartement_winter_1.png',
+  st_4:         'afbeelding/stroomstoring/Appartement_winter_1.png',
+  st_5:         'afbeelding/stroomstoring/Appartement_winter_1.png',
+  st_6:         'afbeelding/stroomstoring/Appartement_winter_1.png',
+  st_6b:        'afbeelding/stroomstoring/Appartement_winter_1.png',
+  st_7:         'afbeelding/stroomstoring/Appartement_winter_1.png',
+  // Fase 2 — temperatuur daalt verder
+  st_8:         'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_8b:        'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_d1_morgen: 'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_9:         'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_autolaad:  'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_watertruck:'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_10b:       'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_10:        'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_d1_avond:  'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_11:        'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_d2_morgen: 'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_12:        'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_d2_avond:  'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_d3_morgen: 'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_13:        'afbeelding/stroomstoring/Appartement_winter_2.png',
+  st_14:        'afbeelding/stroomstoring/Appartement_winter_2.png',
 };

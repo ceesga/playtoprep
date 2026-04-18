@@ -97,7 +97,7 @@ function handleSetupOptionKey(event, kind, value) {
 }
 
 function gotoIntake() {
-  intakeStep = -5; // Begin bij de naamstap (stap -5 is de eerste stap)
+  intakeStep = -6; // Begin bij de naamstap (stap -6 is de eerste stap)
   profile.playerName = '';
   adultsCount = 1;     // Minimaal één volwassene
   childrenCount = 0;
@@ -108,6 +108,7 @@ function gotoIntake() {
   selectedOverigeSubType = null;
   selectedVehicles = [];
   selectedEnvironment = [];
+  selectedPlayerPerson = null;
   avatarSelections = {
     adults: [],
     children: [],
@@ -152,17 +153,18 @@ function renderNameStep() {
    Stappen -5 t/m -1 zijn de huishoud-setup; stap 0 en hoger zijn kaart-vragen.
 */
 function renderIntake() {
-  const totalSteps = intakeQs.length + 5; // Totaal: 5 vaste stappen + kaart-vragen
+  const totalSteps = intakeQs.length + 6; // Totaal: 6 vaste stappen + kaart-vragen
 
   // Bereken het huidige stapnummer voor de voortgangsbalk (0-gebaseerd)
-  const progressStep = intakeStep === -5 ? 0 : intakeStep === -4 ? 1 : intakeStep === -3 ? 2 : intakeStep === -2 ? 3 : intakeStep === -1 ? 4 : intakeStep + 5;
+  const progressStep = intakeStep === -6 ? 0 : intakeStep === -5 ? 1 : intakeStep === -4 ? 2 : intakeStep === -3 ? 3 : intakeStep === -2 ? 4 : intakeStep === -1 ? 5 : intakeStep + 6;
   // Schaalt de voortgangsbalk: begint op 12% en loopt lineair door naar 60%
   document.getElementById('intake-prog').style.transform = 'scaleX(' + (12 + progressStep / totalSteps * 48) / 100 + ')';
 
   // Vaste titels voor de huishoud-setup stappen
   const intakeTitles = {
-    '-5': 'Hoe heet je?',
-    '-4': 'Hoe ziet jouw huishouden eruit?',
+    '-6': 'Hoe heet je?',
+    '-5': 'Hoe ziet jouw huishouden eruit?',
+    '-4': 'Welke van deze personen ben jij?',
     '-3': 'In wat voor type woning woon je?',
     '-2': 'Welke vervoersmiddelen heb je?',
     '-1': 'In welke omgeving woon je?'
@@ -172,7 +174,7 @@ function renderIntake() {
   if (titleEl) titleEl.textContent = intakeTitles[intakeStep] || (intakeQs[intakeStep] ? intakeQs[intakeStep].q : '');
 
   // Debug-codes in de hoek van het scherm voor identificatie van de huidige stap
-  const stepCodes = { '-5': 'intake_naam', '-4': 'intake_mensen', '-3': 'intake_woning', '-2': 'intake_voertuigen', '-1': 'intake_omgeving' };
+  const stepCodes = { '-6': 'intake_naam', '-5': 'intake_mensen', '-4': 'intake_wie_ben_jij', '-3': 'intake_woning', '-2': 'intake_voertuigen', '-1': 'intake_omgeving' };
   const corner = document.getElementById('scene-id-corner');
   if (corner) corner.textContent = stepCodes[intakeStep] || ('intake_' + (intakeQs[intakeStep] ? intakeQs[intakeStep].id : intakeStep));
   document.getElementById('intake-prev').style.display = ''; // Vorige-knop altijd zichtbaar
@@ -183,16 +185,23 @@ function renderIntake() {
   if (instrEl) instrEl.style.display = 'none'; // verberg standaard; renderHouseholdStep toont het opnieuw
 
   // Delegeer naar de juiste stap-renderer op basis van intakeStep
-  if (intakeStep === -5) {
+  if (intakeStep === -6) {
     renderNameStep();
+    return;
+  }
+
+  if (intakeStep === -5) {
+    layout.style.display = 'none';
+    household.style.display = 'flex';
+    renderHouseholdStep();
+    document.getElementById('intake-next').disabled = false; // Altijd doorgaan mogelijk
     return;
   }
 
   if (intakeStep === -4) {
     layout.style.display = 'none';
     household.style.display = 'flex';
-    renderHouseholdStep();
-    document.getElementById('intake-next').disabled = false; // Altijd doorgaan mogelijk
+    renderWieBenJijStep();
     return;
   }
 
@@ -342,7 +351,9 @@ function buildFigures(heightTable, clickable = false) {
     const dist = Math.abs(pos - (figList.length - 1) / 2);
     const zIndex = Math.round((figList.length - dist) * 10);
     // Alle figuren behalve de eerste schuiven gedeeltelijk over de vorige heen
-    const ml = pos === 0 ? 0 : -FIGURE_OVERLAP_PX;
+    // Ouderen-afbeeldingen zijn smaller, dus extra overlap voor gelijke visuele dichtheid
+    const overlapPx = fig.type === 'ouderen' ? FIGURE_OVERLAP_PX + 16 : FIGURE_OVERLAP_PX;
+    const ml = pos === 0 ? 0 : -overlapPx;
     // Bepaal de juiste submap voor de afbeelding
     const folder = fig.type === 'adult' ? 'adult' : fig.type === 'child' ? 'child' :
       fig.type === 'ouderen' ? 'Ouderen' : 'slecht%20ter%20been';
@@ -425,10 +436,12 @@ function renderHouseholdStep() {
   const intakeControls = document.getElementById('intake-controls');
   if (intakeControls) intakeControls.innerHTML = `
     <div id="hh-controls">
+      <div class="hh-totaal">Totaal: <strong>${totalPersons}</strong> ${totalPersons === 1 ? 'persoon' : 'personen'}</div>
+      <div class="hh-counter-row">
       <div class="hh-counter">
-        <span class="hh-label">Volwassenen</span>
+        <span class="hh-label">(Bijna) volwassenen</span>
         <div class="hh-btns">
-          <button class="hh-btn" onclick="changeCount('adults',-1)" ${adultsCount<=1?'disabled':''} aria-label="Minder volwassenen">−</button>
+          <button class="hh-btn" onclick="changeCount('adults',-1)" ${adultsCount<=0?'disabled':''} aria-label="Minder volwassenen">−</button>
           <span class="hh-count">${adultsCount}</span>
           <button class="hh-btn" onclick="changeCount('adults',1)" ${atMax?'disabled':''} aria-label="Meer volwassenen">+</button>
         </div>
@@ -465,7 +478,76 @@ function renderHouseholdStep() {
           <button class="hh-btn" onclick="changeCount('pets',1)" ${petsCount>=MAX_PETS?'disabled':''} aria-label="Meer huisdieren">+</button>
         </div>
       </div>
+      </div>
     </div>`;
+}
+
+/* ─── WIE BEN JIJ STAP ────────────────────────────────────────────────────────
+   Rendert stap -4: de speler kiest welke persoon uit het huishouden zij zelf zijn.
+   De selectie bepaalt of de speler beperkt mobiel of oudere is, wat doorwerkt
+   in de scenarioteksten en keuzes.
+*/
+function renderWieBenJijStep() {
+  const household = document.getElementById('intake-household');
+  const instrEl = document.getElementById('intake-instruction');
+  if (instrEl) instrEl.style.display = 'none';
+
+  const totalPersons = adultsCount + childrenCount + slechtTerBeenCount + ouderenCount;
+  const total = totalPersons + petsCount;
+  const ht = [190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190];
+  const adultH = ht[Math.min(total, ht.length - 1)];
+  const childH = Math.round(adultH * 0.78);
+
+  const figList = [];
+  for (let i = 0; i < adultsCount; i++) figList.push({ type: 'adult', idx: i });
+  for (let i = 0; i < childrenCount; i++) figList.push({ type: 'child', idx: i });
+  for (let i = 0; i < slechtTerBeenCount; i++) figList.push({ type: 'slechtTerBeen', idx: i });
+  for (let i = 0; i < ouderenCount; i++) figList.push({ type: 'ouderen', idx: i });
+
+  const figures = figList.map((fig, pos) => {
+    const dist = Math.abs(pos - (figList.length - 1) / 2);
+    const zIndex = Math.round((figList.length - dist) * 10);
+    const overlapPx = fig.type === 'ouderen' ? FIGURE_OVERLAP_PX + 16 : FIGURE_OVERLAP_PX;
+    const ml = pos === 0 ? 0 : -overlapPx;
+    const folder = fig.type === 'adult' ? 'adult' : fig.type === 'child' ? 'child' :
+      fig.type === 'ouderen' ? 'Ouderen' : 'slecht%20ter%20been';
+    const av = fig.type === 'adult' ? avatarSelections.adults[fig.idx] :
+      fig.type === 'child' ? avatarSelections.children[fig.idx] :
+      fig.type === 'ouderen' ? avatarSelections.ouderen[fig.idx] :
+      avatarSelections.slechtTerBeen[fig.idx];
+    const isSitting = fig.type === 'slechtTerBeen' && (av === 'manx-2' || av === 'womanx-2');
+    const h = (fig.type === 'child' || isSitting) ? childH : adultH;
+    const altText = fig.type === 'adult' ? 'Volwassen persoon' : fig.type === 'child' ? 'Kind' :
+      fig.type === 'ouderen' ? 'Oudere' : 'Beperkt mobiel persoon';
+    const label = fig.type === 'adult' ? 'Volwassene' : fig.type === 'child' ? 'Kind' :
+      fig.type === 'ouderen' ? 'Oudere' : 'Beperkt mobiel';
+    const isSelected = selectedPlayerPerson
+      && selectedPlayerPerson.type === fig.type
+      && selectedPlayerPerson.index === fig.idx;
+    return `<div class="char-fig ${fig.type}${isSelected ? ' wbj-selected' : ''}"
+      role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="${label} selecteren"
+      onclick="selectPlayerPerson('${fig.type}',${fig.idx})"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPlayerPerson('${fig.type}',${fig.idx})}"
+      style="z-index:${zIndex};margin-left:${ml}px">
+      <img src="afbeelding/avatars/${folder}/${av}.png" alt="${altText}" style="height:${h}px;width:auto">
+    </div>`;
+  }).join('');
+
+  household.innerHTML = `
+    <div id="hh-stage">
+      <div id="hh-char-figures">${figures}</div>
+    </div>`;
+
+  const intakeControls = document.getElementById('intake-controls');
+  if (intakeControls) intakeControls.innerHTML = `
+    <div class="wbj-instruction">Selecteer welk persoon jij bent</div>`;
+
+  document.getElementById('intake-next').disabled = selectedPlayerPerson === null;
+}
+
+function selectPlayerPerson(type, index) {
+  selectedPlayerPerson = { type, index };
+  renderWieBenJijStep();
 }
 
 /* ─── WONINGSTAP ──────────────────────────────────────────────────────────────
@@ -783,8 +865,8 @@ function toggleVehicle(val) {
 function changeCount(type, delta) {
   const totalPersons = adultsCount + childrenCount + slechtTerBeenCount + ouderenCount;
   // Blokkeer verhoging van persoonstellingen als het maximum bereikt is
-  if (delta > 0 && type !== 'pets' && totalPersons >= 6) return;
-  if (type === 'adults') adultsCount = Math.max(1, adultsCount + delta);
+  if (delta > 0 && type !== 'pets' && totalPersons >= MAX_HOUSEHOLD) return;
+  if (type === 'adults') adultsCount = Math.max(0, adultsCount + delta);
   else if (type === 'children') childrenCount = Math.max(0, childrenCount + delta);
   else if (type === 'slechtTerBeen') slechtTerBeenCount = Math.max(0, slechtTerBeenCount + delta);
   else if (type === 'ouderen') ouderenCount = Math.max(0, ouderenCount + delta);
@@ -942,7 +1024,7 @@ function selectAvatar(av) {
   if (isHousehold) {
     avatarPickerTarget = null;
     // Herbouw de huidige huishoudstap om de nieuwe avatar direct te tonen
-    if (intakeStep === -4) renderHouseholdStep();
+    if (intakeStep === -5) renderHouseholdStep();
     else if (intakeStep === -3) renderHouseStep();
     else if (intakeStep === -2) renderVehicleStep();
     else renderEnvironmentStep();
@@ -982,16 +1064,16 @@ function closePicker(e) {
 function intakeNext() {
   const a = intakeAnswers;
 
-  // Stap -5: naam → stap -4: mensen
-  if (intakeStep === -5) {
-    intakeStep = -4;
+  // Stap -6: naam → stap -5: mensen
+  if (intakeStep === -6) {
+    intakeStep = -5;
     renderIntake();
     return;
   }
 
-  // Stap -4: mensen → stap -3: woning
+  // Stap -5: mensen → stap -4: wie ben jij
   // Sla huishoud-samenstelling op in het profile-object
-  if (intakeStep === -4) {
+  if (intakeStep === -5) {
     profile.members = adultsCount + childrenCount + slechtTerBeenCount + ouderenCount;
     profile.adults = adultsCount + slechtTerBeenCount + ouderenCount; // Ouderen tellen mee als volwassene
     profile.hasChildren = childrenCount > 0;
@@ -1000,6 +1082,28 @@ function intakeNext() {
     profile.ouderenCount = ouderenCount;
     profile.hasMobilityImpaired = slechtTerBeenCount > 0;
     profile.hasPets = petsCount > 0;
+    // Auto-selecteer de enige persoon als het huishouden maar één persoon heeft
+    const totalPersons = adultsCount + childrenCount + slechtTerBeenCount + ouderenCount;
+    if (totalPersons === 1) {
+      if (adultsCount === 1) selectedPlayerPerson = { type: 'adult', index: 0 };
+      else if (ouderenCount === 1) selectedPlayerPerson = { type: 'ouderen', index: 0 };
+      else if (slechtTerBeenCount === 1) selectedPlayerPerson = { type: 'slechtTerBeen', index: 0 };
+      else if (childrenCount === 1) selectedPlayerPerson = { type: 'child', index: 0 };
+    } else {
+      selectedPlayerPerson = null; // Reset bij meerdere personen
+    }
+    intakeStep = -4;
+    renderIntake();
+    return;
+  }
+
+  // Stap -4: wie ben jij → stap -3: woning
+  if (intakeStep === -4) {
+    if (selectedPlayerPerson) {
+      profile.playerPersonType = selectedPlayerPerson.type;
+      profile.playerIsMobilityImpaired = selectedPlayerPerson.type === 'slechtTerBeen';
+      profile.playerIsElderly = selectedPlayerPerson.type === 'ouderen';
+    }
     intakeStep = -3;
     renderIntake();
     return;
@@ -1045,9 +1149,11 @@ function intakeNext() {
 
 // Navigeert terug naar de vorige intakestap, of naar het uitleg-scherm als we op stap -5 zijn
 function intakePrev() {
-  if (intakeStep === -5) {
+  if (intakeStep === -6) {
     show('s-uitleg'); // Helemaal terug naar het uitleg-scherm
     return;
+  } else if (intakeStep === -5) {
+    intakeStep = -6;
   } else if (intakeStep === -4) {
     intakeStep = -5;
   } else if (intakeStep === -3) {

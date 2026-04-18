@@ -50,7 +50,12 @@ const SCENARIO_REGISTRY = {
     scenes: scenes_stroom,
     sceneDecay: sceneDecay_stroom,
     visuals: {
-      imageMap: sceneImages_stroom
+      imageMap: sceneImages_stroom,
+      imageMapFn(sceneId) {
+        const ht = profile.houseType;
+        if (ht !== 'hoogbouw' && ht !== 'laagbouw') return null;
+        return sceneImages_stroom_appartement[sceneId] || null;
+      }
     },
     report: {
       scoreMode: 'supplies',
@@ -148,7 +153,7 @@ const SCENARIO_REGISTRY = {
     audio: {
       ambient(sceneId) {
         if (sceneId === 'tk_0') {
-          return { name: 'computerHum', targetVolume: 0.16 };
+          return { name: 'computerHum', targetVolume: 1.0 };
         }
         return null;
       }
@@ -223,11 +228,16 @@ function getScenarioReportConfig(scenarioId) {
 }
 
 function resolveSceneBackgroundAsset(scene, scenarioId) {
-  const visuals = scene && scene.visuals ? scene.visuals : null;
-  if (visuals && Object.prototype.hasOwnProperty.call(visuals, 'image')) {
-    return visuals.image;
+  const sceneVisuals = scene && scene.visuals ? scene.visuals : null;
+  if (sceneVisuals && Object.prototype.hasOwnProperty.call(sceneVisuals, 'image')) {
+    return sceneVisuals.image;
   }
-  const imageMap = getScenarioVisualConfig(scenarioId).imageMap || {};
+  const visuals = getScenarioVisualConfig(scenarioId);
+  if (typeof visuals.imageMapFn === 'function') {
+    const dynamic = visuals.imageMapFn(scene.id);
+    if (dynamic) return dynamic;
+  }
+  const imageMap = visuals.imageMap || {};
   return imageMap[scene.id] || DEFAULT_SCENE_BACKGROUND;
 }
 
@@ -257,12 +267,31 @@ function resolveSceneDarkness(scene, scenarioId) {
 }
 
 function preloadScenarioAssets(scenarioId) {
-  const imageMap = getScenarioVisualConfig(scenarioId).imageMap || {};
-  const uniqueImages = [...new Set(Object.values(imageMap))];
-  uniqueImages.forEach(src => {
+  const config = getScenarioConfig(scenarioId);
+  const visuals = getScenarioVisualConfig(scenarioId);
+  const imageMap = visuals.imageMap || {};
+  const srcs = new Set(Object.values(imageMap));
+  // Preload ook de profiel-afhankelijke afbeeldingen (imageMapFn) als die beschikbaar zijn
+  if (typeof visuals.imageMapFn === 'function') {
+    const scenes = config.scenes || [];
+    scenes.forEach(s => {
+      const dynamic = visuals.imageMapFn(s.id);
+      if (dynamic) srcs.add(dynamic);
+    });
+  }
+  srcs.forEach(src => {
     const img = new Image();
     img.src = src;
   });
+
+  if (typeof Ambience !== 'undefined' && typeof Ambience.preload === 'function') {
+    const ambientNames = new Set();
+    (config.scenes || []).forEach(scene => {
+      const ambient = resolveScenarioAmbient(scene.id, scenarioId);
+      if (ambient && ambient.name) ambientNames.add(ambient.name);
+    });
+    Ambience.preload([...ambientNames]);
+  }
 }
 
 function resolveScenarioAmbient(sceneId, scenarioId) {

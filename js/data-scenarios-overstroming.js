@@ -346,7 +346,12 @@ const scenes_overstroming = [{
         ? ` Je hebt geen auto, maar wel een ${fietsnaamOv}. Als je weg wilt, ga je op de ${fietsnaamOv}.`
         : ' Je hebt geen auto en geen fiets. Weggaan betekent te voet door het water.'
       : '';
-    return 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Het evacuatieadvies is duidelijk: ga nu weg als dat nog kan, of ga naar boven.' + tas + geenAuto + ' Wat doe je?';
+    const mobiliteit = profile.playerIsMobilityImpaired
+      ? ' Jij bent beperkt mobiel. Te voet waden is voor jou geen optie. Je moet hulp regelen of boven blijven.'
+      : profile.playerIsElderly
+      ? ' Op jouw leeftijd is waden door hoog water te gevaarlijk. Je opties zijn beperkt. Elke minuut telt.'
+      : '';
+    return 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Het evacuatieadvies is duidelijk: ga nu weg als dat nog kan, of ga naar boven.' + tas + geenAuto + mobiliteit + ' Wat doe je?';
   },
   choices: [{
     conditionalOn: () => !profile.hasMobilityImpaired,
@@ -601,7 +606,14 @@ const scenes_overstroming = [{
     nlalert: null,
     radio: 'Radio 1: Het water stijgt op meerdere plekken tot een uitzonderlijk hoog niveau. Reddingsoperaties zijn gaande. Bel 112 als u hulp nodig heeft. Sluit de meterkast af. Er zijn al meldingen van kortsluiting.'
   },
-  narrative: 'Beneden hoor je het water kabbelen. De onderkant van de trapleuning staat al onder water. Je bent boven en voorlopig veilig, maar het stijgt nog steeds.',
+  get narrative() {
+    const mobExtra = profile.playerIsMobilityImpaired
+      ? ' Als beperkt mobiel persoon is traplopen of vluchten via het raam voor jou veel moeilijker. Je bent afhankelijk van hulp van buitenaf.'
+      : profile.playerIsElderly
+      ? ' Op jouw leeftijd is de situatie extra belastend. Je lichaam protesteert bij elke trap omhoog.'
+      : '';
+    return 'Beneden hoor je het water kabbelen. De onderkant van de trapleuning staat al onder water. Je bent boven en voorlopig veilig, maar het stijgt nog steeds.' + mobExtra;
+  },
   choices: [{
     text: '🪟 Vanuit het raam om hulp seinen',
     consequence: 'Je hangt een laken uit het raam. Een reddingsboot ziet je en noteert je locatie. Ze komen later terug.',

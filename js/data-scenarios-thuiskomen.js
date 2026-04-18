@@ -37,6 +37,7 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Werk',
   dayBadgeClass: '',
+  visuals: { darkness: 0 },
   channels: {
     news: [],
     whatsapp: [],
@@ -63,11 +64,9 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Werk',
   dayBadgeClass: '',
-  autoAdvanceMs: 1000,
+  autoAdvanceMs: 2000,
   hideContinue: true,
-  visuals: {
-    image: 'none'
-  },
+  visuals: {},
   channels: {
     news: [],
     whatsapp: [],
@@ -868,6 +867,8 @@ const scenes_thuis_komen = [{
    Wordt in engine.js samengevoegd tot sceneBgMap.
 */
 const sceneImages_thuis_komen = {
+  tk_0:  'afbeelding/stroomstoring_onderweg/Office_light.png',
+  tk_0b: THUIS_KOMEN_VISUALS.office,
   tk_1:  THUIS_KOMEN_VISUALS.office,
   tk_2:  THUIS_KOMEN_VISUALS.office,
   tk_2b: THUIS_KOMEN_VISUALS.office,

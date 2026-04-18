@@ -38,6 +38,9 @@ const PROFILE_DEFAULTS = {
   hasChildren: false,
   hasElderly: false,
   hasMobilityImpaired: false,
+  playerPersonType: 'adult',
+  playerIsMobilityImpaired: false,
+  playerIsElderly: false,
   hasPets: false,
   hasMedNeeds: false,
   location: [],
@@ -453,7 +456,7 @@ const channels = {
 const choiceHistory = [];
 
 // ─── INTAKE ───────────────────────────────────────────────────────────────────
-let intakeStep = -5; // -5=naam, -4=mensen, -3=woning, -2=voertuigen, -1=omgeving, 0+=kaart-vragen
+let intakeStep = -6; // -6=naam, -5=mensen, -4=wie_ben_jij, -3=woning, -2=voertuigen, -1=omgeving, 0+=kaart-vragen
 let intakeAnswers = {};
 let adultsCount = 1;
 let childrenCount = 0;
@@ -472,6 +475,7 @@ let selectedHouseType = null;
 let selectedOverigeSubType = null; // sub-type van 'overige': 'caravan', 'tiny_house', 'woonboot'
 let selectedVehicles = []; // ['auto'], ['fiets'], of beide
 let selectedEnvironment = [];
+let selectedPlayerPerson = null; // { type: 'adult'|'ouderen'|'slechtTerBeen'|'child', index: number }
 
 const HOUSE_TYPES = [{
   val: 'hoogbouw',

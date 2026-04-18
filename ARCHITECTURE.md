@@ -276,7 +276,29 @@ De nieuwe aanpak voorkomt dat door:
 - alleen scenario-startspecifieke overrides toe te voegen via `buildScenarioStartState()`
 - savegames te hydrateren bovenop defaults in plaats van op mogelijk verouderde objectvormen
 
-## 8. Voertuiggroepen (april 2026)
+## 8. Intake-stap "Welke persoon ben jij?" (april 2026)
+
+Na de stap `intake_mensen` (stap -5) is er een nieuwe stap -4 (`intake_wie_ben_jij`) toegevoegd. De speler selecteert hier welke persoon uit het huishouden zij zelf zijn.
+
+De stap-nummering is hierdoor verschoven:
+
+| Stap | ID | Omschrijving |
+|------|----|--------------|
+| -6 | `intake_naam` | Naam invoeren |
+| -5 | `intake_mensen` | Huishoudsamenstelling |
+| -4 | `intake_wie_ben_jij` | Welke persoon ben jij? (NIEUW) |
+| -3 | `intake_woning` | Woningtype |
+| -2 | `intake_voertuigen` | Vervoersmiddelen |
+| -1 | `intake_omgeving` | Omgeving |
+
+Geselecteerde persoon wordt opgeslagen als:
+- `profile.playerPersonType`: `'adult'` | `'ouderen'` | `'slechtTerBeen'` | `'child'`
+- `profile.playerIsMobilityImpaired`: `true` als speler type `slechtTerBeen` koos
+- `profile.playerIsElderly`: `true` als speler type `ouderen` koos
+
+Scenario-narratieven en keuzes gebruiken `profile.playerIsMobilityImpaired` en `profile.playerIsElderly` om teksten dynamisch aan te passen (bosbrand, overstroming, stroomstoring).
+
+## 9. Voertuiggroepen (april 2026)
 
 De intake-voertuigstap werkt met twee groepen; binnen elke groep kan maximaal één voertuig geselecteerd worden:
 
@@ -288,7 +310,7 @@ De intake-voertuigstap werkt met twee groepen; binnen elke groep kan maximaal é
 Profile-flags: `hasCar`, `hasMotorcycle`, `hasScooter`, `hasEbike`, `hasBike`.
 Scenario-code gebruikt `profile.hasCar \|\| profile.hasMotorcycle` als "heeft motorvoertuig"-check.
 
-## 8. Waarom Deze Architectuur Schaalbaarder Is
+## 10. Waarom Deze Architectuur Schaalbaarder Is
 
 Een nieuw scenario toevoegen vraagt nu in principe om drie dingen:
 
@@ -298,7 +320,7 @@ Een nieuw scenario toevoegen vraagt nu in principe om drie dingen:
 
 De engine, audioflow en visual pipeline hoeven daarvoor niet opnieuw vertakt te worden. Dat maakt groei gecontroleerd en voorspelbaar.
 
-## 9. Bewuste Grenzen
+## 11. Bewuste Grenzen
 
 Niet alles is naar configuratie verplaatst. Deze onderdelen zijn bewust nog codegedreven gebleven:
 
@@ -311,7 +333,7 @@ Reden:
 - deze onderdelen bevatten veel tekstuele of UI-specifieke nuance
 - volledige abstractie zou nu meer risico en complexiteit toevoegen dan waarde opleveren
 
-## 10. Samenvatting
+## 12. Samenvatting
 
 De huidige architectuur heeft nu een duidelijkere scheiding:
 

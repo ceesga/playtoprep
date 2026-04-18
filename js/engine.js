@@ -176,6 +176,10 @@ function renderSceneVisual(scene) {
   const darkness = document.getElementById('bg-darkness');
   if (darkness) {
     darkness.style.background = '#000';
+    if (scene.visuals?.abruptDarkness) {
+      darkness.style.transition = 'none';
+      requestAnimationFrame(() => requestAnimationFrame(() => { darkness.style.transition = ''; }));
+    }
     darkness.style.opacity = resolveSceneDarkness(scene, currentScenario);
   }
 }

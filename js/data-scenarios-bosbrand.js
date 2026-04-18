@@ -133,7 +133,14 @@ const scenes_natuurbrand = [{
     nlalert: 'NL-Alert\n14 augustus 2027 – 10:08\n\nBosbrand in uw omgeving. Mogelijk evacuatiebevel. Let goed op. Houd deuren en ramen gesloten. Bereid je voor op een evacuatie. Update volgt.',
     radio: 'Radio 1: De brandweer heeft de natuurbrand nog niet onder controle. De wind is gedraaid. Mogelijk moeten omliggende wijken worden geëvacueerd. Leg een tas klaar met medicijnen, documenten en kleding voor twee dagen.'
   },
-  narrative: 'De rookpluim is groter geworden en je ruikt de rook nu duidelijk. Je ogen prikken licht. Buiten zie je een buurvrouw haar auto volstouwen. Het begint serieus te worden.',
+  get narrative() {
+    const extra = profile.playerIsMobilityImpaired
+      ? ' Jij realiseert je dat evacueren voor jou meer voorbereiding vraagt dan voor de meeste mensen.'
+      : profile.playerIsElderly
+      ? ' Als oudere weet je dat het verstandig is om op tijd te handelen en niet te wachten tot het laatste moment.'
+      : '';
+    return 'De rookpluim is groter geworden en je ruikt de rook nu duidelijk. Je ogen prikken licht. Buiten zie je een buurvrouw haar auto volstouwen. Het begint serieus te worden.' + extra;
+  },
   choices: [{
     text: '🎒 Alvast een tas inpakken, voor het geval dat',
     consequence: 'Je pakt een tas met paspoort, medicijnen, oplader, wat kleding en contant geld. Als het bevel komt, kun je meteen weg.',
@@ -177,10 +184,21 @@ const scenes_natuurbrand = [{
     nlalert: null,
     radio: 'Radio 1: DRINGEND BERICHT. De wind is gedraaid. Het vuurfront beweegt richting woonwijken. Brandweer schaalt maximaal op. Bewoners van uw wijk en omgeving: zet u klaar voor evacuatie. Evacuatiebevel verwacht binnen dertig minuten.'
   },
-  narrative: 'De rook is nu duidelijk te zien en te ruiken. De lucht heeft een oranje gloed. Je hoort in de verte sirenes. Op straat beginnen mensen hun auto in te rijden. De situatie verandert snel.',
+  get narrative() {
+    const extra = profile.playerIsMobilityImpaired
+      ? ' Jij weet dat je meer tijd nodig hebt om te vertrekken. Wachten is geen optie.'
+      : profile.playerIsElderly
+      ? ' Je beseft dat je op je leeftijd niet te lang moet wachten — de drukte op de wegen neemt snel toe.'
+      : '';
+    return 'De rook is nu duidelijk te zien en te ruiken. De lucht heeft een oranje gloed. Je hoort in de verte sirenes. Op straat beginnen mensen hun auto in te rijden. De situatie verandert snel.' + extra;
+  },
   choices: [{
     text: '🚗 Nu zelf vertrekken, niet wachten op officieel bevel',
-    consequence: 'Je besluit meteen te gaan. De weg is nog vrij. Je bent weg voordat de files ontstaan.',
+    get consequence() {
+      return profile.playerIsMobilityImpaired
+        ? 'Je maakt je klaar om te vertrekken. Met je beperkte mobiliteit kost dat wat meer tijd, maar je bent op tijd weg voordat de file echt opstaat.'
+        : 'Je besluit meteen te gaan. De weg is nog vrij. Je bent weg voordat de files ontstaan.';
+    },
     stateChange: () => ({
       evacuated: true,
       evacuatedEarly: true,

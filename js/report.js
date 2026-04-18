@@ -27,27 +27,45 @@ function prepScoreBerekenen() {
 // ─── SECTIE 1: SCORE ──────────────────────────────────────────────────────────
 
 function renderSectie1(naam, prepScore) {
-  let niveau, niveauClass, duiding;
+  let niveau, heroClass, duiding;
   if (prepScore >= 0.67) {
     niveau = 'Goed voorbereid';
-    niveauClass = 'rep-niveau-goed';
+    heroClass = 'rep-score-hero--goed';
     duiding = 'De meeste essentiële onderdelen van een noodvoorbereiding zijn aanwezig. Dat is een solide basis die in een echte noodsituatie direct van waarde is.';
   } else if (prepScore >= 0.33) {
     niveau = 'Matig voorbereid';
-    niveauClass = 'rep-niveau-matig';
+    heroClass = 'rep-score-hero--matig';
     duiding = 'Een deel van de voorbereiding is op orde, maar er ontbreken nog belangrijke onderdelen. Gerichte aanvullingen vergroten de weerbaarheid aanzienlijk.';
   } else {
     niveau = 'Beperkt voorbereid';
-    niveauClass = 'rep-niveau-beperkt';
+    heroClass = 'rep-score-hero--beperkt';
     duiding = 'De voorbereiding is beperkt. Dit rapport brengt in kaart welke stappen het meeste verschil maken bij een volgende noodsituatie.';
   }
 
+  const scoreItems = [
+    { ok: profile.hasKit       === 'ja' },
+    { ok: profile.hasBOBBag    === 'ja' },
+    { ok: profile.hasNoodplan  === 'ja' },
+    { ok: profile.hasRadio     === 'ja' },
+    { ok: profile.hasCash      === 'ja' },
+    { ok: profile.hasPowerbank === 'ja' },
+  ];
+  const dots = scoreItems.map(item =>
+    `<div class="rep-score-dot ${item.ok ? 'rep-score-dot--ja' : 'rep-score-dot--nee'}"></div>`
+  ).join('');
+
   document.getElementById('rep-s1').innerHTML = `
-    <div class="rep-section-nr">1</div>
-    <div class="rep-section-heading">Score</div>
-    <div class="rep-subsection">
-      <span class="rep-niveau-badge ${niveauClass}">${niveau}</span>
-      <p class="rep-body-text">${duiding} De score is gebaseerd op de voorbereiding die je hebt opgegeven: noodpakket, vluchttas, persoonlijk noodplan, batterijradio, contant geld en powerbank.</p>
+    <div class="rep-section-header-wrap">
+      <span class="rep-section-nr">1</span>
+      <span class="rep-section-heading">Score</span>
+    </div>
+    <div class="rep-score-hero ${heroClass}">
+      <div class="rep-score-hero-top">
+        <div class="rep-score-level">${niveau}</div>
+        <div class="rep-score-dots">${dots}</div>
+      </div>
+      <p class="rep-body-text" style="margin:0">${duiding}</p>
+      <p class="rep-score-basis">De score is gebaseerd op: noodpakket, vluchttas, noodplan, batterijradio, contant geld en powerbank.</p>
     </div>`;
 }
 
@@ -138,7 +156,7 @@ function renderSectie2(persons) {
   // ── Gezinssamenstelling ──────────────────────────────────────────────────────
   const huishoudKvs = [
     { label: 'Aantal personen', waarde: persons },
-    { label: 'Volwassenen',     waarde: adultsCount },
+    { label: '(Bijna) volwassenen', waarde: adultsCount },
     { label: 'Ouderen',         waarde: profile.ouderenCount || 0 },
     { label: 'Jonge kinderen',  waarde: childrenCount },
     { label: 'Beperkt mobiel',  waarde: slechtTerBeenCount },
@@ -189,8 +207,10 @@ function renderSectie2(persons) {
   const vervoerHtml = vervoerRegels.map(r => `<p class="rep-body-text">${r}</p>`).join('');
 
   document.getElementById('rep-s2').innerHTML = `
-    <div class="rep-section-nr">2</div>
-    <div class="rep-section-heading">Jouw thuissituatie</div>
+    <div class="rep-section-header-wrap">
+      <span class="rep-section-nr">2</span>
+      <span class="rep-section-heading">Jouw thuissituatie</span>
+    </div>
 
     <div class="rep-subsection">
       <div class="rep-subsection-title">Gezinssamenstelling</div>
@@ -274,8 +294,10 @@ function renderSectie3() {
   ].join('');
 
   document.getElementById('rep-s3').innerHTML = `
-    <div class="rep-section-nr">3</div>
-    <div class="rep-section-heading">Jouw voorbereiding</div>
+    <div class="rep-section-header-wrap">
+      <span class="rep-section-nr">3</span>
+      <span class="rep-section-heading">Jouw voorbereiding</span>
+    </div>
 
     <div class="rep-subsection">
       <div class="rep-check-row">
@@ -311,8 +333,10 @@ function renderSectie4(naam) {
   const nNaam = naam ? `${naam}, k` : 'K';
 
   document.getElementById('rep-s4').innerHTML = `
-    <div class="rep-section-nr">4</div>
-    <div class="rep-section-heading">Tips</div>
+    <div class="rep-section-header-wrap">
+      <span class="rep-section-nr">4</span>
+      <span class="rep-section-heading">Tips</span>
+    </div>
     <div class="rep-subsection">
       <p class="rep-body-text">${nNaam}ijk naar je individuele situatie en verbeter waar nodig de ontbrekende onderdelen. De checklist in sectie 3 laat precies zien wat al aanwezig is en wat nog ontbreekt. Begin bij de meest kritieke onderdelen en werk van daaruit verder.</p>
       <p class="rep-body-text">Ga het gesprek aan met je buren en werk samen waar mogelijk. Weten wie er in je straat woont, wie kwetsbaar is en wie hulp kan bieden, maakt een buurt weerbaarder. Onderlinge samenwerking is in een crisis vaak sneller en effectiever dan wachten op officiële hulp.</p>
@@ -338,7 +362,7 @@ function showReport() {
     : 'Rapport \u2013 Goed Voorbereid';
 
   const prepScore = prepScoreBerekenen();
-  const persons = adultsCount + childrenCount + slechtTerBeenCount;
+  const persons = profile.members || (adultsCount + childrenCount + slechtTerBeenCount + ouderenCount);
 
   renderSectie1(naam, prepScore);
   renderSectie2(persons);

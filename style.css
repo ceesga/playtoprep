@@ -2967,7 +2967,7 @@ h3 .help-icon svg {
 /* ── PROFESSIONEEL RAPPORT (6 secties) ──────────────────────────────────────── */
 
 .rep-section {
-  padding:24px 0 8px;
+  padding:28px 0 8px;
   border-top:1px solid var(--c-border);
 }
 
@@ -2976,21 +2976,86 @@ h3 .help-icon svg {
   padding-top:8px;
 }
 
+.rep-section-header-wrap {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+
 .rep-section-nr {
-  font-size:.65rem;
+  font-size:.68rem;
   font-weight:700;
-  letter-spacing:2px;
-  color:var(--c-text-faint);
+  letter-spacing:1.5px;
+  color:var(--c-primary);
   text-transform:uppercase;
-  margin-bottom:2px;
+  background:var(--c-primary-bg);
+  border:1px solid var(--c-primary-border);
+  padding:3px 9px;
+  border-radius:var(--r-sm);
+  flex-shrink:0;
 }
 
 .rep-section-heading {
-  font-size:1.05rem;
+  font-size:1.2rem;
   font-weight:700;
   color:var(--c-text);
-  margin-bottom:16px;
+  line-height:1.2;
 }
+
+/* Score hero — sectie 1 */
+.rep-score-hero {
+  border-radius:var(--r-lg);
+  padding:20px;
+  margin-bottom:4px;
+}
+
+.rep-score-hero--goed {
+  background:var(--c-success-bg);
+  border:1px solid #b2ddbf;
+}
+
+.rep-score-hero--matig {
+  background:#fffbeb;
+  border:1px solid #fcd34d;
+}
+
+.rep-score-hero--beperkt {
+  background:var(--c-danger-bg);
+  border:1px solid #f9b4b4;
+}
+
+.rep-score-hero-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.rep-score-level {
+  font-size:1.05rem;
+  font-weight:700;
+}
+
+.rep-score-hero--goed  .rep-score-level { color:var(--c-success); }
+.rep-score-hero--matig .rep-score-level { color:#92400e; }
+.rep-score-hero--beperkt .rep-score-level { color:var(--c-danger); }
+
+.rep-score-dots {
+  display:flex;
+  gap:6px;
+  flex-shrink:0;
+}
+
+.rep-score-dot {
+  width:14px;
+  height:14px;
+  border-radius:50%;
+}
+
+.rep-score-dot--ja     { background:var(--c-success); }
+.rep-score-dot--nee    { background:var(--c-border); border:1.5px solid var(--c-neutral-border); }
 
 .rep-subsection {
   margin-bottom:16px;
@@ -3113,56 +3178,53 @@ h3 .help-icon svg {
   flex:1;
 }
 
-.rep-niveau-badge {
-  display:inline-block;
-  font-size:.82rem;
-  font-weight:700;
-  padding:4px 14px;
-  border-radius:var(--r-sm);
-  margin-bottom:8px;
+.rep-score-basis {
+  font-size:.78rem;
+  color:var(--c-text-muted);
+  margin-top:8px;
+  line-height:1.5;
 }
 
-.rep-niveau-goed {
-  background:var(--c-success-bg);
-  color:var(--c-success);
-  border:1px solid var(--c-success);
-}
-
-.rep-niveau-matig {
-  background:#fffbeb;
-  color:#92400e;
-  border:1px solid #fbbf24;
-}
-
-.rep-niveau-beperkt {
-  background:var(--c-danger-bg);
-  color:var(--c-danger);
-  border:1px solid var(--c-danger);
-}
+.rep-score-hero--goed  .rep-score-basis { color:#4a7a52; }
+.rep-score-hero--matig .rep-score-basis { color:#a16207; }
+.rep-score-hero--beperkt .rep-score-basis { color:#9a2a2a; }
 
 .rep-check-row {
   display:flex;
-  align-items:baseline;
+  align-items:center;
   gap:8px;
-  padding:4px 0;
+  padding:5px 0;
   font-size:.88rem;
   line-height:1.5;
 }
 
 .rep-check-indent {
-  padding-left:18px;
+  padding-left:20px;
 }
 
 .rep-check-icon {
-  font-size:.95rem;
-  font-weight:700;
   flex-shrink:0;
-  width:16px;
-  text-align:center;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.6rem;
+  font-weight:900;
+  line-height:1;
 }
 
-.rep-check-ja { color:var(--c-success); }
-.rep-check-nee { color:var(--c-danger); }
+.rep-check-ja {
+  background:var(--c-success);
+  color:#fff;
+}
+
+.rep-check-nee {
+  background:#fff;
+  color:var(--c-danger);
+  border:1.5px solid var(--c-danger);
+}
 
 .rep-check-label { color:var(--c-text); }
 
@@ -3501,8 +3563,9 @@ h3 .help-icon svg {
 #hh-vehicle-row {
   flex-shrink:0;
   display:flex;
-  flex-direction:column;
-  gap:8px;
+  flex-direction:row;
+  align-items:flex-start;
+  gap:16px;
   padding:10px 16px 16px;
   border-top:1px solid #f0f0f0;
 }
@@ -3531,10 +3594,11 @@ h3 .help-icon svg {
   cursor:pointer;
   border-radius:var(--r-sm);
   border:2px solid var(--c-border);
-  padding:6px 14px;
+  padding:6px 10px;
   display:flex;
+  flex-direction:column;
   align-items:center;
-  gap:8px;
+  gap:4px;
   transition:border-color .15s,box-shadow .15s;
 }
 
@@ -3544,9 +3608,10 @@ h3 .help-icon svg {
 }
 
 .hh-vehicle-opt span {
-  font-size:.75rem;
+  font-size:.65rem;
   font-weight:700;
   color:#555;
+  text-align:center;
 }
 
 .hh-vehicle-opt:hover {
@@ -3861,15 +3926,61 @@ h3 .help-icon svg {
   justify-content:center;
 }
 
+/* Wie ben jij stap */
+.char-fig.wbj-selected img {
+  filter:drop-shadow(0 0 10px rgba(var(--c-primary-rgb),.55))
+         drop-shadow(0 0 4px rgba(var(--c-primary-rgb),.35));
+  transition:filter .2s;
+}
+
+.char-fig[role="button"]:not(.wbj-selected) img {
+  transition:filter .2s;
+}
+
+.char-fig[role="button"]:hover:not(.wbj-selected) img {
+  filter:drop-shadow(0 0 6px rgba(var(--c-primary-rgb),.25));
+}
+
+.wbj-instruction {
+  padding:14px 16px;
+  font-size:.85rem;
+  font-weight:600;
+  color:var(--c-text-faint);
+  text-align:center;
+}
+
 #hh-controls {
   flex-shrink:0;
-  padding:10px 8px 16px;
+  padding:0 8px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  border-top:1px solid var(--c-border-light);
+}
+
+.hh-totaal {
+  text-align:center;
+  font-size:.95rem;
+  font-weight:600;
+  color:var(--c-text);
+  padding:10px 0 12px;
+  border-bottom:1px solid var(--c-border-light);
+  margin-bottom:4px;
+}
+
+.hh-totaal strong {
+  font-size:inherit;
+  font-weight:inherit;
+  color:inherit;
+}
+
+.hh-counter-row {
   display:flex;
   justify-content:center;
   align-items:flex-start;
   gap:0;
-  border-top:1px solid var(--c-border-light);
   flex-wrap:nowrap;
+  padding-top:6px;
 }
 
 .hh-counter {

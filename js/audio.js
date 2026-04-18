@@ -216,7 +216,7 @@ const Ambience = {
     fire: { src: [AUDIO_PATHS.fire], loop: true, preload: true, volume: 0, targetVolume: 0.22 },
     forest: { src: [AUDIO_PATHS.forest], loop: true, preload: true, volume: 0, targetVolume: 0.14 },
     heartbeat: { src: [AUDIO_PATHS.heartbeat], loop: true, preload: true, volume: 0, targetVolume: 0.38 },
-    computerHum: { src: [AUDIO_PATHS.computerHum], loop: true, preload: true, volume: 0, targetVolume: 0.16 }
+    computerHum: { src: [AUDIO_PATHS.computerHum], loop: true, html5: true, preload: true, volume: 0, targetVolume: 0.24 }
   },
 
   // Geeft de Howl-instantie voor de opgegeven track terug; maakt hem aan als hij nog niet bestaat.
@@ -225,6 +225,16 @@ const Ambience = {
       this._sounds[name] = new Howl(this._configs[name]);
     }
     return this._sounds[name];
+  },
+
+  // Verwarm de opgegeven ambient tracks alvast, zodat korte intro-scenes niet
+  // stil blijven terwijl Howler het bestand nog moet laden.
+  preload(names) {
+    (names || []).forEach(name => {
+      if (!name || !this._configs[name]) return;
+      const snd = this._get(name);
+      if (typeof snd.state === 'function' && snd.state() === 'unloaded') snd.load();
+    });
   },
 
   TARGET_VOL: 0.22, // doelvolume na fade-in (22%)
@@ -237,7 +247,7 @@ const Ambience = {
     if (!audioEnabled || !name) return;
 
     const snd = this._get(name);
-    const nextVolume = targetVolume ?? this._configs[name].targetVolume ?? this.TARGET_VOL;
+    const nextVolume = Math.min(1, Math.max(0, targetVolume ?? this._configs[name].targetVolume ?? this.TARGET_VOL));
 
     if (this._current === name) {
       if (!snd.playing()) {

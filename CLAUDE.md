@@ -80,7 +80,7 @@ Er is geen auto-advance timer. Verwijder of voeg deze niet toe.
 
 1. **Geen dark mode** — CSS-blok voor dark mode is bewust verwijderd (veroorzaakte kleurproblemen). Voeg dit niet opnieuw toe.
 
-2. **`intakeStep` begint op -5** — Negatieve waarden zijn speciale intake-stappen: -5=naam, -4=mensen, -3=woning, -2=voertuigen, -1=omgeving. Pas dit patroon aan als je nieuwe pre-intake-stappen toevoegt.
+2. **`intakeStep` begint op -6** — Negatieve waarden zijn speciale intake-stappen: -6=naam, -5=mensen, -4=wie_ben_jij, -3=woning, -2=voertuigen, -1=omgeving. De stap `wie_ben_jij` slaat de persoonsselectie op als `profile.playerPersonType`, `profile.playerIsMobilityImpaired` en `profile.playerIsElderly`. Pas dit patroon aan als je nieuwe pre-intake-stappen toevoegt.
 
 3. **Comfort-schaal vs. UI-schaal** — `MAX_STAT_COMFORT = 10` maar de UI toont slechts 5 segmenten (`MAX_STAT_SEGS = 5`). Comfort-waarde 10 = 5 volle icoontjes. Reken de weergave correct om.
 
