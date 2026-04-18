@@ -540,7 +540,7 @@ function renderWieBenJijStep() {
 
   const intakeControls = document.getElementById('intake-controls');
   if (intakeControls) intakeControls.innerHTML = `
-    <div class="wbj-instruction">Selecteer welk persoon jij bent</div>`;
+    <div class="wbj-instruction">Selecteer wie jij hier bent</div>`;
 
   document.getElementById('intake-next').disabled = selectedPlayerPerson === null;
 }

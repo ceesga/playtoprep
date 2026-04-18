@@ -3237,6 +3237,30 @@ h3 .help-icon svg {
   margin:12px 0 4px;
 }
 
+.rep-inhuis-cols {
+  display:flex;
+  gap:16px;
+  align-items:flex-start;
+}
+
+.rep-inhuis-col {
+  flex:1;
+  min-width:0;
+}
+
+.rep-inhuis-disclaimer {
+  margin-top:14px;
+  font-style:italic;
+  color:var(--c-text-faint);
+}
+
+@media (max-width:540px) {
+  .rep-inhuis-cols {
+    flex-direction:column;
+    gap:0;
+  }
+}
+
 .rep-moment {
   border-left:2px solid var(--c-border);
   padding:10px 0 10px 16px;
