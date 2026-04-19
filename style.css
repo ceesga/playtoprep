@@ -96,6 +96,10 @@
   padding:0;
 }
 
+html {
+  overscroll-behavior: none;
+}
+
 body {
   font-family:'DM Sans',Arial,sans-serif;
   background:#1a1a1a;
@@ -105,6 +109,7 @@ body {
   flex-direction:column;
   align-items:center;
   padding:114px 16px 24px;
+  overscroll-behavior: none;
 }
 
 .bg-layer {
@@ -3500,7 +3505,17 @@ h3 .help-icon svg {
 
 @media(max-width:480px) {
   .cards {
-    grid-template-columns:1fr;
+    grid-template-columns:repeat(auto-fit,minmax(0,1fr));
+  }
+
+  .choice-card {
+    padding:10px 8px;
+    font-size:.78rem;
+    gap:6px;
+  }
+
+  .choice-card .icon {
+    font-size:1.1rem;
   }
 
 }
@@ -4405,6 +4420,12 @@ h3 .help-icon svg {
     bottom:clamp(72px,10vh,88px);
   }
 
+  .inventory-fab,
+  .inventory-fab-img {
+    width:48px;
+    height:48px;
+  }
+
   .inventory-panel {
     width:min(calc(100vw - 32px),546px);
     max-height:min(78vh,520px);
@@ -4425,6 +4446,13 @@ h3 .help-icon svg {
 
   .prep-row {
     gap:8px;
+  }
+
+  /* Prep-pagina footer: negatieve margin aansluiten op mobiele padding */
+
+  #s-prep .screen-footer {
+    margin:0 -16px;
+    padding:14px 16px 20px;
   }
 
   /* Intake + other padded screens */
@@ -4464,34 +4492,67 @@ h3 .help-icon svg {
   /* Household stage — kleiner op mobiel voor meer ruimte aan keuzes */
 
   #hh-stage {
-    height:120px;
+    height:210px;
     padding:6px 10px 8px;
   }
 
   #hh-controls {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px 0;
-    padding:12px 10px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    padding:8px 10px 14px;
   }
 
-  /* House grid — compacte 3-koloms weergave op mobiel */
+  .hh-totaal {
+    padding:4px 0 6px;
+    font-size:.82rem;
+    text-align:left;
+  }
+
+  .hh-counter-row {
+    justify-content:space-between;
+    align-items:flex-end;
+  }
+
+  .hh-counter {
+    padding:0 2px;
+  }
+
+  .hh-label {
+    white-space:normal;
+    text-align:center;
+    font-size:.5rem;
+    line-height:1.2;
+  }
+
+  .hh-btn {
+    width:26px;
+    height:26px;
+    font-size:.85rem;
+  }
+
+  .hh-count {
+    font-size:.85rem;
+    min-width:12px;
+  }
+
+  /* House grid — alle 5 opties op 1 rij */
 
   #hh-house-grid {
-    grid-template-columns:repeat(3,1fr);
-    gap:6px;
-    padding:10px 12px 0;
+    grid-template-columns:repeat(5,1fr);
+    gap:4px;
+    padding:8px 10px 0;
   }
 
   .hh-house-opt img {
-    aspect-ratio:3/2;
-    max-height:56px;
+    aspect-ratio:4/3;
+    max-height:44px;
     padding:2px 2px 0;
   }
 
   .hh-house-opt span {
-    font-size:.6rem;
-    padding:3px 2px 4px;
+    font-size:.55rem;
+    padding:2px 2px 3px;
   }
 
   #intake-household {
@@ -4505,8 +4566,50 @@ h3 .help-icon svg {
   }
 
   #hh-vehicle-row {
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
+    gap:8px;
+    padding:8px 10px 12px;
     justify-content:center;
+  }
+
+  .hh-vehicle-opt {
+    padding:4px 6px;
+  }
+
+  .hh-vehicle-opt img {
+    height:26px;
+  }
+
+  .hh-vehicle-opt span {
+    font-size:.58rem;
+  }
+
+  /* Omgeving — alle 4 opties op 1 rij */
+
+  #hh-env-grid {
+    flex-wrap:nowrap;
+    gap:6px;
+    padding:8px 10px 0;
+    justify-content:stretch;
+  }
+
+  .hh-env-opt {
+    flex:1 1 0;
+    min-width:0;
+    padding:6px 4px;
+    gap:4px;
+  }
+
+  .hh-env-thumb {
+    height:36px;
+  }
+
+  .hh-env-thumb img {
+    max-height:36px;
+  }
+
+  .hh-env-opt span {
+    font-size:.58rem;
   }
 
   .phase-label {

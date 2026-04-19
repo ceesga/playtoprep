@@ -31,7 +31,7 @@ const EDC_ITEMS = ['hasEDCBag', 'hasEDCCash', 'hasEDCSnacks', 'hasEDCCharger', '
 const prepQs = [{
   id: 'hasNoodplan',
   headerToggle: true,
-  section: 'Persoonlijk noodplan (communicatieplan, evacuatieplan, gezin weet wat te doen)'
+  section: 'Persoonlijk noodplan'
 }, {
   id: 'hasBOBBag',
   headerToggle: true,

@@ -534,7 +534,7 @@ function renderWieBenJijStep() {
   }).join('');
 
   household.innerHTML = `
-    <div id="hh-stage">
+    <div id="hh-stage" class="hh-stage--wbj">
       <div id="hh-char-figures">${figures}</div>
     </div>`;
 
