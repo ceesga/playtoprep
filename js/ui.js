@@ -303,6 +303,26 @@ function show(id) {
   const corner = document.getElementById('scene-id-corner');
   if (corner && pageCodes[id]) corner.textContent = pageCodes[id];
 
+  // Achtergrondafbeelding wisselen per scherm
+  const layerA = document.getElementById('bg-layer-a');
+  if (layerA && id !== 's-scenario') {
+    const isApartment = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+    let bgUrl = isApartment
+      ? 'afbeelding/algemeen/appartement_zomer.png'
+      : 'afbeelding/algemeen/huis_normaal.png';
+    if (id === 's-intake') {
+      bgUrl = 'afbeelding/algemeen/woonkamer_normaal.jpg';
+    } else if (id === 's-prep') {
+      bgUrl = isApartment
+        ? 'afbeelding/algemeen/opslag_appartement.png'
+        : 'afbeelding/algemeen/opslag_kelder.png';
+    }
+    layerA.style.backgroundImage = `url('${bgUrl}')`;
+    layerA.style.opacity = '1';
+    const layerB = document.getElementById('bg-layer-b');
+    if (layerB) layerB.style.opacity = '0';
+  }
+
   // Scroll soepel naar boven bij schermwissel
   window.scrollTo({
     top: 0,

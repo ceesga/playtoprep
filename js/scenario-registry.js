@@ -141,7 +141,14 @@ const SCENARIO_REGISTRY = {
     scenes: scenes_thuis_komen,
     sceneDecay: sceneDecay_thuis_komen,
     visuals: {
-      imageMap: sceneImages_thuis_komen
+      imageMap: sceneImages_thuis_komen,
+      imageMapFn(sceneId) {
+        const isApartment = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+        if ((sceneId === 'tk_5c' || sceneId === 'tk_6') && isApartment) {
+          return 'afbeelding/stroomstoring/Appartement_winter_1.png';
+        }
+        return null;
+      }
     },
     report: {
       scoreMode: 'supplies',
@@ -187,7 +194,21 @@ const SCENARIO_REGISTRY = {
     sceneDecay: sceneDecay_nachtalarm,
     visuals: {
       imageMap: sceneImages_nachtalarm,
-      darknessOverride: DARKNESS_OVERRIDE_BY_SCENE
+      darknessOverride: DARKNESS_OVERRIDE_BY_SCENE,
+      imageMapFn(sceneId) {
+        const isApartment = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+        if (sceneId === 'na_4') {
+          return isApartment
+            ? 'afbeelding/brandalarm/appartement_zomer_nacht.png'
+            : 'afbeelding/brandalarm/smoke_alarm_house.png';
+        }
+        if (sceneId === 'na_5') {
+          return isApartment
+            ? 'afbeelding/brandalarm/appartement_zomer_nacht_brandweer.png'
+            : null;
+        }
+        return null;
+      }
     },
     report: {
       scoreMode: 'supplies',

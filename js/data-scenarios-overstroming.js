@@ -37,7 +37,10 @@ const scenes_overstroming = [{
         ? ' Je kind ligt al lekker in bed te slapen.'
         : ' De kinderen liggen al lekker in bed te slapen.')
       : '';
-    return 'Het is maandagavond. Buiten regent het gestaag en de grond is al de hele week verzadigd van al het water.' + locatie + kinderen;
+    const woning = (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? ' Je woont in een appartementengebouw. Bij hoog water ben je op een hogere verdieping beter beschermd dan bewoners van een grondgebonden woning. Maar ook in een flat kun je de gevolgen merken: de begane grond kan onderlopen en de omgeving buiten komt onder water te staan.'
+      : '';
+    return 'Het is maandagavond. Buiten regent het gestaag en de grond is al de hele week verzadigd van al het water.' + locatie + woning + kinderen;
   },
   choices: [{
     text: '🛌 Gaan slapen',
@@ -72,7 +75,10 @@ const scenes_overstroming = [{
     const huisdier = profile.hasPets && !state.tookPets
       ? ' Je huisdier is onrustig en loopt heen en weer te ijsberen.'
       : '';
-    return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. De regen klinkt heftiger dan normaal.' + gisteren + tasNietKlaar + kinderen + huisdier;
+    const buiten = (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? ' Je kijkt vanuit je raam omlaag: op de stoep begint het water al te staan.'
+      : '';
+    return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. De regen klinkt heftiger dan normaal.' + gisteren + tasNietKlaar + buiten + kinderen + huisdier;
   },
   choices: [{
     conditionalOn: () => !state.packedBag,
@@ -84,7 +90,9 @@ const scenes_overstroming = [{
     }
   }, {
     text: '🙈 Afwachten, het regelt zichzelf wel',
-    consequence: 'Je gaat door met je ochtendroutine. Buiten stijgt het water al licht. Je merkt het pas als je naar de brievenbus loopt en natte voeten krijgt.',
+    consequence: () => (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? 'Je gaat door met je ochtendroutine. Buiten stijgt het water al licht. Je merkt het pas als je vanuit het raam ziet dat de stoep blank staat.'
+      : 'Je gaat door met je ochtendroutine. Buiten stijgt het water al licht. Je merkt het pas als je naar de brievenbus loopt en natte voeten krijgt.',
     stateChange: {}
   }, {
     conditionalOn: () => profile.hasPets && !state.tookPets,
@@ -195,7 +203,11 @@ const scenes_overstroming = [{
     nlalert: 'NL-Alert\n9 november 2027 – 09:20\n\nHoogwater in uw omgeving. De waterstand stijgt. Let op de situatie. Bereid u voor op mogelijke maatregelen. Houd deuren en ramen gesloten.',
     radio: 'Radio 1: Op enkele plekken in de regio staat water op straat. Gemeenten plaatsen zandzakken en sluiten wegen af waar nodig. Woont u in een laaggelegen gebied, houd de situatie goed in de gaten.'
   },
-  narrative: 'De straat staat nu een paar centimeter blank. Verderop leggen gemeentewerkers zandzakken neer en een busje van het waterschap zet een deel van de weg af. Buren lopen af en aan met laarzen en kratten.',
+  get narrative() {
+    return (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? 'Vanuit je raam zie je dat de straat nu een paar centimeter blank staat. Verderop leggen gemeentewerkers zandzakken neer. Bewoners op de begane grond dragen kisten naar boven. Jouw woning zit droog, maar de omgeving verandert snel.'
+      : 'De straat staat nu een paar centimeter blank. Verderop leggen gemeentewerkers zandzakken neer en een busje van het waterschap zet een deel van de weg af. Buren lopen af en aan met laarzen en kratten.';
+  },
   choices: [{
     text: '🪟 Ramen dichten, deuren afdichten en zandzakken neerleggen',
     consequence: 'Je stopt handdoeken onder de deuren, sluit ramen en legt je zandzakken voor de drempel. Dit vertraagt het water, maar houdt het niet tegen. Geeft je extra tijd.',
@@ -351,12 +363,19 @@ const scenes_overstroming = [{
       : profile.playerIsElderly
       ? ' Op jouw leeftijd is waden door hoog water te gevaarlijk. Je opties zijn beperkt. Elke minuut telt.'
       : '';
-    return 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Het evacuatieadvies is duidelijk: ga nu weg als dat nog kan, of ga naar boven.' + tas + geenAuto + mobiliteit + ' Wat doe je?';
+    const bovenTekst = (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? ' ga nu weg als dat nog kan, of ga naar een hogere verdieping in het gebouw.'
+      : ' ga nu weg als dat nog kan, of ga naar boven.';
+    return 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Het evacuatieadvies is duidelijk:' + bovenTekst + tas + geenAuto + mobiliteit + ' Wat doe je?';
   },
   choices: [{
     conditionalOn: () => !profile.hasMobilityImpaired,
-    text: '🏠 Boven blijven en naar de eerste verdieping gaan',
-    consequence: 'Je klimt naar boven. Je neemt water, eten en je telefoon mee. Beneden stijgt het water verder.',
+    text: () => (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? '🏠 In het gebouw blijven en naar een hogere verdieping gaan'
+      : '🏠 Boven blijven en naar de eerste verdieping gaan',
+    consequence: () => (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? 'Je gaat naar een hogere verdieping in het gebouw. Je neemt water, eten en je telefoon mee. Op straat stijgt het water verder, maar jij zit droog.'
+      : 'Je klimt naar boven. Je neemt water, eten en je telefoon mee. Beneden stijgt het water verder.',
     stateChange: {
       wentUpstairs: true
     }
@@ -473,7 +492,11 @@ const scenes_overstroming = [{
         ? (petsCount > 1 ? ' Je huisdieren zijn bij je.' : ' Je huisdier is bij je.')
         : (petsCount > 1 ? ' Je huisdieren zijn beneden achtergebleven. Je hoort ze onrustig bewegen.' : ' Je huisdier is beneden achtergebleven. Je hoort het onrustig bewegen.')
       : '';
-    return (state.takingAns ? 'Je bent boven met Ans. Beneden stijgt het water en je hoort het kabbelen. Twee paar ogen zien meer dan één. Hoe bereid je de komende uren voor?' : 'Je bent boven. Beneden stijgt het water en je hoort het kabbelen. Hoe bereid je de komende uren voor?') + huisdier;
+    const isApt = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+    const basisAns = state.takingAns
+      ? (isApt ? 'Je bent met Ans op een hogere verdieping in het gebouw. Beneden in de gang staat het water. Twee paar ogen zien meer dan één. Hoe bereid je de komende uren voor?' : 'Je bent boven met Ans. Beneden stijgt het water en je hoort het kabbelen. Twee paar ogen zien meer dan één. Hoe bereid je de komende uren voor?')
+      : (isApt ? 'Je bent op een hogere verdieping in het gebouw. Beneden in de gang en op straat stijgt het water. Hoe bereid je de komende uren voor?' : 'Je bent boven. Beneden stijgt het water en je hoort het kabbelen. Hoe bereid je de komende uren voor?');
+    return basisAns + huisdier;
   },
   choices: [{
     text: '💧 Water en eten meenemen naar boven',
@@ -612,7 +635,11 @@ const scenes_overstroming = [{
       : profile.playerIsElderly
       ? ' Op jouw leeftijd is de situatie extra belastend. Je lichaam protesteert bij elke trap omhoog.'
       : '';
-    return 'Beneden hoor je het water kabbelen. De onderkant van de trapleuning staat al onder water. Je bent boven en voorlopig veilig, maar het stijgt nog steeds.' + mobExtra;
+    const isApt5 = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+    const basis5 = isApt5
+      ? 'Vanuit je raam zie je het water op straat staan. Beneden in het trappenhuis klinkt het kabbelen van water. Je zit op een hogere verdieping en bent voorlopig veilig, maar het stijgt nog steeds.'
+      : 'Beneden hoor je het water kabbelen. De onderkant van de trapleuning staat al onder water. Je bent boven en voorlopig veilig, maar het stijgt nog steeds.';
+    return basis5 + mobExtra;
   },
   choices: [{
     text: '🪟 Vanuit het raam om hulp seinen',
