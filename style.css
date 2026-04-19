@@ -2981,6 +2981,63 @@ h3 .help-icon svg {
   align-items:center;
   gap:10px;
   margin-bottom:20px;
+  user-select:none;
+}
+
+/* Accordeon chevron */
+.rep-chevron {
+  margin-left:auto;
+  width:20px;
+  height:20px;
+  flex-shrink:0;
+  display:none;
+}
+
+.rep-chevron::before {
+  content:'';
+  display:block;
+  width:8px;
+  height:8px;
+  border-right:2px solid var(--c-text-3);
+  border-bottom:2px solid var(--c-text-3);
+  transform:rotate(45deg) translateY(-2px);
+  transition:transform .2s;
+  margin:4px auto 0;
+}
+
+.rep-collapsed .rep-chevron::before {
+  transform:rotate(-135deg) translateY(-2px);
+}
+
+.rep-section-body {
+  /* Desktop: altijd zichtbaar */
+}
+
+/* Printknop */
+.rep-print-row {
+  display:flex;
+  justify-content:center;
+  padding:8px 0 4px;
+}
+
+.rep-print-btn {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  background:none;
+  border:1.5px solid var(--c-border);
+  border-radius:var(--r-sm);
+  padding:9px 18px;
+  font-size:.85rem;
+  font-weight:600;
+  color:var(--c-text-2);
+  cursor:pointer;
+  transition:border-color .15s, color .15s;
+}
+
+.rep-print-btn:hover {
+  border-color:var(--c-primary);
+  color:var(--c-primary);
 }
 
 .rep-section-nr {
@@ -4380,18 +4437,18 @@ h3 .help-icon svg {
     padding:20px 16px;
   }
 
-  /* Character preview — reduce on mobile since figures aren't selected yet */
+  /* Character preview — verbergen op mobiel, stage toont huishouden al */
 
   #character-preview {
-    min-height:120px;
+    display:none;
   }
 
   .char-fig.adult img {
-    height:100px;
+    height:64px;
   }
 
   .char-fig.child img {
-    height:68px;
+    height:44px;
   }
 
   .inventory-grid {
@@ -4404,11 +4461,11 @@ h3 .help-icon svg {
     flex-direction:column;
   }
 
-  /* Household stage reduced height on mobile */
+  /* Household stage — kleiner op mobiel voor meer ruimte aan keuzes */
 
   #hh-stage {
-    height:260px;
-    padding:16px 10px 20px;
+    height:120px;
+    padding:6px 10px 8px;
   }
 
   #hh-controls {
@@ -4418,10 +4475,23 @@ h3 .help-icon svg {
     padding:12px 10px 18px;
   }
 
-  /* House grid 3 columns op kleine schermen */
+  /* House grid — compacte 3-koloms weergave op mobiel */
 
   #hh-house-grid {
     grid-template-columns:repeat(3,1fr);
+    gap:6px;
+    padding:10px 12px 0;
+  }
+
+  .hh-house-opt img {
+    aspect-ratio:3/2;
+    max-height:56px;
+    padding:2px 2px 0;
+  }
+
+  .hh-house-opt span {
+    font-size:.6rem;
+    padding:3px 2px 4px;
   }
 
   #intake-household {
@@ -4430,6 +4500,21 @@ h3 .help-icon svg {
 
   #intake-controls {
     margin:0 -20px;
+    overflow-y:auto;
+    max-height:40vh;
+  }
+
+  #hh-vehicle-row {
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .phase-label {
+    display:none;
+  }
+
+  .screen-header {
+    padding-bottom:4px;
   }
 
   /* Topbar time + badge */
@@ -4444,6 +4529,116 @@ h3 .help-icon svg {
     font-size:.68rem;
   }
 
+}
+
+@media(max-width:380px) {
+  #hh-house-grid {
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+/* ── ACCORDEON OP MOBIEL ────────────────────────────────────────────────────── */
+@media(max-width:640px) {
+  .rep-chevron {
+    display:block;
+  }
+
+  .rep-section-header-wrap {
+    cursor:pointer;
+    margin-bottom:0;
+    padding-bottom:16px;
+  }
+
+  .rep-section-body {
+    overflow:hidden;
+    max-height:9999px;
+    transition:max-height .3s ease;
+  }
+
+  .rep-collapsed .rep-section-body {
+    max-height:0;
+  }
+
+  .rep-collapsed .rep-section-header-wrap {
+    margin-bottom:0;
+    padding-bottom:0;
+  }
+}
+
+/* ── PRINT / PDF ────────────────────────────────────────────────────────────── */
+
+/* ── PRINT / PDF ────────────────────────────────────────────────────────────── */
+@media print {
+  body, html {
+    background: white !important;
+  }
+
+  /* Maak de card-container onbegrensd */
+  .card {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    display: block !important;
+    max-width: 100% !important;
+  }
+
+  /* Verberg alle schermen behalve het rapport */
+  .screen {
+    display: none !important;
+  }
+
+  #s-report {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    flex: none !important;
+  }
+
+  .screen-body {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: none !important;
+  }
+
+  /* Verberg navigatie en overige UI */
+  .btn-row,
+  .rep-print-row,
+  .phase-label,
+  .ptp-logo-persistent,
+  .rep-print-header,
+  .sc-topbar,
+  .sc-sidebar,
+  .sc-status-bar,
+  .sc-prog {
+    display: none !important;
+  }
+
+  /* Logo bovenaan de print */
+  .rep-print-header {
+    display: flex !important;
+    justify-content: center;
+    padding: 0 0 16px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 16px;
+  }
+
+  .rep-print-header img {
+    height: 80px;
+    width: auto;
+  }
+
+  /* Accordeon: alles uitvouwen en chevron verbergen */
+  .rep-chevron { display: none !important; }
+  .rep-section-header-wrap { margin-bottom: 16px !important; padding-bottom: 0 !important; cursor: default !important; }
+  .rep-section-body { max-height: none !important; overflow: visible !important; }
+  .rep-collapsed .rep-section-body { max-height: none !important; }
+
+  .rep-section { break-inside: avoid; }
 }
 
 /* ── ANIMATIES ─────────────────────────────────────────────────────────────── */
@@ -4666,6 +4861,27 @@ a:focus-visible {
 .ptp-logo {
   height: 80px;
   width: auto;
+}
+
+.rep-print-header {
+  display:none;
+}
+
+.ptp-logo-persistent {
+  position:absolute;
+  bottom:12px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  pointer-events:none;
+  z-index:0;
+}
+
+.ptp-logo-persistent img {
+  height:56px;
+  width:auto;
+  opacity:0.35;
 }
 
 .ptp-logo-footer {

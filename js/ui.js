@@ -246,16 +246,20 @@ function show(id) {
   const card = document.getElementById('main-content');
   if (card) card.classList.toggle('scenario-active', id === 's-scenario');
 
+  // Rugzakknop verborgen op startpagina en rapportpagina
+  const invToggle = document.getElementById('scenario-inventory');
+  if (invToggle) invToggle.style.display = (id === 's-start' || id === 's-report') ? 'none' : '';
+
   // Hamburgerknop verborgen op startpagina en scenario (scenario heeft eigen profielknop)
   const globalMenuBtn = document.getElementById('global-menu-btn');
   if (globalMenuBtn) globalMenuBtn.style.display = (id === 's-start' || id === 's-scenario') ? 'none' : 'flex';
 
-  // Globale klok: verborgen op startpagina en scenario (scenario heeft eigen topbar-klok)
+  // Globale klok: verborgen op startpagina, scenario en rapportpagina
   const globalClock = document.getElementById('global-clock');
-  if (globalClock) globalClock.style.display = (id === 's-uitleg' || id === 's-scenario') ? 'none' : '';
+  if (globalClock) globalClock.style.display = (id === 's-uitleg' || id === 's-scenario' || id === 's-report') ? 'none' : '';
 
-  // Sidebar: toon op prep en alle latere schermen
-  const showSidebar = ['s-prep','s-scenariokeuze','s-commute','s-scenario','s-report'].includes(id);
+  // Sidebar: toon op prep en tussenliggende schermen, niet op rapport
+  const showSidebar = ['s-prep','s-scenariokeuze','s-commute','s-scenario'].includes(id);
   const sidebar = document.getElementById('status-sidebar');
   if (sidebar) sidebar.classList.toggle('visible', showSidebar);
   const cashBox = document.getElementById('ss-cash-box');

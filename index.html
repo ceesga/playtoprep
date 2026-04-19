@@ -283,6 +283,9 @@
 <div id="s-report" class="screen">
   <div class="screen-body">
     <div class="phase-label">Stap 5: Jouw rapport</div>
+    <div class="rep-print-header">
+      <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep">
+    </div>
     <h2 id="rep-title">Rapport – Goed Voorbereid</h2>
     <div class="rep-section" id="rep-s1"></div>
     <div class="rep-section" id="rep-s2"></div>
@@ -294,9 +297,13 @@
       <button type="button" class="btn" onclick="show('s-scenariokeuze')">Ander scenario kiezen</button>
       <button type="button" class="btn-ghost" onclick="location.reload()">Helemaal opnieuw</button>
     </div>
-    <div class="ptp-logo-footer">
-      <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="ptp-logo-sm">
+    <div class="rep-print-row">
+      <button type="button" class="rep-print-btn" onclick="window.print()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Afdrukken / Opslaan als PDF
+      </button>
     </div>
+
   </div>
 </div>
 

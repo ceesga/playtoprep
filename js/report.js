@@ -24,6 +24,12 @@ function prepScoreBerekenen() {
   return items.filter(Boolean).length / items.length;
 }
 
+// ─── ACCORDION ────────────────────────────────────────────────────────────────
+
+function toggleRepSection(header) {
+  header.closest('.rep-section').classList.toggle('rep-collapsed');
+}
+
 // ─── SECTIE 1: SCORE ──────────────────────────────────────────────────────────
 
 function renderSectie1(naam, prepScore) {
@@ -212,7 +218,7 @@ function renderSectie2(persons) {
   document.getElementById('rep-s2').innerHTML = `
     <div class="rep-section-header-wrap">
       <span class="rep-section-nr">2</span>
-      <span class="rep-section-heading">Jouw thuissituatie</span>
+      <span class="rep-section-heading">Thuissituatie</span>
     </div>
 
     <div class="rep-subsection">
@@ -299,7 +305,7 @@ function renderSectie3() {
   document.getElementById('rep-s3').innerHTML = `
     <div class="rep-section-header-wrap">
       <span class="rep-section-nr">3</span>
-      <span class="rep-section-heading">Jouw voorbereiding</span>
+      <span class="rep-section-heading">Voorbereiding</span>
     </div>
 
     <div class="rep-subsection">
@@ -402,4 +408,29 @@ function showReport() {
       el.style.animation = `contentFade 280ms var(--ease-out) ${200 + i * 100}ms both`;
     }
   });
+
+  // Accordeon: wikkel sectioninhoud in rep-section-body en voeg chevron toe
+  secties.forEach((id, i) => {
+    const section = document.getElementById(id);
+    if (!section) return;
+    const header = section.querySelector('.rep-section-header-wrap');
+    if (!header) return;
+
+    // Wikkel alle inhoud na de header in een body-div
+    const body = document.createElement('div');
+    body.className = 'rep-section-body';
+    while (section.children.length > 1) body.appendChild(section.children[1]);
+    section.appendChild(body);
+
+    // Voeg chevron toe en maak header klikbaar
+    header.insertAdjacentHTML('beforeend', '<span class="rep-chevron" aria-hidden="true"></span>');
+    header.setAttribute('role', 'button');
+    header.setAttribute('tabindex', '0');
+    header.onclick = () => toggleRepSection(header);
+    header.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleRepSection(header); } };
+
+    // Op mobiel: sectie 2, 3, 4 standaard ingeklapt
+    if (i > 0 && window.innerWidth <= 640) section.classList.add('rep-collapsed');
+  });
 }
+
