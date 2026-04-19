@@ -4521,19 +4521,19 @@ h3 .help-icon svg {
   .hh-label {
     white-space:normal;
     text-align:center;
-    font-size:.5rem;
+    font-size:.69rem; /* min 11px — leesbaar voor alle leeftijden */
     line-height:1.2;
   }
 
   .hh-btn {
-    width:26px;
-    height:26px;
-    font-size:.85rem;
+    width:30px;
+    height:30px;
+    font-size:.9rem;
   }
 
   .hh-count {
-    font-size:.85rem;
-    min-width:12px;
+    font-size:.9rem;
+    min-width:14px;
   }
 
   /* House grid — alle 5 opties op 1 rij */
@@ -4551,7 +4551,7 @@ h3 .help-icon svg {
   }
 
   .hh-house-opt span {
-    font-size:.55rem;
+    font-size:.69rem;
     padding:2px 2px 3px;
   }
 
@@ -4560,28 +4560,28 @@ h3 .help-icon svg {
   }
 
   #intake-controls {
-    margin:0 -20px;
+    margin:0 -16px; /* matcht screen padding van 16px */
     overflow-y:auto;
-    max-height:40vh;
+    max-height:44vh;
   }
 
   #hh-vehicle-row {
     flex-wrap:nowrap;
     gap:8px;
-    padding:8px 10px 12px;
+    padding:8px 12px 12px;
     justify-content:center;
   }
 
   .hh-vehicle-opt {
-    padding:4px 6px;
+    padding:6px 8px;
   }
 
   .hh-vehicle-opt img {
-    height:26px;
+    height:28px;
   }
 
   .hh-vehicle-opt span {
-    font-size:.58rem;
+    font-size:.69rem;
   }
 
   /* Omgeving — alle 4 opties op 1 rij */
@@ -4609,7 +4609,7 @@ h3 .help-icon svg {
   }
 
   .hh-env-opt span {
-    font-size:.58rem;
+    font-size:.69rem;
   }
 
   .phase-label {
@@ -4635,8 +4635,22 @@ h3 .help-icon svg {
 }
 
 @media(max-width:380px) {
+  /* Woning-grid: horizontaal scrollbaar op zeer kleine schermen */
   #hh-house-grid {
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(5,minmax(52px,1fr));
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:4px;
+  }
+
+  /* Tellers: compacter op miniphones */
+  .hh-btn {
+    width:26px;
+    height:26px;
+  }
+
+  .hh-label {
+    font-size:.62rem;
   }
 }
 
