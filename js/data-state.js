@@ -546,7 +546,7 @@ let commuteStep = 0;
 const ENVIRONMENT_TYPES = [{
   val: 'water',
   label: 'Nabij water',
-  thumb: `<img src="afbeelding/avatars/omgeving/river.png" alt="">`
+  thumb: `<img src="afbeelding/avatars/omgeving/rivier.png" alt="">`
 }, {
   val: 'bos',
   label: 'Bos of natuur',

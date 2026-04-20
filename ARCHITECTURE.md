@@ -28,13 +28,21 @@ playtoprepGH/
 │   ├── data-scenarios-drinkwater.js
 │   ├── data-scenarios-nachtalarm.js
 │   ├── scenario-registry.js
-│   ├── intake.js
+│   ├── avatar-picker.js        ← avatar-constanten, openAvatarPicker, renderHouseholdIndicator
+│   ├── intake-steps.js         ← buildFigures, alle huishoud-stap renderers
+│   ├── intake.js               ← flow control: gotoIntake, renderIntake, intakeNext/Prev
 │   ├── prep.js
 │   ├── inventory.js
 │   ├── audio.js
-│   ├── engine.js
+│   ├── scene-renderer.js       ← renderStatusBars, updateBattery, renderSceneVisual
+│   ├── channel-manager.js      ← newsLog/waLog, setBadge, renderChannels
+│   ├── choice-handler.js       ← CHOICE_ICON_MAP, renderChoices, pickChoice
+│   ├── engine.js               ← startScenario, renderScene, saveGame/loadGame
 │   ├── report.js
-│   └── ui.js
+│   ├── ui.js
+│   ├── users.js                ← statische gebruikerslijst (username + SHA-256 hash)
+│   └── login.js                ← loginscherm, sessiecheck, doLogin()
+├── admin-tool.html             ← lokale beheertool voor aanmaken gebruikers
 ├── afbeelding/
 ├── Audio/
 ├── CLAUDE.md
@@ -50,13 +58,20 @@ icons-data.js
 → data-state.js
 → data-scenarios-*.js
 → scenario-registry.js
-→ intake.js
+→ avatar-picker.js          (avatar-constanten moeten voor intake-steps beschikbaar zijn)
+→ intake-steps.js           (stap-renderers; gebruikt avatar-functies at runtime)
+→ intake.js                 (flow control; roept stap-renderers aan)
 → prep.js
 → inventory.js
 → audio.js
-→ engine.js
+→ scene-renderer.js         (visuele rendering; los van kanaal- en keuzelogica)
+→ channel-manager.js        (kanaalgeschiedenis en badge-logica)
+→ choice-handler.js         (CHOICE_ICON_MAP en keuze-verwerking)
+→ engine.js                 (scenario-lifecycle; roept alle bovenstaande modules aan)
 → report.js
 → ui.js
+→ users.js                 (gebruikerslijst; geen afhankelijkheden)
+→ login.js                 (loginlogica; gebruikt show() uit ui.js en USERS uit users.js)
 ```
 
 Waarom dit logisch is:
@@ -129,25 +144,89 @@ Architectuurrol:
 - deze module vervangt verspreide `if/else`-ketens door configuratiegestuurde lookup
 - scenario-specifiek runtime-beleid staat niet meer in `engine.js`, `audio.js` en `report.js` verspreid
 
-### 4.4 `engine.js`
+### 4.4 `scene-renderer.js`
+
+Verantwoordelijkheid:
+
+- visuele statusbalken bijwerken (water, voedsel, comfort, batterij, cash)
+- achtergrond-crossfade en overlay-video's (vuur, regen)
+- duisterheidlaag per scène
+
+Belangrijke functies:
+
+- `renderStatusBars()` — werkt alle statwidgets bij in sidebar en mobiele balk
+- `updateBattery()` — batterij-widget met gekleurde balken
+- `renderSceneVisual(scene)` — achtergrond, overlays en darkness via registry-helpers
+
+### 4.5 `channel-manager.js`
+
+Verantwoordelijkheid:
+
+- nieuws- en berichtenlogboeken (`newsLog`, `waLog`) en paginatie
+- ongelezen-badges en tab-indicatoren
+- rendering van nieuws, berichten en radio per scène
+
+Belangrijke functies:
+
+- `setBadge()` / `markUnread()` — badge-logica
+- `renderChannels(scene)` — rendert alle kanalen voor de huidige scène
+- `navChannel()` — paginanavigatie in kanaalgeschiedenis
+
+### 4.6 `choice-handler.js`
+
+Verantwoordelijkheid:
+
+- keuze-knoppen renderen inclusief icon-parsing en categorie-sortering
+- keuzeverwerking: stateChange, delta-indicators, typewriter-consequentie
+- `CHOICE_ICON_MAP` — functioneel vereist voor emoji → Lucide-icon mapping
+
+Belangrijke functies:
+
+- `renderChoices(scene)` — bouwt keuzeknoppen met categorie en stagger-animatie
+- `parseChoiceIcon(text)` — leest emoji-prefix, geeft icon + cat + label
+- `pickChoice(idx)` — verwerkt keuze, past state aan, start typewriter
+
+### 4.7 `engine.js`
 
 Verantwoordelijkheid:
 
 - scenario-run lifecycle
-- scene-rendering
-- keuzeverwerking
-- kanaalopbouw en sceneprogressie
+- scène-progressie en terugnavigatie
+- opslaan en laden (localStorage)
 - UI-synchronisatie tijdens actieve gameplay
 
 Belangrijke patterns:
 
 - `startScenario()` activeert altijd via `activateScenarioConfig()`
 - runtime-state wordt altijd opnieuw opgebouwd via `buildScenarioStartState()`
-- choice state changes gebruiken `applyStateChange()`
+- `renderScene()` orkestreert alle sub-modules (scene-renderer, channel-manager, choice-handler)
 - scene decay gebruikt een aparte helper met scenario-onafhankelijke mutatie-logica
-- visuals worden gerenderd via registry-helpers in plaats van lokale scenariotabellen
 
-### 4.5 `inventory.js`
+### 4.8 `avatar-picker.js`
+
+Verantwoordelijkheid:
+
+- avatar-constanten per categorie (adult, child, stb, ouderen, huisdieren)
+- picker-UI voor het wisselen van avatars tijdens de intake
+- `renderHouseholdIndicator()` — huishoudindicator in de scenario-zijbalk
+
+### 4.9 `intake-steps.js`
+
+Verantwoordelijkheid:
+
+- alle zes huishoud-stap renderers (naam, mensen, wie ben jij, woning, voertuigen, omgeving)
+- `buildFigures()` / `buildPetOverlay()` — herbruikbare stage-rendering
+- helper-functies per stap (selectHouseType, toggleVehicle, changeCount, etc.)
+
+### 4.10 `intake.js`
+
+Verantwoordelijkheid:
+
+- intake-flow control: `gotoIntake()`, `renderIntake()`, `intakeNext()`, `intakePrev()`
+- portret-snapshot (`capturePortraitSnapshot()`)
+- kaart-vragen rendering en `intakePick()`
+
+### 4.11 `inventory.js`
 
 Verantwoordelijkheid:
 
@@ -160,7 +239,7 @@ Architectuurrol:
 - inventaris gebruikt nu dezelfde `applyStateChange()` helper als normale scenekeuzes
 - daardoor is er nog maar een patroon voor delta-mutaties in de runtime
 
-### 4.6 `audio.js`
+### 4.12 `audio.js`
 
 Verantwoordelijkheid:
 
@@ -174,7 +253,7 @@ Architectuurrol:
 - ambient-selectie leest nu scenario-audiobeleid uit `scenario-registry.js`
 - daardoor staat scenario-audio niet meer hardcoded in de audio-engine zelf
 
-### 4.7 `report.js`
+### 4.13 `report.js`
 
 Verantwoordelijkheid:
 
@@ -188,7 +267,7 @@ Architectuurrol:
 - goodItems, improveItems en personalTips zijn interne arrays; rendering is nu tekstgebaseerd (geen icons)
 - scoremodus komt uit de scenarioregistratie via `getScenarioReportConfig()`
 
-### 4.8 `ui.js`
+### 4.14 `ui.js`
 
 Verantwoordelijkheid:
 

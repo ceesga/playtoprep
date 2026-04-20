@@ -4,7 +4,7 @@
 //        helpers om scenario-runtime consistent te activeren.
 // ═══════════════════════════════════════════════════════════════
 
-const DEFAULT_SCENE_BACKGROUND = 'afbeelding/algemeen/huis_normaal.png';
+const DEFAULT_SCENE_BACKGROUND = 'afbeelding/algemeen/huis_normaal.webp';
 
 const FIRE_OVERLAY_BY_SCENE = {
   bf_2: 0.30,
@@ -145,7 +145,7 @@ const SCENARIO_REGISTRY = {
       imageMapFn(sceneId) {
         const isApartment = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
         if ((sceneId === 'tk_5c' || sceneId === 'tk_6') && isApartment) {
-          return 'afbeelding/stroomstoring/Appartement_winter_1.png';
+          return 'afbeelding/stroomstoring/appartement_winter_1.webp';
         }
         return null;
       }
@@ -199,12 +199,12 @@ const SCENARIO_REGISTRY = {
         const isApartment = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
         if (sceneId === 'na_4') {
           return isApartment
-            ? 'afbeelding/brandalarm/appartement_zomer_nacht.png'
-            : 'afbeelding/brandalarm/smoke_alarm_house.png';
+            ? 'afbeelding/brandalarm/appartement_zomer_nacht.webp'
+            : 'afbeelding/brandalarm/rookmelder_huis.webp';
         }
         if (sceneId === 'na_5') {
           return isApartment
-            ? 'afbeelding/brandalarm/appartement_zomer_nacht_brandweer.png'
+            ? 'afbeelding/brandalarm/appartement_zomer_nacht_brandweer.webp'
             : null;
         }
         return null;

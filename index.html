@@ -1,3 +1,7 @@
+<!--
+  Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden.
+  Zie LICENSE voor volledige voorwaarden.
+-->
 <!DOCTYPE html>
 <html lang="nl">
   <head>
@@ -8,7 +12,7 @@
     <meta property="og:title" content="Noodscenario Simulator | PlayToPrep.nl">
     <meta property="og:description" content="Test hoe jij reageert op een stroomstoring, bosbrand of overstroming. Vier herkenbare noodscenario's in Nederland.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="afbeelding/algemeen/huis_normaal.png">
+    <meta property="og:image" content="afbeelding/algemeen/huis_normaal.webp">
     <title>Noodscenario Simulator | PlayToPrep.nl</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,12 +24,32 @@
     <div id="bg-layer-a" class="bg-layer"></div>
     <div id="bg-layer-b" class="bg-layer"></div>
     <div id="bg-darkness"></div>
-    <video id="rain-overlay" src="rain-overlay.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
-    <video id="fire-overlay" src="fire-overlay.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
+    <video id="rain-overlay" data-src="rain-overlay.mp4" preload="none" loop muted playsinline aria-hidden="true"></video>
+    <video id="fire-overlay" data-src="fire-overlay.mp4" preload="none" loop muted playsinline aria-hidden="true"></video>
     <main class="card" id="main-content">
 
+      <!-- LOGIN SCREEN -->
+      <div id="s-login" class="screen active">
+        <h1 class="start-title">Goed Voorbereid</h1>
+        <p class="start-subtitle">oefenen met keuzes in een crisissituatie</p>
+        <div class="login-form">
+          <label for="login-username" class="login-label">Naam</label>
+          <input type="text" id="login-username" class="login-input" autocomplete="username" placeholder="Jouw naam">
+          <label for="login-password" class="login-label">Wachtwoord</label>
+          <input type="password" id="login-password" class="login-input" autocomplete="current-password" placeholder="Wachtwoord">
+          <p id="login-error" class="login-error" role="alert" style="display:none"></p>
+          <nav class="start-menu" aria-label="Inloggen">
+            <button type="button" class="start-menu-btn" onclick="doLogin()">Inloggen</button>
+          </nav>
+        </div>
+        <div class="start-credits">
+          <span class="start-credits-label">gemaakt door</span>
+          <img src="afbeelding/algemeen/ptp_logo.webp" alt="PlayToPrep" class="start-logo-ptp">
+        </div>
+      </div>
+
       <!-- START SCREEN -->
-      <div id="s-start" class="screen active">
+      <div id="s-start" class="screen">
         <h1 class="start-title">Goed Voorbereid</h1>
         <p class="start-subtitle">oefenen met keuzes in een crisissituatie</p>
         <nav class="start-menu" aria-label="Hoofdmenu" id="start-menu">
@@ -56,11 +80,11 @@
         </nav>
         <div class="start-credits">
           <span class="start-credits-label">gemaakt door</span>
-          <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="start-logo-ptp">
+          <img src="afbeelding/algemeen/ptp_logo.webp" alt="PlayToPrep" class="start-logo-ptp">
           <span class="start-credits-sep">·</span>
           <span class="start-credits-label">in samenwerking met</span>
           <div class="partner-logo-wrap">
-            <img src="afbeelding/algemeen/logo-opsterland.png" alt="Gemeente Opsterland" class="partner-logo">
+            <img src="afbeelding/algemeen/logo-opsterland.webp" alt="Gemeente Opsterland" class="partner-logo">
             <span class="partner-demo">DEMO</span>
           </div>
         </div>
@@ -275,7 +299,7 @@
     <div class="consequence-box inv-consequence-box" id="inv-consequence"></div>
   </div>
   <button type="button" class="inventory-fab" id="inventory-toggle" onclick="toggleInventory()" aria-label="Open inventaris" aria-haspopup="dialog" aria-expanded="false">
-    <img src="afbeelding/algemeen/backpack.png" alt="" aria-hidden="true" class="inventory-fab-img">
+    <img src="afbeelding/algemeen/backpack.webp" alt="" aria-hidden="true" class="inventory-fab-img">
   </button>
 </div>
 
@@ -284,7 +308,7 @@
   <div class="screen-body">
     <div class="phase-label">Stap 5: Jouw rapport</div>
     <div class="rep-print-header">
-      <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep">
+      <img src="afbeelding/algemeen/ptp_logo.webp" alt="PlayToPrep">
     </div>
     <h2 id="rep-title">Rapport – Goed Voorbereid</h2>
     <div class="rep-section" id="rep-s1"></div>
@@ -500,9 +524,9 @@
     <div class="over-body">
       <p>Goed Voorbereid is een interactief spel van Play to Prep, in samenwerking met onder andere [volgt later], over voorbereiding op een crisis. In het spel maken spelers in een veilige omgeving kennis met noodsituaties. Zo leren zij beter wat ze kunnen doen als er echt iets gebeurt, en hoe ze zich daar vooraf op kunnen voorbereiden.</p>
       <div class="over-logos">
-        <img src="afbeelding/algemeen/ptp_logo.png" alt="PlayToPrep" class="over-logo-ptp">
+        <img src="afbeelding/algemeen/ptp_logo.webp" alt="PlayToPrep" class="over-logo-ptp">
         <div class="partner-logo-wrap">
-          <img src="afbeelding/algemeen/logo-opsterland.png" alt="Gemeente Opsterland" class="partner-logo">
+          <img src="afbeelding/algemeen/logo-opsterland.webp" alt="Gemeente Opsterland" class="partner-logo">
           <span class="partner-demo">DEMO</span>
         </div>
       </div>
@@ -520,12 +544,24 @@
 <script src="js/data-scenarios-drinkwater.js"></script>
 <script src="js/data-scenarios-nachtalarm.js"></script>
 <script src="js/scenario-registry.js"></script>
+<script src="js/avatar-picker.js"></script>
+<script src="js/intake-steps.js"></script>
 <script src="js/intake.js"></script>
 <script src="js/prep.js"></script>
 <script src="js/inventory.js"></script>
 <script src="js/audio.js"></script>
+<script src="js/scene-renderer.js"></script>
+<script src="js/channel-manager.js"></script>
+<script src="js/choice-handler.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/report.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/users.js"></script>
+<script src="js/login.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+</script>
 </body>
 </html>

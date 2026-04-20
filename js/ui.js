@@ -248,7 +248,7 @@ function show(id) {
 
   // Rugzakknop verborgen op startpagina en rapportpagina
   const invToggle = document.getElementById('scenario-inventory');
-  if (invToggle) invToggle.style.display = (id === 's-start' || id === 's-report') ? 'none' : '';
+  if (invToggle) invToggle.style.display = (id === 's-login' || id === 's-start' || id === 's-report') ? 'none' : '';
 
   // Hamburgerknop verborgen op startpagina en scenario (scenario heeft eigen profielknop)
   const globalMenuBtn = document.getElementById('global-menu-btn');
@@ -308,14 +308,14 @@ function show(id) {
   if (layerA && id !== 's-scenario') {
     const isApartment = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
     let bgUrl = isApartment
-      ? 'afbeelding/algemeen/appartement_zomer.png'
-      : 'afbeelding/algemeen/huis_normaal.png';
+      ? 'afbeelding/algemeen/appartement_zomer.webp'
+      : 'afbeelding/algemeen/huis_normaal.webp';
     if (id === 's-intake') {
-      bgUrl = 'afbeelding/algemeen/woonkamer_normaal.jpg';
+      bgUrl = 'afbeelding/algemeen/woonkamer_normaal.webp';
     } else if (id === 's-prep') {
       bgUrl = isApartment
-        ? 'afbeelding/algemeen/opslag_appartement.png'
-        : 'afbeelding/algemeen/opslag_kelder.png';
+        ? 'afbeelding/algemeen/opslag_appartement.webp'
+        : 'afbeelding/algemeen/opslag_kelder.webp';
     }
     layerA.style.backgroundImage = `url('${bgUrl}')`;
     layerA.style.opacity = '1';

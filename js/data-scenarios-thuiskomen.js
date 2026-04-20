@@ -6,13 +6,13 @@
 
 // ─── ONDERWEG NAAR HUIS SCENARIO ─────────────────────────────────────────────
 const THUIS_KOMEN_VISUALS = {
-  office: 'afbeelding/stroomstoring_onderweg/kantoor.png',
-  walking: 'afbeelding/stroomstoring_onderweg/pedestrian.png',
-  bike: 'afbeelding/stroomstoring_onderweg/bicycle_path.jpg',
-  bus: 'afbeelding/stroomstoring_onderweg/Bus_station.png',
-  train: 'afbeelding/stroomstoring_onderweg/train_station.jpg',
-  car: 'afbeelding/stroomstoring_onderweg/Auto_Nweg.jpg',
-  home: 'afbeelding/stroomstoring/Huis_winter1.png'
+  office: 'afbeelding/stroomstoring_onderweg/kantoor.webp',
+  walking: 'afbeelding/stroomstoring_onderweg/voetganger.webp',
+  bike: 'afbeelding/stroomstoring_onderweg/fietspad.webp',
+  bus: 'afbeelding/stroomstoring_onderweg/busstation.webp',
+  train: 'afbeelding/stroomstoring_onderweg/treinstation.webp',
+  car: 'afbeelding/stroomstoring_onderweg/auto_snelweg.webp',
+  home: 'afbeelding/stroomstoring/huis_winter_1.webp'
 };
 
 function thuisKomenTravelImage(mode) {
@@ -867,7 +867,7 @@ const scenes_thuis_komen = [{
    Wordt in engine.js samengevoegd tot sceneBgMap.
 */
 const sceneImages_thuis_komen = {
-  tk_0:  'afbeelding/stroomstoring_onderweg/Office_light.png',
+  tk_0:  'afbeelding/stroomstoring_onderweg/kantoor_licht.webp',
   tk_0b: THUIS_KOMEN_VISUALS.office,
   tk_1:  THUIS_KOMEN_VISUALS.office,
   tk_2:  THUIS_KOMEN_VISUALS.office,

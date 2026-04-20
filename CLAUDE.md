@@ -96,7 +96,7 @@ Er is geen auto-advance timer. Verwijder of voeg deze niet toe.
 
 9. **Taalregels** — Zie `STIJLGIDS.md`. Schrijf altijd B1-Nederlands. Gebruik vaste termen: "stroomstoring" (niet "black-out"), "dringend advies" (niet "noodverordening"), en noem WhatsApp of WhatsAppjes in zichtbare tekst altijd `bericht`, `berichten` of `berichtjes`.
 
-10. **Script-laadvolgorde in index.html** — Scripts worden geladen in deze volgorde: `icons-data.js` → `data-state.js` → scenario-data → `intake.js` → `prep.js` → `audio.js` → `engine.js` → `report.js` → `ui.js`. Nieuwe scripts toevoegen? Respecteer de afhankelijkheden.
+10. **Script-laadvolgorde in index.html** — Scripts worden geladen in deze volgorde: `icons-data.js` → `data-state.js` → scenario-data → `scenario-registry.js` → `avatar-picker.js` → `intake-steps.js` → `intake.js` → `prep.js` → `inventory.js` → `audio.js` → `scene-renderer.js` → `channel-manager.js` → `choice-handler.js` → `engine.js` → `report.js` → `ui.js`. Nieuwe scripts toevoegen? Respecteer de afhankelijkheden. Engine is opgesplitst: `scene-renderer.js` (visuelen), `channel-manager.js` (kanalen), `choice-handler.js` (keuzes). Intake is opgesplitst: `intake-steps.js` (stap-renderers), `avatar-picker.js` (avatar-picker).
 
 11. **WhatsApp-berichten gebruiken `msg`, niet `text`** — Het veld in whatsapp-objecten heet `msg`. Gebruik `get channels()` als berichten conditioneel moeten zijn op profiel of state.
 

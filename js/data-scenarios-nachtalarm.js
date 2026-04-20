@@ -47,7 +47,7 @@ const scenes_nachtalarm = [
     dayBadgeClass: 'blue',
     hideContinue: true,
     visuals: {
-      image: 'afbeelding/brandalarm/waking_up.png'
+      image: 'afbeelding/brandalarm/wakker_worden.webp'
     },
     channels: {
       news: [],
@@ -401,12 +401,12 @@ const scenes_nachtalarm = [
    Wordt in engine.js samengevoegd tot sceneBgMap.
 */
 const sceneImages_nachtalarm = {
-  na_intro: 'afbeelding/brandalarm/going_to_bed.png',
-  na_0:  'afbeelding/brandalarm/waking_up.png',
-  na_1:  'afbeelding/brandalarm/Rook_hal.png',
-  na_2:  'afbeelding/brandalarm/rook_woonkamer.png',
-  na_2b: 'afbeelding/brandalarm/Rook_hal.png',
-  na_3:  'afbeelding/brandalarm/Rook_uitgang.png',
-  na_4:  'afbeelding/brandalarm/Dutch_house_fire.png',
-  na_5:  'afbeelding/brandalarm/Dutch_house_fire.png',
+  na_intro: 'afbeelding/brandalarm/naar_bed.webp',
+  na_0:  'afbeelding/brandalarm/wakker_worden.webp',
+  na_1:  'afbeelding/brandalarm/rook_hal.webp',
+  na_2:  'afbeelding/brandalarm/rook_woonkamer.webp',
+  na_2b: 'afbeelding/brandalarm/rook_hal.webp',
+  na_3:  'afbeelding/brandalarm/rook_uitgang.webp',
+  na_4:  'afbeelding/brandalarm/huis_brand.webp',
+  na_5:  'afbeelding/brandalarm/huis_brand.webp',
 };

@@ -387,12 +387,12 @@ const scenes_drinkwater = [{
    Wordt in engine.js samengevoegd tot sceneBgMap.
 */
 const sceneImages_drinkwater = {
-  wd_0: 'afbeelding/algemeen/huis_normaal.png',
-  wd_1: 'afbeelding/algemeen/huis_normaal.png',
-  wd_2: 'afbeelding/algemeen/huis_normaal.png',
-  wd_3: 'afbeelding/algemeen/huis_normaal.png',
-  wd_4: 'afbeelding/algemeen/huis_normaal.png',
-  wd_5: 'afbeelding/algemeen/huis_normaal.png',
-  wd_6: 'afbeelding/algemeen/huis_normaal.png',
-  wd_7: 'afbeelding/algemeen/huis_normaal.png',
+  wd_0: 'afbeelding/algemeen/huis_normaal.webp',
+  wd_1: 'afbeelding/algemeen/huis_normaal.webp',
+  wd_2: 'afbeelding/algemeen/huis_normaal.webp',
+  wd_3: 'afbeelding/algemeen/huis_normaal.webp',
+  wd_4: 'afbeelding/algemeen/huis_normaal.webp',
+  wd_5: 'afbeelding/algemeen/huis_normaal.webp',
+  wd_6: 'afbeelding/algemeen/huis_normaal.webp',
+  wd_7: 'afbeelding/algemeen/huis_normaal.webp',
 };
