@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scenario Registry — centrale scenarioconfiguratie
 // Bevat: scene-arrays, decay-tabellen, visuals, report-meta en
@@ -10,7 +11,7 @@ const FIRE_OVERLAY_BY_SCENE = {
   bf_2: 0.30,
   bf_2b: 0.35,
   bf_3: 0.40,
-  bf_3b: 0.45,
+  bf_3c: 0.45,
   bf_4: 0.50,
   bf_4b: 0.50,
   bf_4c: 0.55,
@@ -23,7 +24,7 @@ const RAIN_OVERLAY_BY_SCENE = {
   ov_2: 0.35,
   ov_2b: 0.35,
   ov_3: 0.45,
-  ov_4a: 0.50,
+  ov_4b: 0.50,
   ov_4b: 0.50,
   ov_5: 0.55,
   ov_5b: 0.55,

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Intake — Huishoud-setup flow (Stap 1)
 // Bevat: capturePortraitSnapshot, gotoIntake, renderNameStep,
@@ -98,9 +99,10 @@ function handleSetupOptionKey(event, kind, value) {
   if (kind === 'environment') selectEnvironment(value);
 }
 
-function gotoIntake() {
+function resetSetupFlowState() {
+  resetObjectToDefaults(profile, PROFILE_DEFAULTS);
   intakeStep = -6; // Begin bij de naamstap (stap -6 is de eerste stap)
-  profile.playerName = '';
+  intakeAnswers = {};
   adultsCount = 1;     // Minimaal één volwassene
   childrenCount = 0;
   slechtTerBeenCount = 0;
@@ -118,7 +120,11 @@ function gotoIntake() {
     ouderen: [],
     pets: []
   };
-  portraitSnapshot = null; // Reset snapshot bij nieuwe intake
+  portraitSnapshot = null;
+}
+
+function gotoIntake() {
+  resetSetupFlowState();
   renderIntake();
   show('s-intake');
 }
@@ -365,6 +371,7 @@ function intakeNext() {
       stedelijk: 'city'
     };
     profile.location = selectedEnvironment.map(e => envMap[e]).filter(Boolean);
+    profile.intakeCompleted = true;
     // Snapshot maken VOORDAT het scherm verborgen wordt (anders zijn coördinaten nul)
     capturePortraitSnapshot();
     gotoPrep();
@@ -375,7 +382,7 @@ function intakeNext() {
 // Navigeert terug naar de vorige intakestap, of naar het uitleg-scherm als we op stap -5 zijn
 function intakePrev() {
   if (intakeStep === -6) {
-    show('s-uitleg'); // Helemaal terug naar het uitleg-scherm
+    show('s-uitleg');
     return;
   } else if (intakeStep === -5) {
     intakeStep = -6;

@@ -55,28 +55,9 @@
         <nav class="start-menu" aria-label="Hoofdmenu" id="start-menu">
           <div class="start-menu-topbar" id="start-menu-title">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-            Menu
+            <span id="start-menu-title-text">Menu</span>
           </div>
-          <!-- Pagina 0: Hoofdmenu -->
-          <div id="start-p0">
-            <button type="button" class="start-menu-btn" onclick="show('s-uitleg')">Nieuw spel</button>
-            <button type="button" class="start-menu-btn" id="start-load-btn" onclick="startMenuPage(1)">Spel laden</button>
-            <button type="button" class="start-menu-btn" id="start-audio-btn" onclick="toggleAudio()">Geluid aan</button>
-            <button type="button" class="start-menu-btn" onclick="openHelp('setup')">Uitleg</button>
-            <button type="button" class="start-menu-btn" onclick="openOver()">Over Goed Voorbereid</button>
-          </div>
-          <!-- Pagina 1: Laden -->
-          <div id="start-p1" style="display:none">
-            <button type="button" class="start-menu-btn" onclick="startMenuPage(0)">← Terug</button>
-            <button type="button" class="start-menu-btn" id="start-profile-btn" onclick="loadProfileAndGo()">
-              <span>Huishouden laden</span>
-              <span class="start-menu-sub" id="start-profile-info"></span>
-            </button>
-            <button type="button" class="start-menu-btn" id="start-savegame-btn" onclick="loadGame()">
-              <span>Vorige opslag laden</span>
-              <span class="start-menu-sub" id="start-load-info"></span>
-            </button>
-          </div>
+          <div id="start-menu-pages"></div>
         </nav>
         <div class="start-credits">
           <span class="start-credits-label">gemaakt door</span>
@@ -344,38 +325,7 @@
       <button type="button" class="help-close-x" onclick="closeGearMenu()" aria-label="Sluiten">✕</button>
     </div>
 
-    <!-- Pagina 0: Hoofdmenu -->
-    <div id="gear-p0" class="gear-page">
-      <button type="button" class="gear-row" onclick="gearPage(1)">Opslaan</button>
-      <button type="button" class="gear-row" onclick="gearPage(2)">Laden</button>
-      <button type="button" class="gear-row" id="gear-audio-item" onclick="toggleAudio()">
-        <span id="gear-audio-label">Geluid aan</span>
-      </button>
-      <button type="button" class="gear-row" onclick="openHelp('scenario');closeGearMenu()">Uitleg</button>
-      <button type="button" class="gear-row" onclick="openOver();closeGearMenu()">Over Goed Voorbereid</button>
-    </div>
-
-    <!-- Pagina 1: Opslaan -->
-    <div id="gear-p1" class="gear-page" style="display:none">
-      <div id="gear-feedback" class="gear-feedback" style="display:none"></div>
-      <button type="button" class="gear-row" onclick="saveProfile()">Thuissituatie opslaan</button>
-      <button type="button" class="gear-row" onclick="saveGame()">Voortgang opslaan</button>
-    </div>
-
-    <!-- Pagina 2: Laden -->
-    <div id="gear-p2" class="gear-page" style="display:none">
-      <button type="button" class="gear-row gear-row-stacked" id="gear-profile-btn" onclick="loadProfileAndGo();closeGearMenu()">
-        <span class="gear-row-label">Huishouden laden</span>
-        <span class="gear-row-sub" id="gear-profile-info"></span>
-      </button>
-      <button type="button" class="gear-row gear-row-stacked" id="gear-load-btn" onclick="loadGame();closeGearMenu()">
-        <span class="gear-row-label">Vorige opslag laden</span>
-        <span class="gear-row-sub" id="gear-load-info"></span>
-      </button>
-      <button type="button" class="gear-row" onclick="gotoScenariokeuze();closeGearMenu()">
-        <span class="gear-row-label">Scenario opnieuw kiezen</span>
-      </button>
-    </div>
+    <div id="gear-menu-pages"></div>
   </div>
 </div>
 

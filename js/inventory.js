@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Inventory — scenario-items op basis van prep + context
 // Toont een compacte inventaris tijdens het scenario en laat

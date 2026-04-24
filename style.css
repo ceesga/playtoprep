@@ -1672,6 +1672,16 @@ p.sub {
   min-height:0;
 }
 
+.choice-source {
+  margin-top:1rem;
+  font-size:.8rem;
+  opacity:.75;
+}
+.choice-source a {
+  color:var(--accent, #60a5fa);
+  text-decoration:underline;
+}
+
 .radio-panel-bg {
   flex:1;
   min-height:0;
@@ -3426,7 +3436,6 @@ h3 .help-icon svg {
 
 .scenario-pick-card.spk-universal .spk-rel-label {
   display:block;
-  background:var(--c-primary);
 }
 
 .spk-top {
@@ -3488,7 +3497,7 @@ h3 .help-icon svg {
   top:0;
   left:50%;
   transform:translateX(-50%);
-  background:#16a34a;
+  background:var(--c-primary);
   color:#fff;
   font-size:.65rem;
   font-weight:700;
@@ -3501,6 +3510,7 @@ h3 .help-icon svg {
 
 .spk-relevant .spk-rel-label {
   display:block;
+  background:#16a34a;
 }
 
 @media(max-width:480px) {

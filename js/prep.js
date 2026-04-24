@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Prep — Noodpakket vragenlijst (Stap 1 vervolg)
 // 4 secties: noodpakket, vluchttas, reistasje, aanvullingen
@@ -278,6 +279,7 @@ function setToggle(id, val) {
    de gekozen omgeving (bos/rural voor natuurbrand, water voor overstroming).
 */
 function gotoScenariokeuze() {
+  profile.prepCompleted = true;
   // renderScenarioKeuze() in ui.js bouwt de kaarten inclusief klassen
   // op basis van profile.location — geen extra klassenlogica nodig hier.
   show('s-scenariokeuze');

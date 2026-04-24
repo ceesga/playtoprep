@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Rapport — Persoonlijke eindanalyse na het scenario
 // Secties: 1 score, 2 thuissituatie, 3 voorbereiding, 4 tips
@@ -13,6 +14,7 @@ function checkItem(val, label, indent) {
 }
 
 function prepScoreBerekenen() {
+  if (!profile.prepCompleted) return null;
   const items = [
     profile.hasKit       === 'ja',
     profile.hasBOBBag    === 'ja',
@@ -33,6 +35,21 @@ function toggleRepSection(header) {
 // ─── SECTIE 1: SCORE ──────────────────────────────────────────────────────────
 
 function renderSectie1(naam, prepScore) {
+  if (prepScore === null) {
+    document.getElementById('rep-s1').innerHTML = `
+      <div class="rep-section-header-wrap">
+        <span class="rep-section-nr">1</span>
+        <span class="rep-section-heading">Score</span>
+      </div>
+      <div class="rep-score-hero rep-score-hero--matig">
+        <div class="rep-score-hero-top">
+          <div class="rep-score-level">Geen voorbereidingsscore</div>
+        </div>
+        <p class="rep-body-text" style="margin:0">Je hebt het korte scenario gespeeld zonder intake en voorbereidingsvragen. Daarom geeft dit rapport hier geen oordeel over je voorbereiding.</p>
+      </div>`;
+    return;
+  }
+
   let niveau, heroClass, duiding;
   if (prepScore >= 0.67) {
     niveau = 'Goed voorbereid';
@@ -77,6 +94,18 @@ function renderSectie1(naam, prepScore) {
 // ─── SECTIE 2: THUISSITUATIE ──────────────────────────────────────────────────
 
 function renderSectie2(persons) {
+  if (!profile.intakeCompleted) {
+    document.getElementById('rep-s2').innerHTML = `
+      <div class="rep-section-header-wrap">
+        <span class="rep-section-nr">2</span>
+        <span class="rep-section-heading">Thuissituatie</span>
+      </div>
+      <div class="rep-subsection">
+        <p class="rep-body-text">Voor dit korte scenario is geen intake ingevuld. Daarom doet dit rapport hier geen uitspraken over je huishouden, woning, omgeving of vervoersmiddelen.</p>
+      </div>`;
+    return;
+  }
+
   const houseSubLabels = { 'caravan': 'Caravan', 'tiny_house': 'Tiny house', 'woonboot': 'Woonboot' };
   const houseLabels = {
     'hoogbouw':           'Hoogbouw (met lift)',
@@ -177,9 +206,9 @@ function renderSectie2(persons) {
 
   const gezinsAandacht = [];
   if (profile.hasChildren) {
-    gezinsAandacht.push('Kinderen van 0 tot 5 jaar zijn volledig afhankelijk van verzorgers. Zorg voor voldoende voeding, luiers, medicijnen en vertrouwde voorwerpen. Houd de dagelijkse routine zoveel mogelijk intact en geef korte, geruststellende uitleg. Jonge kinderen kunnen in stress terugvallen in gedrag zoals extra huilen, angst om alleen te zijn of slaapproblemen.');
-    gezinsAandacht.push('Kinderen van 6 tot 12 jaar begrijpen de situatie beter, maar hebben duidelijke structuur en geruststelling nodig. Betrek hen actief bij eenvoudige taken en houd hen weg uit risicovolle situaties. Ze kunnen veel vragen stellen en hebben behoefte aan eerlijke, eenvoudige informatie om hun eigen interpretaties te voorkomen.');
-    gezinsAandacht.push('Kinderen van 12 jaar en ouder kunnen helpen bij praktische taken en beseffen de ernst van de situatie. Ze kunnen echter ook roekeloos gedrag vertonen of zich afsluiten. Geef hen duidelijke verantwoordelijkheden en zorg voor open en eerlijke communicatie. Let erop dat ook zij stress kunnen ervaren, zoals slaapproblemen of prikkelbaarheid.');
+    gezinsAandacht.push('Kinderen van 0 tot 5 jaar hebben in een crisis vooral nabijheid, voorspelbaarheid en eenvoudige geruststelling nodig. Houd hen dicht bij je, gebruik een kalme stem, leg in korte concrete zinnen uit wat er gebeurt en wat jullie nu gaan doen, en probeer slaap-, eet- en troostroutines zoveel mogelijk vast te houden. Vertrouwde spullen helpen. Stress kan zichtbaar worden in huilen, vastklampen, regressie, driftbuien of slaapproblemen.');
+    gezinsAandacht.push('Kinderen van 6 tot 12 jaar willen meestal weten wat er concreet gebeurt en wat er van hen verwacht wordt. Geef eerlijke uitleg op hun niveau, laat ruimte voor vragen, corrigeer misverstanden en laat hen met kleine haalbare taken meehelpen. Blijf duidelijk over regels en veiligheid en prijs rustig of behulpzaam gedrag expliciet. Stress kan zich uiten in buikpijn, piekeren, boosheid, terugtrekken of steeds dezelfde vragen stellen.');
+    gezinsAandacht.push('Kinderen van 12 jaar en ouder begrijpen de ernst vaak goed, maar verwerken spanning heel verschillend. Betrek hen in het plan, geef verantwoordelijkheden die bij hun leeftijd passen en wees open over wat je wel en niet weet. Laat ruimte voor emoties en contact met vertrouwde mensen, zonder hen op te zadelen met volwassen zorgen. Let op signalen zoals prikkelbaarheid, slaapproblemen, terugtrekken, roekeloos gedrag of juist overdreven stoer doen.');
   }
   if (profile.hasElderly)        gezinsAandacht.push('Ouderen koelen sneller af en kunnen gevoeliger zijn voor stress en uitputting.');
   if (profile.hasMobilityImpaired || slechtTerBeenCount > 0) gezinsAandacht.push('Beperkt mobiele bewoners vereisen extra aandacht bij evacuatie en verplaatsing.');
@@ -191,6 +220,9 @@ function renderSectie2(persons) {
   const gezinsAandachtHtml = gezinsAandacht.length
     ? gezinsAandacht.map(a => `<li class="rep-bullet-item">${a}</li>`).join('')
     : '<li class="rep-bullet-item rep-bullet-empty">Geen specifieke aandachtspunten voor dit huishouden.</li>';
+  const gezinsBronHtml = profile.hasChildren
+    ? '<p class="rep-body-text">Bron voor kindbegeleiding in crisissituaties: <a href="https://www.unodc.org/res/drug-prevention-and-treatment/publications/data/drug-abuse-treatment-and-rehabilitation_caring-for-your-child-in-crisis-situations_html/UN-Caring-for-child-in-Crisis-Situations-booklet-200929-DIGITAL.pdf" target="_blank" rel="noopener noreferrer">VN/UNODC - Caring for your child in crisis situations</a>.</p>'
+    : '';
 
   const woningVoordelen = wInfo.voordelen.map(v => `<li class="rep-bullet-item">${v}</li>`).join('');
   const woningAandacht  = wInfo.aandachtspunten.map(a => `<li class="rep-bullet-item">${a}</li>`).join('');
@@ -228,6 +260,7 @@ function renderSectie2(persons) {
       <div class="rep-sub-groep">
         <div class="rep-sub-groep-titel">Aandachtspunten</div>
         <ul class="rep-bullet-list">${gezinsAandachtHtml}</ul>
+        ${gezinsBronHtml}
       </div>
     </div>
 
@@ -268,6 +301,18 @@ function renderSectie2(persons) {
 // ─── SECTIE 3: VOORBEREIDING ──────────────────────────────────────────────────
 
 function renderSectie3() {
+  if (!profile.prepCompleted) {
+    document.getElementById('rep-s3').innerHTML = `
+      <div class="rep-section-header-wrap">
+        <span class="rep-section-nr">3</span>
+        <span class="rep-section-heading">Voorbereiding</span>
+      </div>
+      <div class="rep-subsection">
+        <p class="rep-body-text">Je hebt de voorbereidingsvragen in deze korte route overgeslagen. Daarom geeft dit rapport hier geen beoordeling van je noodpakket, vluchttas of dagelijkse spullen.</p>
+      </div>`;
+    return;
+  }
+
   // IN HUIS
   const noodpakketHtml = [
     checkItem(profile.hasKit,      'Noodpakket aanwezig'),
@@ -433,4 +478,3 @@ function showReport() {
     if (i > 0 && window.innerWidth <= 640) section.classList.add('rep-collapsed');
   });
 }
-

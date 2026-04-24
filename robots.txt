@@ -1,0 +1,23 @@
+# robots.txt — PlayToPrep.nl
+# Zie https://www.robotstxt.org/
+
+# Wayback Machine / Internet Archive — archivering geblokkeerd
+User-agent: ia_archiver
+Disallow: /
+
+# HTTrack en vergelijkbare site-kopieertools
+User-agent: HTTrack
+Disallow: /
+
+User-agent: WebCopier
+Disallow: /
+
+User-agent: SiteSucker
+Disallow: /
+
+User-agent: Offline Explorer
+Disallow: /
+
+# Zoekrobots zijn welkom
+User-agent: *
+Allow: /

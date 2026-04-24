@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Intake Steps — Huishoud-stap renderers
 // Bevat: buildFigures, buildPetOverlay, renderHouseholdStep,

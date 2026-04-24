@@ -73,6 +73,7 @@ Er is geen auto-advance timer. Verwijder of voeg deze niet toe.
 - Voeg geen dark-mode CSS toe (zie gotcha #1).
 - Gebruik `conditionalOn` consequent voor keuzes die niet voor alle spelers relevant zijn (profiel én state).
 - **Pas `architecture.md` bij** als je iets aan de architectuur verandert.
+- **Pas de keuze-boom bij** als je een scenario aanpast (scenes, keuzes of condities toevoegt, verwijdert of hernoemt). De bomen staan in `docs/keuze-boom-{scenario}.html` — één bestand per scenario.
 
 ---
 

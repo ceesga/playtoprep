@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Noodscenario Simulator — Game State & Data Definities
 // Bevat: profiel, spelstatus, scene-decay, kanaal-inhoud,
@@ -68,6 +69,8 @@ const PROFILE_DEFAULTS = {
   hasBOBWater: false,
   commuteMode: '',
   commuteDistance: '',
+  intakeCompleted: false,
+  prepCompleted: false,
   hasEDCBag: false,
   hasEDCCash: false,
   hasEDCSnacks: false,
@@ -145,6 +148,8 @@ const STATE_DEFAULTS = {
   packedBag: false,
   madeFirebreak: false,
   bfTravelMode: '',
+  bfCrossFireSafe: false,
+  bfAssistedEvacuation: false,
   returnedHome: false,
   tookPets: false,
   kidsEvacuated: false,
@@ -291,7 +296,7 @@ const sceneDecay_stroom = {
   st_watertruck: {
     phoneBattery: -10
   }, // +2h
-  st_10a: {
+  st_10b: {
     phoneBattery: -5
   }, // +0.5h
   st_10: {
@@ -426,7 +431,7 @@ const sceneDecay_thuis_komen = {
   tk_6: {
     phoneBattery: -10
   }, // +2h naar 18:00 pad
-  tk_7: {
+  tk_6: {
     phoneBattery: -15
   } // +3h avond
 };

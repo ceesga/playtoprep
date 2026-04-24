@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Nachtalarm — "De rookmelder gaat af in de nacht"
 // 8 hoofdscènes + 1 conditionele scène — van na_intro (22:30) tot na_5 (02:45)
@@ -31,7 +32,7 @@ const scenes_nachtalarm = [
     },
     choices: [
       {
-        text: 'ga slapen',
+        text: '😴 ga slapen',
         consequence: 'Je kruipt onder de dekens. Even later val je in slaap.',
         stateChange: {}
       }
@@ -62,6 +63,7 @@ const scenes_nachtalarm = [
   // ─── Scene 0: Wakker schrikken ────────────────────────────────────────────
   {
     id: 'na_0',
+    _w: 'PTP-NL-©2026-4vH8rZ',
     time: '02:17',
     date: 'Dinsdag',
     dayBadge: 'Nacht',
@@ -86,12 +88,14 @@ const scenes_nachtalarm = [
       {
         text: '🗣️ Huisgenoten direct wakker maken',
         consequence: 'Je schudt iedereen wakker. Slaperige stemmen, verwarde blikken, blote voeten op de vloer. Het kost een paar seconden, maar niemand slaapt meer.',
+        source: { text: 'Brandweer: vlucht met je vluchtplan', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
         stateChange: { awarenessLevel: 1, tookAlarmSeriously: true, warnedHousemates: true },
         conditionalOn: () => hasHousemates() && !state.warnedHousemates
       },
       {
         text: '🛌 Blijven liggen, het is vast loos alarm',
         consequence: 'Je trekt het dekbed hoger op, maar het piepen blijft door merg en been gaan. Na een minuut weet je genoeg: dit is geen loos alarm. Je springt alsnog uit bed.',
+        source: { text: 'Brandweer: als de rookmelder afgaat, heb je nog drie minuten om te vluchten', url: 'https://www.brandweer.nl/onderwerpen/rookmelders/' },
         stateChange: { comfort: -1 }
       }
     ]
@@ -120,13 +124,15 @@ const scenes_nachtalarm = [
       {
         text: '🗣️ Direct iedereen wakker maken',
         consequence: 'Je klopt op deuren, roept namen en maakt iedereen wakker. Slaperig en geschrokken komt iedereen de gang op.',
+        source: { text: 'Brandweer: vlucht met je vluchtplan', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
         stateChange: { warnedHousemates: true },
         conditionalOn: () => hasHousemates() && !state.warnedHousemates
       },
       {
         text: '📱 Meteen 112 bellen',
         consequence: 'De meldkamer neemt snel op, maar zegt direct: "Verlaat eerst de woning. Bel ons opnieuw zodra u buiten staat en zeg of iedereen eruit is." Ze sturen wel meteen een ploeg, maar benadrukken dat je nu moet gaan.',
-        cat: 'cat-action',
+        cat: 'cat-risk',
+        source: { text: 'Brandweer: bel 112 pas als je veilig buiten staat', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
         stateChange: { called112PreExit: true }
       },
       {
@@ -162,18 +168,22 @@ const scenes_nachtalarm = [
         consequence: 'Je gooit water over het stopcontact. Er volgt een felle knal en een regen van vonken. Water en elektriciteit zijn een gevaarlijke combinatie. Dit maakt de situatie juist nog riskanter.',
         cat: 'cat-risk',
         sound: 'coughing',
+        source: { text: 'Brandweer: gebruik nooit water bij elektrische brand', url: 'https://www.brandweer.nl/onderwerpen/het-juiste-blusmiddel/' },
         stateChange: { health: -2 }
       },
       {
         text: '🔍 Dichterbij gaan kijken',
         consequence: 'Je zet een stap dichterbij. Meteen beginnen je ogen te prikken en moet je hoesten. Hier blijven is gevaarlijk en je verliest kostbare tijd.',
         cat: 'cat-info',
+        sound: 'coughing',
+        source: { text: 'Brandweer: alle rook is giftig — blijf er altijd uit', url: 'https://www.brandweer.nl/onderwerpen/blijf-uit-de-rook/' },
         stateChange: { health: -1 }
       },
       {
         text: '🚪 Teruglopen en iedereen naar buiten sturen',
         consequence: 'Je draait je om, rent naar de slaapkamers, maakt iedereen wakker, en stuurt ze naar buiten. Onderweg trek je de woonkamerdeur dicht, zodat de rook zich minder snel verspreidt.',
         cat: 'cat-social',
+        source: { text: 'Brandweer: doe de deur dicht om rookverspreiding te remmen', url: 'https://www.brandweer.nl/onderwerpen/doe-de-deur-dicht/' },
         stateChange: { warnedHousemates: true, didntUseWaterOnFire: true },
         conditionalOn: () => hasHousemates() && !state.warnedHousemates
       },
@@ -184,6 +194,7 @@ const scenes_nachtalarm = [
         consequence: () => hasHousemates()
           ? 'Je trekt de deur dicht om de rook te remmen en gaat snel terug om de anderen naar buiten te krijgen.'
           : 'Je trekt de deur dicht om de rook te remmen en loopt direct naar buiten.',
+        source: { text: 'Brandweer: doe de deur dicht — een gesloten deur remt rook en vuur', url: 'https://www.brandweer.nl/onderwerpen/doe-de-deur-dicht/' },
         stateChange: { didntUseWaterOnFire: true }
       }
     ]
@@ -245,10 +256,23 @@ const scenes_nachtalarm = [
     },
     choices: [
       {
-        text: '🎒 De noodtas meenemen die klaarstaat bij de deur',
-        consequence: 'Je grijpt de noodtas die al klaarstaat bij de deur. Papieren, medicijnen en oplader zitten erin. Daarna ga je meteen naar buiten.',
+        get text() {
+          return profile.hasMeds === 'ja'
+            ? '📁 Documenten en medicijnen grijpen die bij de deur liggen'
+            : '📁 Je documenten grijpen die bij de deur liggen';
+        },
+        get consequence() {
+          if (profile.hasDocuments === 'ja' && profile.hasMeds === 'ja') {
+            return 'Je grijpt de map met documenten en je medicijnen die je al bij de deur had gelegd. Daarna ga je meteen naar buiten.';
+          }
+          if (profile.hasMeds === 'ja') {
+            return 'Je grijpt je medicijnen die al bij de deur lagen en gaat meteen naar buiten.';
+          }
+          return 'Je grijpt de map met belangrijke documenten die al bij de deur lag en gaat meteen naar buiten.';
+        },
+        source: { text: 'Brandweer: maak een vluchtplan — verlies bij brand geen tijd', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
         stateChange: { evacuatedFire: true, savedItems: true },
-        conditionalOn: () => profile.hasDocuments === 'ja' && profile.hasBOBBag !== 'ja'
+        conditionalOn: () => (profile.hasDocuments === 'ja' || profile.hasMeds === 'ja') && profile.hasBOBBag !== 'ja'
       },
       {
         text: '🎒 De vluchttas oppakken en naar buiten rennen',
@@ -270,6 +294,7 @@ const scenes_nachtalarm = [
       {
         text: '🔑 Je sleutels en telefoon zoeken',
         consequence: 'Je begint te zoeken, maar in de stress weet je niet meer waar je alles hebt neergelegd. Kostbare seconden tikken weg terwijl de rooklucht sterker wordt. Uiteindelijk vind je alles en ga je naar buiten, maar je had er langer over gedaan dan gedacht.',
+        source: { text: 'Brandweer: maak een vluchtplan — verlies geen tijd bij brand', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
         stateChange: { evacuatedFire: true, comfort: -1, delayedEvacuation: true }
       },
       {
@@ -281,6 +306,7 @@ const scenes_nachtalarm = [
         consequence: () => (profile.hasChildren || profile.hasMobilityImpaired)
           ? 'Je helpt iedereen zo snel mogelijk naar buiten. Dat kost even tijd, maar het voorkomt dat iemand achterblijft in de rook. Even later staat iedereen half aangekleed buiten in de koude lucht.'
           : 'Je maakt iedereen wakker en stuurt hen direct naar buiten. Even later staat iedereen buiten, geschrokken maar veilig.',
+        source: { text: 'VN/UNODC: begeleid kinderen in een crisis met rust, nabijheid en uitleg op hun niveau', url: 'https://www.unodc.org/res/drug-prevention-and-treatment/publications/data/drug-abuse-treatment-and-rehabilitation_caring-for-your-child-in-crisis-situations_html/UN-Caring-for-child-in-Crisis-Situations-booklet-200929-DIGITAL.pdf' },
         stateChange: { evacuatedFire: true, kidsEvacuated: true, warnedHousemates: true },
         conditionalOn: () => (hasHousemates() && !state.warnedHousemates) || profile.hasChildren || profile.hasMobilityImpaired
       }
@@ -327,6 +353,7 @@ const scenes_nachtalarm = [
           ? 'Je belt opnieuw nu je buiten staat. De meldkamer vraagt of iedereen buiten is en noteert je adres. Even later hoor je in de verte sirenes. De brandweer komt eraan.'
           : 'De meldkamer neemt snel op, vraagt of iedereen buiten is en noteert je adres. Even later hoor je in de verte sirenes. De brandweer komt eraan.',
         cat: 'cat-action',
+        source: { text: 'Brandweer: bel 112 zodra je veilig buiten staat', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
         stateChange: { called112: true, stayedOutside: true },
         conditionalOn: () => !state.called112
       },
@@ -342,6 +369,7 @@ const scenes_nachtalarm = [
           ? 'Je klopt hard aan bij de directe buren op de gang en roept dat er brand is in jouw woning. Slaperige gezichten, dan geschrokken ogen. Ze gaan meteen naar buiten. Goed dat je dit deed, in een flatgebouw kan rook snel naar andere woningen trekken.'
           : 'Je loopt snel naar de buren en klopt aan. Even later staan ze in de deuropening. Je legt kort uit wat er aan de hand is. Ze bellen 112 en houden een oogje in het zeil. Je bent blij dat je dit even gedaan hebt.',
         cat: 'cat-social',
+        source: { text: 'Brandweer: waarschuw buren — in een flatgebouw kan rook snel naar andere woningen trekken', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
         stateChange: { stayedOutside: true, knowsNeighbors: true }
       },
       {

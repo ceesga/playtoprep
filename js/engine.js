@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Engine — Scenario-lifecycle en scène-progressie
 // Bevat: startScenario, renderScene, saveGame/loadGame,

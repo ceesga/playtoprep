@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Choice Handler — Keuze-rendering en -verwerking
 // Bevat: renderChoices, CHOICE_ICON_MAP,
@@ -734,6 +735,14 @@ function pickChoice(idx) {
 
   // Toon de consequentie met typewriter-effect; speler klikt zelf op "Verder →" om door te gaan
   Typewriter.run(consequenceText, twSpan, null);
+
+  // Toon bronverwijzing als de keuze een source-veld heeft
+  if (choice.source) {
+    const sourceEl = document.createElement('p');
+    sourceEl.className = 'choice-source';
+    sourceEl.innerHTML = `<a href="${choice.source.url}" target="_blank" rel="noopener noreferrer">${choice.source.text}</a>`;
+    narrativeEl.appendChild(sourceEl);
+  }
 
   // Speel keuze-specifiek geluidseffect af indien opgegeven
   if (choice.sound && typeof SceneEffects !== 'undefined') {

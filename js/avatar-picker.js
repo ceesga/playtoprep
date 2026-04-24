@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Avatar Picker — Avatar-selectie en huishoudindicator
 // Bevat: avatar-constanten, openAvatarPicker, selectAvatar,

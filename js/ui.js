@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // UI — Schermnavigatie, overlays en hulpfuncties
 // Bevat: NL-Alert overlay, Help popup, Huishouden portret,
@@ -32,14 +33,89 @@ function updatePrepState() {
 }
 
 // Wisselt de zichtbare subpagina van het startmenu (0 = hoofd, 1 = laden).
+function buildMenuRowHtml(menuType, item) {
+  const btnClass = item.stacked ? 'gear-row gear-row-stacked' : 'gear-row';
+  const idAttr = item.id ? ` id="${item.id}"` : '';
+  const disabledAttr = item.disabled ? ' disabled' : '';
+  const labelIdAttr = item.labelId ? ` id="${item.labelId}"` : '';
+  const closeSuffix = menuType === 'gear' && item.closeOnClick ? ';closeGearMenu()' : '';
+  const onclickAttr = item.onclick ? ` onclick="${item.onclick}${closeSuffix}"` : '';
+
+  let inner = `<span${labelIdAttr}>${item.label}</span>`;
+  if (item.subId) {
+    inner += `<span class="gear-row-sub" id="${item.subId}"></span>`;
+  }
+
+  return `<button type="button" class="${btnClass}"${idAttr}${onclickAttr}${disabledAttr}>${inner}</button>`;
+}
+
+function getMenuPages(menuType) {
+  if (menuType === 'start') {
+    return {
+      titles: { 0: 'Menu', 1: 'Spel laden' },
+      pages: {
+        0: [
+          { label: 'Nieuw spel', onclick: "show('s-uitleg')" },
+          { label: 'Spel laden', onclick: "startMenuPage(1)" },
+          { label: audioEnabled ? 'Geluid aan' : 'Geluid uit', id: 'start-audio-btn', onclick: 'toggleAudio()' },
+          { label: 'Uitleg', onclick: "openHelp('setup')" },
+          { label: 'Over Goed Voorbereid', onclick: 'openOver()' }
+        ],
+        1: [
+          { label: '← Terug', onclick: 'startMenuPage(0)' },
+          { label: 'Huishouden laden', id: 'start-profile-btn', subId: 'start-profile-info', stacked: true, onclick: 'loadProfileAndGo()' },
+          { label: 'Vorige opslag laden', id: 'start-savegame-btn', subId: 'start-load-info', stacked: true, onclick: 'loadGame()' }
+        ]
+      }
+    };
+  }
+
+  return {
+    titles: { 0: 'Menu', 1: 'Spel opslaan', 2: 'Spel laden' },
+    pages: {
+      0: [
+        { label: 'Nieuw spel', onclick: "show('s-uitleg')", closeOnClick: true },
+        { label: 'Spel opslaan', onclick: 'gearPage(1)' },
+        { label: 'Spel laden', onclick: 'gearPage(2)' },
+        { label: audioEnabled ? 'Geluid aan' : 'Geluid uit', id: 'gear-audio-item', labelId: 'gear-audio-label', onclick: 'toggleAudio()' },
+        { label: 'Uitleg', onclick: "openHelp('scenario')", closeOnClick: true },
+        { label: 'Over Goed Voorbereid', onclick: 'openOver()', closeOnClick: true }
+      ],
+      1: [
+        { html: '<div id="gear-feedback" class="gear-feedback" style="display:none"></div>' },
+        { label: 'Thuissituatie opslaan', onclick: 'saveProfile()' },
+        { label: 'Voortgang opslaan', onclick: 'saveGame()' }
+      ],
+      2: [
+        { label: 'Huishouden laden', id: 'gear-profile-btn', subId: 'gear-profile-info', stacked: true, onclick: 'loadProfileAndGo()', closeOnClick: true },
+        { label: 'Vorige opslag laden', id: 'gear-load-btn', subId: 'gear-load-info', stacked: true, onclick: 'loadGame()', closeOnClick: true },
+        { label: 'Scenario opnieuw kiezen', onclick: 'gotoScenariokeuze()', closeOnClick: true }
+      ]
+    }
+  };
+}
+
+function renderMenuPage(menuType, page) {
+  const config = getMenuPages(menuType);
+  const titleEl = document.getElementById(menuType === 'start' ? 'start-menu-title-text' : 'gear-title');
+  const pagesEl = document.getElementById(menuType === 'start' ? 'start-menu-pages' : 'gear-menu-pages');
+  if (!titleEl || !pagesEl) return;
+
+  titleEl.textContent = config.titles[page] || 'Menu';
+  pagesEl.innerHTML = (config.pages[page] || []).map(item =>
+    item.html || buildMenuRowHtml(menuType, item)
+  ).join('');
+
+  if (menuType === 'gear') {
+    const back = document.getElementById('gear-back');
+    if (back) back.style.visibility = page === 0 ? 'hidden' : 'visible';
+  }
+
+  checkSave();
+}
+
 function startMenuPage(n) {
-  const titles = { 0: 'Menu', 1: 'Laden' };
-  const titleEl = document.getElementById('start-menu-title');
-  if (titleEl) titleEl.textContent = titles[n] || 'Menu';
-  [0, 1].forEach(i => {
-    const p = document.getElementById('start-p' + i);
-    if (p) p.style.display = i === n ? 'block' : 'none';
-  });
+  renderMenuPage('start', n);
 }
 
 /* ───────────────────────────────────────────────────────────────
@@ -297,8 +373,12 @@ function show(id) {
 
   // Vertaal scherm-ID naar een leesbare paginacode voor de hoek-indicator
   const pageCodes = {
-    's-start': 'start', 's-uitleg': 'uitleg', 's-prep': 'prep',
-    's-scenariokeuze': 'scenario_keuze', 's-commute': 'commute', 's-report': 'report'
+    's-start': 'start',
+    's-uitleg': 'uitleg',
+    's-prep': 'prep',
+    's-scenariokeuze': 'scenario_keuze',
+    's-commute': 'commute',
+    's-report': 'report'
   };
   const corner = document.getElementById('scene-id-corner');
   if (corner && pageCodes[id]) corner.textContent = pageCodes[id];
@@ -422,43 +502,7 @@ function closeGearMenu() {
 // Wisselt de zichtbare subpagina van het tandwielmenu (0 = hoofd, 1 = opslaan, 2 = laden).
 // Past ook de titel, terugknop-zichtbaarheid en contextspecifieke UI-elementen aan.
 function gearPage(n) {
-  const titles = { 0: 'Menu', 1: 'Opslaan', 2: 'Laden' };
-  document.getElementById('gear-title').textContent = titles[n] || 'Menu';
-
-  // Verberg de terugknop op de hoofdpagina, toon hem op subpagina's
-  const back = document.getElementById('gear-back');
-  if (back) back.style.visibility = n === 0 ? 'hidden' : 'visible';
-
-  // Toon alleen de pagina die overeenkomt met het opgegeven paginanummer
-  [0, 1, 2].forEach(i => {
-    const p = document.getElementById('gear-p' + i);
-    if (p) p.style.display = i === n ? '' : 'none';
-  });
-
-  // Sync audio label op hoofdpagina
-  if (n === 0) {
-    const label = document.getElementById('gear-audio-label');
-    const icon  = document.getElementById('gear-audio-icon');
-    // Gebruik audioEnabled als die beschikbaar is, anders standaard aan
-    const on = typeof audioEnabled !== 'undefined' ? audioEnabled : true;
-    if (label) label.textContent = on ? 'Geluid aan' : 'Geluid uit';
-    if (icon)  icon.innerHTML = on
-      ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>'
-      : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><line x1="2" y1="2" x2="22" y2="22"/></svg>';
-  }
-
-  // Dim laad-knop als er geen save is
-  if (n === 2) {
-    const loadBtn = document.getElementById('gear-load-btn');
-    // Maak de knop half-transparant als er geen opgeslagen sessie is
-    if (loadBtn) loadBtn.style.opacity = localStorage.getItem(SAVE_KEY) ? '1' : '0.4';
-  }
-
-  // Verberg feedback bij terug
-  if (n === 0) {
-    const fb = document.getElementById('gear-feedback');
-    if (fb) fb.style.display = 'none'; // verberg eventuele eerdere feedbackmelding
-  }
+  renderMenuPage('gear', n);
 }
 
 // Toont een korte feedbackmelding in het tandwielmenu (bijv. "Opgeslagen").
@@ -481,6 +525,8 @@ function loadProfileAndGo() {
   try {
     const d = JSON.parse(raw);
     Object.assign(profile, d.profile);
+    profile.intakeCompleted = d.profile?.intakeCompleted ?? true;
+    profile.prepCompleted = d.profile?.prepCompleted ?? true;
     adultsCount        = d.adultsCount        ?? 1;
     childrenCount      = d.childrenCount      ?? 0;
     slechtTerBeenCount = d.slechtTerBeenCount ?? 0;
@@ -621,6 +667,7 @@ function closeOver() {
 */
 function renderScenarioKeuze() {
   const loc = (typeof profile !== 'undefined' && profile.location) ? profile.location : [];
+  const hasChildren = !!(typeof profile !== 'undefined' && profile.hasChildren);
 
   // Bepaal welke omgevingsspecifieke scenario's getoond worden:
   // - overstroming: alleen bij 'water'
@@ -660,7 +707,7 @@ function renderScenarioKeuze() {
       badge: 'Medium (~20 min)',
       badgeClass: 'spk-medium',
       cardClass: 'spk-relevant',
-      label: 'Specifiek voor jouw omgeving',
+      label: hasChildren ? 'Extra keuzes met kinderen' : 'Specifiek voor jouw omgeving',
       desc: 'Het heeft de afgelopen dagen veel geregend. De rivieren staan hoog en in de buurt praten mensen over het waterpeil. Voorlopig lijkt het mee te vallen, maar de regen houdt aan.',
       active: true,
       env: true,
@@ -672,7 +719,7 @@ function renderScenarioKeuze() {
       badge: 'Medium (~20 min)',
       badgeClass: 'spk-medium',
       cardClass: 'spk-relevant',
-      label: 'Specifiek voor jouw omgeving',
+      label: hasChildren ? 'Extra keuzes met kinderen' : 'Specifiek voor jouw omgeving',
       desc: 'Het is al weken droog en warm. De tuin staat er dor bij en het nieuws heeft het over de aanhoudende hitte. Je bent thuis en de dag begint zoals gewoonlijk.',
       active: true,
       env: true,
@@ -712,6 +759,8 @@ function renderScenarioKeuze() {
 
 // Controleer de opgeslagen sessie zodra de pagina volledig geladen is.
 document.addEventListener('DOMContentLoaded', () => {
+  startMenuPage(0);
+  gearPage(0);
   checkSave();
   const corner = document.getElementById('scene-id-corner');
   if (corner) corner.textContent = 'start';

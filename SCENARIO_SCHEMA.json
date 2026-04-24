@@ -52,7 +52,7 @@
         "dayBadge": { "type": "string" },
         "dayBadgeClass": {
           "type": "string",
-          "enum": ["blue", "orange", "red"]
+          "enum": ["", "blue", "green", "orange", "red"]
         },
         "title": {
           "type": "string",

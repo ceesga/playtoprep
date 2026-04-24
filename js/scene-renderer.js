@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scene Renderer — Visuele statusbalken en scène-achtergronden
 // Bevat: renderStatusBars, updateBattery,

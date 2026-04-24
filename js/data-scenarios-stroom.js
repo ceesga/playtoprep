@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Stroomstoring — "Een gewone winterdag"
 // 28 scenes — van st_pre_d2 (vrijdagmiddag) tot st_14 (stroom terug)
@@ -47,6 +48,7 @@ const scenes_stroom = [
   // SCENE 2 — Day -1
   {
     id: 'st_pre_d1',
+    _w: 'PTP-NL-©2026-4vH8rZ',
     time: '12:00',
     date: 'Zaterdag 30 januari 2027',
     dayBadge: '',
@@ -74,6 +76,7 @@ const scenes_stroom = [
     choices: [{
       text: '💵 Ik pin even €100 contant geld, voor de zekerheid',
       consequence: 'Je haalt €100 op uit de automaat. Je hebt nu contant geld bij je als pinnen of betalen later moeilijker wordt.',
+      source: { text: 'Denkvooruit: contant geld hoort in je noodpakket', url: 'https://www.denkvooruit.nl/bereid-je-voor/stel-je-noodpakket-samen' },
       stateChange: {
         hasCash: true,
         cash: 100
@@ -81,6 +84,7 @@ const scenes_stroom = [
     }, {
       text: '🔦 Ik pak de zaklamp eruit en check of de batterijen het nog doen',
       consequence: 'Je vindt de zaklamp in de keukenkast. De batterijen zijn bijna leeg. Je vervangt ze door nieuwe en legt de zaklamp klaar.',
+      source: { text: 'Denkvooruit: een zaklamp is een vast onderdeel van het noodpakket', url: 'https://www.denkvooruit.nl/bereid-je-voor/stel-je-noodpakket-samen' },
       stateChange: {
         hasFlashlight: true
       }
@@ -170,6 +174,7 @@ const scenes_stroom = [
     choices: [{
       text: '🔌 Alle grote apparaten uitschakelen en de zekering uitzetten',
       consequence: 'Je loopt door het huis en zet alles handmatig uit: wasmachine, oven, verwarming. Zo verklein je de kans op schade als de stroom later terugkomt.',
+      source: { text: 'Denkvooruit: trek stekkers uit het stopcontact — zo voorkom je schade als de stroom terugkomt', url: 'https://www.denkvooruit.nl/risicos/risicos-in-nederland/geen-stroom' },
       stateChange: {}
     }, {
       conditionalOn: () => profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw',
@@ -279,11 +284,15 @@ const scenes_stroom = [
       const afgelegen = !heeftMotorVoertuig && !profile.location.includes('city')
         ? ' Je woont buiten het centrum en hebt geen motorvoertuig. Als je ergens naartoe moet, ben je afhankelijk van je eigen benen of je fiets.'
         : '';
-      return 'De stroom valt opnieuw uit. Alles wordt stil. Dit keer voelt het anders — geen gezoem van apparaten, geen standby-lampjes, niets. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.' + kinderen + afgelegen;
+      const infoleeg = state.phoneBattery <= 0 && !state.hasCarRadio && profile.hasRadio !== 'ja'
+        ? ' Je telefoon is leeg en je hebt ook geen radio. Je hebt geen goede manier meer om te weten wat er nu gebeurt.'
+        : '';
+      return 'De stroom valt opnieuw uit. Alles wordt stil. Dit keer voelt het anders — geen gezoem van apparaten, geen standby-lampjes, niets. Je telefoon trilt. Buiten komen mensen hun huis uit. Ze kijken om zich heen en zeggen bijna niets. Je accu staat op ' + state.phoneBattery + '%.' + kinderen + afgelegen + infoleeg;
     },
     choices: [{
       text: '🍶 Lege flessen vullen met water, voor noodgebruik',
       consequence: 'Je pakt alle lege flessen, pannen en emmers die je kunt vinden en vult ze met kraanwater. Als de waterpomp uitvalt, heb je nog water voor drinken, koken en de wc.',
+      source: { text: 'Denkvooruit: sla voldoende drinkwater op als onderdeel van je noodpakket', url: 'https://www.denkvooruit.nl/bereid-je-voor/stel-je-noodpakket-samen' },
       stateChange: {
         hasWater: true,
         water: 2
@@ -352,10 +361,13 @@ const scenes_stroom = [
       };
     },
     get narrative() {
+      const infoleeg = state.phoneBattery <= 0 && !state.hasCarRadio && profile.hasRadio !== 'ja'
+        ? ' Je telefoon is leeg en je hebt ook geen radio. Je hebt geen goede manier meer om te weten wat er nu gebeurt.'
+        : '';
       if (profile.location.includes('city')) {
-        return 'Je telefoon heeft nauwelijks bereik meer. Je hoort constant politiesirenes in de verte. Op straat zijn mensen nerveus. Kleine groepjes staan bij elkaar te praten. De supermarkt om de hoek is nog open, maar je ziet de rij al van ver. Het begint merkbaar kouder te worden in huis: de thermostaat staat op 19°C, maar de CV werkt niet.';
+        return 'Je telefoon heeft nauwelijks bereik meer. Je hoort constant politiesirenes in de verte. Op straat zijn mensen nerveus. Kleine groepjes staan bij elkaar te praten. De supermarkt om de hoek is nog open, maar je ziet de rij al van ver. Het begint merkbaar kouder te worden in huis: de thermostaat staat op 19°C, maar de CV werkt niet.' + infoleeg;
       } else {
-        return 'Je telefoon heeft nauwelijks bereik meer. Je hoort constant politiesirenes in de verte. Op straat zijn mensen nerveus. Kleine groepjes staan bij elkaar te praten. Je overweegt naar de supermarkt te gaan, maar die zit een eind weg. En je weet niet of ze nog open zijn. Het begint merkbaar kouder te worden in huis: de thermostaat staat op 19°C, maar de CV werkt niet.';
+        return 'Je telefoon heeft nauwelijks bereik meer. Je hoort constant politiesirenes in de verte. Op straat zijn mensen nerveus. Kleine groepjes staan bij elkaar te praten. Je overweegt naar de supermarkt te gaan, maar die zit een eind weg. En je weet niet of ze nog open zijn. Het begint merkbaar kouder te worden in huis: de thermostaat staat op 19°C, maar de CV werkt niet.' + infoleeg;
       }
     },
     choices: [{
@@ -488,6 +500,7 @@ const scenes_stroom = [
     }, {
       text: '🌡️ Alle kamers afsluiten behalve de woonkamer, warmte bewaren',
       consequence: 'Je sluit alle deuren. Eén kamer warm houden kost veel minder energie dan het hele huis. Je trekt een extra trui aan.',
+      source: { text: 'Denkvooruit: houd bij stroomstoring één ruimte warm en sluit de rest af', url: 'https://www.denkvooruit.nl/risicos/risicos-in-nederland/geen-stroom' },
       stateChange: {}
     }, {
       text: '👴 Bij buurvrouw Annie aanbellen en vragen of ze het redt',
@@ -516,6 +529,7 @@ const scenes_stroom = [
     choices: [{
       text: '🏕️ Campingkooktoestel of barbecue gebruiken',
       consequence: 'Je haalt het campingkooktoestel tevoorschijn. Belangrijk: gebruik het buiten of met veel ventilatie, want koolmonoxide is dodelijk in een besloten ruimte. Je kookt een warme maaltijd.',
+      source: { text: 'Brandweer: veilig en warm de winter door', url: 'https://www.brandweer.nl/onderwerpen/veilig-en-warm-de-winter-door/' },
       stateChange: {
         comfort: 1,
         hasCampingStove: true
@@ -545,11 +559,12 @@ const scenes_stroom = [
       radio: 'Radio 1. Goedenavond. De politie vraagt iedereen zoveel mogelijk binnen te blijven. In meerdere wijken zijn incidenten gemeld. Sluit uw deuren en ramen goed af. Wij zenden de hele nacht door op batterijstroom.'
     },
     get narrative() {
-      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">12°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; 🌙 Nacht valt in</div>Je hebt gegeten. Nu begint de lange avond. Buiten is het pikzwart. Geen lantaarnpalen, geen lichtjes bij de buren. Alleen hier en daar het flakkerende schijnsel van een kaars achter een raam. Het huis koelt langzaam maar zeker af. Je telefoon staat op ' + state.phoneBattery + '%.';
+      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">12°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; 🌙 Nacht valt in</div>Je hebt gegeten. Nu begint de lange avond. Buiten is het pikzwart. Geen lantaarnpalen, geen lichtjes bij de buren. Alleen hier en daar het flakkerende schijnsel van een kaars achter een raam. Het huis koelt langzaam maar zeker af. Je telefoon staat op ' + state.phoneBattery + '%.' + (state.phoneBattery <= 0 && !state.hasCarRadio && profile.hasRadio !== 'ja' ? ' Je telefoon is leeg en je hebt ook geen radio. Je hebt geen goede manier meer om te weten wat er nu gebeurt.' : '');
     },
     choices: [{
       text: '🕯️ Kaarsen aansteken, slaapzakken halen en in de woonkamer bij elkaar blijven',
       consequence: 'Je zet kaarsen in glazen voor stabiliteit en sleept slaapzakken, dekens en kussens naar de woonkamer. Eén kamer verlichten en verwarmen met lichaamswarmte is veel efficiënter dan het hele huis. Het flakkerende licht maakt het minder zwaar.',
+      source: { text: 'Brandweer: gebruik kaarsen altijd in een stabiele houder en laat ze nooit onbeweerd branden', url: 'https://www.brandweer.nl/onderwerpen/veilig-en-warm-de-winter-door/' },
       stateChange: {}
     }, {
       text: '🔦 Zaklamp pakken en de rest van de avond op batterijen doorbrengen',
@@ -589,7 +604,10 @@ const scenes_stroom = [
         'naar de tuin van de overburen kijkt';
       const mob = profile.hasMobilityImpaired ? (profile.houseType === 'hoogbouw' ? ' De trap is zwaar. Zonder lift is elke verdieping een opgave.' : ' De trap is zwaar voor iemand met beperkte mobiliteit.') : '';
       const oud = profile.hasElderly ? ' Je denkt ook aan de ouderen in huis: de kou is voor hen zwaarder.' : '';
-      return 'Je wordt wakker van glasgerinkel buiten. Als je voorzichtig naar het raam loopt en ' + view + ', zie je twee mensen met zaklampen langs auto\'s en tuinen lopen. Ze voelen aan een paar deurklinken en lopen dan weer door. Het is donker, stil en ijskoud. Je hart bonkt.' + mob + oud;
+      const infoleegNacht = state.phoneBattery <= 0 && !state.hasCarRadio && profile.hasRadio !== 'ja'
+        ? ' Je telefoon is leeg en je hebt ook geen radio. Je hebt geen goede manier meer om te weten wat er nu gebeurt.'
+        : '';
+      return 'Je wordt wakker van glasgerinkel buiten. Als je voorzichtig naar het raam loopt en ' + view + ', zie je twee mensen met zaklampen langs auto\'s en tuinen lopen. Ze voelen aan een paar deurklinken en lopen dan weer door. Het is donker, stil en ijskoud. Je hart bonkt.' + mob + oud + infoleegNacht;
     },
     choices: [{
       text: '📱 112 bellen',
@@ -1221,7 +1239,7 @@ const scenes_stroom = [
       const opening = 'De derde ochtend. Bijna windstil buiten. ';
       if (state.knowsNeighbors) {
         return statusBar + opening + 'Er wordt geklopt. Rob staat voor de deur en zijn adem dampt in de kou. "Heb je het gehoord?" zegt hij. "In grote delen van Europa is de stroom terug. Nederland is een van de laatste, maar ze zeggen: vandaag." Hij valt even stil. "En om 10:00 is er hier in de buurt een voedseluitdeling." Voor het eerst in dagen voel je weer een beetje hoop.';
-      } else if (profile.hasRadio) {
+      } else if (profile.hasRadio === 'ja') {
         return statusBar + opening + 'Je zet de radio aan. De stem klinkt rustiger dan de afgelopen dagen. Er is eindelijk goed nieuws. Voor het eerst in dagen voel je weer een beetje hoop.';
       } else {
         return statusBar + opening + 'Geen nieuws van buiten. Je weet niet hoe het er elders voor staat. Het huis is stil. Je wacht af.';
@@ -1245,12 +1263,12 @@ const scenes_stroom = [
       consequence: 'Crackers, de laatste pindakaas, een appel. Koud maar plechtig. Vandaag misschien de laatste dag zonder stroom.',
       stateChange: {}
     }, {
-      conditionalOn: () => state.knowsNeighbors || profile.hasRadio,
+      conditionalOn: () => state.knowsNeighbors || profile.hasRadio === 'ja',
       text: '🤝 De buren informeren over de voedseluitdeling en de hoop',
       consequence: 'Je klopt bij Rob en Annie aan. Rob grijpt je hand. "Echt?" Annie veegt een traan weg. Je brengt hoop naar mensen die het nodig hebben.',
       stateChange: {}
     }, {
-      conditionalOn: () => state.knowsNeighbors || profile.hasRadio,
+      conditionalOn: () => state.knowsNeighbors || profile.hasRadio === 'ja',
       text: '🙈 Niets verwachten, ik geloof het pas als ik het zie',
       consequence: 'Je hebt te vaak "binnenkort" gehoord. Daarom houd je jezelf rustig. Beter niets verwachten dan opnieuw teleurgesteld worden.',
       stateChange: {}
@@ -1314,6 +1332,7 @@ const scenes_stroom = [
     }, {
       text: '⚡ Alle apparaten uitschakelen voordat er stroompieken schade aanrichten',
       consequence: 'Je loopt door het huis en zet alles handmatig uit. Daarna zet je apparaat voor apparaat langzaam terug aan. De TV ruikt wat gebrand, maar werkt nog.',
+      source: { text: 'Denkvooruit: trek stekkers uit het stopcontact — zo voorkom je schade als de stroom terugkomt', url: 'https://www.denkvooruit.nl/risicos/risicos-in-nederland/geen-stroom' },
       stateChange: {}
     }, {
       text: '⚡ Alles direct aanpakken: apparaten uit, leidingen doorspoelen, mama bellen',

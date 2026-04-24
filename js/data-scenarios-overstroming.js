@@ -1,10 +1,16 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Overstroming — "Het water staat hoog"
-// 25 scenes — van ov_0 (avond, hoog water) tot ov_8 (thuiskomst)
+// 26 scenes — van ov_0 (avond, hoog water) tot ov_8 (thuiskomst)
 // Tijdspanne: ~18 uur
 // ═══════════════════════════════════════════════════════════════
 
 // ─── OVERSTROMING SCENARIO ────────────────────────────────────────────────────
+const FLOOD_CHILD_CRISIS_SOURCE = {
+  text: 'VN/UNODC: begeleid kinderen in een crisis met rust, nabijheid en uitleg op hun niveau',
+  url: 'https://www.unodc.org/res/drug-prevention-and-treatment/publications/data/drug-abuse-treatment-and-rehabilitation_caring-for-your-child-in-crisis-situations_html/UN-Caring-for-child-in-Crisis-Situations-booklet-200929-DIGITAL.pdf'
+};
+
 const scenes_overstroming = [{
   id: 'ov_0',
   time: '20:00',
@@ -50,6 +56,7 @@ const scenes_overstroming = [{
   }]
 }, {
   id: 'ov_1',
+    _w: 'PTP-NL-©2026-4vH8rZ',
   time: '07:00',
   date: 'Dinsdag 9 november 2027',
   dayBadge: 'Dag 1',
@@ -84,12 +91,14 @@ const scenes_overstroming = [{
     conditionalOn: () => !state.packedBag,
     text: '🎒 Direct beginnen met voorbereiding',
     consequence: 'Je begint alvast: documenten in een waterdichte zak, medicijnen, kleding. Je zet je schoenen bij de deur. Als het bevel komt ben je klaar.',
+    source: { text: 'Rijksoverheid: bereid je tijdig voor en pak medicijnen, kleding en essentiële spullen in', url: 'https://www.rijksoverheid.nl/onderwerpen/water/vraag-en-antwoord/wat-moet-ik-doen-bij-een-dreigende-overstroming' },
     stateChange: {
       awarenessLevel: 1,
       packedBag: true
     }
   }, {
     text: '🙈 Afwachten, het regelt zichzelf wel',
+    source: { text: 'Denkvooruit: wacht niet af — volg de overstromingswaarschuwingen en handel direct', url: 'https://www.denkvooruit.nl/risicos/risicos-in-nederland/overstroming' },
     consequence: () => (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
       ? 'Je gaat door met je ochtendroutine. Buiten stijgt het water al licht. Je merkt het pas als je vanuit het raam ziet dat de stoep blank staat.'
       : 'Je gaat door met je ochtendroutine. Buiten stijgt het water al licht. Je merkt het pas als je naar de brievenbus loopt en natte voeten krijgt.',
@@ -140,6 +149,7 @@ const scenes_overstroming = [{
   }, {
     text: '🏠 Thuis houden én even samen doorlopen wat jullie gaan doen',
     consequence: () => profile.childrenCount === 1 ? 'Je houdt je kind thuis en neemt vijf minuten om rustig uit te leggen wat er aan de hand is. Wat jullie gaan doen als het water te hoog wordt. Je kind luistert serieuzer dan je had verwacht.' : 'Je houdt de kinderen thuis. Jullie zitten even aan tafel: wat er aan de hand is, wat jullie gaan doen, wat ze van jou kunnen verwachten. Ze luisteren serieuzer dan je had verwacht.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       kidsWithYou: true,
       kidsKeptHome: true,
@@ -168,16 +178,19 @@ const scenes_overstroming = [{
   choices: [{
     text: () => profile.childrenCount === 1 ? '🎒 Je kind een kleine taak geven en een rugzakje laten pakken' : '🎒 De kinderen een kleine taak geven en rugzakjes laten pakken',
     consequence: () => profile.childrenCount === 1 ? 'Je kind gaat meteen aan de slag. Even later staat het trots met een rugzakje: een knuffel, een boek en een pakje kaarten. Het voelt zich nuttig en blijft rustiger.' : 'De kinderen gaan meteen aan de slag. Even later staan ze trots met hun rugzakjes. De een heeft een knuffel en sokken, de ander een boek en een reep chocolade. Ze voelen zich nuttig en blijven rustiger.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       kidsNoodpakket: true
     }
   }, {
     text: () => profile.childrenCount === 1 ? '📺 Je kind achter een scherm zetten zodat jij verder kunt' : '📺 De kinderen achter een scherm zetten zodat jij verder kunt',
     consequence: () => profile.childrenCount === 1 ? 'Je kind gaat zitten en jij werkt door. Toch kijkt het steeds weer op van het scherm. Je merkt dat het de spanning voelt, ook zonder vragen te stellen.' : 'De kinderen gaan zitten en jij werkt door. Toch kijken ze steeds weer op van het scherm. Je merkt dat ze de spanning voelen, ook zonder veel te zeggen.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {}
   }, {
     text: () => profile.childrenCount === 1 ? '💬 Stoppen en rustig uitleggen wat er aan de hand is' : '💬 Stoppen en rustig uitleggen wat er aan de hand is',
     consequence: () => profile.childrenCount === 1 ? '"Er komt veel water. We gaan straks naar een veilige plek. Jij hoeft alleen bij mij te blijven." Je kind knikt. Het weet nu beter wat er gebeurt en dat helpt meteen.' : '"Er komt veel water. We gaan straks naar een veilige plek. Jullie hoeven alleen bij mij te blijven." Ze knikken. Ze weten nu beter wat er gebeurt en dat helpt meteen.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
@@ -305,6 +318,7 @@ const scenes_overstroming = [{
   choices: [{
     text: () => profile.childrenCount === 1 ? '🛑 Je kind tegenhouden en uitleggen waarom het niet terug mag' : '🛑 De jongste tegenhouden en uitleggen waarom ze niet terug mag',
     consequence: () => profile.childrenCount === 1 ? 'Je legt rustig uit: "We gaan zo samen weg, maar jij mag nu niet alleen terug." Je kind protesteert, maar na twee minuten geeft het toe. Het blijft wel onrustig.' : 'Je legt rustig uit: "We gaan zo samen weg, maar jij mag nu niet alleen terug." Ze protesteert, maar na twee minuten geeft ze toe. Ze blijft wel onrustig.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: -1
     }
@@ -312,12 +326,14 @@ const scenes_overstroming = [{
     conditionalOn: () => profile.childrenCount > 1,
     text: '🛑🗣️ Beide kinderen aanpakken: jongste tegenhouden én oudste aanspreken',
     consequence: 'Je houdt de jongste stevig vast en legt uit waarom ze niet terug mag. Dan kniel je naast de oudste: "Wat zie je?" vraag je. "Komt ons huis vol water?" vraagt hij. Je legt het uit. Langzaam komen allebei tot rust.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: -1
     }
   }, {
     text: () => profile.childrenCount === 1 ? '💬 Je kind aanspreken dat verstijfd bij het raam staat' : '💬 De oudste aanspreken die verstijfd bij het raam staat',
     consequence: () => profile.childrenCount === 1 ? 'Je knielt naast je kind en vraagt wat het ziet. "Komt ons huis vol water?" vraagt het. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.' : 'Je knielt naast hem en vraagt wat hij ziet. "Komt ons huis vol water?" vraagt hij. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       phoneBattery: -5
     }
@@ -344,7 +360,7 @@ const scenes_overstroming = [{
       }] : [];
     },
     nlalert: 'NL-Alert\n9 november 2027 – 10:22\n\nEVACUATIEADVIES voor laaggelegen wijken. Vertrek nu als de route nog veilig is, of ga naar de bovenste verdieping. Gebruik aangewezen evacuatieroutes.',
-    radio: 'Radio 1: Evacuatieadvies voor laaggelegen wijken. Ga nu weg als de route nog open is. Kan dat niet meer, ga dan naar boven. Sluit de meterkast af. Bel 112 alleen in levensbedreigende situaties.'
+    radio: 'Radio 1: Evacuatieadvies voor laaggelegen wijken. Ga nu weg als de route nog open is. Kan dat niet meer, ga dan naar boven. Alleen als de vloer nog droog is: haal stekkers eruit en schakel de stroom uit. Bel 112 alleen in levensbedreigende situaties.'
   },
   get narrative() {
     const tas = !state.packedBag
@@ -366,10 +382,19 @@ const scenes_overstroming = [{
     const bovenTekst = (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
       ? ' ga nu weg als dat nog kan, of ga naar een hogere verdieping in het gebouw.'
       : ' ga nu weg als dat nog kan, of ga naar boven.';
-    return 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Het evacuatieadvies is duidelijk:' + bovenTekst + tas + geenAuto + mobiliteit + ' Wat doe je?';
+    return 'Het water staat nu tientallen centimeters hoog in de straat. Er klinkt een NL-Alert. Binnen is de vloer nog droog, maar dat kantelpunt komt snel dichterbij. Het evacuatieadvies is duidelijk:' + bovenTekst + tas + geenAuto + mobiliteit + ' Wat doe je?';
   },
   choices: [{
-    conditionalOn: () => !profile.hasMobilityImpaired,
+    conditionalOn: () => !state.cutElectricity,
+    text: '🔌 Haal stekkers uit het stopcontact en schakel de stroom uit',
+    consequence: 'Omdat de vloer binnen nog droog is, trek je snel de stekkers uit het stopcontact en zet je de hoofdschakelaar uit. Daarna moet je direct beslissen: nu weg zolang het nog kan, of meteen naar boven. Zodra er water op de vloer staat, blijf je weg van elektra.',
+    source: { text: 'VNOG: verlaat jij je huis? Sluit gas, water en elektriciteit af. Haal stekkers uit het stopcontact.', url: 'https://www.vnog.nl/risicos/overstroming/woning?tab_1=2' },
+    stateChange: {
+      cutElectricity: true,
+      delayedEvacuation: true
+    }
+  }, {
+    conditionalOn: () => !profile.playerIsMobilityImpaired,
     text: () => (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
       ? '🏠 In het gebouw blijven en naar een hogere verdieping gaan'
       : '🏠 Boven blijven en naar de eerste verdieping gaan',
@@ -405,7 +430,7 @@ const scenes_overstroming = [{
       evacuatedFlood: false
     }
   }, {
-    conditionalOn: () => !(profile.hasCar || profile.hasMotorcycle) && !profile.hasMobilityImpaired,
+    conditionalOn: () => !(profile.hasCar || profile.hasMotorcycle) && !profile.playerIsMobilityImpaired,
     text: '🚶 Te voet wegwaden nu het nog kan',
     consequence: () => {
       const heeftFietsOv = profile.hasBike || profile.hasScooter || profile.hasEbike;
@@ -420,7 +445,110 @@ const scenes_overstroming = [{
       health: -1
     }
   }, {
-    conditionalOn: () => profile.hasMobilityImpaired,
+    conditionalOn: () => profile.playerIsMobilityImpaired,
+    text: '🆘 Hulp vragen om naar een hogere verdieping te komen',
+    consequence: 'Je belt aan bij de buren en vraagt hulp. Met twee mensen lukt het om naar boven te komen. Het kost kostbare tijd. Het water staat al in de gang.',
+    stateChange: {
+      health: -1,
+      comfort: -1,
+      wentUpstairs: true
+    }
+  }, {
+    conditionalOn: () => profile.hasPets && !state.tookPets,
+    text: () => petsCount > 1 ? '🐾 Huisdieren veiligstellen voor je vertrekt' : '🐾 Huisdier veiligstellen voor je vertrekt',
+    consequence: () => petsCount > 1
+      ? 'Je pakt de manden en roept de dieren. Ze zijn bang van het water en werken niet mee. Na een paar minuten heb je ze. Je vertrekt samen — maar kostbare tijd ben je kwijt.'
+      : 'Je pakt de transportmand en roept je huisdier. Het is bang en wil niet mee. Na anderhalve minuut heb je het. Je vertrekt samen — maar kostbare tijd ben je kwijt.',
+    stateChange: { tookPets: true, comfort: -1 }
+  }]
+}, {
+  id: 'ov_3a',
+  time: '10:33',
+  date: 'Dinsdag 9 november 2027',
+  dayBadge: 'Dag 1',
+  dayBadgeClass: '',
+  conditionalOn: () => state.delayedEvacuation === true && !state.evacuatedFlood && state.wentUpstairs === null,
+  channels: {
+    news: [],
+    whatsapp: [],
+    nlalert: null,
+    radio: 'Radio 1: Water op de vloer? Blijf uit de buurt van elektra. Is de vloer nog droog en moet je weg? Dan kun je nog snel de stroom uitschakelen en stekkers eruit halen, maar wacht niet te lang met evacueren.'
+  },
+  get narrative() {
+    const tas = !state.packedBag
+      ? ' Je hebt nog steeds niets klaargelegd. Elke extra seconde telt nu.'
+      : ' Je tas staat klaar bij de deur.';
+    const heeftMotorVov = profile.hasCar || profile.hasMotorcycle;
+    const heeftFietsVov = profile.hasBike || profile.hasScooter || profile.hasEbike;
+    const fietsnaamOv   = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+    const geenAuto = !heeftMotorVov
+      ? heeftFietsVov
+        ? ` Je hebt geen auto, maar wel een ${fietsnaamOv}. Als je weg wilt, ga je op de ${fietsnaamOv}.`
+        : ' Je hebt geen auto en geen fiets. Weggaan betekent te voet door het water.'
+      : '';
+    const mobiliteit = profile.playerIsMobilityImpaired
+      ? ' Jij bent beperkt mobiel. Te voet waden is voor jou geen optie. Je moet hulp regelen of boven blijven.'
+      : profile.playerIsElderly
+      ? ' Op jouw leeftijd is waden door hoog water te gevaarlijk. Je opties zijn beperkt. Elke minuut telt.'
+      : '';
+    const bovenTekst = (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? ' ga nu weg als dat nog kan, of ga naar een hogere verdieping in het gebouw.'
+      : ' ga nu weg als dat nog kan, of ga naar boven.';
+    return 'Je hebt de stekkers eruit gehaald en de stroom uitgeschakeld zolang de vloer nog droog was. Buiten stijgt het water verder. Het evacuatieadvies is nog steeds duidelijk:' + bovenTekst + tas + geenAuto + mobiliteit + ' Wat doe je nu?';
+  },
+  choices: [{
+    conditionalOn: () => !profile.playerIsMobilityImpaired,
+    text: () => (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? '🏠 In het gebouw blijven en naar een hogere verdieping gaan'
+      : '🏠 Boven blijven en naar de eerste verdieping gaan',
+    consequence: () => (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
+      ? 'Je gaat naar een hogere verdieping in het gebouw. Je neemt water, eten en je telefoon mee. Op straat stijgt het water verder, maar jij zit droog.'
+      : 'Je klimt naar boven. Je neemt water, eten en je telefoon mee. Beneden stijgt het water verder.',
+    stateChange: {
+      wentUpstairs: true
+    }
+  }, {
+    conditionalOn: () => state.contactedAns && !profile.hasChildren,
+    text: '📞 Ans vragen naar jou toe te komen en samen boven te blijven',
+    consequence: 'Je appt Ans: "Kom nu, de straat is nog wadbaar." Tien minuten later staat ze voor de deur, kletsnat maar opgelucht. Samen ga je naar boven.',
+    stateChange: {
+      takingAns: true,
+      wentUpstairs: true
+    }
+  }, {
+    conditionalOn: () => profile.hasCar || profile.hasMotorcycle,
+    text: () => profile.hasCar ? '🚗 Toch proberen weg te rijden' : '🚗 Toch proberen weg te rijden op de motor',
+    consequence: () => {
+      const v = profile.hasCar ? 'auto' : 'motor';
+      return state.carMovedHigher
+        ? `Je ${v} stond al hoger geparkeerd. Daardoor kom je nu nog weg via de omleiding. Je rijdt langzaam maar gestaag naar een droog deel van de stad.`
+        : profile.hasCar
+          ? `Je stapt in de auto. Het water staat al bijna aan de drempel. Rijden in 30 cm water is gevaarlijk, want auto's kunnen bij 60 cm al gaan drijven. Je rijdt voorzichtig, maar komt na 100 meter vast te staan.`
+          : `Je stapt op de motor. Het water staat al hoog. Een motor kan door ondiep water rijden, maar de kans dat de motor uitvalt is groot. Na 50 meter sputtert de motor en kom je vast te staan.`;
+    },
+    stateChange: () => state.carMovedHigher ? {
+      evacuatedFlood: true
+    } : {
+      wentUpstairs: false,
+      evacuatedFlood: false
+    }
+  }, {
+    conditionalOn: () => !(profile.hasCar || profile.hasMotorcycle) && !profile.playerIsMobilityImpaired,
+    text: '🚶 Te voet wegwaden nu het nog kan',
+    consequence: () => {
+      const heeftFietsOv = profile.hasBike || profile.hasScooter || profile.hasEbike;
+      const naamFietsOv  = profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike';
+      return heeftFietsOv
+        ? `Je pakt je ${naamFietsOv} en rijdt langzaam door het water. Het staat al tot je knieën, maar de ${naamFietsOv} houdt je overeind. Via de omweg bereik je een droog stuk weg.`
+        : 'Je trekt laarzen aan en waadt naar buiten. Het water staat bijna tot je knieën. Het is zwaar en koud, maar je werkt je door de straat heen en bereikt een droog stuk weg verderop.';
+    },
+    stateChange: {
+      evacuatedFlood: true,
+      comfort: -2,
+      health: -1
+    }
+  }, {
+    conditionalOn: () => profile.playerIsMobilityImpaired,
     text: '🆘 Hulp vragen om naar een hogere verdieping te komen',
     consequence: 'Je belt aan bij de buren en vraagt hulp. Met twee mensen lukt het om naar boven te komen. Het kost kostbare tijd. Het water staat al in de gang.',
     stateChange: {
@@ -459,16 +587,19 @@ const scenes_overstroming = [{
     conditionalOn: () => profile.childrenCount > 1,
     text: '🏃 Beide kinderen meenemen en zelf kalm blijven',
     consequence: 'Je loopt rustig maar doelgericht. Er zit geen paniek in je stem. De kinderen letten op jouw gedrag en blijven daardoor ook rustiger.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
   }, {
     text: () => profile.childrenCount === 1 ? '🛑 Hand pakken en doorlopen: "We praten boven verder"' : '🛑 De jongste meenemen en doorlopen: "We praten boven verder"',
     consequence: () => profile.childrenCount === 1 ? 'Je pakt de hand van je kind en loopt door. Het protesteert even, maar komt mee. Boven heb je meer tijd voor vragen.' : 'Je pakt de jongste vast en loopt door. Ze protesteert even, maar komt mee. Boven heb je meer tijd voor vragen.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {}
   }, {
     text: () => profile.childrenCount === 1 ? '💬 Knielen en eerlijk zeggen: "Het huis kan nat worden, maar wij redden het samen"' : '💬 Bij de oudste knielen en eerlijk zeggen: "Het huis kan nat worden, maar wij redden het samen"',
     consequence: () => profile.childrenCount === 1 ? 'Je kind kijkt je aan. Even is het stil. Daarna loopt het weer mee de trap op. Het weet nu beter wat er gebeurt.' : 'De oudste knikt langzaam en loopt mee. De jongste ziet dat en volgt vanzelf. Ze weten nu beter wat er gebeurt.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
@@ -502,8 +633,7 @@ const scenes_overstroming = [{
     text: '💧 Water en eten meenemen naar boven',
     consequence: 'Je haalt flessen water, blikjes, crackers en een blik opener naar boven. Als het water nog hoger stijgt, heb je een dag proviand.',
     stateChange: {
-      savedItems: true,
-      food: 1
+      savedItems: true
     }
   }, {
     text: '📱 Partner of familie laten weten dat jullie boven zitten',
@@ -513,21 +643,27 @@ const scenes_overstroming = [{
     }
   }, {
     conditionalOn: () => !state.cutElectricity,
-    text: '⚡ Meterkast afsluiten voor de veiligheid',
-    consequence: 'Je loopt naar de meterkast beneden, die al half onder water staat. Je gooit de hoofdschakelaar eruit. Water en stroom zijn hier een gevaarlijke combinatie.',
-    stateChange: {
+    text: '⚡ Alleen uitschakelen als de meterkast nog droog bereikbaar is',
+    consequence: () => state.sealedHome
+      ? 'Je kijkt eerst vanaf de trap. De vloer rond de meterkast is nog droog genoeg. Je gaat snel naar beneden, zet de hoofdschakelaar uit en gaat direct terug naar boven. Zodra daar water staat, blijf je weg van alle elektra beneden.'
+      : 'Je kijkt vanaf de trap en ziet dat er al water bij de meterkast staat. Je blijft weg. Een natte ruimte met elektra is te gevaarlijk; beneden raak je nu geen elektrische apparaten of metalen delen meer aan.',
+    source: { text: 'VDE: betreed nooit een natte ruimte met elektra; check ook lokaal overheid- of netbeheerderadvies', url: 'https://www.vde.com/topics-en/consumer-protection/electronics-flooding' },
+    stateChange: () => state.sealedHome ? {
       cutElectricity: true,
       savedItems: true
-    }
+    } : {}
   }, {
     conditionalOn: () => !state.cutElectricity,
-    text: '⚡💧 Meterkast afsluiten en eten naar boven brengen',
-    consequence: 'Je loopt snel naar beneden, met water tot aan je enkels, en zet de hoofdschakelaar uit. Daarna pak je flessen water, blikjes en crackers en neem je alles mee naar boven. Zo houd je stroom en water gescheiden en heb je eten en drinken dichtbij.',
-    stateChange: {
+    text: '⚡💧 Alleen als droog bereikbaar: stroom uit en proviand mee',
+    consequence: () => state.sealedHome
+      ? 'Je controleert eerst of de route droog is. Dat is nog net zo. Je zet de hoofdschakelaar uit, pakt flessen water, blikjes en crackers en gaat meteen terug naar boven. Je neemt niets meer mee zodra het water de elektra kan raken.'
+      : 'Je ziet dat de route naar de meterkast al nat is. Dan geldt: niet meer naar binnen voor elektra of spullen. Je blijft boven en gebruikt alleen wat je al veilig bij je hebt.',
+    source: { text: 'VDE: betreed nooit een natte ruimte met elektra; check ook lokaal overheid- of netbeheerderadvies', url: 'https://www.vde.com/topics-en/consumer-protection/electronics-flooding' },
+    stateChange: () => state.sealedHome ? {
       cutElectricity: true,
       savedItems: true,
       food: 1
-    }
+    } : {}
   }, ]
 }, {
   id: 'ov_4c',
@@ -592,17 +728,20 @@ const scenes_overstroming = [{
   choices: [{
     text: () => profile.childrenCount === 1 ? '🪟 Samen door het raam kijken en benoemen wat je ziet' : '🪟 Samen door het raam kijken en benoemen wat je ziet',
     consequence: () => profile.childrenCount === 1 ? '"Daar drijft een fiets." "Dat is een reddingsboot." "Dat is de buurman zijn auto." Je kind wijst en benoemt. Het verwerkt door te kijken en te praten. Dat helpt.' : '"Daar drijft een fiets." "Dat is een reddingsboot." "Dat is de buurman zijn auto." De kinderen wijzen en benoemen. Ze verwerken door te kijken en te praten. Dat helpt.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
   }, {
     text: () => profile.childrenCount === 1 ? '🎲 Een spelletje verzinnen of verhaal vertellen om de tijd door te komen' : '🎲 Een spelletje verzinnen of verhaal vertellen om de tijd door te komen',
     consequence: () => profile.childrenCount === 1 ? 'Je begint een verzonnen verhaal over een avonturier die door het water vaart. Je kind gaat liggen en luistert. Even is de wereld kleiner dan de slaapkamer.' : 'Je begint een verzonnen verhaal over een avonturier die door het water vaart. De jongste kruipt naast je, de oudste doet alsof hij niet luistert maar luistert toch. Even is de wereld kleiner dan de slaapkamer.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
   }, {
     text: () => profile.childrenCount === 1 ? '⏳ Je kind zijn gang laten gaan terwijl jij oplet' : '⏳ De kinderen hun gang laten gaan terwijl jij oplet',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     consequence: () => {
       if (state.kidsNoodpakket) {
         return profile.childrenCount === 1 ? 'Je kind speelt rustig. Jij houdt buiten alles in de gaten. Dat werkt vooral omdat het iets heeft om mee te spelen.' : 'De kinderen spelen rustig. Jij houdt buiten alles in de gaten. Dat werkt vooral omdat ze iets hebben om mee te spelen.';
@@ -627,7 +766,7 @@ const scenes_overstroming = [{
     }],
     whatsapp: [],
     nlalert: null,
-    radio: 'Radio 1: Het water stijgt op meerdere plekken tot een uitzonderlijk hoog niveau. Reddingsoperaties zijn gaande. Bel 112 als u hulp nodig heeft. Sluit de meterkast af. Er zijn al meldingen van kortsluiting.'
+    radio: 'Radio 1: Het water stijgt op meerdere plekken tot een uitzonderlijk hoog niveau. Reddingsoperaties zijn gaande. Bel 112 als u hulp nodig heeft. Ga niet een natte ruimte met elektra in. Alleen als de meterkast nog droog en veilig bereikbaar is, kan de stroom uit. Er zijn al meldingen van kortsluiting.'
   },
   get narrative() {
     const mobExtra = profile.playerIsMobilityImpaired
@@ -649,22 +788,21 @@ const scenes_overstroming = [{
     }
   }, {
     conditionalOn: () => !state.cutElectricity,
-    text: '⚡ Alsnog de elektriciteit afsluiten bij de meterkast',
-    consequence: 'Je wacht op het juiste moment en loopt snel naar de meterkast. Beneden staat het water tot je enkels. Je gooit de hoofdschakelaar om. Zo voorkom je kortsluiting.',
-    stateChange: {
-      cutElectricity: true
-    }
+    text: '⚡ Niet meer naar de natte meterkast gaan',
+    consequence: 'Je blijft boven. Beneden staat al water en dan ga je niet meer naar een ruimte met elektra. Je houdt iedereen weg van elektrische apparaten en wacht op hulp of professionele uitschakeling van buitenaf.',
+    source: { text: 'VDE: betreed nooit een natte ruimte met elektra; check ook lokaal overheid- of netbeheerderadvies', url: 'https://www.vde.com/topics-en/consumer-protection/electronics-flooding' },
+    stateChange: {}
   }, {
     conditionalOn: () => !state.cutElectricity,
-    text: '⚡🪟 Elektriciteit afsluiten en een teken geven',
-    consequence: 'Je loopt snel naar beneden, met water tot aan je enkels, en zet de hoofdschakelaar uit. Daarna ga je weer naar boven en hang je een laken uit het raam. Binnen een kwartier ziet een reddingsboot je en noteert je locatie.',
+    text: '⚡🪟 Wegblijven van de meterkast en een teken geven',
+    consequence: 'Je blijft uit de buurt van de natte meterkast en hangt een laken uit het raam. Dat is nu de veiligste combinatie: geen risico op een schok, maar wel zorgen dat hulp je ziet.',
+    source: { text: 'VDE: betreed nooit een natte ruimte met elektra; check ook lokaal overheid- of netbeheerderadvies', url: 'https://www.vde.com/topics-en/consumer-protection/electronics-flooding' },
     stateChange: {
-      cutElectricity: true,
       calledRescue: true
     }
   }, {
     text: '⏳ Afwachten en batterij sparen',
-    consequence: 'Je doet even niets en spaart de batterij. Maar beneden borrelt het water door. Als de meterkast nat wordt, kan het misgaan.',
+    consequence: 'Je doet even niets en spaart de batterij. Wel blijf je uit de buurt van beneden: als daar water bij de elektra komt, raak je niets meer aan en wacht je op hulp.',
     stateChange: {}
   }]
 }, {
@@ -684,6 +822,7 @@ const scenes_overstroming = [{
   choices: [{
     text: '🧯 Blussen met een droog poederbrandblusser',
     consequence: 'Je grijpt de kleine brandblusser naast de keuken. Droog poeder werkt goed bij een elektrische brand. In twee seconden is het vuur uit.',
+    source: { text: 'Brandweer: het juiste blusmiddel', url: 'https://www.brandweer.nl/onderwerpen/het-juiste-blusmiddel/' },
     stateChange: {
       comfort: -1
     }
@@ -762,6 +901,7 @@ const scenes_overstroming = [{
   choices: [{
     text: () => profile.childrenCount === 1 ? '🧸 Geruststellen over de knuffel: "We zorgen straks voor hem"' : '🧸 Jongste geruststellen over de knuffel: "We zorgen straks voor hem"',
     consequence: () => profile.childrenCount === 1 ? '"Hij weet dat we terugkomen," zeg je. "Knuffels zijn dapper." Je kind denkt even na. Dan knikt het. Het helpt om iets te zeggen, ook als je het niet zeker weet.' : '"Hij weet dat we terugkomen," zeg je. "Knuffels zijn dapper." De jongste denkt even na. Dan knikt ze. Het helpt om iets te zeggen, ook als je het niet zeker weet.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
@@ -769,12 +909,14 @@ const scenes_overstroming = [{
     conditionalOn: () => profile.childrenCount > 1,
     text: '🏅 De oudste complimenteren voor het helpen van de vrouw',
     consequence: 'Je pakt zijn hand even vast. "Dat was goed van je." Hij zegt niets, maar je ziet dat het aankomt. In het midden van de chaos heeft hij iemand anders gezien.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
   }, {
     text: '🧘 Zelf rustig blijven zodat de kinderen jouw kalmte voelen',
     consequence: () => profile.childrenCount === 1 ? 'Je ademt rustig en houdt je kind vast. Je zegt niet veel, maar je stem blijft kalm. Kinderen letten sterk op hun ouders. Als jij rustig blijft, helpt dat meteen.' : 'Je ademt rustig en houdt de jongste vast. Je zegt niet veel, maar je stem blijft kalm. Kinderen letten sterk op hun ouders. Als jij rustig blijft, helpt dat meteen. De oudste leunt even tegen je aan.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
@@ -845,7 +987,7 @@ const scenes_overstroming = [{
     return basis + kids + ' Het is tijd om iets te eten.';
   },
   choices: [{
-    conditionalOn: () => !profile.hasGasStove && (state.savedItems || profile.hasKit === 'ja'),
+    conditionalOn: () => profile.hasGasStove !== 'ja' && (state.savedItems || profile.hasKit === 'ja'),
     get text() {
       return profile.hasKit === 'ja' ? '🎒 Noodpakket openmaken en koud eten' : '📦 Blikjes en crackers koud eten';
     },
@@ -863,7 +1005,7 @@ const scenes_overstroming = [{
       food: -1
     }
   }, {
-    conditionalOn: () => profile.hasGasStove && (state.savedItems || state.food > 2),
+    conditionalOn: () => profile.hasGasStove === 'ja' && (state.savedItems || state.food > 2),
     text: '🍲 Gasstelletje aansteken en iets warms koken',
     get consequence() {
       const kids = profile.hasChildren && state.kidsWithYou;
@@ -919,18 +1061,21 @@ const scenes_overstroming = [{
     conditionalOn: () => state.kidsNoodpakket,
     text: '📋 Samen terugkijken op wat goed ging met het plan',
     consequence: () => profile.childrenCount === 1 ? '"Ik wist wat ik moest doen," zegt je kind. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.' : '"We wisten wat we moesten doen," zegt de oudste. "Waarom wist jij dat?" vraag je. "Omdat we het hadden geoefend." Je voelt iets van trots, gemengd met opluchting.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
   }, {
     text: () => profile.childrenCount === 1 ? '🫂 Je kind dicht bij je houden en samen blijven' : '🫂 De jongste dicht bij je houden en samen blijven',
     consequence: () => profile.childrenCount === 1 ? 'Je laat het toe. Je kind blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.' : 'Je laat het toe. De jongste blijft aan je vast. Een vrijwilliger zegt dat dit vaak vanzelf zakt als een kind weer veiligheid voelt. Dat blijkt ook zo te zijn.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
   }, {
     text: () => profile.childrenCount === 1 ? '💬 Uitleggen dat het hier veilig is en dat je niet weggaat' : '💬 Jongste uitleggen dat het hier veilig is en dat je niet weggaat',
     consequence: () => profile.childrenCount === 1 ? '"Ik ga niet weg. We zijn hier samen en het is veilig." Je kind kijkt je aan. Het gelooft het half. Maar de greep wordt iets losser.' : '"Ik ga niet weg. We zijn hier samen en het is veilig." De jongste kijkt je aan. Het gelooft het half. Maar de greep wordt iets losser.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
@@ -938,12 +1083,14 @@ const scenes_overstroming = [{
     conditionalOn: () => !state.kidsNoodpakket && profile.childrenCount > 1,
     text: '🎮 De oudste laten spelen, dat is zijn manier van verwerken',
     consequence: 'Een vrijwilliger fluistert: "Laat maar. Spelen is hoe kinderen stress verwerken. Het is in orde." Je stopt met tegenhouden. Dat voelt beter.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
   }, {
     text: '🤝 Met andere ouders vergelijken hoe hun kinderen reageren',
     consequence: '"Die van mij laat me geen seconde los," zeg jij. "Die van mij rent al een uur rond," zegt een vader. "Allebei normaal," zegt een vrijwilliger. Dat helpt.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
@@ -1180,10 +1327,17 @@ const scenes_overstroming = [{
     nlalert: null,
     radio: null
   },
-  narrative: 'Je mag kort terug de woning in om schade vast te leggen en noodzakelijke spullen te halen. Het ruikt naar modder en riool. Alles is nat. Overnachten of alles opruimen is nog niet verstandig.',
+  get narrative() {
+    if (state.evacuatedFlood) {
+      return 'Je mag kort terug de woning in om schade vast te leggen en noodzakelijke spullen te halen. Het ruikt naar modder en riool. Alles is nat. Overnachten of alles opruimen is nog niet verstandig.';
+    }
+    return 'Je bent al thuis en loopt nog eens rustig door de woning om schade vast te leggen en noodzakelijke spullen apart te zetten. Het ruikt naar modder en riool. Alles is nat. Overnachten of alles opruimen is nog niet verstandig.';
+  },
   choices: [{
     text: '📦 Alleen noodzakelijke spullen meenemen',
-    consequence: 'Je pakt medicijnen, paspoorten en kleding voor een paar dagen. Alles wat je nu niet echt nodig hebt laat je staan. Het huis moet eerst gekeurd worden voor je echt terugkeert.',
+    consequence: () => state.evacuatedFlood
+      ? 'Je pakt medicijnen, paspoorten en kleding voor een paar dagen. Alles wat je nu niet echt nodig hebt laat je staan. Het huis moet eerst gekeurd worden voor je echt terugkeert.'
+      : 'Je pakt medicijnen, paspoorten en kleding voor een paar dagen. Alles wat je nu niet echt nodig hebt laat je staan. Ook al ben je al thuis, het huis moet eerst gekeurd worden voordat je het weer normaal kunt gebruiken.',
     stateChange: {
       savedItems: true,
       comfort: 1
@@ -1196,7 +1350,9 @@ const scenes_overstroming = [{
     }
   }, {
     text: '⚡ Keuring regelen voordat je echt terugkomt',
-    consequence: 'Je belt de netbeheerder en een installateur. Elektra en gas moeten professioneel gecontroleerd worden voor gebruik. Je noteert wat er moet gebeuren en verlaat daarna de woning weer.',
+    consequence: () => state.evacuatedFlood
+      ? 'Je belt de netbeheerder en een installateur. Elektra en gas moeten professioneel gecontroleerd worden voor gebruik. Je noteert wat er moet gebeuren en verlaat daarna de woning weer.'
+      : 'Je belt de netbeheerder en een installateur. Elektra en gas moeten professioneel gecontroleerd worden voor gebruik. Je noteert wat er moet gebeuren en gebruikt de woning daarna nog steeds niet alsof alles al normaal is.',
     stateChange: {}
   }]
 }];
@@ -1214,6 +1370,7 @@ const sceneImages_overstroming = {
   ov_2b: 'afbeelding/overstroming/overstroming_straat.webp',
   ov_2c: 'afbeelding/overstroming/overstroming_straat.webp',
   ov_3:  'afbeelding/overstroming/overstroming_wijk.webp',
+  ov_3a: 'afbeelding/overstroming/overstroming_wijk.webp',
   ov_3c: 'afbeelding/overstroming/overstroming_wijk.webp',
   ov_4b: 'afbeelding/overstroming/overstroming_wijk.webp',
   ov_4c: 'afbeelding/overstroming/auto_water.webp',

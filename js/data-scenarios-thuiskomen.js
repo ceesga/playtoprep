@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Onderweg naar huis
 // Meerdere routevarianten — van tk_1 (kantoor) tot tk_6 (thuis)
@@ -7,10 +8,10 @@
 // ─── ONDERWEG NAAR HUIS SCENARIO ─────────────────────────────────────────────
 const THUIS_KOMEN_VISUALS = {
   office: 'afbeelding/stroomstoring_onderweg/kantoor.webp',
-  walking: 'afbeelding/stroomstoring_onderweg/voetganger.webp',
+  walking: 'afbeelding/stroomstoring_onderweg/voetganger.png',
   bike: 'afbeelding/stroomstoring_onderweg/fietspad.webp',
   bus: 'afbeelding/stroomstoring_onderweg/busstation.webp',
-  train: 'afbeelding/stroomstoring_onderweg/treinstation.webp',
+  train: 'afbeelding/stroomstoring_onderweg/treinstation.png',
   car: 'afbeelding/stroomstoring_onderweg/auto_snelweg.webp',
   home: 'afbeelding/stroomstoring/huis_winter_1.webp'
 };
@@ -77,6 +78,7 @@ const scenes_thuis_komen = [{
   choices: []
 }, {
   id: 'tk_1',
+    _w: 'PTP-NL-©2026-4vH8rZ',
   time: '11:57',
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Werk',
@@ -572,7 +574,7 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Onderweg',
   dayBadgeClass: '',
-  conditionalOn: () => !state.reachedHome && !state.arriveHomeAt1743 && !state.travelingWithMartijn && !(state.travelMode === 'walking' && profile.commuteDistance === 'far'),
+  conditionalOn: () => !state.reachedHome && !state.travelingWithMartijn && !(state.travelMode === 'walking' && profile.commuteDistance === 'far'),
   get visuals() {
     return {
       image: thuisKomenTravelImage(state.travelMode)
@@ -716,8 +718,9 @@ const scenes_thuis_komen = [{
       reachedHome: true
     }
   }, {
-    text: '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
-    consequence: 'Je loopt een rustige ronde door het huis. Alles is in orde. De kaarsjes staan veilig en het gas is dicht.',
+    text: '🏠 Huis controleren en kaarsen veilig neerzetten',
+    consequence: 'Je loopt een rustige ronde door het huis. Alles voelt rustig en veilig. De kaarsjes staan stabiel, en je lucht even door waar nodig.',
+    source: { text: 'Brandweer: gebruik kaarsen veilig en zorg voor voldoende ventilatie', url: 'https://www.brandweer.nl/onderwerpen/veilig-en-warm-de-winter-door/' },
     stateChange: {
       reachedHome: true
     },
@@ -833,8 +836,9 @@ const scenes_thuis_komen = [{
       reachedHome: true
     }
   }, {
-    text: '🏠 Huis controleren, gas, kaarsjes en ramen nalopen',
-    consequence: 'Je loopt door het huis. Alles is in orde. De kaarsjes staan veilig in houders en het gas is dicht.',
+    text: '🏠 Huis controleren en kaarsen veilig neerzetten',
+    consequence: 'Je loopt door het huis. Alles voelt rustig en veilig. De kaarsjes staan stevig in houders en je lucht even door waar nodig.',
+    source: { text: 'Brandweer: gebruik kaarsen veilig en zorg voor voldoende ventilatie', url: 'https://www.brandweer.nl/onderwerpen/veilig-en-warm-de-winter-door/' },
     stateChange: {
       reachedHome: true
     },

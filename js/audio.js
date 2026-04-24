@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Audio — Geluidseffecten, ambient loops en radio
 // Bevat: clock tick, audioEnabled toggle, Ambience (loops),

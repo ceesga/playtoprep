@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keuze-boom — Bosbrand · PlayToPrep</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #0b1520;
+  color: #dde4ed;
+  padding: 40px 24px 80px;
+  min-height: 100vh;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.page-header h1 {
+  font-size: 1.4rem;
+  color: #7ab8e8;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+.page-header p {
+  font-size: 0.82rem;
+  color: #5a7080;
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 44px;
+  font-size: 0.76rem;
+  color: #7a8a98;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; }
+.legend-box {
+  width: 32px;
+  height: 15px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.lb-scene     { background: #162e4a; border: 1.5px solid #4a8abf; }
+.lb-keuze     { background: #102a12; border: 1.5px solid #3a7a3a; }
+.lb-cond      { background: #2e1a00; border: 1.5px solid #a06020; }
+.lb-condscene { background: #2e1000; border: 1.5px solid #b03808; }
+
+#scroll-wrap {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+#tree {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: max-content;
+  padding: 0 60px 20px;
+}
+
+#svg-layer {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+
+/* -- Scene level -------------------------------------------------------- */
+.level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+.level:first-child { padding-top: 0; }
+.level:not(:first-child) { padding-top: 50px; }
+
+.scene-node {
+  background: #162e4a;
+  border: 2px solid #4a8abf;
+  border-radius: 10px;
+  padding: 12px 24px;
+  text-align: center;
+  min-width: 210px;
+  max-width: 310px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.45);
+}
+.scene-node.cond-scene {
+  background: #2c1000;
+  border-color: #b03808;
+}
+
+.scene-id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.66rem;
+  color: #4a8abf;
+  letter-spacing: 0.06em;
+  margin-bottom: 3px;
+}
+.cond-scene .scene-id { color: #b03808; }
+
+.scene-time {
+  font-size: 0.68rem;
+  color: #4a6070;
+  margin-bottom: 4px;
+}
+
+.scene-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #e0e8f0;
+  line-height: 1.3;
+}
+
+.scene-condnote {
+  margin-top: 6px;
+  font-size: 0.67rem;
+  color: #b03808;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.scene-auto {
+  margin-top: 5px;
+  font-size: 0.67rem;
+  color: #3a5a6a;
+  font-style: italic;
+}
+
+/* -- Choice row --------------------------------------------------------- */
+.choice-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  position: relative;
+  z-index: 1;
+}
+
+.choice-card {
+  background: #102a12;
+  border: 1.5px solid #3a7a3a;
+  border-radius: 8px;
+  padding: 9px 11px;
+  width: 152px;
+  flex-shrink: 0;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  text-align: center;
+  color: #90c090;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+}
+.choice-card.cond {
+  background: #2c1800;
+  border-color: #a06020;
+  color: #c09860;
+}
+
+.cond-tag {
+  display: block;
+  margin-top: 7px;
+  padding-top: 6px;
+  border-top: 1px solid #3a2a10;
+  font-size: 0.62rem;
+  color: #906030;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+/* -- Rapport ------------------------------------------------------------ */
+.rapport-level {
+  padding-top: 50px;
+  position: relative;
+  z-index: 1;
+}
+.rapport-node {
+  background: #1e1030;
+  border: 2px solid #6030a8;
+  border-radius: 10px;
+  padding: 13px 42px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #a880d8;
+  letter-spacing: 0.03em;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.45);
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Keuze-boom — Bosbrand</h1>
+  <p>Een warme droge zomer &nbsp;·&nbsp; Vrijdag 13 aug → Zondag 15 aug 2027 &nbsp;·&nbsp; PlayToPrep</p>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-box lb-scene"></div>Scene</div>
+  <div class="legend-item"><div class="legend-box lb-keuze"></div>Keuze — altijd zichtbaar</div>
+  <div class="legend-item"><div class="legend-box lb-cond"></div>Keuze — conditioneel (profiel)</div>
+  <div class="legend-item"><div class="legend-box lb-condscene"></div>Scène — conditioneel (kan worden overgeslagen)</div>
+</div>
+
+<div id="scroll-wrap">
+  <div id="tree">
+    <svg id="svg-layer"></svg>
+  </div>
+</div>
+
+<script>
+const SCENES = [
+  {
+    id: 'bf_0', time: 'Vrijdag 13 aug · 16:00', title: 'Vrijdagmiddag — KNMI-waarschuwing',
+    choices: [
+      { text: '🌅 Eindelijk weekend' }
+    ]
+  },
+  {
+    id: 'bf_0b', time: 'Zaterdag 14 aug · 08:30', title: 'Brandrook ruiken in de ochtend',
+    choices: [
+      { text: '🎒 Noodtas klaarzetten voor het geval dat' },
+      { text: '🔍 Naar buiten — waar komt de geur vandaan?' },
+      { text: '📱 Kijken of er al iets gemeld is' },
+      { text: '🌿 Brandbaar materiaal rondom huis weghalen' },
+      { text: '🙈 Negeren — zal wel meevallen' }
+    ]
+  },
+  {
+    id: 'bf_1', time: 'Zaterdag 14 aug · 09:00', title: 'Rookpluim aan de horizon',
+    choices: [
+      { text: '📱 Nieuws checken — wat is er aan de hand?' },
+      { text: '🙈 Rookpluim negeren — loopt wel los' }
+    ]
+  },
+  {
+    id: 'bf_2', time: 'Zaterdag 14 aug · 10:15', title: 'Evacuatie kan meer voorbereiding vragen',
+    choices: [
+      { text: '🎒 Alvast tas inpakken — voor het geval dat' },
+      { text: '📱 Familie en vrienden informeren' }
+    ]
+  },
+  {
+    id: 'bf_2b', time: 'Zaterdag 14 aug · 11:00', title: 'Meer tijd nodig om te vertrekken',
+    choices: [
+      { text: '🚗 Nu zelf vertrekken — niet wachten' },
+      { text: '📻 Wachten op officieel bericht via radio' },
+      { text: '🏘️ Buren waarschuwen voor je vertrekt' }
+    ]
+  },
+  {
+    id: 'bf_2c', time: 'Zaterdag 14 aug · 11:15', title: 'Kind staat buiten bij het hek',
+    conditional: true,
+    condNote: 'Overgeslagen als: geen kinderen, of al vroeg geëvacueerd',
+    choices: [
+      { text: '🚶 Naar buiten gaan, naast kind staan' },
+      { text: '📢 Naar buiten en kind naar binnen roepen' }
+    ]
+  },
+  {
+    id: 'bf_2d', time: 'Zaterdag 14 aug · 11:20', title: 'Rook hangt nu ook in huis',
+    conditional: true,
+    condNote: 'Overgeslagen als: geen kinderen, of kind niet bij je',
+    choices: [
+      { text: '💬 Stoppen en rustig uitleggen wat er aan de hand is' }
+    ]
+  },
+  {
+    id: 'bf_3', time: 'Zaterdag 14 aug · 11:30', title: 'Evacuatiebevel — 15 minuten',
+    conditional: true,
+    condNote: 'Overgeslagen als: al vroeg zelf geëvacueerd',
+    choices: [
+      { text: '📄 Paspoort, medicijnen en oplader — snel' },
+      { text: '⚡ Nu direct weg, niets meenemen' },
+      { text: '🐕 Eerst huisdier veiligstellen', cond: 'Heeft huisdier + nog niet veiliggesteld' },
+      { text: '💎 Waardevolle spullen inpakken' }
+    ]
+  },
+  {
+    id: 'bf_3c', time: 'Zaterdag 14 aug · 12:00', title: 'Auto staat klaar',
+    conditional: true,
+    condNote: 'Overgeslagen als: geen kinderen bij je, of al vroeg geëvacueerd',
+    choices: [
+      { text: '📋 Herinneren aan het vaste gezinsplan' }
+    ]
+  },
+  {
+    id: 'bf_4', time: 'Zaterdag 14 aug · 12:00', title: 'Hoe ga je weg?',
+    choices: [
+      { text: '🚗 Met de auto', cond: 'Heeft auto, fiets of scooter' },
+      { text: '🚲 Met de fiets of scooter', cond: 'Heeft fiets of scooter' },
+      { text: '🚶 Te voet — 3 kilometer', cond: 'Niet slecht ter been' },
+      { text: '🆘 Hulp vragen — zelf lukt dit niet', cond: 'Slecht ter been' }
+    ]
+  },
+  {
+    id: 'bf_4a', time: 'Zaterdag 14 aug · 12:05', title: 'Welke route neem je?',
+    conditional: true,
+    condNote: 'Overgeslagen als: te voet of hulp ingeroepen',
+    choices: [
+      { text: '🛣️ Dwars op brand, naar openbare weg' },
+      { text: '🌲 Kortste route langs de bosrand' },
+      { text: '➡️ In dezelfde richting blijven vluchten' }
+    ]
+  },
+  {
+    id: 'bf_4b', time: 'Zaterdag 14 aug · 12:15', title: 'File op de evacuatieroute',
+    conditional: true,
+    condNote: 'Overgeslagen als: niet met de auto',
+    choices: [
+      { text: '📻 Radio aanhouden, hoofdroute volgen' },
+      { text: '🔀 Omrijden via alternatieve route' },
+      { text: '🚶 Auto laten staan en te voet verder' }
+    ]
+  },
+  {
+    id: 'bf_4c', time: 'Zaterdag 14 aug · 12:30', title: 'Met de fiets op de hoofdweg',
+    conditional: true,
+    condNote: 'Overgeslagen als: niet met de fiets',
+    choices: [
+      { text: '🔀 Omrijden via de doorgaande weg' },
+      { text: '🚶 Fiets laten staan, stuk te voet' },
+      { text: '😤 Doorrijden, bijna er' }
+    ]
+  },
+  {
+    id: 'bf_4d', time: 'Zaterdag 14 aug · 12:30', title: 'Te voet — rook hangt laag',
+    conditional: true,
+    condNote: 'Overgeslagen als: niet te voet',
+    choices: [
+      { text: '🧣 Natte doek voor de mond, rustig aan' },
+      { text: '🚶 Stevig doorlopen, kop naar beneden' },
+      { text: '🚗 Lift vragen aan langsrijdende auto' }
+    ]
+  },
+  {
+    id: 'bf_4f', time: 'Zaterdag 14 aug · 12:35', title: 'Evacuatiebus rijdt de straat in',
+    conditional: true,
+    condNote: 'Overgeslagen als: geen geassisteerde evacuatie aangevraagd',
+    choices: [
+      { text: '🚌 Meteen instappen en instructies volgen' },
+      { text: '🤝 Eerst andere wachtende helpen instappen' }
+    ]
+  },
+  {
+    id: 'bf_4e', time: 'Zaterdag 14 aug · 12:45', title: 'Kind hoest — rook wordt dikker',
+    conditional: true,
+    condNote: 'Overgeslagen als: geen kinderen, of kind niet bij je',
+    choices: [
+      { text: '🧣 Shirt als filter — uitleggen hoe te ademen' },
+      { text: '🏃 Doorgaan, hand pakken en doorlopen' },
+      { text: '💬 Even stoppen, rustig uitleggen — bijna er' }
+    ]
+  },
+  {
+    id: 'bf_5', time: 'Zaterdag 14 aug · 13:30', title: 'Noodopvang — sporthal stampvol',
+    choices: [
+      { text: '📋 Registreren bij de gemeente' },
+      { text: '📱 Eerst familie bellen' },
+      { text: '🛏️ Snel slaapplek claimen' }
+    ]
+  },
+  {
+    id: 'bf_5f', time: 'Zaterdag 14 aug · 13:45', title: 'Kind grijpt je hand vast',
+    conditional: true,
+    condNote: 'Overgeslagen als: geen kinderen, of kind niet bij je',
+    choices: [
+      { text: '🎒 Rugzakje samen openmaken', cond: 'Kind heeft noodpakket' },
+      { text: '🗺️ Samen de hal verkennen en plek zoeken' },
+      { text: '💬 Rustig zitten en uitleggen wat er nu gaat gebeuren' }
+    ]
+  },
+  {
+    id: 'bf_5b', time: 'Zaterdag 14 aug · 15:00', title: 'Wachten in de noodopvang',
+    choices: [
+      { text: '🍞 In de rij voor eten en drinken' },
+      { text: '🔌 Stopcontact zoeken, oplader lenen' },
+      { text: '👵 Iemand anders helpen' },
+      { text: '🛏️ Slaapplek regelen voor de nacht' }
+    ]
+  },
+  {
+    id: 'bf_5c', time: 'Zaterdag 14 aug · 15:30', title: 'Buurman Kevin is ook hier',
+    conditional: true,
+    condNote: 'Overgeslagen als: buurman Kevin niet eerder gewaarschuwd',
+    choices: [
+      { text: '🤝 Blij zijn dat hij veilig is' },
+      { text: '😌 Niets bijzonders — iedereen had dat gedaan' }
+    ]
+  },
+  {
+    id: 'bf_5d', time: 'Zaterdag 14 aug · 18:00', title: 'Avond in de sporthal',
+    choices: [
+      { text: '📻 Nieuws volgen via iemands radio' },
+      { text: '💬 Gesprek met andere evacuees' },
+      { text: '😴 Proberen te slapen' }
+    ]
+  },
+  {
+    id: 'bf_5g', time: 'Zaterdag 14 aug · 18:30', title: 'Kind ruikt nog naar rook',
+    conditional: true,
+    condNote: 'Overgeslagen als: geen kinderen, of kind niet bij je',
+    choices: [
+      { text: '💬 Eerlijk antwoorden op de vraag van je kind' },
+      { text: '🤫 Naast kind gaan zitten zonder veel te zeggen' }
+    ]
+  },
+  {
+    id: 'bf_6', time: 'Zondag 15 aug · 09:00', title: 'Ochtend na — mag je terug?',
+    choices: [
+      { text: '📋 Wachten op officieel sein veilig' },
+      { text: '⏳ Nog even wachten — situatie onduidelijk' }
+    ]
+  },
+  {
+    id: 'bf_6b', time: 'Zondag 15 aug · 10:00', title: 'Kind loopt mee de straat in',
+    conditional: true,
+    condNote: 'Overgeslagen als: geen kinderen, of kind niet bij je',
+    choices: [
+      { text: '💬 Eerlijk antwoorden waarom ons huis er nog staat' },
+      { text: '🤫 Naast kind lopen en even zwijgen' }
+    ]
+  },
+  {
+    id: 'bf_7', time: 'Zondag 15 aug · 11:00', title: 'Terug thuis — geur van as',
+    choices: [
+      { text: '🏠 Woning inspecteren — buiten dan binnen' },
+      { text: '📸 Schade fotograferen voor de verzekering' },
+      { text: '🤝 Buren helpen met meer schade' }
+    ]
+  }
+];
+
+// -- Build DOM ------------------------------------------------------------
+function buildTree() {
+  const tree = document.getElementById('tree');
+
+  SCENES.forEach(scene => {
+    const level = document.createElement('div');
+    level.className = 'level';
+    level.dataset.id = scene.id;
+
+    const node = document.createElement('div');
+    node.className = 'scene-node' + (scene.conditional ? ' cond-scene' : '');
+    node.dataset.role = 'scene';
+    node.innerHTML =
+      `<div class="scene-id">${scene.id}</div>` +
+      `<div class="scene-time">${scene.time}</div>` +
+      `<div class="scene-title">${scene.title}</div>` +
+      (scene.condNote ? `<div class="scene-condnote">⚠️ ${scene.condNote}</div>` : '') +
+      (scene.auto    ? `<div class="scene-auto">${scene.auto}</div>` : '');
+    level.appendChild(node);
+
+    if (scene.choices && scene.choices.length) {
+      const row = document.createElement('div');
+      row.className = 'choice-row';
+      row.dataset.role = 'choices';
+      scene.choices.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'choice-card' + (c.cond ? ' cond' : '');
+        card.innerHTML = c.text + (c.cond ? `<span class="cond-tag">⚠️ ${c.cond}</span>` : '');
+        row.appendChild(card);
+      });
+      level.appendChild(row);
+    }
+
+    tree.appendChild(level);
+  });
+
+  const rapDiv = document.createElement('div');
+  rapDiv.className = 'rapport-level';
+  rapDiv.dataset.role = 'rapport';
+  rapDiv.innerHTML = '<div class="rapport-node">📋 RAPPORT</div>';
+  tree.appendChild(rapDiv);
+}
+
+// -- Draw SVG connections -------------------------------------------------
+function drawLines() {
+  const svg    = document.getElementById('svg-layer');
+  const tree   = document.getElementById('tree');
+
+  svg.style.width  = tree.scrollWidth  + 'px';
+  svg.style.height = tree.scrollHeight + 'px';
+  svg.setAttribute('width',  tree.scrollWidth);
+  svg.setAttribute('height', tree.scrollHeight);
+  svg.innerHTML = '';
+
+  function posEl(el) {
+    let left = 0, top = 0;
+    let e = el;
+    while (e && e !== tree) {
+      left += e.offsetLeft;
+      top  += e.offsetTop;
+      e = e.offsetParent;
+    }
+    return {
+      tcx: left + el.offsetWidth / 2,
+      tcy: top,
+      bcx: left + el.offsetWidth / 2,
+      bcy: top + el.offsetHeight,
+      w: el.offsetWidth,
+      h: el.offsetHeight
+    };
+  }
+
+  function pos(el) { return posEl(el); }
+
+  function bezier(x1, y1, x2, y2, col, w, op) {
+    const dy = Math.abs(y2 - y1);
+    const cp = dy * 0.55;
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', `M ${x1} ${y1} C ${x1} ${y1+cp}, ${x2} ${y2-cp}, ${x2} ${y2}`);
+    p.setAttribute('stroke', col);
+    p.setAttribute('stroke-width', w || 1.5);
+    p.setAttribute('fill', 'none');
+    p.setAttribute('opacity', op || 1);
+    return p;
+  }
+
+  function dot(cx, cy, r, fill) {
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', cx);
+    c.setAttribute('cy', cy);
+    c.setAttribute('r',  r);
+    c.setAttribute('fill', fill);
+    return c;
+  }
+
+  const levels  = [...tree.querySelectorAll('.level')];
+  const rapport = tree.querySelector('.rapport-level .rapport-node');
+
+  levels.forEach((level, i) => {
+    const sceneEl   = level.querySelector('.scene-node');
+    const choiceEls = [...(level.querySelectorAll('.choice-card') || [])];
+    const isCondScene = sceneEl.classList.contains('cond-scene');
+    const sceneLineColor = isCondScene ? '#b03808' : '#3a6e9e';
+
+    const sp = pos(sceneEl);
+    svg.appendChild(dot(sp.bcx, sp.bcy, 3.5, sceneLineColor));
+
+    if (choiceEls.length === 0) {
+      const nextAnchor = nextTopAnchor(i, levels, rapport);
+      if (nextAnchor) {
+        svg.appendChild(bezier(sp.bcx, sp.bcy, nextAnchor.x, nextAnchor.y, sceneLineColor, 1.5, 0.5));
+      }
+      return;
+    }
+
+    choiceEls.forEach(card => {
+      const isCond = card.classList.contains('cond');
+      const lineCol = isCond ? '#8a5018' : '#2a6a3a';
+      const cp = pos(card);
+      svg.appendChild(bezier(sp.bcx, sp.bcy, cp.tcx, cp.tcy, lineCol, 1.5, 0.85));
+      svg.appendChild(dot(cp.tcx, cp.tcy, 2.5, isCond ? '#a06020' : '#3a7a3a'));
+    });
+
+    const nextAnchor = nextTopAnchor(i, levels, rapport);
+    if (nextAnchor) {
+      svg.appendChild(dot(nextAnchor.x, nextAnchor.y, 3.5,
+        nextAnchor.isRapport ? '#6030a8' : (nextAnchor.isCond ? '#b03808' : '#3a6e9e')));
+
+      choiceEls.forEach(card => {
+        const cp = pos(card);
+        svg.appendChild(bezier(cp.bcx, cp.bcy, nextAnchor.x, nextAnchor.y, '#2a4a6a', 1.5, 0.5));
+      });
+    }
+  });
+}
+
+function nextTopAnchor(currentIdx, levels, rapport) {
+  if (currentIdx < levels.length - 1) {
+    const nextScene = levels[currentIdx + 1].querySelector('.scene-node');
+    const isCondScene = nextScene.classList.contains('cond-scene');
+    const p = posEl(nextScene);
+    return { x: p.tcx, y: p.tcy, isCond: isCondScene };
+  }
+  if (rapport) {
+    const p = posEl(rapport);
+    return { x: p.tcx, y: p.tcy, isRapport: true };
+  }
+  return null;
+}
+
+function posEl(el) {
+  const tree = document.getElementById('tree');
+  let left = 0, top = 0;
+  let e = el;
+  while (e && e !== tree) {
+    left += e.offsetLeft;
+    top  += e.offsetTop;
+    e = e.offsetParent;
+  }
+  return {
+    tcx: left + el.offsetWidth / 2,
+    tcy: top,
+    bcx: left + el.offsetWidth / 2,
+    bcy: top + el.offsetHeight
+  };
+}
+
+function pos(el) { return posEl(el); }
+
+buildTree();
+requestAnimationFrame(() => requestAnimationFrame(drawLines));
+window.addEventListener('resize', drawLines);
+</script>
+</body>
+</html>

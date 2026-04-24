@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Vervuild drinkwater — "Bruin water uit de kraan"
 // 8 scènes — van wd_0 (13:10) tot wd_7 (20:30)
@@ -49,6 +50,7 @@ const scenes_drinkwater = [{
   }, {
     text: '📱 Online zoeken wat er aan de hand is',
     consequence: 'Op de website van Vitens staat een kort bericht: meldingen van troebel kraanwater, oorzaak wordt onderzocht. De gemeente verwijst naar dezelfde pagina. Er is nog geen kookadvies, maar het advies is voorzichtig te zijn.',
+    source: { text: 'Vitens: bij bruin water of een storing vind je de actuele informatie via storingen en werkzaamheden', url: 'https://www.vitens.nl/Service/FAQ-actuele-storingen-en-werkzaamheden' },
     stateChange: {
       awarenessLevel: 1
     }
@@ -59,6 +61,7 @@ const scenes_drinkwater = [{
   }]
 }, {
   id: 'wd_1',
+    _w: 'PTP-NL-©2026-4vH8rZ',
   time: '13:35',
   date: 'Dinsdag 15 april 2025',
   dayBadge: 'Dag 1',
@@ -111,6 +114,7 @@ const scenes_drinkwater = [{
   }, {
     text: '💧 Alleen water koken voor wat je nu direct nodig hebt',
     consequence: 'Je zet een pan water op, genoeg voor een kop thee en iets te drinken. Niet meer dan dat. Je houdt de voorraad klein en makkelijk te beheren.',
+    source: { text: 'Vitens: kook water 3 minuten voor drinken, tandenpoetsen en eten of drinken bereiden', url: 'https://www.vitens.nl/Storing-en-onderhoud/Kookadvies-drinkwater' },
     stateChange: {}
   }, {
     text: '⏳ Eerst afwachten tot er meer nieuws is',
@@ -184,6 +188,7 @@ const scenes_drinkwater = [{
   choices: [{
     text: '📱 Alleen officiële updates blijven volgen',
     consequence: 'De website van Vitens is duidelijk: het advies geldt tot er een nieuw bericht is. Je deelt dat kort in de buurtapp. Een paar mensen reageren dankbaar.',
+    source: { text: 'Vitens: een kookadvies blijft gelden tot je een nieuw officieel bericht krijgt', url: 'https://www.vitens.nl/Storing-en-onderhoud/Kookadvies-drinkwater' },
     stateChange: {
       followedOfficialAdvice: true
     }
@@ -191,6 +196,7 @@ const scenes_drinkwater = [{
     text: '💬 In de buurtapp delen dat iedereen het officiële bericht moet afwachten',
     consequence: 'Je typt een kort berichtje in de buurtapp: "Kookadvies geldt nog steeds, ook al ziet het water er beter uit. Wacht op bericht van Vitens." Meerdere mensen reageren met een duim omhoog.',
     cat: 'cat-social',
+    source: { text: 'Vitens: een kookadvies blijft gelden tot je een nieuw officieel bericht krijgt', url: 'https://www.vitens.nl/Storing-en-onderhoud/Kookadvies-drinkwater' },
     stateChange: {
       followedOfficialAdvice: true
     }

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Channel Manager — Nieuws, berichten en radio-kanalen
 // Bevat: newsLog/waLog globals, unreadCounts,
