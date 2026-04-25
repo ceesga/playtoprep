@@ -320,7 +320,10 @@ function show(id) {
 
   // Verberg kaartachtergrond en schaduw tijdens scenario (fixed overlay is transparant)
   const card = document.getElementById('main-content');
-  if (card) card.classList.toggle('scenario-active', id === 's-scenario');
+  if (card) {
+    card.classList.toggle('scenario-active', id === 's-scenario');
+    card.classList.toggle('start-active', id === 's-start');
+  }
 
   // Rugzakknop verborgen op startpagina en rapportpagina
   const invToggle = document.getElementById('scenario-inventory');
@@ -390,7 +393,9 @@ function show(id) {
     let bgUrl = isApartment
       ? 'afbeelding/algemeen/appartement_zomer.webp'
       : 'afbeelding/algemeen/huis_normaal.webp';
-    if (id === 's-intake') {
+    if (id === 's-start') {
+      bgUrl = 'afbeelding/algemeen/startpagina.webp';
+    } else if (id === 's-intake') {
       bgUrl = 'afbeelding/algemeen/woonkamer_normaal.webp';
     } else if (id === 's-prep') {
       bgUrl = isApartment

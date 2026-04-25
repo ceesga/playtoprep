@@ -20,6 +20,7 @@ const PRECACHE = [
   '/js/bundle.min.js',
 
   // Algemene afbeeldingen (zichtbaar vóór scenariokeuze)
+  '/afbeelding/algemeen/startpagina.webp',
   '/afbeelding/algemeen/appartement_zomer.webp',
   '/afbeelding/algemeen/backpack.webp',
   '/afbeelding/algemeen/golden_force_shield.webp',

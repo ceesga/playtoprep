@@ -582,7 +582,57 @@ p.sub {
 }
 
 #s-start {
-  padding:64px 32px 24px;
+  padding:0 32px 24px;
+}
+
+#s-start .start-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(3rem, 10vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: left;
+  text-shadow: none;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+#s-start .start-title-l1 { color: #fff; }
+#s-start .start-title-l2 { color: #f97316; }
+#s-start .start-title:focus { outline: none; }
+
+#s-start .start-subtitle {
+  font-size: 1.1rem;
+  color: #fff;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+#s-start .start-credits {
+  border-top-color: rgba(255,255,255,.2);
+}
+
+#s-start .start-credits-label,
+#s-start .start-credits-sep {
+  color: rgba(255,255,255,.6);
+}
+
+/* ── START SCREEN ── */
+
+/* Kaart volledig transparant op de startpagina — achtergrondafbeelding schijnt door */
+.card.start-active {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ── UITLEG SCREEN — zelfde achtergrond als startpagina ── */
+
+body:has(#s-uitleg.active) #bg-layer-a {
+  background-image: url('afbeelding/algemeen/startpagina.webp') !important;
+  opacity: 1 !important;
 }
 
 /* ── SCENARIO SCREEN ── */
@@ -5098,7 +5148,9 @@ a:focus-visible {
   margin: 0 auto 28px;
   border-radius: 24px;
   overflow: hidden;
-  background: #fff;
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 25px 50px -12px rgba(0,0,0,.25);
   border: 1px solid rgba(255,255,255,.4);
 }
@@ -5115,7 +5167,7 @@ a:focus-visible {
   text-align: center;
   border-bottom: 3px solid transparent;
   border-image: linear-gradient(to right,#3b82f6,#2563eb) 1;
-  background: #fff;
+  background: transparent;
 }
 
 .start-menu-topbar svg {
