@@ -8,10 +8,10 @@
 // ─── ONDERWEG NAAR HUIS SCENARIO ─────────────────────────────────────────────
 const THUIS_KOMEN_VISUALS = {
   office: 'afbeelding/stroomstoring_onderweg/kantoor.webp',
-  walking: 'afbeelding/stroomstoring_onderweg/voetganger.png',
+  walking: 'afbeelding/stroomstoring_onderweg/voetganger.webp',
   bike: 'afbeelding/stroomstoring_onderweg/fietspad.webp',
   bus: 'afbeelding/stroomstoring_onderweg/busstation.webp',
-  train: 'afbeelding/stroomstoring_onderweg/treinstation.png',
+  train: 'afbeelding/stroomstoring_onderweg/treinstation.webp',
   car: 'afbeelding/stroomstoring_onderweg/auto_snelweg.webp',
   home: 'afbeelding/stroomstoring/huis_winter_1.webp'
 };

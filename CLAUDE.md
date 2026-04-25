@@ -74,6 +74,7 @@ Er is geen auto-advance timer. Verwijder of voeg deze niet toe.
 - Gebruik `conditionalOn` consequent voor keuzes die niet voor alle spelers relevant zijn (profiel én state).
 - **Pas `architecture.md` bij** als je iets aan de architectuur verandert.
 - **Pas de keuze-boom bij** als je een scenario aanpast (scenes, keuzes of condities toevoegt, verwijdert of hernoemt). De bomen staan in `docs/keuze-boom-{scenario}.html` — één bestand per scenario.
+- **Voer `./build.sh` uit** na elke wijziging in een JS-bestand. De browser laadt `js/bundle.min.js`; zonder rebuild zijn JS-wijzigingen niet zichtbaar.
 
 ---
 

@@ -1,75 +1,84 @@
-const CACHE_VERSION = 'v2';
+// Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
+// Service Worker v3 — App-shell strategie
+// Pre-cache: alleen de app-shell (~4 MB).
+// Al het overige (audio, video, scenario-afbeeldingen) wordt gecached
+// zodra het de eerste keer wordt opgevraagd (cache-on-demand).
+
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `playtoprep-${CACHE_VERSION}`;
 
+// App-shell: alles wat de speler nodig heeft vóór het scenario kiest.
+// Audio, video en scenario-afbeeldingen staan hier NIET in —
+// die worden gecached bij eerste gebruik.
 const PRECACHE = [
   '/',
   '/index.html',
   '/style.css',
-  '/js/icons-data.js',
-  '/js/data-state.js',
-  '/js/data-scenarios-stroom.js',
-  '/js/data-scenarios-bosbrand.js',
-  '/js/data-scenarios-overstroming.js',
-  '/js/data-scenarios-thuiskomen.js',
-  '/js/data-scenarios-drinkwater.js',
-  '/js/data-scenarios-nachtalarm.js',
-  '/js/scenario-registry.js',
-  '/js/intake.js',
-  '/js/prep.js',
-  '/js/inventory.js',
-  '/js/audio.js',
-  '/js/engine.js',
-  '/js/report.js',
-  '/js/ui.js',
-  '/rain-overlay.mp4',
-  '/fire-overlay.mp4',
+  '/robots.txt',
+
+  // JS — één minified bundle
+  '/js/bundle.min.js',
+
+  // Algemene afbeeldingen (zichtbaar vóór scenariokeuze)
   '/afbeelding/algemeen/appartement_zomer.webp',
   '/afbeelding/algemeen/backpack.webp',
+  '/afbeelding/algemeen/golden_force_shield.webp',
   '/afbeelding/algemeen/huis_normaal.webp',
-  '/afbeelding/algemeen/logo-opsterland.webp',
   '/afbeelding/algemeen/noodopvang.webp',
   '/afbeelding/algemeen/opslag_appartement.webp',
   '/afbeelding/algemeen/opslag_kelder.webp',
   '/afbeelding/algemeen/ptp_logo.webp',
   '/afbeelding/algemeen/supermarkt.webp',
   '/afbeelding/algemeen/woonkamer_normaal.webp',
-  '/afbeelding/bosbrand/bomen_afgebrand.webp',
-  '/afbeelding/bosbrand/bosbrand_fase_1.webp',
-  '/afbeelding/bosbrand/bosbrand_fase_2.webp',
-  '/afbeelding/bosbrand/bosbrand_fase_2b.webp',
-  '/afbeelding/bosbrand/bosbrand_fase_3.webp',
-  '/afbeelding/bosbrand/geen_bosbrand.webp',
-  '/afbeelding/brandalarm/appartement_zomer_nacht.webp',
-  '/afbeelding/brandalarm/appartement_zomer_nacht_brandweer.webp',
-  '/afbeelding/brandalarm/huis_brand.webp',
-  '/afbeelding/brandalarm/naar_bed.webp',
-  '/afbeelding/brandalarm/rook_hal.webp',
-  '/afbeelding/brandalarm/rook_uitgang.webp',
-  '/afbeelding/brandalarm/rook_woonkamer.webp',
-  '/afbeelding/brandalarm/rookmelder_huis.webp',
-  '/afbeelding/brandalarm/wakker_worden.webp',
-  '/afbeelding/overstroming/auto_water.webp',
-  '/afbeelding/overstroming/overstroming_avond.webp',
-  '/afbeelding/overstroming/overstroming_ernstig.webp',
-  '/afbeelding/overstroming/overstroming_hoogwater.webp',
-  '/afbeelding/overstroming/overstroming_naderhand.webp',
-  '/afbeelding/overstroming/overstroming_straat.webp',
-  '/afbeelding/overstroming/overstroming_wijk.webp',
-  '/afbeelding/overstroming/reddingsboot.webp',
-  '/afbeelding/stroomstoring/appartement_winter_0.webp',
-  '/afbeelding/stroomstoring/appartement_winter_1.webp',
-  '/afbeelding/stroomstoring/appartement_winter_2.webp',
-  '/afbeelding/stroomstoring/huis_winter_0.webp',
-  '/afbeelding/stroomstoring/huis_winter_1.webp',
-  '/afbeelding/stroomstoring/huis_winter_2.webp',
-  '/afbeelding/stroomstoring/huis_winter_3.webp',
-  '/afbeelding/stroomstoring_onderweg/auto_snelweg.webp',
-  '/afbeelding/stroomstoring_onderweg/busstation.webp',
-  '/afbeelding/stroomstoring_onderweg/fietspad.webp',
-  '/afbeelding/stroomstoring_onderweg/kantoor.webp',
-  '/afbeelding/stroomstoring_onderweg/kantoor_licht.webp',
-  '/afbeelding/stroomstoring_onderweg/treinstation.webp',
-  '/afbeelding/stroomstoring_onderweg/voetganger.webp',
+
+  // Avatars — nodig tijdens intake
+  '/afbeelding/avatars/adult/man-1.png',
+  '/afbeelding/avatars/adult/man-3.png',
+  '/afbeelding/avatars/adult/man-4.png',
+  '/afbeelding/avatars/adult/man-5.png',
+  '/afbeelding/avatars/adult/man-6.png',
+  '/afbeelding/avatars/adult/man-7.png',
+  '/afbeelding/avatars/adult/woman-1.png',
+  '/afbeelding/avatars/adult/woman-3.png',
+  '/afbeelding/avatars/adult/woman-4.png',
+  '/afbeelding/avatars/adult/woman-5.png',
+  '/afbeelding/avatars/adult/woman-6.png',
+  '/afbeelding/avatars/child/boy-1.png',
+  '/afbeelding/avatars/child/boy-2.png',
+  '/afbeelding/avatars/child/girl-1.png',
+  '/afbeelding/avatars/child/girl-2.png',
+  '/afbeelding/avatars/child/girl-3.png',
+  '/afbeelding/avatars/ouderen/old_man.png',
+  '/afbeelding/avatars/ouderen/old_woman.png',
+  '/afbeelding/avatars/slecht ter been/manx-2.png',
+  '/afbeelding/avatars/slecht ter been/womanx-1.png',
+  '/afbeelding/avatars/slecht ter been/womanx-2.png',
+  '/afbeelding/avatars/pets/hamster.png',
+  '/afbeelding/avatars/pets/hond.png',
+  '/afbeelding/avatars/pets/kat.png',
+  '/afbeelding/avatars/pets/konijn.png',
+  '/afbeelding/avatars/pets/paard.png',
+  '/afbeelding/avatars/vehicles/auto.png',
+  '/afbeelding/avatars/vehicles/e-bike.png',
+  '/afbeelding/avatars/vehicles/fiets.png',
+  '/afbeelding/avatars/vehicles/fiets-2.png',
+  '/afbeelding/avatars/vehicles/motor.png',
+  '/afbeelding/avatars/vehicles/scooter.png',
+  '/afbeelding/avatars/woningtype/appartement.png',
+  '/afbeelding/avatars/woningtype/caravan.png',
+  '/afbeelding/avatars/woningtype/hoogbouw.png',
+  '/afbeelding/avatars/woningtype/rijwoning.png',
+  '/afbeelding/avatars/woningtype/tiny_house.png',
+  '/afbeelding/avatars/woningtype/vrijstaande-woning.png',
+  '/afbeelding/avatars/woningtype/woonboot.png',
+  '/afbeelding/avatars/omgeving/boom.png',
+  '/afbeelding/avatars/omgeving/rivier.png',
+  '/afbeelding/avatars/omgeving/schaap.png',
+  '/afbeelding/avatars/omgeving/stadsgebouw.png',
+  '/afbeelding/avatars/omgeving/stadsgebouw1.png',
+  '/afbeelding/avatars/omgeving/trekker.png',
+  '/afbeelding/avatars/omgeving/trekker1.png',
+  '/afbeelding/avatars/omgeving/waterwaves.png',
 ];
 
 self.addEventListener('install', event => {
@@ -90,8 +99,17 @@ self.addEventListener('activate', event => {
   );
 });
 
+// Cache-on-demand: dien gecached op als beschikbaar, haal anders op via
+// het netwerk en sla op voor volgende keer. Audio en video worden
+// nooit gecached (te groot, streamen via html5: true in Howler).
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  const path = url.pathname;
+
+  // Audio en video: altijd via netwerk (Howler streamt ze via html5-modus)
+  if (path.startsWith('/Audio/') || path.endsWith('.mp4')) return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {
@@ -102,7 +120,7 @@ self.addEventListener('fetch', event => {
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         return response;
-      });
+      }).catch(() => cached || new Response('Offline', { status: 503 }));
     })
   );
 });
