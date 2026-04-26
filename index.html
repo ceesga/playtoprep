@@ -30,7 +30,10 @@
 
       <!-- LOGIN SCREEN -->
       <div id="s-login" class="screen active">
-        <h1 class="start-title">Goed Voorbereid</h1>
+        <h1 class="start-title">
+          <span class="start-title-l1">Goed</span>
+          <span class="start-title-l2">Voorbereid</span>
+        </h1>
         <p class="start-subtitle">oefenen met keuzes in een crisissituatie</p>
         <div class="login-form">
           <label for="login-username" class="login-label">Naam</label>
@@ -38,8 +41,13 @@
           <label for="login-password" class="login-label">Wachtwoord</label>
           <input type="password" id="login-password" class="login-input" autocomplete="current-password" placeholder="Wachtwoord">
           <p id="login-error" class="login-error" role="alert" style="display:none"></p>
+          <label class="terms-check-label" style="margin-top:16px">
+            <input type="checkbox" id="login-terms-checkbox"
+              onchange="document.getElementById('login-btn').disabled = !this.checked;">
+            Ik ga akkoord met de <button type="button" class="terms-link" onclick="event.stopPropagation(); openTerms()">algemene voorwaarden</button>
+          </label>
           <nav class="start-menu" aria-label="Inloggen">
-            <button type="button" class="start-menu-btn" onclick="doLogin()">Inloggen</button>
+            <button type="button" id="login-btn" class="start-menu-btn" onclick="doLogin()" disabled>Inloggen</button>
           </nav>
         </div>
         <div class="start-credits">
@@ -84,9 +92,11 @@
     <div class="phase-label" style="margin-top:8px">Stap 0: Introductie</div>
     <div class="narrative-text" style="margin-top:12px">
       Je speelt een bewoner die te maken krijgt met een noodsituatie. Dat kan een grote stroomstoring zijn, een natuurbrand, een overstroming of een moeilijke reis naar huis.<br><br>
-      Tijdens het spel maak je keuzes voor jezelf en je huishouden. Die keuzes hebben gevolgen voor hoe de situatie verloopt.<br><br>
-      Na afloop krijg je een persoonlijk rapport. Daarin zie je wat goed ging, wat beter kon en hoe je je beter kunt voorbereiden, met een noodpakket en een noodplan.<br><br>
-      Vul je gegevens in zoals ze echt voor jou gelden. Hoe eerlijker je dat doet, hoe beter het spel past bij jouw situatie. Zo leer je er meer van en krijg je advies dat beter bij jou past.
+      Het spel bestaat uit drie delen:<br>
+      <strong>1. Intake</strong> — Vertel wie je bent, hoe je woont en wat je al in huis hebt.<br>
+      <strong>2. Scenario</strong> — Doorloop een noodsituatie en maak keuzes voor jezelf en je huishouden.<br>
+      <strong>3. Rapport</strong> — Zie wat goed ging, wat beter kon en welke tips bij jou passen.<br><br>
+      Vul je gegevens in zoals ze echt voor jou gelden. Hoe eerlijker je dat doet, hoe beter het spel past bij jouw situatie.
     </div>
   </div>
   <div class="btn-row screen-footer">
@@ -415,7 +425,7 @@
     <li><strong><span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.247 7.761a6 6 0 0 1 0 8.478"/><path d="M19.075 4.933a10 10 0 0 1 0 14.134"/><path d="M4.925 19.067a10 10 0 0 1 0-14.134"/><path d="M7.753 16.239a6 6 0 0 1 0-8.478"/><circle cx="12" cy="12" r="2"/></svg></span> Radio</strong>: Luister naar noodberichten tijdens het scenario.</li>
     <li><strong><span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span> NL-Alert</strong>: Officiële waarschuwingen verschijnen vanzelf.</li>
   </ul>
-<p>Houd je <strong>water <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg></span>, eten <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4z"/></svg></span>, comfort <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg></span></strong> en <strong>gezondheid <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2z"/></svg></span></strong> op peil. Je batterij <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14v-4"/><path d="M22 14v-4"/><path d="M6 14v-4"/><rect x="2" y="6" width="16" height="12" rx="2"/></svg></span> en contant geld <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span> spelen ook een rol.</p>
+<p>Houd je <strong>water <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg></span>, eten <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4z"/></svg></span>, comfort <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg></span></strong> op peil. Je batterij <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14v-4"/><path d="M22 14v-4"/><path d="M6 14v-4"/><rect x="2" y="6" width="16" height="12" rx="2"/></svg></span> en contant geld <span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span> spelen ook een rol.</p>
 </div>
 <!-- Pagina 2: Uitleg over de eerste stappen (setup context) -->
 <div class="help-page" id="help-p2-setup" style="display:none">
@@ -426,6 +436,18 @@
     <li><strong>Stap 3: Persoonlijk rapport</strong>: Na afloop zie je wat goed ging, wat beter kan en welke tips bij jou passen.</li>
   </ul>
 <p>Hoe eerlijker je antwoordt, hoe persoonlijker en realistischer het rapport achteraf wordt.</p>
+</div>
+<div class="help-page" id="help-p3" style="display:none">
+  <h3><span class="help-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/><path d="M8 10h8"/><path d="M8 18h8"/></svg></span> Jouw inventaris</h3>
+  <p>Tik op de rugzak rechtsonder in het scherm om je inventaris te openen. Daarin vind je alles wat je bij je hebt of thuis klaar hebt staan.</p>
+  <ul>
+    <li><strong>Altijd bij je</strong>: Telefoon, portemonnee en sleutels.</li>
+    <li><strong>Voertuigen</strong>: Je auto of fiets, als je die hebt.</li>
+    <li><strong>Vluchttas</strong>: Spullen die je vooraf klaargelegd hebt, zoals een zaklamp of documenten.</li>
+    <li><strong>Reistas / EDC</strong>: Kleine dingen die je onderweg altijd bij je hebt, zoals een waterfles of snack.</li>
+    <li><strong>Noodpakket</strong>: Spullen voor meerdere dagen thuis, zoals medicijnen, een radio of een powerbank.</li>
+  </ul>
+  <p>Tik op een item om het te gebruiken. Sommige items kun je maar één keer gebruiken.</p>
 </div>
 <div class="help-footer">
   <button type="button" class="help-prev" id="help-prev" onclick="helpPage(1)" disabled aria-label="Vorige pagina">← Vorige</button>
@@ -483,6 +505,32 @@
           <span class="partner-demo">DEMO</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALGEMENE VOORWAARDEN OVERLAY -->
+<div id="terms-overlay" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+  <div class="over-box">
+    <div class="over-header">
+      <span id="terms-title">Algemene voorwaarden</span>
+      <button type="button" class="help-close-x" onclick="closeTerms()" aria-label="Sluiten">✕</button>
+    </div>
+    <div class="over-body">
+      <h3 style="margin:0 0 8px;font-size:.95rem">Educatief gebruik</h3>
+      <p>Dit spel is bedoeld als oefening en educatief hulpmiddel. Elke crisissituatie is anders. De keuzes en uitkomsten in dit spel zijn fictief en geven geen garantie voor de beste aanpak in een echte noodsituatie.</p>
+      <p>Volg bij een echte crisis altijd de instructies op van hulpdiensten en officiële autoriteiten. Blijf zelf nadenken en pas je keuzes aan op jouw situatie.</p>
+      <h3 style="margin:16px 0 8px;font-size:.95rem">Auteursrecht</h3>
+      <p>Alle inhoud van dit spel — scenario's, teksten, afbeeldingen en code — is eigendom van PlayToPrep.nl. Het is niet toegestaan om inhoud te kopiëren, te verveelvoudigen, openbaar te maken of op andere wijze te hergebruiken zonder voorafgaande schriftelijke toestemming van PlayToPrep.nl.</p>
+      <h3 style="margin:16px 0 8px;font-size:.95rem">Privacy en persoonsgegevens (AVG)</h3>
+      <p>Dit spel vraagt om gegevens zoals je naam en informatie over je huishouden. Deze gegevens worden uitsluitend lokaal in je browser verwerkt voor het genereren van je persoonlijke rapport. Er worden geen gegevens opgeslagen op externe servers of gedeeld met derden. Na het sluiten van je browser worden de gegevens gewist. PlayToPrep.nl verwerkt geen persoonsgegevens buiten je eigen apparaat.</p>
+      <h3 style="margin:16px 0 8px;font-size:.95rem">Wijzigingen van deze voorwaarden</h3>
+      <p>PlayToPrep.nl behoudt zich het recht voor om deze voorwaarden te wijzigen. De meest actuele versie is steeds van toepassing.</p>
+      <h3 style="margin:16px 0 8px;font-size:.95rem">Toepasselijk recht</h3>
+      <p>Op deze voorwaarden is Nederlands recht van toepassing.</p>
+    </div>
+    <div style="padding:12px 16px;border-top:1px solid var(--c-border-light);flex-shrink:0">
+      <button type="button" class="btn" style="width:100%" onclick="closeTerms()">Sluiten</button>
     </div>
   </div>
 </div>

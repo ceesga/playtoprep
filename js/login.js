@@ -55,6 +55,7 @@
       show('s-start');
       return;
     }
+    show('s-login'); // Stel achtergrond en kaartstate in bij initieel laden
 
     // Enter-toets in wachtwoordveld triggert login
     const passwordEl = document.getElementById('login-password');

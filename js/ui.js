@@ -227,18 +227,37 @@ function closeHelp() {
   if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
 }
 
-// Toont de juiste pagina in het helpoverlay (1 of 2).
-// Pagina 2 heeft een aparte variant per modus (scenario vs. setup).
-function helpPage(n) {
-  // Toon/verberg de twee helppagina's op basis van het paginanummer en de modus
-  document.getElementById('help-p1').style.display = n === 1 ? '' : 'none';
-  document.getElementById('help-p2').style.display       = (n === 2 && _helpMode === 'scenario') ? '' : 'none';
-  document.getElementById('help-p2-setup').style.display = (n === 2 && _helpMode === 'setup')    ? '' : 'none';
+function openTerms() {
+  _lastFocusBeforeModal = document.activeElement;
+  const overlay = document.getElementById('terms-overlay');
+  overlay.classList.add('open');
+  trapFocus(overlay);
+}
 
-  // Pas de paginateller en de knoppen aan
-  document.getElementById('help-pager').textContent = n + ' van 2';
-  document.getElementById('help-prev').disabled = n === 1; // geen vorige op pagina 1
-  document.getElementById('help-next').disabled = n === 2; // geen volgende op pagina 2
+function closeTerms() {
+  document.getElementById('terms-overlay').classList.remove('open');
+  if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
+}
+
+// Toont de juiste pagina in het helpoverlay.
+// Scenario-modus heeft 3 pagina's, setup-modus heeft 2 pagina's.
+// Pagina 2 en 3 hebben aparte varianten per modus.
+function helpPage(n) {
+  const maxPages = _helpMode === 'scenario' ? 3 : 2;
+
+  document.getElementById('help-p1').style.display        = n === 1 ? '' : 'none';
+  document.getElementById('help-p2').style.display        = (n === 2 && _helpMode === 'scenario') ? '' : 'none';
+  document.getElementById('help-p2-setup').style.display  = (n === 2 && _helpMode === 'setup')    ? '' : 'none';
+  document.getElementById('help-p3').style.display        = (n === 3 && _helpMode === 'scenario') ? '' : 'none';
+
+  document.getElementById('help-pager').textContent = n + ' van ' + maxPages;
+
+  const prevBtn = document.getElementById('help-prev');
+  const nextBtn = document.getElementById('help-next');
+  prevBtn.disabled = n === 1;
+  nextBtn.disabled = n === maxPages;
+  if (n > 1) prevBtn.setAttribute('onclick', 'helpPage(' + (n - 1) + ')');
+  if (n < maxPages) nextBtn.setAttribute('onclick', 'helpPage(' + (n + 1) + ')');
 }
 
 /* ───────────────────────────────────────────────────────────────
@@ -322,7 +341,7 @@ function show(id) {
   const card = document.getElementById('main-content');
   if (card) {
     card.classList.toggle('scenario-active', id === 's-scenario');
-    card.classList.toggle('start-active', id === 's-start');
+    card.classList.toggle('start-active', id === 's-start' || id === 's-login');
   }
 
   // Rugzakknop verborgen op startpagina en rapportpagina
@@ -331,7 +350,7 @@ function show(id) {
 
   // Hamburgerknop verborgen op startpagina en scenario (scenario heeft eigen profielknop)
   const globalMenuBtn = document.getElementById('global-menu-btn');
-  if (globalMenuBtn) globalMenuBtn.style.display = (id === 's-start' || id === 's-scenario') ? 'none' : 'flex';
+  if (globalMenuBtn) globalMenuBtn.style.display = (id === 's-login' || id === 's-start' || id === 's-scenario') ? 'none' : 'flex';
 
   // Globale klok: verborgen op startpagina, scenario en rapportpagina
   const globalClock = document.getElementById('global-clock');
@@ -393,7 +412,7 @@ function show(id) {
     let bgUrl = isApartment
       ? 'afbeelding/algemeen/appartement_zomer.webp'
       : 'afbeelding/algemeen/huis_normaal.webp';
-    if (id === 's-start') {
+    if (id === 's-start' || id === 's-login') {
       bgUrl = 'afbeelding/algemeen/startpagina.webp';
     } else if (id === 's-intake') {
       bgUrl = 'afbeelding/algemeen/woonkamer_normaal.webp';

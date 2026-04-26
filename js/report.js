@@ -176,8 +176,8 @@ function renderSectie2(persons) {
     'city':       'Bebouwde kom'
   };
   const envProse = {
-    'water':      'Je woont in de buurt van open water. Dit kan bijvoorbeeld een rivier, polder of kanaal zijn. Er is over het algemeen voldoende water in de omgeving. Risicofactoren zijn een verhoogde kans op wateroverlast, het onbruikbaar worden van routes bij stijgend water, verstoring van pompen en gemalen bij stroomuitval en beperkte bereikbaarheid van de woning bij overstroming.',
-    'forest':     'Je woont in of nabij bos of natuur. Bomen en groen kunnen bij warm weer voor meer schaduw en verkoeling zorgen. Risicofactoren zijn onder andere een grotere kans op natuurbrand, snelle verspreiding van vuur bij droogte en wind en minder goed bereikbare wegen bij extreem weer.',
+    'water':      'Je woont in de buurt van open water. Dit kan bijvoorbeeld een rivier, polder of kanaal zijn. Er is over het algemeen voldoende water in de omgeving. Risicofactoren zijn een verhoogde kans op wateroverlast, het onbruikbaar worden van routes bij stijgend water, verstoring van pompen en gemalen bij stroomuitval en beperkte bereikbaarheid van de woning bij overstroming. Meer informatie: <a href="https://www.overstroomik.nl" target="_blank" rel="noopener noreferrer">overstroomik.nl</a>.',
+    'forest':     'Je woont in of nabij bos of natuur. Bomen en groen kunnen bij warm weer voor meer schaduw en verkoeling zorgen. Risicofactoren zijn onder andere een grotere kans op natuurbrand, snelle verspreiding van vuur bij droogte en wind en minder goed bereikbare wegen bij extreem weer. Meer informatie: <a href="https://www.brandweer.nl/natuurbrandrisico/" target="_blank" rel="noopener noreferrer">brandweer.nl/natuurbrandrisico</a>.',
     'rural_area': 'Je woont in het buitengebied. Voorzieningen zoals winkels, zorg en hulpdiensten liggen op grotere afstand dan in stedelijk gebied. Er is vaak voldoende ruimte voor noodvoorraad en eigen voorzieningen, minder drukte en concurrentie om middelen, en meer mogelijkheden om zelfstandig te handelen. Risicofactoren zijn afhankelijkheid van eigen vervoer, langere aanrijtijden voor hulpdiensten, beperkte alternatieven bij uitval van infrastructuur en mogelijke uitval van nutsvoorzieningen over grotere gebieden.',
     'city':       'Je woont in de bebouwde kom. Hulpdiensten, informatie en andere voorzieningen zijn meestal dichtbij. Risicofactoren zijn snelle uitputting van basisproducten, overbelasting van verkeer en communicatienetwerken, beperkte bewegingsruimte en grotere afhankelijkheid van gedeelde voorzieningen.'
   };
@@ -221,7 +221,7 @@ function renderSectie2(persons) {
     ? gezinsAandacht.map(a => `<li class="rep-bullet-item">${a}</li>`).join('')
     : '<li class="rep-bullet-item rep-bullet-empty">Geen specifieke aandachtspunten voor dit huishouden.</li>';
   const gezinsBronHtml = profile.hasChildren
-    ? '<p class="rep-body-text">Bron voor kindbegeleiding in crisissituaties: <a href="https://www.unodc.org/res/drug-prevention-and-treatment/publications/data/drug-abuse-treatment-and-rehabilitation_caring-for-your-child-in-crisis-situations_html/UN-Caring-for-child-in-Crisis-Situations-booklet-200929-DIGITAL.pdf" target="_blank" rel="noopener noreferrer">VN/UNODC - Caring for your child in crisis situations</a>.</p>'
+    ? '<p class="rep-body-text">Meer informatie: <a href="https://www.unodc.org/res/drug-prevention-and-treatment/publications/data/drug-abuse-treatment-and-rehabilitation_caring-for-your-child-in-crisis-situations_html/UN-Caring-for-child-in-Crisis-Situations-booklet-200929-DIGITAL.pdf" target="_blank" rel="noopener noreferrer">VN/UNODC - Caring for your child in crisis situations</a>.</p>'
     : '';
 
   const woningVoordelen = wInfo.voordelen.map(v => `<li class="rep-bullet-item">${v}</li>`).join('');
@@ -318,7 +318,7 @@ function renderSectie3() {
     checkItem(profile.hasKit,      'Noodpakket aanwezig'),
     checkItem(profile.hasWater,    'Water — minimaal 6 liter per persoon', true),
     checkItem(profile.hasFood,     'Houdbaar eten voor minimaal 3 dagen', true),
-    checkItem(profile.hasFirstAid, 'EHBO-doos', true),
+    checkItem(profile.hasFirstAid, 'EHBO-doos — <a href="https://www.rodekruis.nl" target="_blank" rel="noopener noreferrer">rodekruis.nl</a>', true),
     checkItem(profile.hasRadio,    'Radio op batterijen', true),
     profile.hasPets ? checkItem(profile.hasPetFood, 'Dierenvoer voor minimaal 3 dagen', true) : ''
   ].join('');
@@ -388,7 +388,7 @@ function renderSectie3() {
       ${edcHtml}
     </div>
 
-    <p class="rep-body-text rep-inhuis-disclaimer">De juiste samenstelling van een noodpakket, vluchttas en reistas is afhankelijk van de persoonlijke situatie en voorkeuren.</p>`;
+    <p class="rep-body-text rep-inhuis-disclaimer">De juiste samenstelling van een noodpakket, vluchttas en reistas is afhankelijk van de persoonlijke situatie en voorkeuren. Meer informatie en checklists: <a href="https://www.crisis.nl" target="_blank" rel="noopener noreferrer">crisis.nl</a>.</p>`;
 }
 
 // ─── SECTIE 4: TIPS ───────────────────────────────────────────────────────────
@@ -403,7 +403,7 @@ function renderSectie4(naam) {
     </div>
     <div class="rep-subsection">
       <ul class="rep-bullet-list">
-        <li class="rep-bullet-item">Kijk naar je persoonlijke voorbereiding en vul waar nodig de ontbrekende onderdelen aan. Download de checklist om een gepersonaliseerd noodpakket te kunnen maken.</li>
+        <li class="rep-bullet-item">Kijk naar je persoonlijke voorbereiding en vul waar nodig de ontbrekende onderdelen aan.</li>
         <li class="rep-bullet-item">Ga het gesprek aan met je buren en werk samen waar mogelijk. Weten wie er in je straat woont, wie kwetsbaar is en wie hulp kan bieden, maakt een buurt weerbaarder. Onderlinge samenwerking is in een crisis vaak sneller en effectiever dan wachten op officiële hulp.</li>
         <li class="rep-bullet-item">Kijk waar de belangrijke punten in jouw gemeente zijn: noodopvanglocaties, gemeentelijke informatiepunten en evacuatieroutes. Deze zijn vaak niet vooraf bekend; locaties zoals bibliotheken, buurthuizen en sporthallen worden dan regelmatig aangewezen.</li>
         <li class="rep-bullet-item">Voorbereiden is altijd persoonlijk: wat goed is, hangt af van jouw eigen situatie. Ook tijdens een crisis moeten keuzes steeds worden afgewogen op wat op dat moment het beste past.</li>
@@ -412,9 +412,9 @@ function renderSectie4(naam) {
     <div class="rep-divider"></div>
     <div class="rep-subsection">
       <ul class="rep-bullet-list">
-        <li class="rep-bullet-item">Het doorlopen van fictieve crisisscenario’s helpt je om je reactie onder druk te begrijpen, blinde vlekken in je voorbereiding te ontdekken en beter te leren handelen in een echte crisissituatie.</li>
+        <li class="rep-bullet-item">Het doorlopen van fictieve crisisscenario’s helpt je om je bekend te worden met hoe een crisissituatie zich kan voltrekken, blinde vlekken in je voorbereiding te ontdekken en beter te leren handelen in een echte crisissituatie.</li>
         <li class="rep-bullet-item">Herhaald oefenen met verschillende scenario’s versterkt de voorbereiding. Elk scenario stelt je voor andere dilemma’s en onthult andere tekortkomingen.</li>
-        <li class="rep-bullet-item">Het samen doorlopen van een crisisscenario met gezinsleden helpt om rollen, kennis en verwachtingen op elkaar af te stemmen en versterkt de samenwerking en besluitvorming tijdens een echte noodsituatie.</li>
+        <li class="rep-bullet-item">Het samen doorlopen van een crisisscenario met andere gezinsleden helpt om rollen, kennis en verwachtingen op elkaar af te stemmen en versterkt de samenwerking en besluitvorming tijdens een echte noodsituatie.</li>
       </ul>
     </div>`;
 }
