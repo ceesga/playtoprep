@@ -11,6 +11,31 @@ function hasHousemates() {
   return (adultsCount + childrenCount + slechtTerBeenCount) > 1;
 }
 
+const phoneContacts_nachtalarm = [
+  {
+    name: '112',
+    startSceneId: 'na_0',
+    get label() {
+      return (state.evacuatedFire && state.called112PreExit) ? '112 opnieuw' : 'Bel 112';
+    },
+    get consequence() {
+      if (state.evacuatedFire) {
+        return state.called112PreExit
+          ? 'Je belt opnieuw nu je buiten staat. De meldkamer vraagt of iedereen buiten is en noteert je adres. Even later hoor je in de verte sirenes. De brandweer komt eraan.'
+          : 'De meldkamer neemt snel op, vraagt of iedereen buiten is en noteert je adres. Even later hoor je in de verte sirenes. De brandweer komt eraan.';
+      }
+      return 'De meldkamer neemt snel op, maar zegt direct: "Verlaat eerst de woning. Bel ons opnieuw zodra u buiten staat en zeg of iedereen eruit is." Ze sturen wel meteen een ploeg, maar benadrukken dat je nu moet gaan.';
+    },
+    source: { text: 'Brandweer: bel 112 zodra je veilig buiten staat', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
+    get stateChange() {
+      return state.evacuatedFire
+        ? { called112: true, stayedOutside: true }
+        : { called112PreExit: true };
+    },
+    conditionalOn: () => state.phoneBattery > 0
+  }
+];
+
 const scenes_nachtalarm = [
   // ─── Intro: Naar bed ──────────────────────────────────────────────────────
   {
@@ -47,6 +72,7 @@ const scenes_nachtalarm = [
     dayBadge: 'Nacht',
     dayBadgeClass: 'blue',
     hideContinue: true,
+    hideHUD: true,
     visuals: {
       image: 'afbeelding/brandalarm/wakker_worden.webp'
     },
@@ -129,13 +155,6 @@ const scenes_nachtalarm = [
         conditionalOn: () => hasHousemates() && !state.warnedHousemates
       },
       {
-        text: '📱 Meteen 112 bellen',
-        consequence: 'De meldkamer neemt snel op, maar zegt direct: "Verlaat eerst de woning. Bel ons opnieuw zodra u buiten staat en zeg of iedereen eruit is." Ze sturen wel meteen een ploeg, maar benadrukken dat je nu moet gaan.',
-        cat: 'cat-risk',
-        source: { text: 'Brandweer: bel 112 pas als je veilig buiten staat', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
-        stateChange: { called112PreExit: true }
-      },
-      {
         text: '🔍 Eerst zelf gaan kijken wat er aan de hand is',
         consequence: 'Je loopt voorzichtig richting de trap. De rooklucht wordt sterker en prikt in je keel. Je voelt hoe snel de situatie ernstiger wordt.',
         stateChange: { awarenessLevel: 1 }
@@ -180,7 +199,7 @@ const scenes_nachtalarm = [
         stateChange: { health: -1 }
       },
       {
-        text: '🚪 Teruglopen en iedereen naar buiten sturen',
+        text: '🚪 Iedereen wakker maken en naar buiten sturen',
         consequence: 'Je draait je om, rent naar de slaapkamers, maakt iedereen wakker, en stuurt ze naar buiten. Onderweg trek je de woonkamerdeur dicht, zodat de rook zich minder snel verspreidt.',
         cat: 'cat-social',
         source: { text: 'Brandweer: doe de deur dicht om rookverspreiding te remmen', url: 'https://www.brandweer.nl/onderwerpen/doe-de-deur-dicht/' },
@@ -188,9 +207,7 @@ const scenes_nachtalarm = [
         conditionalOn: () => hasHousemates() && !state.warnedHousemates
       },
       {
-        text: () => hasHousemates()
-          ? '🚪 De woonkamerdeur dichtdoen en de anderen naar buiten krijgen'
-          : '🚪 De woonkamerdeur dichtdoen en meteen naar buiten gaan',
+        text: '🚪 De woonkamerdeur sluiten',
         consequence: () => hasHousemates()
           ? 'Je trekt de deur dicht om de rook te remmen en gaat snel terug om de anderen naar buiten te krijgen.'
           : 'Je trekt de deur dicht om de rook te remmen en loopt direct naar buiten.',
@@ -347,16 +364,6 @@ const scenes_nachtalarm = [
         : 'Je staat buiten in de koude nacht. Vanuit de woning ruik je nog steeds rook. Het is koud en je vraagt je af of je toch nog even naar binnen kunt om wat extra kleren te pakken.' + delayedNote;
     },
     choices: [
-      {
-        text: () => state.called112PreExit ? '📱 112 opnieuw bellen zodra je buiten staat' : '📱 112 bellen',
-        consequence: () => state.called112PreExit
-          ? 'Je belt opnieuw nu je buiten staat. De meldkamer vraagt of iedereen buiten is en noteert je adres. Even later hoor je in de verte sirenes. De brandweer komt eraan.'
-          : 'De meldkamer neemt snel op, vraagt of iedereen buiten is en noteert je adres. Even later hoor je in de verte sirenes. De brandweer komt eraan.',
-        cat: 'cat-action',
-        source: { text: 'Brandweer: bel 112 zodra je veilig buiten staat', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
-        stateChange: { called112: true, stayedOutside: true },
-        conditionalOn: () => !state.called112
-      },
       {
         text: '👥 Controleren of iedereen buiten is',
         consequence: 'Je telt alle huisgenoten en kijkt of niemand nog binnen is. Dat geeft rust terwijl je op de brandweer wacht.',

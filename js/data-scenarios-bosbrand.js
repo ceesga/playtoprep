@@ -15,6 +15,18 @@ const NATURE_FIRE_ESCAPE_SOURCE = {
   url: 'https://www.brandweer.nl/onderwerpen/natuurbrand/'
 };
 
+const phoneContacts_bosbrand = [
+  {
+    name: 'Zus Lisa',
+    startSceneId: 'bf_3',
+    label: 'Stuur bericht',
+    consequence: 'Bellen lukt niet, het netwerk is overbelast. Daarom stuur je een bericht: "Ik ben veilig, ben aan het evacueren." Even later zie je de dubbele vinkjes. Ze weet het nu.',
+    source: { text: 'Brandweer: laat familie weten dat je veilig bent zodra je kunt', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
+    stateChange: { familyContacted: true },
+    conditionalOn: () => !state.familyContacted && state.phoneBattery > 0
+  }
+];
+
 const scenes_natuurbrand = [{
   id: 'bf_0',
   time: '16:00',
@@ -163,7 +175,8 @@ const scenes_natuurbrand = [{
     text: '📱 Familie en vrienden informeren waar je bent',
     consequence: 'Je stuurt berichten naar familie. Ze weten nu waar je bent. Als communicatie later uitvalt, is dat goud waard.',
     stateChange: {
-      awarenessLevel: 1
+      awarenessLevel: 1,
+      familyContacted: true
     }
   }, {
     conditionalOn: () => profile.hasPets && !state.tookPets,
@@ -471,7 +484,7 @@ const scenes_natuurbrand = [{
   },
   choices: [{
     conditionalOn: () => profile.hasCar || profile.hasMotorcycle,
-    text: () => profile.hasCar ? '🚗 Met de auto via de hoofdweg' : '🚗 Met de motor via de hoofdweg',
+    text: () => profile.hasCar ? '🚗 Met de auto via de verharde weg' : '🏍️ Met de motor via de verharde weg',
     consequence: () => {
       const v = profile.hasCar ? 'auto' : 'motor';
       return state.evacuatedEarly
@@ -480,6 +493,17 @@ const scenes_natuurbrand = [{
     },
     stateChange: {
       bfTravelMode: 'car'
+    }
+  }, {
+    conditionalOn: () => (profile.hasCar || profile.hasMotorcycle) && !profile.playerIsMobilityImpaired,
+    text: () => profile.hasCar ? '🚗 Met de auto via het binnendoorweggetje' : '🏍️ Met de motor via het binnendoorweggetje',
+    consequence: () => {
+      const v = profile.hasCar ? 'auto' : 'motor';
+      return `Je slaat af van de hoofdweg en neemt het binnendoorweggetje. Smaller, stiller — geen file. De rook hangt laag boven de weilanden, maar je hebt de weg voor je alleen.`;
+    },
+    stateChange: {
+      bfTravelMode: 'car',
+      bfBackRoad: true
     }
   }, {
     conditionalOn: () => (profile.hasBike || profile.hasScooter || profile.hasEbike) && !profile.hasMobilityImpaired,
@@ -517,7 +541,7 @@ const scenes_natuurbrand = [{
   date: 'Zaterdag 14 augustus 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
-  conditionalOn: () => state.bfTravelMode === 'car' || state.bfTravelMode === 'bike',
+  conditionalOn: () => (state.bfTravelMode === 'car' && !state.bfBackRoad) || state.bfTravelMode === 'bike',
   channels: {
     news: [],
     whatsapp: [],
@@ -558,7 +582,7 @@ const scenes_natuurbrand = [{
   date: 'Zaterdag 14 augustus 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
-  conditionalOn: () => state.bfTravelMode === 'car',
+  conditionalOn: () => state.bfTravelMode === 'car' && !state.bfBackRoad,
   channels: {
     news: [{
       time: '12:10',
@@ -608,7 +632,7 @@ const scenes_natuurbrand = [{
   date: 'Zaterdag 14 augustus 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
-  conditionalOn: () => state.bfTravelMode === 'bike',
+  conditionalOn: () => state.bfTravelMode === 'bike' || state.bfBackRoad,
   channels: {
     news: [],
     whatsapp: [],
@@ -616,26 +640,33 @@ const scenes_natuurbrand = [{
     radio: null
   },
   get narrative() {
-    if (state.bfCrossFireSafe) {
-      return 'Je hebt eerst dwars op de brand een verharde route genomen en fietst nu verder over bredere paden richting de openbare weg. De lucht is hier beter, maar je blijft alert: de rook kan snel draaien.';
-    }
-    return 'Je fietst via de achterpaden. De straten zijn leeg, want bijna iedereen zit in de auto. Alleen hangt de rook hier juist laag tussen de bomen. Je rijdt langs de bosrand, de geur van verbrand hout is scherp en je ogen prikken. De fiets is snel, maar je longen protesteren.';
+    const vervoer = state.bfBackRoad
+      ? (profile.hasCar ? 'In je achteruitkijkspiegel zie je het.' : 'In je spiegel zie je het.')
+      : 'Je kijkt even achterom en ziet het.';
+    const onderweg = state.bfBackRoad
+      ? 'Je rijdt via het binnendoorweggetje. Het is stil, geen file — maar ook niemand anders in de buurt.'
+      : 'Je bent onderweg via de achterpaden. De straten zijn leeg, bijna iedereen zit in de auto.';
+    return `${onderweg} Opeens merk je het. ${vervoer} De oranje gloed achter je wordt groter. De brand is van richting veranderd en haalt je in. Voor je loopt de weg rechtdoor. Rechts is een zijweg — maar die kruist het brandfront.`;
   },
   choices: [{
-    text: '🔀 Omrijden via de doorgaande weg',
-    consequence: 'Je kiest een langere route met minder bosrand. Meer verkeer, maar schonere lucht. Na 25 minuten ben je er.',
+    text: '⬆️ Rechtdoor, zo hard mogelijk',
+    consequence: () => {
+      const v = state.bfBackRoad ? (profile.hasCar ? 'Je geeft plankgas' : 'Je geeft vol gas') : 'Je trapt zo hard als je kunt';
+      return `${v}. Maar het vuur reist met de wind mee — dezelfde richting als jij. De afstand tussen jou en het front wordt kleiner. De hitte groeit, rook vullt de auto. Pas als je een zijweg neemt kom je los van het front. Je haalt het, maar ternauwernood.`;
+    },
+    source: NATURE_FIRE_ESCAPE_SOURCE,
     stateChange: {
-      evacuated: true
+      evacuated: true,
+      health: -2,
+      comfort: -1
     }
   }, {
-    text: '🚶 Fiets laten staan en te voet een stuk',
-    consequence: 'Je zet de fiets tegen een hek en loopt het laatste stuk. De weg is hier breed genoeg om de rook te vermijden. Je komt aan.',
-    stateChange: {
-      evacuated: true
-    }
-  }, {
-    text: '😤 Doorrijden, bijna er',
-    consequence: 'Je houdt je shirt voor je neus en trapt door. Na een kwartier kom je aan bij de noodopvang, buiten adem maar ongedeerd.',
+    text: '➡️ Rechts afslaan, dwars op het brandfront',
+    consequence: () => {
+      const v = state.bfBackRoad ? (profile.hasCar ? 'Je geeft plankgas' : 'Je geeft vol gas') : 'Je trapt hard';
+      return `Je slaat hard rechts. Even is de hitte maximaal — je snijdt dwars door het front. Maar het duurt slechts seconden. Aan de andere kant is de lucht open en schoon. Het vuur trekt verder in de andere richting. Je bent veilig.`;
+    },
+    source: NATURE_FIRE_ESCAPE_SOURCE,
     stateChange: {
       evacuated: true
     }
@@ -774,10 +805,6 @@ const scenes_natuurbrand = [{
     stateChange: {
       evacuated: true
     }
-  }, {
-    text: '📱 Eerst familie bellen, ze weten niet of je veilig bent',
-    consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, want het netwerk is overbelast. Daarom stuur je een bericht: "Veilig bij de noodopvang." Twintig minuten later zie je dubbele vinkjes. Ze weten het nu.' : 'Je telefoon is leeg. Je kunt je familie niet bereiken.',
-    stateChange: {}
   }, {
     text: '🛏️ Snel een slaapplek claimen voordat alles weg is',
     consequence: 'Je loopt door de hal en vindt een rustig hoekje bij de muur. Je legt er je jas neer. Later op de avond zijn bijna alle plekken bezet.',

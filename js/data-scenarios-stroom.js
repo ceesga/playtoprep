@@ -6,6 +6,21 @@
 // ═══════════════════════════════════════════════════════════════
 
 
+const phoneContacts_stroom = [
+  {
+    name: 'Mama',
+    label: 'Bel mama',
+    get consequence() {
+      if (state.networkDown) {
+        return 'Je probeert mama te bellen, maar het netwerk is overbelast. Eerst hoor je een toon, daarna niets meer. Je stuurt een sms: "Alles goed hier. Wacht even af." Of die aankomt weet je niet.';
+      }
+      return 'Je belt mama. Ze neemt snel op. "Alles goed met jullie? Ik hoorde het nieuws." Je vertelt kort wat er speelt. "Pas goed op jezelf. Ik denk aan jullie." Je legt neer met een goed gevoel.';
+    },
+    stateChange: {},
+    conditionalOn: () => state.phoneBattery > 0
+  }
+];
+
 const scenes_stroom = [
   // SCENE 1 — Day -2
   {
@@ -35,10 +50,6 @@ const scenes_stroom = [
       stateChange: {
         awarenessLevel: 1
       }
-    }, {
-      text: '📱 Ik scan de koppen maar lees verder niets',
-      consequence: 'Je ziet de berichten vluchtig voorbijkomen. Niets bijzonders.',
-      stateChange: {}
     }, {
       text: '🙈 Ik scroll verder, dit soort nieuws is er altijd',
       consequence: 'Je scrolt door naar sport en entertainment. Zulke berichten zijn er volgens jou altijd wel.',
@@ -169,25 +180,13 @@ const scenes_stroom = [
           ? ' De lift doet het niet meer. Traplopen is zwaar op jouw leeftijd, zeker bij een langdurige storing.'
           : ' De lift doet het niet meer. Je loopt de trap.'
         : '';
-      return 'Midden op de ochtend valt ineens de stroom uit. Alles wordt stil: de koelkast, de verwarming en het wifi-lampje. Alleen je telefoon doet het nog via mobiel bereik. Buiten zie je buren naar buiten komen om te kijken wat er aan de hand is. De stilte voelt vreemd, alsof iemand in één keer al het geluid heeft uitgezet.' + lift;
+      const radio = profile.hasRadio === 'ja' ? ' Je pakt de batterijradio en zet hem aan. Radio 1 zendt nog uit.' : '';
+      return 'Midden op de ochtend valt ineens de stroom uit. Alles wordt stil: de koelkast, de verwarming en het wifi-lampje. Alleen je telefoon doet het nog via mobiel bereik. Buiten zie je buren naar buiten komen om te kijken wat er aan de hand is. De stilte voelt vreemd, alsof iemand in één keer al het geluid heeft uitgezet.' + lift + radio;
     },
     choices: [{
       text: '🔌 Alle grote apparaten uitschakelen en de zekering uitzetten',
       consequence: 'Je loopt door het huis en zet alles handmatig uit: wasmachine, oven, verwarming. Zo verklein je de kans op schade als de stroom later terugkomt.',
       source: { text: 'Denkvooruit: trek stekkers uit het stopcontact — zo voorkom je schade als de stroom terugkomt', url: 'https://www.denkvooruit.nl/risicos/risicos-in-nederland/geen-stroom' },
-      stateChange: {}
-    }, {
-      conditionalOn: () => profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw',
-      text: '🏢 Even in de gang kijken, hoe reageren de andere bewoners?',
-      consequence: () => profile.houseType === 'hoogbouw'
-        ? 'Op de gang staan drie buren. Niemand weet wat er aan de hand is. Iemand probeert de deur van de meterkast te openen. Een oudere dame vraagt of jij misschien weet wanneer de lift het weer doet.'
-        : 'Op de gang staan drie buren. Niemand weet wat er aan de hand is. Iemand probeert de deur van de meterkast te openen.',
-      stateChange: {
-        knowsNeighbors: true
-      }
-    }, {
-      text: '📱 Nieuws checken op mijn telefoon, wat is er aan de hand?',
-      consequence: 'Op NOS lees je dat er een brand is bij een knooppunt bij Dronten en dat die vermoedelijk verband houdt met de storing. De precieze oorzaak is nog onduidelijk. Er staat niet bij hoe lang het gaat duren. Meer kun je nu niet doen dan afwachten.',
       stateChange: {}
     }, {
       conditionalOn: () => profile.hasElderly,
@@ -197,10 +196,6 @@ const scenes_stroom = [
     }, {
       text: '☕ Even koffie zetten op het gasfornuis en rustig afwachten',
       consequence: 'Het gasfornuis werkt gelukkig nog. Je zet koffie en probeert rustig te blijven. Misschien is het zo weer voorbij.',
-      stateChange: {}
-    }, {
-      text: '🤷 Gewoon doorgaan, dit is toch zo opgelost',
-      consequence: 'Je wacht. Niets aan de hand. Zulke kleine storingen zijn er wel vaker.',
       stateChange: {}
     }]
   },
@@ -236,10 +231,6 @@ const scenes_stroom = [
     }, {
       text: '🔋 Snel de powerbank opladen zolang het kan',
       consequence: 'Je hangt de powerbank meteen aan de lader. Na tien minuten zit er 10% extra in. Niet veel, maar straks kun je dat goed gebruiken.',
-      stateChange: {}
-    }, {
-      text: '📺 Kijken wat het nieuws zegt',
-      consequence: 'De nieuwszender: "Grote storing in Nederland, inmiddels hersteld." Je leunt achterover. Mooi. Dit was dus niets.',
       stateChange: {}
     }, {
       text: '😌 Niets doen, alles is toch weer normaal',
@@ -308,17 +299,6 @@ const scenes_stroom = [
         hasCarRadio: true
       }
     }, {
-      text: '📞 Proberen mama terug te bellen',
-      consequence: () => state.phoneBattery > 0 ? "Je probeert te bellen, maar het netwerk is overbelast. Eerst hoor je een toon, daarna niets meer. Je stuurt een sms: \"Alles goed hier. Wacht even af.\" Of die aankomt weet je niet." : 'Je telefoon is leeg. Je kunt niemand bereiken.',
-      stateChange: {}
-    }, {
-      conditionalOn: () => profile.hasRadio === 'ja',
-      text: '📻 Batterijradio aanzetten voor nieuws',
-      consequence: 'Je zet de radio aan. Radio 1 zendt nog uit en vertelt dat de storing groot is en lang kan duren. Vanaf nu is de radio je belangrijkste bron van informatie.',
-      stateChange: {
-        hasCarRadio: true
-      }
-    }, {
       text: '🤷 Niets doen, ik wacht af wat er gaat gebeuren',
       consequence: 'Je zit op de bank en wacht. Er komt geen stroom. Je accu loopt langzaam verder leeg. Buiten klinkt een sirene.',
       stateChange: {}
@@ -374,12 +354,13 @@ const scenes_stroom = [
       text: '🛒 Nu naar de supermarkt gaan, voor het te laat is',
       consequence: 'Je pakt je jas en gaat. De rij is lang maar beweegt. Na 25 minuten ben je binnen. Pas daar merk je dat je alleen met contant geld kunt betalen.',
       stateChange: {
-        wentToSupermarket: 'early'
+        wentToSupermarket: 'early',
+        networkDown: true
       }
     }, {
       text: '🏠 Thuis blijven en inventariseren wat we al hebben',
       consequence: 'Je maakt een overzicht: wat ligt er in de vriezer, de kelder, de kast? Je weet nu wat je hebt.',
-      stateChange: {}
+      stateChange: { networkDown: true }
     }, {
       conditionalOn: () => profile.hasCar || profile.hasMotorcycle,
       text: () => profile.hasCar ? '🚗 Met de auto naar een tankstation voor benzine' : '🚗 Met de motor naar een tankstation voor benzine',
@@ -387,12 +368,13 @@ const scenes_stroom = [
         const v = profile.hasCar ? 'auto' : 'motor';
         return `Bij het tankstation staat een rij. Na een uur wachten krijg je te horen: "Alleen voor hulpdiensten." Teleurgesteld rij je terug op je ${v}. Je hebt gezien hoe gespannen de sfeer buiten is.`;
       },
-      stateChange: {}
+      stateChange: { networkDown: true }
     }, {
       text: '👴 Even bij de buren langs of alles goed is',
       consequence: 'Buurvrouw Annie (78) staat verward in de deuropening. Je legt het kort uit en vraagt of ze nog eten heeft. "Ja hoor, ik red me wel", zegt ze. Maar ze ziet er bleek uit.',
       stateChange: {
-        knowsNeighbors: true
+        knowsNeighbors: true,
+        networkDown: true
       }
     }]
   },
@@ -1335,12 +1317,8 @@ const scenes_stroom = [
       source: { text: 'Denkvooruit: trek stekkers uit het stopcontact — zo voorkom je schade als de stroom terugkomt', url: 'https://www.denkvooruit.nl/risicos/risicos-in-nederland/geen-stroom' },
       stateChange: {}
     }, {
-      text: '⚡ Alles direct aanpakken: apparaten uit, leidingen doorspoelen, mama bellen',
-      consequence: 'Je werkt snel. Eerst schakel je alle apparaten handmatig uit, lamp voor lamp en stekker voor stekker. Daarna zet je de kraan open: eerst komt er bruin water, daarna helder. De leidingen zijn weer schoon. Dan bel je mama. Ze neemt direct op. "Ik heb me zo ongerust gemaakt." Jullie praten bij terwijl de koelkast zachtjes zoemt.',
-      stateChange: {}
-    }, {
-      text: '📱 Als eerste mama bellen, ze weet vast niets van ons',
-      consequence: 'Je belt. Ze neemt direct op en barst bijna in tranen uit. "Ik heb me zo ongerust gemaakt. Jullie zijn toch goed?" Jullie praten tien minuten lang bij.',
+      text: '⚡ Alles direct aanpakken: apparaten uit en leidingen doorspoelen',
+      consequence: 'Je werkt snel. Eerst schakel je alle apparaten handmatig uit, lamp voor lamp en stekker voor stekker. Daarna zet je de kraan open: eerst komt er bruin water, daarna helder. De leidingen zijn weer schoon.',
       stateChange: {}
     }, {
       text: '🤝 Bij Annie en Rob aanbellen om het nieuws te vieren',

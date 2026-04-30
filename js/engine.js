@@ -306,6 +306,9 @@ function applySceneDecayChange(decayChange) {
 function renderScene() {
   Typewriter.cancel();
   pendingChoiceMade = false; // reset bij elke nieuwe scène
+  if (typeof lockPhoneButton === 'function') lockPhoneButton(false);
+  var _phoneArea = document.getElementById('phone-consequence-area');
+  if (_phoneArea) _phoneArea.innerHTML = '';
   // Annuleer timers van de vorige scène
   if (_badgeMarkTimer) { clearTimeout(_badgeMarkTimer); _badgeMarkTimer = null; }
   if (_sceneAutoAdvanceTimer) { clearTimeout(_sceneAutoAdvanceTimer); _sceneAutoAdvanceTimer = null; }
@@ -325,6 +328,12 @@ function renderScene() {
     showReport();
     return;
   }
+
+  var _hideHUD = !!(scene.hideHUD);
+  var _elPhone = document.getElementById('scenario-phone');
+  var _elInventory = document.getElementById('scenario-inventory');
+  if (_elPhone) _elPhone.hidden = _hideHUD;
+  if (_elInventory) _elInventory.hidden = _hideHUD;
 
   // Save state snapshot for back navigation
   stateSnapshots[currentSceneIdx] = structuredClone(state);

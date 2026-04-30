@@ -50,6 +50,7 @@ const SCENARIO_REGISTRY = {
     label: 'Stroomuitval',
     scenes: scenes_stroom,
     sceneDecay: sceneDecay_stroom,
+    phoneContacts: phoneContacts_stroom,
     visuals: {
       imageMap: sceneImages_stroom,
       imageMapFn(sceneId) {
@@ -76,6 +77,7 @@ const SCENARIO_REGISTRY = {
     label: 'Natuurbrand',
     scenes: scenes_natuurbrand,
     sceneDecay: sceneDecay_natuurbrand,
+    phoneContacts: phoneContacts_bosbrand,
     visuals: {
       imageMap: sceneImages_natuurbrand,
       fireOverlay: FIRE_OVERLAY_BY_SCENE
@@ -119,6 +121,7 @@ const SCENARIO_REGISTRY = {
     label: 'Overstroming',
     scenes: scenes_overstroming,
     sceneDecay: sceneDecay_overstroming,
+    phoneContacts: phoneContacts_overstroming,
     visuals: {
       imageMap: sceneImages_overstroming,
       rainOverlay: RAIN_OVERLAY_BY_SCENE
@@ -193,6 +196,7 @@ const SCENARIO_REGISTRY = {
     label: 'Alarm In De Nacht',
     scenes: scenes_nachtalarm,
     sceneDecay: sceneDecay_nachtalarm,
+    phoneContacts: phoneContacts_nachtalarm,
     visuals: {
       imageMap: sceneImages_nachtalarm,
       darknessOverride: DARKNESS_OVERRIDE_BY_SCENE,
@@ -229,6 +233,8 @@ const SCENARIO_REGISTRY = {
   }
 };
 
+let persistentChoices = [];
+
 function getScenarioConfig(scenarioId) {
   return SCENARIO_REGISTRY[scenarioId] || SCENARIO_REGISTRY.stroom;
 }
@@ -238,6 +244,8 @@ function activateScenarioConfig(scenarioId) {
   currentScenario = config.id;
   scenes = config.scenes;
   sceneDecay = config.sceneDecay;
+  persistentChoices = config.persistentChoices || [];
+  activatePhoneContacts(config.phoneContacts || []);
   return config;
 }
 

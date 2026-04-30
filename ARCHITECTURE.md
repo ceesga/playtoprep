@@ -185,6 +185,11 @@ Belangrijke functies:
 - `renderChoices(scene)` — bouwt keuzeknoppen met categorie en stagger-animatie
 - `parseChoiceIcon(text)` — leest emoji-prefix, geeft icon + cat + label
 - `pickChoice(idx)` — verwerkt keuze, past state aan, start typewriter
+- `pickPersistentChoice(idx)` — verwerkt persistente keuze; identieke logica als `pickChoice`
+
+**Persistente keuzes** — Naast reguliere (locatiegebonden) keuzes ondersteunt de engine een `persistentChoices`-array per scenario. Deze keuzes worden eenmalig op scenario-niveau gedefinieerd (in het bijbehorende `data-scenarios-*.js`-bestand) en verschijnen in elke scène vanaf een optionele `startSceneId`. Ze worden visueel gescheiden getoond onder de reguliere keuzes (sectie "Altijd mogelijk"), en verdwijnen zodra hun `conditionalOn` niet meer geldt. Vergrendeling van alle knoppen bij een keuze werkt identiek voor beide typen, omdat persistente knoppen dezelfde class `choice-btn` in `#sc-choices` gebruiken.
+
+**Telefoon-UI** — `phone-handler.js` biedt een niet-blokkerende bel-overlay via `togglePhone()`. Bel-acties die altijd beschikbaar zijn (112, familie) worden gedefinieerd als `phoneContacts`-array in `data-scenarios-*.js` en worden geladen via `activatePhoneContacts()` in `activateScenarioConfig()`. Elk contact heeft dezelfde `startSceneId` / `conditionalOn` filtering als persistente keuzes, maar bellen vergrendelt de scènekeuzes niet en vereist geen 'Verder →'. De telefoon-knop wordt wel vergrendeld via `lockPhoneButton()` wanneer een scènekeuze in behandeling is (`pendingChoiceMade = true`).
 
 ### 4.7 `engine.js`
 

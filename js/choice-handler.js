@@ -12,12 +12,10 @@ function renderChoices(scene) {
     _conseqEl.innerHTML = '';
   }
   if (!scene.choices) {
-    // Geen keuzes: leeg de container (scène heeft alleen een 'Verder'-knop)
     if (wrap) wrap.innerHTML = '';
     return;
   }
   if (!wrap) return;
-  // Volgorde van keuze-categorieën: lagere waarde = eerder getoond
   const catOrder = {
     'cat-action': 0,
     'cat-risk': 0,
@@ -26,38 +24,43 @@ function renderChoices(scene) {
     'cat-info': 3,
     'cat-neutral': 3
   };
-  let html = '';
-  let btnIdx = 0;
-  const visibleChoices = scene.choices
-    .map((c, i) => ({
-      c,
-      i
-    }))
-    // Filter weg keuzes waarvan de conditie niet vervuld is
-    .filter(({
-      c
-    }) => !c.conditionalOn || c.conditionalOn())
-    // Sorteer op categorie zodat de meest urgente keuzes bovenaan staan
+
+  // Reguliere (locatiegebonden) keuzes
+  const visibleRegular = scene.choices
+    .map((c, i) => ({ c, id: `cbtn-${i}`, onclick: `pickChoice(${i})` }))
+    .filter(({ c }) => !c.conditionalOn || c.conditionalOn());
+
+  // Persistente keuzes — gemengd in dezelfde lijst, zelfde visuele behandeling
+  const allPersistent = (typeof persistentChoices !== 'undefined') ? persistentChoices : [];
+  const visibleScenes = typeof getActiveScenes === 'function' ? getActiveScenes() : [];
+  const visiblePersistent = allPersistent
+    .map((c, i) => ({ c, id: `pbtn-${i}`, onclick: `pickPersistentChoice(${i})` }))
+    .filter(({ c }) => {
+      if (c.startSceneId) {
+        const startIdx = visibleScenes.findIndex(s => s.id === c.startSceneId);
+        if (startIdx === -1 || currentSceneIdx < startIdx) return false;
+      }
+      return !c.conditionalOn || c.conditionalOn();
+    });
+
+  // Samenvoegen en sorteren op categorie
+  const allVisible = [...visibleRegular, ...visiblePersistent]
     .sort((a, b) => {
       const ta = a.c.cat || parseChoiceIcon(typeof a.c.text === 'function' ? a.c.text() : a.c.text).cat;
       const tb = b.c.cat || parseChoiceIcon(typeof b.c.text === 'function' ? b.c.text() : b.c.text).cat;
       return (catOrder[ta] ?? 3) - (catOrder[tb] ?? 3);
     });
-  visibleChoices.forEach(({
-    c,
-    i
-  }) => {
+
+  let html = '';
+  allVisible.forEach(({ c, id, onclick }, btnIdx) => {
     const txt = typeof c.text === 'function' ? c.text() : c.text;
     const parsed = parseChoiceIcon(txt);
     const icon = parsed.icon;
     const cat = c.cat || parsed.cat;
     const label = parsed.label;
-    // Stagger de animatie per knop: elke knop 55ms later zichtbaar
     const delay = btnIdx * 55;
-    // Gebruik het SVG-icoon als het beschikbaar is, anders lege string
     const iconSvg = (typeof ICON_SVG !== 'undefined' && ICON_SVG[icon]) ? ICON_SVG[icon] : '';
-    html += `<button class="choice-btn ${cat}" id="cbtn-${i}" onclick="pickChoice(${i})" style="animation:contentFade 260ms var(--ease-out) ${delay}ms both"><span class="choice-icon" aria-hidden="true">${iconSvg}</span><span>${label}</span></button>`;
-    btnIdx++;
+    html += `<button class="choice-btn ${cat}" id="${id}" onclick="${onclick}" style="animation:contentFade 260ms var(--ease-out) ${delay}ms both"><span class="choice-icon" aria-hidden="true">${iconSvg}</span><span>${label}</span></button>`;
   });
   wrap.innerHTML = html;
 }
@@ -648,6 +651,7 @@ function pickChoice(idx) {
   document.querySelectorAll('#sc-choices .choice-btn').forEach(b => { b.disabled = true; });
   btn.classList.add('picked');
   pendingChoiceMade = true;
+  if (typeof lockPhoneButton === 'function') lockPhoneButton(true);
 
   // Snapshot state before changes for delta calculation
   const statsBefore = {
@@ -745,6 +749,110 @@ function pickChoice(idx) {
   }
 
   // Speel keuze-specifiek geluidseffect af indien opgegeven
+  if (choice.sound && typeof SceneEffects !== 'undefined') {
+    SceneEffects._get(choice.sound).play();
+  }
+}
+
+function pickPersistentChoice(idx) {
+  const btn = document.getElementById('pbtn-' + idx);
+  if (btn && btn.classList.contains('picked')) return;
+  if (typeof hideInventoryConsequence === 'function') hideInventoryConsequence();
+
+  const allPersistent = (typeof persistentChoices !== 'undefined') ? persistentChoices : [];
+  const choice = allPersistent[idx];
+  if (!choice) return;
+
+  const visibleScenes = getActiveScenes();
+  const scene = visibleScenes[currentSceneIdx];
+
+  if (choice.failCondition && choice.failCondition()) {
+    const failText = typeof choice.failConsequence === 'function'
+      ? choice.failConsequence()
+      : (choice.failConsequence || 'Je kunt deze keuze nu niet maken.');
+    switchTab('buiten');
+    const failNarrativeEl = document.getElementById('sc-narrative');
+    if (!failNarrativeEl) return;
+    failNarrativeEl.innerHTML = '';
+    const failSpan = document.createElement('span');
+    failSpan.className = 'consequence-inline';
+    failNarrativeEl.appendChild(failSpan);
+    Typewriter.run(failText, failSpan, null);
+    return;
+  }
+
+  document.querySelectorAll('#sc-choices .choice-btn').forEach(b => { b.disabled = true; });
+  if (btn) btn.classList.add('picked');
+  pendingChoiceMade = true;
+
+  const statsBefore = {
+    water: state.water,
+    food: state.food,
+    comfort: state.comfort,
+    health: state.health,
+    phoneBattery: state.phoneBattery,
+    cash: state.cash
+  };
+
+  const rawSc = typeof choice.stateChange === 'function' ? choice.stateChange() : choice.stateChange;
+  const sc = rawSc || {};
+  applyStateChange(state, sc);
+  if (state.water === 0) state.ranOutOfWater = true;
+  if (state.food === 0) state.ranOutOfFood = true;
+  renderStatusBars();
+  if (typeof renderInventory === 'function') renderInventory();
+  Ambience.resumeForScene(scene.id);
+
+  const statAnchorMap = {
+    water: 'ss-water',
+    food: 'ss-food',
+    comfort: 'ss-comfort',
+    phoneBattery: 'batt-phone-fill',
+    cash: 'ss-cash-amount'
+  };
+  const deltaItems = Object.keys(statsBefore).map(k => {
+    const delta = state[k] - statsBefore[k];
+    if (delta === 0) return null;
+    const anchor = document.getElementById(statAnchorMap[k]);
+    if (!anchor) return null;
+    return { delta, rect: anchor.getBoundingClientRect() };
+  }).filter(Boolean);
+  deltaItems.forEach(({ delta, rect }) => {
+    const span = document.createElement('span');
+    span.className = 'stat-delta';
+    span.textContent = (delta > 0 ? '+' : '−') + Math.abs(delta);
+    span.style.color = delta > 0 ? '#22c55e' : '#ef4444';
+    span.style.left = (rect.left + rect.width / 2 - 12) + 'px';
+    span.style.top = (rect.top - 4) + 'px';
+    document.body.appendChild(span);
+    setTimeout(() => span.remove(), 1100);
+  });
+
+  choiceHistory.push({
+    sceneId: scene.id,
+    time: scene.time,
+    date: scene.date,
+    dayBadge: scene.dayBadge,
+    choiceText: typeof choice.text === 'function' ? choice.text() : choice.text
+  });
+
+  const consequenceText = typeof choice.consequence === 'function' ? choice.consequence() : choice.consequence;
+  switchTab('buiten');
+  const narrativeEl = document.getElementById('sc-narrative');
+  if (!narrativeEl) return;
+  narrativeEl.innerHTML = '';
+  const twSpan = document.createElement('span');
+  twSpan.className = 'consequence-inline';
+  narrativeEl.appendChild(twSpan);
+  Typewriter.run(consequenceText, twSpan, null);
+
+  if (choice.source) {
+    const sourceEl = document.createElement('p');
+    sourceEl.className = 'choice-source';
+    sourceEl.innerHTML = `<a href="${choice.source.url}" target="_blank" rel="noopener noreferrer">${choice.source.text}</a>`;
+    narrativeEl.appendChild(sourceEl);
+  }
+
   if (choice.sound && typeof SceneEffects !== 'undefined') {
     SceneEffects._get(choice.sound).play();
   }

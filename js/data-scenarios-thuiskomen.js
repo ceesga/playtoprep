@@ -67,6 +67,7 @@ const scenes_thuis_komen = [{
   dayBadgeClass: '',
   autoAdvanceMs: 2000,
   hideContinue: true,
+  hideHUD: true,
   visuals: {},
   channels: {
     news: [],
@@ -158,17 +159,13 @@ const scenes_thuis_komen = [{
     text: '🏃 Nu direct vertrekken, vóór het vastloopt',
     consequence: 'Je trekt je jas aan, pakt je spullen en vertrekt meteen. Buiten is het nog redelijk overzichtelijk. Je bent er vroeg bij.',
     stateChange: {
-      leftEarly: true
+      leftEarly: true,
+      networkDown: true
     }
-  }, {
-    conditionalOn: () => profile.adults > 1,
-    text: '📱 Partner bellen om af te stemmen',
-    consequence: () => state.phoneBattery > 0 ? 'Bellen lukt niet, het netwerk zit vol. Je stuurt een bericht: "Ik kom naar huis, geen idee hoe laat ik aankom." Pas veel later zie je een leesteken. Meer contact lukt voorlopig niet.' : 'Je telefoon is leeg. Je kunt je partner niet bereiken.',
-    stateChange: {}
   }, {
     text: '⏳ Nog even op kantoor afwachten wat er gaat komen',
     consequence: 'Je blijft nog even. Een collega heeft een powerbank, dus je laadt je telefoon bij. Om 13:00 vertrek je alsnog, maar dan staat alles vast.',
-    stateChange: {}
+    stateChange: { networkDown: true }
   }]
 }, {
   id: 'tk_2b',

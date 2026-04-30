@@ -218,10 +218,6 @@
     <span class="msb-stat-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg></span>
     <span class="msb-value" id="msb-val-comfort">100%</span>
   </div>
-  <div class="msb-stat">
-    <span class="msb-stat-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14v-4"/><path d="M22 14v-4"/><path d="M6 14v-4"/><rect x="2" y="6" width="16" height="12" rx="2"/></svg></span>
-    <span class="msb-value" id="msb-battery">80%</span>
-  </div>
   <div class="msb-stat msb-cash-pill">
     <span class="msb-stat-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>
     <span class="msb-value" id="msb-cash">€20</span>
@@ -283,7 +279,32 @@
 
 
 </div>
-<div class="scenario-inventory" id="scenario-inventory">
+<div class="scenario-phone" id="scenario-phone" hidden>
+  <div class="phone-panel" id="phone-panel" role="dialog" aria-modal="true"
+       aria-labelledby="phone-panel-title" hidden>
+    <div class="phone-panel-header">
+      <span class="phone-panel-title" id="phone-panel-title">Bellen</span>
+      <span class="phone-panel-battery" id="phone-panel-battery">Batterij 100%</span>
+      <button type="button" class="phone-panel-close" onclick="closePhone()"
+              aria-label="Belscherm sluiten">&#x2715;</button>
+    </div>
+    <div class="phone-panel-body">
+      <div id="phone-contacts-list"></div>
+      <div id="phone-consequence-area" class="phone-consequence-outer"></div>
+    </div>
+  </div>
+  <button type="button" class="phone-fab" id="phone-toggle"
+          onclick="togglePhone()" aria-label="Open telefoon"
+          aria-haspopup="dialog" aria-expanded="false">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="phone-fab-icon" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </svg>
+    <span class="phone-fab-battery" id="phone-fab-battery">100%</span>
+  </button>
+</div>
+<div class="scenario-inventory" id="scenario-inventory" hidden>
   <div class="inventory-panel" id="inventory-panel" role="dialog" aria-modal="true" aria-labelledby="inventory-title" hidden>
     <div class="inventory-panel-header">
       <span class="inventory-title" id="inventory-title">Inventaris</span>
@@ -293,7 +314,15 @@
     <div class="consequence-box inv-consequence-box" id="inv-consequence"></div>
   </div>
   <button type="button" class="inventory-fab" id="inventory-toggle" onclick="toggleInventory()" aria-label="Open inventaris" aria-haspopup="dialog" aria-expanded="false">
-    <img src="afbeelding/algemeen/backpack.webp" alt="" aria-hidden="true" class="inventory-fab-img">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="inventory-fab-icon" aria-hidden="true">
+      <path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>
+      <path d="M8 10h8"/>
+      <path d="M8 18h8"/>
+      <path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6"/>
+      <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+    </svg>
   </button>
 </div>
 
@@ -386,13 +415,6 @@
     <div class="ss-val-block">
       <div class="ss-val-row"><span class="ss-big-val" id="ss-val-comfort">100</span><span class="ss-unit">%</span></div>
       <div class="ss-progress"><div class="ss-progress-fill ss-fill-comfort" id="ss-fill-comfort" style="width:100%"></div></div>
-    </div>
-  </div>
-  <div class="ss-stat" id="ss-battery">
-    <div class="ss-icon-bg ss-col-battery" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14v-4"/><path d="M22 14v-4"/><path d="M6 14v-4"/><rect x="2" y="6" width="16" height="12" rx="2"/></svg></div>
-    <div class="ss-val-block">
-      <div class="ss-val-row"><span class="ss-big-val" id="batt-phone-pct">80</span><span class="ss-unit">%</span></div>
-      <div class="ss-progress"><div class="ss-progress-fill ss-fill-battery" id="ss-fill-battery" style="width:80%"></div></div>
     </div>
   </div>
 </div>

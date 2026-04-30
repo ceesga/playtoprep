@@ -213,6 +213,19 @@ body {
   <div class="legend-item"><div class="legend-box lb-condscene"></div>Scène — conditioneel (kan worden overgeslagen)</div>
 </div>
 
+<div style="max-width:680px;margin:0 auto 36px;background:#0d1e10;border:1.5px dashed #3a7a3a;border-radius:10px;padding:16px 20px;font-size:.8rem;color:#90c090;line-height:1.6">
+  <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#4a8060;margin-bottom:10px">Persistente keuzes — altijd mogelijk (vanaf bf_3)</div>
+  <div style="display:flex;align-items:flex-start;gap:12px">
+    <div style="background:#102a12;border:1.5px solid #3a7a3a;border-radius:8px;padding:9px 14px;font-size:.74rem;color:#90c090;flex:1">
+      📱 Familie laten weten dat je veilig bent<br>
+      <span style="font-size:.62rem;color:#4a8060;font-style:italic;display:block;margin-top:5px;line-height:1.4">
+        Beschikbaar in alle scènes vanaf bf_3 · verdwijnt zodra contact is gelegd (state: familyContacted = true).<br>
+        Ook bf_2 "Familie en vrienden informeren" zet nu familyContacted = true. Consequentie: SMS bij overbelast netwerk.
+      </span>
+    </div>
+  </div>
+</div>
+
 <div id="scroll-wrap">
   <div id="tree">
     <svg id="svg-layer"></svg>
@@ -367,7 +380,6 @@ const SCENES = [
     id: 'bf_5', time: 'Zaterdag 14 aug · 13:30', title: 'Noodopvang — sporthal stampvol',
     choices: [
       { text: '📋 Registreren bij de gemeente' },
-      { text: '📱 Eerst familie bellen' },
       { text: '🛏️ Snel slaapplek claimen' }
     ]
   },

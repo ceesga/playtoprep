@@ -157,6 +157,7 @@ const STATE_DEFAULTS = {
   evacuatedFlood: false,
   savedItems: false,
   calledRescue: false,
+  familyContacted: false,
   kidsWithYou: false,
   sentKidsToSchool: false,
   cutElectricity: false,

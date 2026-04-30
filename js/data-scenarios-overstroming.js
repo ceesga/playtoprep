@@ -11,6 +11,45 @@ const FLOOD_CHILD_CRISIS_SOURCE = {
   url: 'https://www.unodc.org/res/drug-prevention-and-treatment/publications/data/drug-abuse-treatment-and-rehabilitation_caring-for-your-child-in-crisis-situations_html/UN-Caring-for-child-in-Crisis-Situations-booklet-200929-DIGITAL.pdf'
 };
 
+const phoneContacts_overstroming = [
+  {
+    name: '112',
+    startSceneId: 'ov_1',
+    label: 'Bel 112',
+    get consequence() {
+      if (state.calledRescue) {
+        return 'Je hebt al hulp ingeroepen. De meldkamer noteert: "We hebben uw melding." Reddingsdiensten zijn op weg.';
+      }
+      if (state.wentUpstairs === false) {
+        return 'Je staat vast in het water. Je belt 112. "Blijf staan op uw auto, niet lopen." Na veertig minuten komt een reddingsboot. Je bent gered, maar de auto is verloren.';
+      }
+      if (state.wentUpstairs === true) {
+        return 'Je belt 112 vanuit je bovenhuis. De meldkamer noteert je adres: "Blijf boven, ga niet naar beneden. We sturen hulp." Even later arriveert er een reddingsboot.';
+      }
+      return 'Je belt 112. De meldkamer vraagt je situatie en noteert je adres. Ze geven aan dat reddingsdiensten in de buurt zijn. "Bel ons opnieuw als u daadwerkelijk in gevaar bent."';
+    },
+    source: { text: 'Rijksoverheid: bel 112 als u daadwerkelijk in gevaar bent', url: 'https://www.rijksoverheid.nl/onderwerpen/water/vraag-en-antwoord/wat-moet-ik-doen-bij-een-dreigende-overstroming' },
+    get stateChange() {
+      if (state.calledRescue) return {};
+      if (state.wentUpstairs === false) return { calledRescue: true, evacuatedFlood: true };
+      return { calledRescue: true };
+    },
+    conditionalOn: () => state.phoneBattery > 0
+  },
+  {
+    name: 'Oma',
+    startSceneId: 'ov_2b',
+    get label() { return profile.childrenCount === 1 ? 'Bel oma (kind ophalen)' : 'Bel oma (kinderen ophalen)'; },
+    get consequence() {
+      return profile.childrenCount === 1
+        ? 'Je belt oma. Ze neemt direct op: "Ik ga er meteen heen." Ze woont dichtbij en is snel bij de school. "Maak je geen zorgen, ik zorg goed voor hem." Je hangt op met een goed gevoel.'
+        : 'Je belt oma. Ze neemt direct op: "Ik ga er meteen heen." Ze woont dichtbij en is snel bij de school. "Maak je geen zorgen, ik zorg goed voor ze." Je hangt op met een goed gevoel.';
+    },
+    stateChange: { kidsWithYou: false },
+    conditionalOn: () => profile.hasChildren && state.sentKidsToSchool === true && !state.evacuatedFlood && !state.kidsWithYou && state.phoneBattery > 0
+  }
+];
+
 const scenes_overstroming = [{
   id: 'ov_0',
   time: '20:00',
@@ -85,7 +124,8 @@ const scenes_overstroming = [{
     const buiten = (profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw')
       ? ' Je kijkt vanuit je raam omlaag: op de stoep begint het water al te staan.'
       : '';
-    return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. De regen klinkt heftiger dan normaal.' + gisteren + tasNietKlaar + buiten + kinderen + huisdier;
+    const radio = profile.hasRadio === 'ja' ? ' Je zet de batterijradio aan en stemt af op Radio 1.' : '';
+    return 'Je wordt wakker van de regen die hard tegen je raam slaat. Het is dinsdag, vroeg in de ochtend. De regen klinkt heftiger dan normaal.' + gisteren + tasNietKlaar + buiten + kinderen + huisdier + radio;
   },
   choices: [{
     conditionalOn: () => !state.packedBag,
@@ -280,11 +320,11 @@ const scenes_overstroming = [{
       sentKidsToSchool: false
     }
   }, {
-    text: () => profile.childrenCount === 1 ? '📱 Iemand anders vragen je kind op te halen' : '📱 Iemand anders vragen de kinderen op te halen',
-    consequence: () => state.phoneBattery > 0 ? (profile.childrenCount === 1 ? 'Je belt oma. Zij woont dichtbij en kan direct gaan. Ze haalt je kind op en brengt het naar een veilig adres.' : 'Je belt oma. Zij woont dichtbij en kan direct gaan. Ze haalt de kinderen op en brengt ze naar een veilig adres.') : 'Je telefoon is leeg. Je kunt niemand bellen om op te halen.',
-    stateChange: () => state.phoneBattery > 0 ? {
-      kidsWithYou: false
-    } : {}
+    text: () => profile.childrenCount === 1 ? '📱 Iemand anders laten ophalen' : '📱 Iemand anders laten ophalen',
+    consequence: () => state.phoneBattery > 0
+      ? (profile.childrenCount === 1 ? 'Je belt oma. Ze gaat direct en brengt je kind naar een veilig adres.' : 'Je belt oma. Ze gaat direct en brengt de kinderen naar een veilig adres.')
+      : 'Je telefoon is leeg. Je kunt niemand bereiken om op te halen.',
+    stateChange: () => state.phoneBattery > 0 ? { kidsWithYou: false } : {}
   }, {
     text: '⏳ Even wachten en straks tegelijk ophalen en spullen pakken',
     consequence: 'Je wacht een kwartier. Als je rijdt, staat de weg al half blank. Je komt er nog, maar het was spannend.',
@@ -685,13 +725,6 @@ const scenes_overstroming = [{
     stateChange: {
       wentUpstairs: true
     }
-  }, {
-    text: '📱 112 bellen',
-    consequence: () => state.phoneBattery > 0 ? 'Je belt 112. "Blijf op uw auto staan, niet lopen." Na 40 minuten komt een reddingsboot. Je bent gered, maar de auto is verloren.' : 'Je telefoon is leeg. Je kunt 112 niet bereiken. Je wacht en hoopt dat iemand je ziet.',
-    stateChange: () => state.phoneBattery > 0 ? {
-      evacuatedFlood: true,
-      calledRescue: true
-    } : {}
   }, {
     text: '🆘 Hulp vragen aan voorbijrijdende boot of buren',
     consequence: 'Je roept. Een buurman met een roeiboot vaart voorbij en pikt je op. Je wordt naar hoger gelegen terrein gebracht.',

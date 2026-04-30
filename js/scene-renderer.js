@@ -72,6 +72,7 @@ function renderStatusBars() {
   // Mobile bar — battery + cash
   const mBatt = document.getElementById('msb-battery');
   if (mBatt) mBatt.textContent = state.phoneBattery + '%';
+  if (typeof updatePhoneFabBattery === 'function') updatePhoneFabBattery();
   const mCash = document.getElementById('msb-cash');
   if (mCash) mCash.textContent = '€' + state.cash;
   // Voertuigen — toon of dim auto/fiets afhankelijk van het scenario en profiel

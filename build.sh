@@ -26,6 +26,7 @@ npx terser \
   "$BASE/js/audio.js" \
   "$BASE/js/scene-renderer.js" \
   "$BASE/js/channel-manager.js" \
+  "$BASE/js/phone-handler.js" \
   "$BASE/js/choice-handler.js" \
   "$BASE/js/engine.js" \
   "$BASE/js/report.js" \

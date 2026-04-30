@@ -2594,9 +2594,11 @@ body.scene-blackout .sc-clock-icon {
   right:20px;
   bottom:clamp(80px,11vh,100px);
   z-index:40;
-  display:flex;
   flex-direction:column;
   align-items:flex-end;
+}
+.scenario-inventory:not([hidden]) {
+  display:flex;
 }
 
 .inventory-panel {
@@ -2761,28 +2763,29 @@ body.scene-blackout .sc-clock-icon {
 }
 
 .inventory-fab {
-  width:96px;
-  height:96px;
-  border:none;
-  border-radius:0;
-  background:transparent;
-  padding:0;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  filter:drop-shadow(0 4px 12px rgba(15,23,42,.5));
-  transition:filter .25s ease;
+  width: 82px;
+  height: 82px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15, 30, 50, 0.85);
+  border: 1.5px solid rgba(80, 140, 200, 0.4);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  transition: background 0.2s;
 }
 
 .inventory-fab:hover {
-  filter:drop-shadow(0 6px 16px rgba(15,23,42,.6));
+  background: rgba(30, 55, 85, 0.95);
 }
 
-.inventory-fab-img {
-  width:96px;
-  height:96px;
-  object-fit:contain;
+.inventory-fab-icon {
+  width: 34px;
+  height: 34px;
+  color: #f97316;
 }
 
 @keyframes slideDown {
@@ -4536,10 +4539,14 @@ h3 .help-icon svg {
     bottom:clamp(72px,10vh,88px);
   }
 
-  .inventory-fab,
-  .inventory-fab-img {
-    width:48px;
-    height:48px;
+  .inventory-fab {
+    width: 56px;
+    height: 56px;
+  }
+
+  .inventory-fab-icon {
+    width: 24px;
+    height: 24px;
   }
 
   .inventory-panel {
@@ -5459,4 +5466,211 @@ a:focus-visible {
 
 .login-form .start-menu {
   margin-top: 10px;
+}
+
+/* ─── TELEFOON FAB ────────────────────────────────────────────────────────── */
+.scenario-phone {
+  position: fixed;
+  right: 128px;
+  bottom: clamp(80px, 11vh, 100px);
+  z-index: 40;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.scenario-phone:not([hidden]) {
+  display: flex;
+}
+
+.phone-fab {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: rgba(15, 30, 50, 0.85);
+  border: 1.5px solid rgba(80, 140, 200, 0.4);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  transition: background 0.2s;
+  gap: 3px;
+}
+
+.phone-fab:hover {
+  background: rgba(30, 55, 85, 0.95);
+}
+
+.phone-fab:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.phone-fab-icon {
+  width: 32px;
+  height: 32px;
+  color: rgb(76, 187, 23);
+}
+
+.phone-fab-battery {
+  font-size: 0.55rem;
+  color: #5a8aaa;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* ─── TELEFOON PANEL ──────────────────────────────────────────────────────── */
+.phone-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -52%);
+  width: min(400px, calc(100vw - 32px));
+  max-height: min(70vh, 520px);
+  background: #0d1a27;
+  border: 1.5px solid rgba(80, 140, 200, 0.35);
+  border-radius: 22px;
+  box-shadow: 0 32px 72px -16px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  z-index: 200;
+}
+
+.phone-panel:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+}
+
+.phone-panel-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(80, 140, 200, 0.2);
+  gap: 8px;
+}
+
+.phone-panel-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #c8dff0;
+  flex: 1;
+}
+
+.phone-panel-battery {
+  font-size: 0.75rem;
+  color: #5a8aaa;
+}
+
+.phone-panel-close {
+  background: none;
+  border: none;
+  color: #5a8aaa;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.phone-panel-close:hover {
+  color: #90b8d8;
+}
+
+.phone-panel-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ─── CONTACT KAART ───────────────────────────────────────────────────────── */
+.phone-contact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(80, 140, 200, 0.15);
+  border-radius: 12px;
+  padding: 11px 14px;
+}
+
+.phone-contact-avatar {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #7ab8e8;
+  background: rgba(80, 140, 200, 0.12);
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.phone-contact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.phone-contact-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c8dff0;
+  line-height: 1.3;
+}
+
+.phone-call-btn {
+  flex-shrink: 0;
+  background: #1a4a2a;
+  border: 1.5px solid #2a7a3a;
+  border-radius: 20px;
+  color: #6ecc88;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.phone-call-btn:hover {
+  background: #1f5a32;
+}
+
+.phone-call-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── CONSEQUENTIE IN BELSCHERM ───────────────────────────────────────────── */
+.phone-consequence {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(80, 140, 200, 0.15);
+  border-radius: 10px;
+  padding: 10px 13px;
+  font-size: 0.78rem;
+  color: #90b8d8;
+  line-height: 1.6;
+}
+
+.phone-source-link {
+  font-size: 0.65rem;
+  color: #3a6080;
+  margin-top: 6px;
+  display: block;
+}
+
+.phone-empty {
+  text-align: center;
+  color: #3a5a70;
+  font-size: 0.8rem;
+  padding: 24px 0;
+}
+
+.phone-consequence-outer {
+  padding: 0 0 4px;
 }
