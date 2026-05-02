@@ -1,8 +1,8 @@
 // Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Stroomstoring — "Een gewone winterdag"
-// 28 scenes — van st_pre_d2 (vrijdagmiddag) tot st_14 (stroom terug)
-// Tijdspanne: vrijdag 29 jan → woensdag 3 feb 2027
+// 27 scenes — van st_pre_d1 (zaterdagmiddag) tot st_14 (stroom terug)
+// Tijdspanne: zaterdag 30 jan → woensdag 3 feb 2027
 // ═══════════════════════════════════════════════════════════════
 
 
@@ -22,11 +22,12 @@ const phoneContacts_stroom = [
 ];
 
 const scenes_stroom = [
-  // SCENE 1 — Day -2
+  // SCENE 1 — Day -1
   {
-    id: 'st_pre_d2',
+    id: 'st_pre_d1',
+    _w: 'PTP-NL-©2026-4vH8rZ',
     time: '12:00',
-    date: 'Vrijdag 29 januari 2027',
+    date: 'Zaterdag 30 januari 2027',
     dayBadge: '',
     dayBadgeClass: 'blue',
     channels: {
@@ -38,34 +39,7 @@ const scenes_stroom = [
         time: '11:02',
         headline: 'Kabinet verhoogt budget voor cyberveiligheid vitale infrastructuur',
         body: 'Het kabinet trekt 340 miljoen extra uit voor de beveiliging van energiecentrales, waterwerken en communicatienetwerken.'
-      }],
-      whatsapp: [],
-      nlalert: null,
-      radio: 'Radio 1. Het nieuws van twaalf uur. Experts waarschuwen voor zwakke plekken in delen van het Europese stroomnet. De precieze oorzaak is nog niet duidelijk. Verder: zacht winterweer dit weekend, met kans op natte sneeuw in de regio.'
-    },
-    narrative: 'Het is een gewone vrijdagmiddag. Je hebt lunchpauze. Buiten waait een koude januariewind en op kantoor is het druk. Zelf ben je met heel andere dingen bezig.',
-    choices: [{
-      text: '💡 Ik lees het artikel over zwakke plekken in het stroomnet',
-      consequence: 'Je leest het artikel aandachtig. Experts leggen uit hoe een grote storing zich via het gekoppelde net verder kan verspreiden. Later denk je er niet veel meer aan, maar je onthoudt wel dat het stroomnet kwetsbaar kan zijn.',
-      stateChange: {
-        awarenessLevel: 1
-      }
-    }, {
-      text: '🙈 Ik scroll verder, dit soort nieuws is er altijd',
-      consequence: 'Je scrolt door naar sport en entertainment. Zulke berichten zijn er volgens jou altijd wel.',
-      stateChange: {}
-    }]
-  },
-  // SCENE 2 — Day -1
-  {
-    id: 'st_pre_d1',
-    _w: 'PTP-NL-©2026-4vH8rZ',
-    time: '12:00',
-    date: 'Zaterdag 30 januari 2027',
-    dayBadge: '',
-    dayBadgeClass: 'blue',
-    channels: {
-      news: [{
+      }, {
         time: '11:47',
         headline: 'Experts zien onrustige signalen op Europees stroomnet',
         body: 'Netbeheerders en experts melden dat er de laatste dagen meerdere storingen en spanningsschommelingen zijn geweest op delen van het Europese stroomnet. De precieze oorzaak is nog niet duidelijk.'
@@ -85,19 +59,10 @@ const scenes_stroom = [
     },
     narrative: 'In het dorp hangt vandaag een onrustige sfeer. Mensen praten in groepjes en in het lunchcafé staat de tv harder dan normaal. Buiten lijkt alles gewoon, maar de stemming voelt anders.',
     choices: [{
-      text: '💵 Ik pin even €100 contant geld, voor de zekerheid',
-      consequence: 'Je haalt €100 op uit de automaat. Je hebt nu contant geld bij je als pinnen of betalen later moeilijker wordt.',
-      source: { text: 'Denkvooruit: contant geld hoort in je noodpakket', url: 'https://www.denkvooruit.nl/bereid-je-voor/stel-je-noodpakket-samen' },
+      text: '💡 Ik lees het artikel over zwakke plekken in het stroomnet',
+      consequence: 'Je leest het artikel aandachtig. Experts leggen uit hoe een grote storing zich via het gekoppelde net verder kan verspreiden. Later denk je er niet veel meer aan, maar je onthoudt wel dat het stroomnet kwetsbaar kan zijn.',
       stateChange: {
-        hasCash: true,
-        cash: 100
-      }
-    }, {
-      text: '🔦 Ik pak de zaklamp eruit en check of de batterijen het nog doen',
-      consequence: 'Je vindt de zaklamp in de keukenkast. De batterijen zijn bijna leeg. Je vervangt ze door nieuwe en legt de zaklamp klaar.',
-      source: { text: 'Denkvooruit: een zaklamp is een vast onderdeel van het noodpakket', url: 'https://www.denkvooruit.nl/bereid-je-voor/stel-je-noodpakket-samen' },
-      stateChange: {
-        hasFlashlight: true
+        awarenessLevel: 1
       }
     }, {
       text: '💬 Ik stuur Rob terug: "Ja, beetje raar. Ik hoop dat het niks is"',
@@ -1342,7 +1307,6 @@ const scenes_stroom = [
    Wordt in engine.js samengevoegd tot sceneBgMap.
 */
 const sceneImages_stroom = {
-  st_pre_d2:   'afbeelding/stroomstoring/huis_winter_0.webp',
   st_pre_d1:   'afbeelding/stroomstoring/huis_winter_0.webp',
   st_d0_morgen:'afbeelding/stroomstoring/huis_winter_0.webp',
   st_2:        'afbeelding/stroomstoring/huis_winter_0.webp',
@@ -1376,7 +1340,6 @@ const sceneImages_stroom = {
 // maar specifiek voor een flatgebouw-interieur.
 const sceneImages_stroom_appartement = {
   // Fase 0 — stroom werkt nog
-  st_pre_d2:    'afbeelding/stroomstoring/appartement_winter_0.webp',
   st_pre_d1:    'afbeelding/stroomstoring/appartement_winter_0.webp',
   st_d0_morgen: 'afbeelding/stroomstoring/appartement_winter_0.webp',
   st_2:         'afbeelding/stroomstoring/appartement_winter_0.webp',

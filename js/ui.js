@@ -344,13 +344,17 @@ function show(id) {
     card.classList.toggle('start-active', id === 's-start' || id === 's-login');
   }
 
-  // Rugzakknop verborgen op startpagina en rapportpagina
+  // Rugzakknop verborgen op startpagina, uitleg, intake en rapportpagina
   const invToggle = document.getElementById('scenario-inventory');
-  if (invToggle) invToggle.style.display = (id === 's-login' || id === 's-start' || id === 's-report') ? 'none' : '';
+  if (invToggle) {
+    const hideInv = ['s-login','s-start','s-uitleg','s-intake','s-report'].includes(id);
+    if (hideInv) { invToggle.setAttribute('hidden', ''); }
+    else { invToggle.removeAttribute('hidden'); }
+  }
 
-  // Hamburgerknop verborgen op startpagina en scenario (scenario heeft eigen profielknop)
+  // Hamburgerknop verborgen op startpagina
   const globalMenuBtn = document.getElementById('global-menu-btn');
-  if (globalMenuBtn) globalMenuBtn.style.display = (id === 's-login' || id === 's-start' || id === 's-scenario') ? 'none' : 'flex';
+  if (globalMenuBtn) globalMenuBtn.style.display = ['s-login','s-start','s-uitleg','s-intake','s-scenario','s-report'].includes(id) ? 'none' : 'flex';
 
   // Globale klok: verborgen op startpagina, scenario en rapportpagina
   const globalClock = document.getElementById('global-clock');

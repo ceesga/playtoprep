@@ -320,10 +320,15 @@ function intakeNext() {
       else if (ouderenCount === 1) selectedPlayerPerson = { type: 'ouderen', index: 0 };
       else if (slechtTerBeenCount === 1) selectedPlayerPerson = { type: 'slechtTerBeen', index: 0 };
       else if (childrenCount === 1) selectedPlayerPerson = { type: 'child', index: 0 };
+      // Sla stap -4 (wie ben jij) over: er is maar één persoon
+      profile.playerPersonType = selectedPlayerPerson.type;
+      profile.playerIsMobilityImpaired = selectedPlayerPerson.type === 'slechtTerBeen';
+      profile.playerIsElderly = selectedPlayerPerson.type === 'ouderen';
+      intakeStep = -3;
     } else {
       selectedPlayerPerson = null; // Reset bij meerdere personen
+      intakeStep = -4;
     }
-    intakeStep = -4;
     renderIntake();
     return;
   }
@@ -389,7 +394,7 @@ function intakePrev() {
   } else if (intakeStep === -4) {
     intakeStep = -5;
   } else if (intakeStep === -3) {
-    intakeStep = -4;
+    intakeStep = profile.members === 1 ? -5 : -4;
   } else if (intakeStep === -2) {
     intakeStep = -3;
   } else if (intakeStep === -1) {

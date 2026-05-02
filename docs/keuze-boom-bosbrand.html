@@ -254,13 +254,14 @@ const SCENES = [
     id: 'bf_1', time: 'Zaterdag 14 aug · 09:00', title: 'Rookpluim aan de horizon',
     choices: [
       { text: '📱 Nieuws checken — wat is er aan de hand?' },
-      { text: '🙈 Rookpluim negeren — loopt wel los' }
+      { text: '🌿 Alsnog brandbare materialen weghalen', cond: 'Nog niet gedaan' },
+      { text: '🎒 Alvast een vluchttas inpakken', cond: 'Nog geen tas ingepakt' }
     ]
   },
   {
     id: 'bf_2', time: 'Zaterdag 14 aug · 10:15', title: 'Evacuatie kan meer voorbereiding vragen',
     choices: [
-      { text: '🎒 Alvast tas inpakken — voor het geval dat' },
+      { text: '🎒 Alsnog een vluchttas inpakken', cond: 'Nog geen tas ingepakt' },
       { text: '📱 Familie en vrienden informeren' }
     ]
   },
@@ -269,7 +270,8 @@ const SCENES = [
     choices: [
       { text: '🚗 Nu zelf vertrekken — niet wachten' },
       { text: '📻 Wachten op officieel bericht via radio' },
-      { text: '🏘️ Buren waarschuwen voor je vertrekt' }
+      { text: '🏘️ Buren waarschuwen voor je vertrekt' },
+      { text: '🐾 Huisdier alvast in de transportmand zetten', cond: 'Heeft huisdier, nog niet in mand' }
     ]
   },
   {
@@ -294,14 +296,14 @@ const SCENES = [
     conditional: true,
     condNote: 'Overgeslagen als: al vroeg zelf geëvacueerd',
     choices: [
-      { text: '📄 Paspoort, medicijnen en oplader — snel' },
+      { text: '🎒 Vluchttas oppakken en weggaan', cond: 'Heeft vluchttas — tekst wordt "vluchttas en transportmand" als huisdier al in mand' },
       { text: '⚡ Nu direct weg, niets meenemen' },
-      { text: '🐕 Eerst huisdier veiligstellen', cond: 'Heeft huisdier + nog niet veiliggesteld' },
+      { text: '🐕 Eerst huisdier veiligstellen', cond: 'Heeft huisdier + nog niet in transportmand' },
       { text: '💎 Waardevolle spullen inpakken' }
     ]
   },
   {
-    id: 'bf_3c', time: 'Zaterdag 14 aug · 12:00', title: 'Auto staat klaar',
+    id: 'bf_3c', time: 'Zaterdag 14 aug · 11:45', title: 'Auto staat klaar',
     conditional: true,
     condNote: 'Overgeslagen als: geen kinderen bij je, of al vroeg geëvacueerd',
     choices: [
@@ -315,16 +317,6 @@ const SCENES = [
       { text: '🚲 Met de fiets of scooter', cond: 'Heeft fiets of scooter' },
       { text: '🚶 Te voet — 3 kilometer', cond: 'Niet slecht ter been' },
       { text: '🆘 Hulp vragen — zelf lukt dit niet', cond: 'Slecht ter been' }
-    ]
-  },
-  {
-    id: 'bf_4a', time: 'Zaterdag 14 aug · 12:05', title: 'Welke route neem je?',
-    conditional: true,
-    condNote: 'Overgeslagen als: te voet of hulp ingeroepen',
-    choices: [
-      { text: '🛣️ Dwars op brand, naar openbare weg' },
-      { text: '🌲 Kortste route langs de bosrand' },
-      { text: '➡️ In dezelfde richting blijven vluchten' }
     ]
   },
   {
@@ -364,16 +356,6 @@ const SCENES = [
     choices: [
       { text: '🚌 Meteen instappen en instructies volgen' },
       { text: '🤝 Eerst andere wachtende helpen instappen' }
-    ]
-  },
-  {
-    id: 'bf_4e', time: 'Zaterdag 14 aug · 12:45', title: 'Kind hoest — rook wordt dikker',
-    conditional: true,
-    condNote: 'Overgeslagen als: geen kinderen, of kind niet bij je',
-    choices: [
-      { text: '🧣 Shirt als filter — uitleggen hoe te ademen' },
-      { text: '🏃 Doorgaan, hand pakken en doorlopen' },
-      { text: '💬 Even stoppen, rustig uitleggen — bijna er' }
     ]
   },
   {
@@ -429,23 +411,7 @@ const SCENES = [
     ]
   },
   {
-    id: 'bf_6', time: 'Zondag 15 aug · 09:00', title: 'Ochtend na — mag je terug?',
-    choices: [
-      { text: '📋 Wachten op officieel sein veilig' },
-      { text: '⏳ Nog even wachten — situatie onduidelijk' }
-    ]
-  },
-  {
-    id: 'bf_6b', time: 'Zondag 15 aug · 10:00', title: 'Kind loopt mee de straat in',
-    conditional: true,
-    condNote: 'Overgeslagen als: geen kinderen, of kind niet bij je',
-    choices: [
-      { text: '💬 Eerlijk antwoorden waarom ons huis er nog staat' },
-      { text: '🤫 Naast kind lopen en even zwijgen' }
-    ]
-  },
-  {
-    id: 'bf_7', time: 'Zondag 15 aug · 11:00', title: 'Terug thuis — geur van as',
+    id: 'bf_6', time: 'Zondag 15 aug · 09:00', title: 'Terug thuis — geur van as',
     choices: [
       { text: '🏠 Woning inspecteren — buiten dan binnen' },
       { text: '📸 Schade fotograferen voor de verzekering' },

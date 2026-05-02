@@ -1,7 +1,7 @@
 // Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Natuurbrand — "Een warme droge zomer"
-// 23 scenes — van bf_0 (vrijdagavond) tot bf_7 (thuiskomst)
+// 21 scenes — van bf_0 (vrijdagavond) tot bf_6 (thuiskomst)
 // Tijdspanne: ~24 uur
 // ═══════════════════════════════════════════════════════════════
 
@@ -69,8 +69,9 @@ const scenes_natuurbrand = [{
   },
   narrative: 'Je bent \'s ochtends bezig met je ochtendritueel als je opeens een vage rooklucht opmerkt. Zwak, maar onmiskenbaar. Je stopt even en snuift de lucht op. Verbrand hout? Of iets anders? Je vraagt je af waar die geur vandaan komt.',
   choices: [{
-    text: '🎒 Noodtas klaarzetten voor het geval dat',
-    consequence: 'Je pakt alvast een tas: paspoort, medicijnen, oplader, wat kleding. Zet hem bij de deur. Als het mis gaat, ben je klaar.',
+    conditionalOn: () => !profile.hasBOBBag,
+    text: '🎒 Alvast een vluchttas klaarzetten',
+    consequence: 'Je pakt een tas: paspoort, medicijnen, oplader, wat kleding. Zet hem bij de deur. Als het mis gaat, ben je klaar om te gaan.',
     stateChange: {
       packedBag: true,
       awarenessLevel: 1
@@ -81,19 +82,14 @@ const scenes_natuurbrand = [{
     cat: 'cat-action',
     stateChange: { awarenessLevel: 1 }
   }, {
-    text: '📱 Op de telefoon kijken of er al iets gemeld is',
-    consequence: 'Je scrolt door het nieuws. Nog niets in de buurt, maar er is wel een KNMI-waarschuwing voor extreme droogte en hitte. Je besluit de situatie in de gaten te houden.',
-    cat: 'cat-info',
-    stateChange: { awarenessLevel: 1 }
-  }, {
     text: '🌿 Brandbare materialen rondom het huis weghalen',
     consequence: 'Je haalt droge bladhopen, tuinstoelen en andere brandbare spullen weg bij de buitenmuren en schutting. Het kost een half uur zweet, maar je woning is nu een stuk minder kwetsbaar als het vuur dichtbij komt.',
     cat: 'cat-action',
     source: { text: 'Brandweer: verwijder brandbaar materiaal rondom je woning bij dreigend natuurbrandgevaar', url: 'https://www.brandweer.nl/onderwerpen/natuurbrand-voorkomen-tips-vakantieverblijf/' },
     stateChange: { madeFirebreak: true, awarenessLevel: 1 }
   }, {
-    text: '🙈 Het negeren, het zal wel meevallen',
-    consequence: 'Je ruikt het nog even, en gaat dan verder met wat je aan het doen was. Misschien is het van ver. Misschien niks.',
+    text: '📱 Even checken op de telefoon — het zal wel meevallen',
+    consequence: 'Je scrolt snel door het nieuws. Niets specifieks in de buurt. Je legt de telefoon neer en gaat verder met waar je mee bezig was. Misschien is het van ver. Misschien niks.',
     stateChange: {}
   }]
 }, {
@@ -131,10 +127,23 @@ const scenes_natuurbrand = [{
       awarenessLevel: 1
     }
   }, {
-    text: '🙈 Rookpluim negeren, het zal wel loslopen',
-    consequence: 'Je gaat naar binnen. Het zal wel meevallen, denk je. Maar ondertussen houd je de situatie helemaal niet in de gaten.',
-    stateChange: {}
-  }, ]
+    conditionalOn: () => !state.madeFirebreak,
+    text: '🌿 Alsnog brandbare materialen rondom het huis weghalen',
+    consequence: 'Je haalt snel droge bladeren, tuinstoelen en andere brandbare spullen bij de buitenmuren vandaan. Met die rookpluim aan de horizon is het beter om dit nu te doen. Je huis is een stuk minder kwetsbaar als het vuur dichterbij zou komen.',
+    cat: 'cat-action',
+    source: { text: 'Brandweer: verwijder brandbaar materiaal rondom je woning bij dreigend natuurbrandgevaar', url: 'https://www.brandweer.nl/onderwerpen/natuurbrand-voorkomen-tips-vakantieverblijf/' },
+    stateChange: {
+      madeFirebreak: true,
+      awarenessLevel: 1
+    }
+  }, {
+    conditionalOn: () => !state.packedBag,
+    text: '🎒 Alvast een vluchttas inpakken, voor het geval dat',
+    consequence: 'Je pakt snel een tas: paspoort, medicijnen, oplader en wat kleding. Je zet hem bij de voordeur. Als er een bevel komt, ben je meteen klaar om te gaan.',
+    stateChange: {
+      packedBag: true
+    }
+  }]
 }, {
   id: 'bf_2',
     _w: 'PTP-NL-©2026-4vH8rZ',
@@ -166,7 +175,8 @@ const scenes_natuurbrand = [{
     return 'De rookpluim is groter geworden en je ruikt de rook nu duidelijk. Je ogen prikken licht. Buiten zie je een buurvrouw haar auto volstouwen. Het begint serieus te worden.' + extra;
   },
   choices: [{
-    text: '🎒 Alvast een tas inpakken, voor het geval dat',
+    conditionalOn: () => !state.packedBag,
+    text: '🎒 Alsnog een vluchttas inpakken, voor het geval dat',
     consequence: 'Je pakt een tas met paspoort, medicijnen, oplader, wat kleding en contant geld. Als het bevel komt, kun je meteen weg.',
     stateChange: {
       packedBag: true
@@ -226,13 +236,12 @@ const scenes_natuurbrand = [{
         : 'Je besluit meteen te gaan. De weg is nog vrij. Je bent weg voordat de files ontstaan.';
     },
     stateChange: () => ({
-      evacuated: true,
       evacuatedEarly: true,
       ...(profile.hasChildren ? { kidsWithYou: true, kidsKeptHome: true } : {})
     })
   }, {
     text: '📻 Wachten op officieel bericht via radio',
-    consequence: 'Je zet de radio op volle sterkte. Een minuut later: "Evacueert u direct." Je pakt alles in twee minuten bij elkaar.',
+    consequence: 'Je zet de radio op volle sterkte. De stem klinkt dringend: "Bewoners van uw wijk: bereid u voor op directe evacuatie. Een officieel NL-Alert volgt zodra het bevel er is." Je besluit thuis te wachten op het officiële bevel.',
     stateChange: {
       awarenessLevel: 1
     }
@@ -242,9 +251,15 @@ const scenes_natuurbrand = [{
     source: { text: 'Denkvooruit: praat met buren en denk ook aan kwetsbare mensen in je buurt', url: 'https://www.denkvooruit.nl/bereid-je-voor/praat-erover' },
     stateChange: {
       awarenessLevel: 1,
-      knowsNeighbors: true,
       warnedKevin: true
     }
+  }, {
+    conditionalOn: () => profile.hasPets && !state.tookPets,
+    text: () => petsCount > 1 ? '🐾 Huisdieren alvast in de transportmanden zetten' : '🐾 Huisdier alvast in de transportmand zetten',
+    consequence: () => petsCount > 1
+      ? 'De dieren zijn onrustig. De rook hangt al in de lucht en ze voelen dat er iets mis is. Het kost moeite om ze in de manden te krijgen, maar het lukt. Als het bevel komt, hoef je hier niet meer aan te denken.'
+      : 'Je huisdier is onrustig. De rook hangt al in de lucht en het voelt dat er iets mis is. Het kost moeite om het in de mand te krijgen, maar het lukt. Als het bevel komt, hoef je hier niet meer aan te denken.',
+    stateChange: { tookPets: true }
   }]
 }, {
   id: 'bf_2c',
@@ -349,13 +364,18 @@ const scenes_natuurbrand = [{
       time: '11:32',
       outgoing: false
     }],
-    nlalert: 'NL-Alert\n14 augustus 2027 – 11:28\n\nEVACUATIEBEVEL uw wijk en omgeving. VERLAAT NU UW WONING. Noodopvang: zie opsterland.nl/noodsteunpunten. Gebruik de aangewezen routes.',
+    nlalert: 'NL-Alert\n14 augustus 2027 – 11:28\n\nEVACUATIEBEVEL uw wijk en omgeving. VERLAAT NU UW WONING. Ga naar het dichtstbijzijnde noodsteunpunt. Gebruik de aangewezen routes.',
     radio: null
   },
   narrative: 'Het evacuatiebevel is officieel. Je hebt maximaal 15 minuten. De rook hangt inmiddels laag over de straat. Je ogen prikken. Wat doe je?',
   choices: [{
-    text: '📄 Paspoort, medicijnen en oplader meenemen, snel',
-    consequence: 'Je pakt het belangrijkste. Paspoort in de binnenzak, medicijnen in de tas, oplader in de zijzak. Binnen drie minuten sta je buiten.',
+    conditionalOn: () => state.packedBag,
+    text: () => (profile.hasPets && state.tookPets)
+      ? '🎒 Vluchttas en transportmand oppakken en weggaan'
+      : '🎒 Vluchttas oppakken en weggaan',
+    consequence: () => (profile.hasPets && state.tookPets)
+      ? 'Je pakt de vluchttas en de transportmand. Binnen een minuut sta je buiten.'
+      : 'Je pakt de vluchttas. Binnen een minuut sta je buiten.',
     source: { text: 'Brandweer: pak alleen het noodzakelijkste en vertrek direct', url: 'https://www.brandweer.nl/onderwerpen/vlucht-met-je-vluchtplan/' },
     stateChange: {
       packedBag: true
@@ -363,9 +383,7 @@ const scenes_natuurbrand = [{
   }, {
     text: '⚡ Nu direct weg, niets meenemen',
     consequence: 'Je pakt niets en loopt direct de deur uit. Geen tas, geen documenten. Je verlaat het huis en gaat zo snel mogelijk weg.',
-    stateChange: {
-      evacuated: true
-    }
+    stateChange: {}
   }, {
     conditionalOn: () => profile.hasPets && !state.tookPets,
     text: '🐕 Eerst huisdier veiligstellen',
@@ -385,7 +403,7 @@ const scenes_natuurbrand = [{
   }]
 }, {
   id: 'bf_3c',
-  time: '12:00',
+  time: '11:45',
   date: 'Zaterdag 14 augustus 2027',
   dayBadge: 'Dag 1',
   dayBadgeClass: '',
@@ -431,6 +449,7 @@ const scenes_natuurbrand = [{
       comfort: -1
     }
   }, {
+    conditionalOn: () => !state.tookPets,
     text: () => profile.hasPets ? '🐾 Even teruggaan voor het huisdier' : '🧸 Even teruggaan voor de knuffel',
     consequence: () => profile.hasPets
       ? 'Je rent toch nog naar binnen om het huisdier te pakken. Dat lukt, maar de weg is nu drukker. Jullie verliezen kostbare minuten.'
@@ -536,47 +555,6 @@ const scenes_natuurbrand = [{
     }
   }]
 }, {
-  id: 'bf_4a',
-  time: '12:05',
-  date: 'Zaterdag 14 augustus 2027',
-  dayBadge: 'Dag 1',
-  dayBadgeClass: '',
-  conditionalOn: () => (state.bfTravelMode === 'car' && !state.bfBackRoad) || state.bfTravelMode === 'bike',
-  channels: {
-    news: [],
-    whatsapp: [],
-    nlalert: null,
-    radio: null
-  },
-  get narrative() {
-    const voertuig = state.bfTravelMode === 'car'
-      ? (profile.hasCar ? 'auto' : 'motor')
-      : (profile.hasBike ? 'fiets' : profile.hasScooter ? 'scooter' : 'e-bike');
-    return `Je bent onderweg met de ${voertuig}. Voor je zie je rook over de route trekken. Rechts ligt een openbare weg met bredere, verharde stukken. Rechtdoor blijf je langer langs de bosrand. Welke vluchtrichting kies je?`;
-  },
-  choices: [{
-    text: '🛣️ Dwars op de brand naar de openbare weg via verharde paden',
-    consequence: 'Je buigt haaks af van het brandfront en houdt de route over asfalt en brede paden aan. Zo blijf je beter uit de dichte rook tussen de bomen en verklein je de kans dat het vuur je inhaalt.',
-    stateChange: {
-      bfCrossFireSafe: true,
-      comfort: 1
-    }
-  }, {
-    text: '🌲 Kortste route nemen langs de bosrand',
-    consequence: 'De route lijkt sneller, maar je blijft dicht langs de bosrand rijden. Tussen de bomen blijft de rook hangen en het zicht wordt slechter.',
-    source: NATURE_FIRE_ESCAPE_SOURCE,
-    stateChange: {
-      health: -1
-    }
-  }, {
-    text: '➡️ In dezelfde richting blijven vluchten, niet afbuigen',
-    consequence: 'Je blijft in dezelfde richting bewegen als de rook en het brandfront. Dat voelt logisch in de haast, maar zo vergroot je juist de kans dat de brand je blijft volgen.',
-    source: NATURE_FIRE_ESCAPE_SOURCE,
-    stateChange: {
-      health: -1
-    }
-  }]
-}, {
   id: 'bf_4b',
   time: '12:15',
   date: 'Zaterdag 14 augustus 2027',
@@ -594,11 +572,6 @@ const scenes_natuurbrand = [{
     radio: 'Radio 1: Op de evacuatieroutes staan zware files. Politie leidt verkeer om via alternatieve routes. Gebruik deze omleiding als u nu onderweg bent.'
   },
   get narrative() {
-    if (state.bfCrossFireSafe) {
-      return state.evacuatedEarly
-        ? 'Doordat je eerst dwars op de brand naar de openbare weg bent gereden, blijf je uit de dikste rook. De hoofdweg is nog redelijk vrij en de radio is nog te horen. Wat doe je?'
-        : 'Je hebt eerst een veiligere uitwijkroute genomen en komt nu op de hoofdweg uit. Daar staat alsnog veel verkeer, maar de lucht is hier beter dan langs de bosrand. Wat doe je?';
-    }
     return state.evacuatedEarly ? 'Jij bent vroeg genoeg vertrokken. De hoofdweg is nog redelijk vrij, al is het wel drukker dan normaal. De radio is nog te horen. Wat doe je?' : 'Je staat muurvast in de file. De rook is overal. De radio doet het nog. Wat doe je?';
   },
   choices: [{
@@ -606,25 +579,19 @@ const scenes_natuurbrand = [{
     consequence: () => state.evacuatedEarly
       ? 'Je houdt de radio aan en volgt de aanwijzingen onderweg. Omdat je er vroeg bij was, blijf je in beweging en bereik je zonder stilstand de noodopvang.'
       : 'De radio geeft een alternatieve route. Je rijdt eraf en komt via een rustigere weg alsnog bij de noodopvang aan.',
-    stateChange: {
-      evacuated: true
-    }
+    stateChange: {}
   }, {
     text: () => state.evacuatedEarly ? '🛣️ Meteen de omleiding nemen voordat het vastloopt' : '🛤️ Auto aan de kant, te voet verder',
     consequence: () => state.evacuatedEarly
       ? 'Je neemt direct de omleiding die de politie adviseert. Vijf minuten later zie je in je spiegel dat de hoofdweg alsnog dichtslibt. Via de omweg kom je zonder file bij de noodopvang aan.'
       : 'Je zet de auto in een zijstraat en loopt de rest. Het is twintig minuten lopen, maar je bent sneller dan de file.',
-    stateChange: {
-      evacuated: true
-    }
+    stateChange: {}
   }, {
     text: () => state.evacuatedEarly ? '🚘 Ramen dicht en rustig doorrijden' : '⏳ In de file blijven wachten',
     consequence: () => state.evacuatedEarly
       ? 'Je houdt de ramen dicht en blijft rustig doorrijden. Het verkeer vertraagt even, maar valt nog niet stil. Je bereikt de noodopvang zonder extra omweg.'
       : 'De file komt langzaam op gang. Na 45 minuten ben je er. Ondertussen hangt er steeds meer rook in de auto. Achteraf had je de airco beter uitgezet.',
-    stateChange: {
-      evacuated: true
-    }
+    stateChange: {}
   }]
 }, {
   id: 'bf_4c',
@@ -656,7 +623,6 @@ const scenes_natuurbrand = [{
     },
     source: NATURE_FIRE_ESCAPE_SOURCE,
     stateChange: {
-      evacuated: true,
       health: -2,
       comfort: -1
     }
@@ -667,9 +633,7 @@ const scenes_natuurbrand = [{
       return `Je slaat hard rechts. Even is de hitte maximaal — je snijdt dwars door het front. Maar het duurt slechts seconden. Aan de andere kant is de lucht open en schoon. Het vuur trekt verder in de andere richting. Je bent veilig.`;
     },
     source: NATURE_FIRE_ESCAPE_SOURCE,
-    stateChange: {
-      evacuated: true
-    }
+    stateChange: {}
   }]
 }, {
   id: 'bf_4d',
@@ -689,21 +653,15 @@ const scenes_natuurbrand = [{
     text: '🧣 Natte doek voor de mond, en rustig aan',
     consequence: 'Je maakt je shirt nat en houdt het voor je neus. Je loopt rustig maar gestaag verder. Het duurt langer, maar ademen gaat beter.',
     source: { text: 'Brandweer: alle rook is giftig — bescherm je luchtwegen', url: 'https://www.brandweer.nl/onderwerpen/blijf-uit-de-rook/' },
-    stateChange: {
-      evacuated: true
-    }
+    stateChange: {}
   }, {
     text: '🚶 Stevig doorlopen, kop naar beneden',
     consequence: 'Je houdt je jas voor je mond en loopt in een stevig tempo door. Na 40 minuten kom je aan bij de noodopvang, bezweet en met tranende ogen.',
-    stateChange: {
-      evacuated: true
-    }
+    stateChange: {}
   }, {
     text: '🚗 Lift vragen aan een langsrijdende auto',
     consequence: 'Je steekt je hand op. Een gezin stopt. "Stap in, we gaan ook naar de noodopvang." Je bent er in tien minuten.',
-    stateChange: {
-      evacuated: true
-    }
+    stateChange: {}
   }]
 }, {
   id: 'bf_4f',
@@ -723,51 +681,11 @@ const scenes_natuurbrand = [{
     text: '🚌 Meteen instappen en instructies volgen',
     consequence: 'Je stapt zo snel mogelijk in. Binnen is de lucht schoner en iemand van de brandweer vraagt kort of je medicijnen of extra hulp nodig hebt. Tien minuten later word je bij de noodopvang afgezet.',
     stateChange: {
-      evacuated: true,
       comfort: 1
     }
   }, {
     text: '🤝 Eerst een andere wachtende helpen instappen',
     consequence: 'Je helpt een andere bewoner met instappen voordat je zelf naar binnen gaat. Dat kost je een halve minuut, maar daarna zit iedereen veilig in de bus. Samen rijden jullie naar de noodopvang.',
-    stateChange: {
-      evacuated: true,
-      helpedNeighbor: true,
-      comfort: 1
-    }
-  }]
-}, {
-  id: 'bf_4e',
-  time: '12:45',
-  date: 'Zaterdag 14 augustus 2027',
-  dayBadge: 'Dag 1',
-  dayBadgeClass: '',
-  conditionalOn: () => profile.hasChildren && state.kidsWithYou === true && state.kidsKeptHome === true && !state.bfAssistedEvacuation && (state.bfTravelMode === 'walk' || !state.bfCrossFireSafe),
-  channels: {
-    news: [],
-    whatsapp: [],
-    nlalert: null,
-    radio: null
-  },
-  get narrative() {
-    const een = profile.childrenCount === 1;
-    return een ?
-      'Onderweg wordt de rook dikker. Je kind merkt dat ook. Zijn ogen tranen en hij houdt zijn adem in. Je voelt dat het te veel wordt.' :
-      'Onderweg wordt de rook dikker. De kinderen zijn stil. De jongste begint te hoesten, wrijft in haar ogen. De oudste houdt zijn shirt voor zijn neus maar kijkt jou aan: "Is dit gevaarlijk?" De rook is overal.';
-  },
-  choices: [{
-    text: () => profile.childrenCount === 1 ? '🧣 Je shirt als filter gebruiken en uitleggen hoe je door de stof ademt' : '🧣 Shirts als filter gebruiken en uitleggen hoe je door de stof ademt',
-    consequence: () => profile.childrenCount === 1 ? 'Je trekt je eigen shirt omhoog en laat zien hoe het moet. Je kind doet het na. Het helpt niet perfect, maar wel een beetje. En het geeft je kind iets om op te letten.' : 'Je trekt je eigen shirt omhoog en laat zien hoe het moet. De kinderen doen het na. Het helpt niet perfect, maar wel een beetje. En het geeft ze iets om op te letten.',
-    source: CHILD_CRISIS_SOURCE,
-    stateChange: {}
-  }, {
-    text: () => profile.childrenCount === 1 ? '🏃 Doorgaan, hand pakken en doorlopen' : '🏃 Doorgaan, handen pakken en doorlopen',
-    consequence: () => profile.childrenCount === 1 ? 'Je pakt de hand van je kind en loopt snel door. Er is nu geen tijd voor een lange uitleg. Eerst moeten jullie veilig aankomen.' : 'Je pakt beide handen vast en loopt snel door. Er is nu geen tijd voor een lange uitleg. Eerst moeten jullie veilig aankomen.',
-    source: CHILD_CRISIS_SOURCE,
-    stateChange: {}
-  }, {
-    text: () => profile.childrenCount === 1 ? '💬 Even stoppen, knielen, rustig uitleggen dat het bijna voorbij is' : '💬 Even stoppen, knielen, rustig uitleggen dat het bijna voorbij is',
-    consequence: () => profile.childrenCount === 1 ? '"We zijn er bijna. De noodopvang is om de hoek." Je kind knikt. Even stilstaan en uitleggen helpt meer dan doorrennen zonder woorden.' : '"We zijn er bijna. De noodopvang is om de hoek." De kinderen kijken je aan. Even stilstaan en uitleggen helpt meer dan doorrennen zonder woorden.',
-    source: CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: 1
     }
@@ -952,9 +870,7 @@ const scenes_natuurbrand = [{
   }, {
     text: '💬 Gesprek aangaan met andere evacuees',
     consequence: 'Je raakt in gesprek met een gezin uit dezelfde straat. Ze hebben een kind dat bang is. Jullie wisselen telefoonnummers uit. In crisis zijn banden snel gelegd.',
-    stateChange: {
-      knowsNeighbors: true
-    }
+    stateChange: {}
   }, {
     text: '😴 Proberen te slapen, morgen is een lange dag',
     consequence: 'Je sluit je ogen. Het is lawaaiig, maar uiteindelijk val je toch in slaap. Niet ideaal, wel nodig.',
@@ -1016,122 +932,33 @@ const scenes_natuurbrand = [{
       msg: 'Beste bewoner, de brand is geblust. U mag terugkeren naar uw woning. Controleer de woning op schade voor u naar binnen gaat.',
       time: '09:00',
       outgoing: false
-    }],
-    nlalert: null,
-    radio: 'Radio 1: De natuurbrand in het gebied is volledig geblust. Bewoners van de geëvacueerde wijken mogen terugkeren. De gemeente vraagt bewoners schade te melden.'
-  },
-  narrative: 'Het is eindelijk ochtend. Je hebt slecht geslapen. Buiten is de lucht nog wit van de rook, maar het NL-Alert is verdwenen. Mensen komen langzaam overeind. Je vraagt je af of het nu echt veilig is.',
-  choices: [{
-    text: '📋 Wachten op officieel sein veilig van gemeente',
-    consequence: 'Je wacht rustig. Om 9 uur komt de bevestiging: terugkeer is toegestaan. Samen met de andere bewoners ga je terug naar de wijk.',
-    stateChange: {
-      returnedHome: true
-    }
-  }, {
-    text: () => {
-      if (profile.hasCar || profile.hasMotorcycle) return profile.hasCar ? '🚗 Alvast zelf gaan kijken bij de woning' : '🚗 Alvast zelf gaan kijken bij de woning';
-      if (profile.hasBike || profile.hasScooter || profile.hasEbike) return '🚲 Alvast zelf gaan kijken bij de woning';
-      return '🚶 Alvast zelf gaan kijken bij de woning';
-    },
-    consequence: 'Je gaat alvast voorzichtig terug. Een politieagent bij de ingang laat je door. Het sein veilig is net gegeven. Je woning staat er nog.',
-    stateChange: {
-      returnedHome: true
-    }
-  }, {
-    text: '⏳ Nog even wachten, de situatie is nog onduidelijk',
-    consequence: 'Je wacht. Een uur later is er meer duidelijkheid en ga je zonder extra stress terug.',
-    stateChange: {
-      returnedHome: true
-    }
-  }]
-}, {
-  id: 'bf_6b',
-  time: '10:00',
-  date: 'Zondag 15 augustus 2027',
-  dayBadge: 'Dag 2',
-  dayBadgeClass: 'blue',
-  conditionalOn: () => profile.hasChildren && state.kidsWithYou === true,
-  channels: {
-    news: [],
-    whatsapp: [],
-    nlalert: null,
-    radio: null
-  },
-  get narrative() {
-    const een = profile.childrenCount === 1;
-    if (state.kidsNoodpakket) {
-      return een ?
-        'Je kind loopt naast je de straat in. Overal ligt as: op de stoep, op de auto\'s en in de tuin. De boom in de voortuin staat er nog, maar aan de overkant is een huis helemaal weg. Alleen de fundering en wat balken zijn over. Je kind stopt en vraagt: "Waarom staat ons huis er nog en hun huis niet?"' :
-        'De kinderen lopen naast je de straat in. As op de stoep. De boom staat er nog. Maar aan de overkant: twee huizen weg, alleen funderingen over. De jongste pakt jouw hand. De oudste vraagt zacht: "Waarom staat ons huis er nog en hun huis niet?"';
-    } else {
-      return een ?
-        'Je kind loopt de straat in en stopt bij de voordeur. Overal ligt as: op de stoep, op de auto en op de vensterbanken. Het veegt met een vinger over de ruit. "Alles is grijs," zegt het. Verderop is van twee huizen bijna niets over.' :
-        'De jongste loopt meteen naar de tuin. As op het gras, op het speelgoed. Ze veegt haar hand af aan haar broek. De oudste staat stil bij de stoep en kijkt naar de overkant: twee huizen weg, alleen funderingen over. Hij zegt niets.';
-    }
-  },
-  choices: [{
-    text: () => profile.childrenCount === 1 ? '💬 Eerlijk antwoorden waarom ons huis er nog staat' : '💬 Eerlijk antwoorden waarom ons huis er nog staat',
-    consequence: () => profile.childrenCount === 1 ? '"Dat weet niemand precies. Wind, toeval, de route van het vuur." Je kind knikt langzaam. Soms is het antwoord: we hebben geluk gehad. Dat is ook een antwoord.' : '"Dat weet niemand precies. Wind, toeval, de route van het vuur." De oudste knikt langzaam. De jongste kijkt naar de overkant. Soms is het antwoord: we hebben geluk gehad. Dat is ook een antwoord.',
-    source: CHILD_CRISIS_SOURCE,
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    conditionalOn: () => state.kidsNoodpakket,
-    text: () => profile.childrenCount === 1 ? '💬 Terugvragen wat het moeilijkste moment was' : '💬 Terugvragen wat het moeilijkste moment was',
-    consequence: () => profile.childrenCount === 1 ? '"Toen ik de vlammen zag," zegt je kind. "Maar ik was minder bang dan ik dacht." Als je vraagt waarom, zegt het: "Omdat ik wist wat we gingen doen." Goede voorbereiding blijkt juist nu belangrijk.' : '"Toen ik de vlammen zag," zegt de oudste. "Maar ik was minder bang dan ik dacht." De jongste knikt. "Ik ook. We wisten wat we moesten doen." Goede voorbereiding blijkt juist nu belangrijk.',
-    source: CHILD_CRISIS_SOURCE,
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    text: () => profile.childrenCount === 1 ? '🌳 Samen de tuin in lopen en rustig rondkijken' : '🌳 Samen de tuin in lopen en rustig rondkijken',
-    consequence: () => profile.childrenCount === 1 ? 'De boom staat er nog. Het speelgoed ligt er ook nog, maar alles ruikt naar as en verbrand hout. Je kind benoemt wat het ziet. Zo begint het verwerken.' : 'De boom staat er nog. Het speelgoed ligt er ook nog, maar alles ruikt naar as en verbrand hout. De kinderen benoemen wat ze zien. Zo begint het verwerken.',
-    source: CHILD_CRISIS_SOURCE,
-    stateChange: {}
-  }]
-}, {
-  id: 'bf_7',
-  time: '11:00',
-  date: 'Zondag 15 augustus 2027',
-  dayBadge: 'Dag 2',
-  dayBadgeClass: 'blue',
-  channels: {
-    news: [],
-    whatsapp: [{
+    }, {
       from: 'Buurman Kevin',
       msg: 'Mijn schuur is weg maar het huis staat er nog. Jij?',
       time: '11:10',
       outgoing: false
     }],
     nlalert: null,
-    radio: null
+    radio: 'Radio 1: De natuurbrand in het gebied is volledig geblust. Bewoners van de geëvacueerde wijken mogen terugkeren. De gemeente vraagt bewoners schade te melden.'
   },
   get narrative() {
     if (state.kidsWithYou) {
-      return 'De lucht ruikt nog naar as en verbrande hars. Je bent al even terug, maar nu komen de vragen pas echt. Bij jou en bij je kind' + (profile.childrenCount > 1 ? 'eren' : '') + '. Sommige huizen in de buurt zijn beschadigd, met zwarte gevels en kapotte dakpannen. Jouw woning staat er nog.';
+      return 'Het is eindelijk ochtend. Je hebt slecht geslapen. Het NL-Alert is verdwenen: de brand is geblust en terugkeer is toegestaan. Je komt je straat weer in' + (profile.childrenCount === 1 ? ' — je kind naast je' : ' — de kinderen naast je') + '. De lucht ruikt naar as en verbrande hars. Sommige huizen in de buurt zijn beschadigd, met aangeblakerde gevels en kapotte dakpannen. Jouw woning staat er nog.';
     }
-    return 'Je komt je straat weer in. De lucht ruikt naar as en verbrande hars. Sommige huizen in de buurt zijn beschadigd, met aangeblakerde gevels en kapotte dakpannen. Jouw woning staat er nog.';
+    return 'Het is eindelijk ochtend. Je hebt slecht geslapen. Het NL-Alert is verdwenen: de brand is geblust en terugkeer is toegestaan. Je komt je straat weer in. De lucht ruikt naar as en verbrande hars. Sommige huizen in de buurt zijn beschadigd, met aangeblakerde gevels en kapotte dakpannen. Jouw woning staat er nog.';
   },
   choices: [{
     text: '🏠 Woning inspecteren, eerst buiten en dan binnen',
     consequence: 'Je loopt eerst om het huis heen. Geen zichtbare brandschade. Binnen is alles intact. Alleen op de vensterbanken buiten ligt een laagje roet.',
-    stateChange: {
-      returnedHome: true
-    }
+    stateChange: {}
   }, {
     text: '📸 Schade fotograferen voor de verzekering',
     consequence: 'Je maakt foto\'s van de buurt en de gevels. Jouw huis heeft lichte rookschade aan de buitengevel. Handig voor de verzekering.',
-    stateChange: {
-      returnedHome: true
-    }
+    stateChange: {}
   }, {
     text: '🤝 Buren helpen die meer schade hebben',
     consequence: 'Je loopt naar Kevin. Zijn schuur is verloren, maar hij staat er goed bij. Samen inventariseren jullie de schade. Hij is blij met de hulp.',
-    stateChange: {
-      returnedHome: true,
-      helpedNeighbor: true
-    }
+    stateChange: {}
   }]
 }];
 
@@ -1155,7 +982,6 @@ const sceneImages_natuurbrand = {
   bf_4c: 'afbeelding/bosbrand/bosbrand_fase_3.webp',
   bf_4d: 'afbeelding/bosbrand/bosbrand_fase_3.webp',
   bf_4f: 'afbeelding/bosbrand/bosbrand_fase_2b.webp',
-  bf_4e: 'afbeelding/bosbrand/bosbrand_fase_3.webp',
   bf_5:  'afbeelding/algemeen/noodopvang.webp',
   bf_5f: 'afbeelding/algemeen/noodopvang.webp',
   bf_5b: 'afbeelding/algemeen/noodopvang.webp',
@@ -1163,6 +989,4 @@ const sceneImages_natuurbrand = {
   bf_5d: 'afbeelding/algemeen/noodopvang.webp',
   bf_5g: 'afbeelding/algemeen/noodopvang.webp',
   bf_6:  'afbeelding/bosbrand/bomen_afgebrand.webp',
-  bf_6b: 'afbeelding/bosbrand/bomen_afgebrand.webp',
-  bf_7:  'afbeelding/bosbrand/bomen_afgebrand.webp',
 };

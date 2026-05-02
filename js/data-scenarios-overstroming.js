@@ -1,7 +1,7 @@
 // Copyright (c) 2026 PlayToPrep.nl — Alle rechten voorbehouden. Zie LICENSE voor volledige voorwaarden.
 // ═══════════════════════════════════════════════════════════════
 // Scenario: Overstroming — "Het water staat hoog"
-// 26 scenes — van ov_0 (avond, hoog water) tot ov_8 (thuiskomst)
+// 23 scenes — van ov_0 (avond, hoog water) tot ov_7 (thuiskomst)
 // Tijdspanne: ~18 uur
 // ═══════════════════════════════════════════════════════════════
 
@@ -826,14 +826,6 @@ const scenes_overstroming = [{
     source: { text: 'VDE: betreed nooit een natte ruimte met elektra; check ook lokaal overheid- of netbeheerderadvies', url: 'https://www.vde.com/topics-en/consumer-protection/electronics-flooding' },
     stateChange: {}
   }, {
-    conditionalOn: () => !state.cutElectricity,
-    text: '⚡🪟 Wegblijven van de meterkast en een teken geven',
-    consequence: 'Je blijft uit de buurt van de natte meterkast en hangt een laken uit het raam. Dat is nu de veiligste combinatie: geen risico op een schok, maar wel zorgen dat hulp je ziet.',
-    source: { text: 'VDE: betreed nooit een natte ruimte met elektra; check ook lokaal overheid- of netbeheerderadvies', url: 'https://www.vde.com/topics-en/consumer-protection/electronics-flooding' },
-    stateChange: {
-      calledRescue: true
-    }
-  }, {
     text: '⏳ Afwachten en batterij sparen',
     consequence: 'Je doet even niets en spaart de batterij. Wel blijf je uit de buurt van beneden: als daar water bij de elektra komt, raak je niets meer aan en wacht je op hulp.',
     stateChange: {}
@@ -1210,6 +1202,10 @@ const scenes_overstroming = [{
       time: '07:30',
       headline: 'Water zakt, terugkeer geëvacueerde gebieden mogelijk',
       body: 'Het waterpeil daalt snel. Bewoners van geëvacueerde gebieden mogen terugkeren voor een eerste inspectie, maar overnachten wordt afgeraden vanwege gas- en elektrarisico\'s.'
+    }, {
+      time: '10:00',
+      headline: 'Waterschade woningen: gas en elektra eerst laten controleren',
+      body: 'Experts waarschuwen dat gas en elektra in overstroomde woningen absoluut eerst door een professional gecontroleerd moeten worden voor gebruik.'
     }],
     whatsapp: [],
     nlalert: null,
@@ -1271,123 +1267,6 @@ const scenes_overstroming = [{
       }];
     }
   }
-}, {
-  id: 'ov_7b',
-  time: '09:00',
-  date: 'Woensdag 10 november 2027',
-  dayBadge: 'Dag 2',
-  dayBadgeClass: 'blue',
-  conditionalOn: () => state.contactedAns,
-  channels: {
-    news: [],
-    whatsapp: [],
-    nlalert: null,
-    radio: null
-  },
-  get narrative() {
-    return state.takingAns ? 'Ans loopt met je mee door de straat. Ze kijkt naar haar woning: de begane grond staat vol slib. "Ik ben blij dat je me gisteren hebt gevraagd", zegt ze. "Anders had ik hier de nacht in mijn eentje gestaan."' : 'Iemand roept je naam. Het is Ans, je buurvrouw. Ze staat voor haar huis met modderige laarzen en een vochtige jas. "Ik ben blij dat je me gisteren hebt teruggestuurd", zegt ze. "Ik wist niet wat ik moest doen. Dat contact hielp echt."';
-  },
-  choices: [{
-    text: '🤝 Samen de schade opnemen',
-    consequence: 'Jullie lopen elkaars woningen door. Ans haar begane grond staat vol slib, maar de constructie is intact. Je helpt haar een lijst maken voor de verzekering.',
-    stateChange: {
-      helpedNeighbor: true,
-      comfort: 1
-    }
-  }, {
-    text: '😌 Blij zijn dat ze veilig is',
-    consequence: '"Ik ben gewoon blij dat je er bent", zeg je. Ze knikt. In het geweld van modder en schade is dit een heel menselijk moment.',
-    stateChange: {}
-  }]
-}, {
-  id: 'ov_7c',
-  time: '09:30',
-  date: 'Woensdag 10 november 2027',
-  dayBadge: 'Dag 2',
-  dayBadgeClass: 'blue',
-  conditionalOn: () => profile.hasChildren && state.kidsWithYou === true,
-  channels: {
-    news: [],
-    whatsapp: [],
-    nlalert: null,
-    radio: null
-  },
-  get narrative() {
-    const een = profile.childrenCount === 1;
-    if (state.kidsNoodpakket) {
-      return een ?
-        'Je kind loopt naast je de woning in en kijkt serieus om zich heen. Dan vraagt het: "Wanneer is het weer normaal?" Niet huilend, maar gewoon vragend. Je weet het antwoord niet precies.' :
-        'De kinderen lopen naast je de woning in. De oudste kijkt serieus om zich heen. De jongste pakt een modderig speelgoedbusje op van de vloer en toont het trots: "Hij heeft het overleefd!" Even schiet je in de lach.';
-    } else {
-      return een ?
-        'Je kind loopt de woning in en blijft stil staan. De modder, de geur en de kapotte spullen zijn te veel tegelijk. Dan vraagt het: "Wanneer gaan we naar huis?" Het begrijpt nog niet dat dit al thuis is.' :
-        'De jongste loopt naar binnen en draait zich meteen om: "Wanneer gaan we naar huis?" De oudste zegt zacht: "Dit ís thuis." Ze kijkt hem aan. Dan begint ze te huilen.';
-    }
-  },
-  choices: [{
-    text: () => profile.childrenCount === 1 ? '📸 Je kind laten meehelpen met fotograferen voor de verzekering' : '📸 De oudste laten meehelpen met fotograferen voor de verzekering',
-    consequence: () => profile.childrenCount === 1 ? 'Je geeft je kind de telefoon en vraagt foto\'s te maken van de schade. Het loopt ernstig door de kamers. Even later kom je samen terug met veertig foto\'s. Betrokkenheid helpt bij verwerken.' : 'Je geeft de oudste de telefoon en vraagt foto\'s te maken van de schade. Hij loopt ernstig door de kamers. Even later kom je samen terug met veertig foto\'s. Betrokkenheid helpt bij verwerken.',
-    stateChange: {
-      savedItems: true
-    }
-  }, {
-    text: () => profile.childrenCount === 1 ? '💬 Uitleggen dat dit nog steeds thuis is en dat het beter wordt' : '💬 Uitleggen dat dit nog steeds thuis is en dat het beter wordt',
-    consequence: () => profile.childrenCount === 1 ? '"Dit is nog steeds ons huis. Het ziet er nu anders uit, maar we maken het weer goed." Je kind kijkt om zich heen. "Mijn kamer ook?" vraagt het. "Jouw kamer ook," zeg je.' : '"Dit is nog steeds ons huis. Het ziet er nu anders uit, maar we maken het weer goed." De jongste snuft. "Mijn kamer ook?" vraagt ze. "Jouw kamer ook," zeg je. Ze knikt.',
-    stateChange: {
-      comfort: 1
-    }
-  }, {
-    conditionalOn: () => state.kidsNoodpakket,
-    text: () => profile.childrenCount === 1 ? '💬 Terugkijken op hoe het ging: "Wat vond jij het moeilijkste?"' : '💬 Terugkijken op hoe het ging: "Wat vonden jullie het moeilijkste?"',
-    consequence: () => profile.childrenCount === 1 ? '"Het ergste moment," zegt je kind. "Maar ik was minder bang dan ik dacht." Als je vraagt waarom, zegt het: "Omdat ik wist wat we gingen doen." Goede voorbereiding merk je vaak pas achteraf.' : '"Het ergste moment," zegt de jongste. "Maar ik was minder bang dan ik dacht." De oudste zegt: "Ik ook niet. We wisten wat we moesten doen." Goede voorbereiding merk je vaak pas achteraf.',
-    stateChange: {
-      comfort: 1
-    }
-  }]
-}, {
-  id: 'ov_8',
-  time: '10:30',
-  date: 'Woensdag 10 november 2027',
-  dayBadge: 'Dag 2',
-  dayBadgeClass: 'blue',
-  channels: {
-    news: [{
-      time: '10:00',
-      headline: 'Waterschade woningen: gas en elektra eerst laten controleren',
-      body: 'Experts waarschuwen dat gas en elektra in overstroomde woningen absoluut eerst door een professional gecontroleerd moeten worden voor gebruik.'
-    }],
-    whatsapp: [],
-    nlalert: null,
-    radio: null
-  },
-  get narrative() {
-    if (state.evacuatedFlood) {
-      return 'Je mag kort terug de woning in om schade vast te leggen en noodzakelijke spullen te halen. Het ruikt naar modder en riool. Alles is nat. Overnachten of alles opruimen is nog niet verstandig.';
-    }
-    return 'Je bent al thuis en loopt nog eens rustig door de woning om schade vast te leggen en noodzakelijke spullen apart te zetten. Het ruikt naar modder en riool. Alles is nat. Overnachten of alles opruimen is nog niet verstandig.';
-  },
-  choices: [{
-    text: '📦 Alleen noodzakelijke spullen meenemen',
-    consequence: () => state.evacuatedFlood
-      ? 'Je pakt medicijnen, paspoorten en kleding voor een paar dagen. Alles wat je nu niet echt nodig hebt laat je staan. Het huis moet eerst gekeurd worden voor je echt terugkeert.'
-      : 'Je pakt medicijnen, paspoorten en kleding voor een paar dagen. Alles wat je nu niet echt nodig hebt laat je staan. Ook al ben je al thuis, het huis moet eerst gekeurd worden voordat je het weer normaal kunt gebruiken.',
-    stateChange: {
-      savedItems: true,
-      comfort: 1
-    }
-  }, {
-    text: '📸 Eerst schade vastleggen',
-    consequence: 'Je documenteert alles: de waterlijn op de muur, omgevallen kasten, kapotte apparaten. Cruciale stap voor de schadeclaim. Je verzekeraar zal je er later dankbaar voor zijn.',
-    stateChange: {
-      savedItems: true
-    }
-  }, {
-    text: '⚡ Keuring regelen voordat je echt terugkomt',
-    consequence: () => state.evacuatedFlood
-      ? 'Je belt de netbeheerder en een installateur. Elektra en gas moeten professioneel gecontroleerd worden voor gebruik. Je noteert wat er moet gebeuren en verlaat daarna de woning weer.'
-      : 'Je belt de netbeheerder en een installateur. Elektra en gas moeten professioneel gecontroleerd worden voor gebruik. Je noteert wat er moet gebeuren en gebruikt de woning daarna nog steeds niet alsof alles al normaal is.',
-    stateChange: {}
-  }]
 }];
 
 /* ─── SCENE ACHTERGRONDAFBEELDINGEN ─────────────────────────────────────────
@@ -1418,7 +1297,4 @@ const sceneImages_overstroming = {
   ov_6f: 'afbeelding/overstroming/overstroming_ernstig.webp',
   ov_6g: 'afbeelding/overstroming/overstroming_ernstig.webp',
   ov_7:  'afbeelding/overstroming/overstroming_naderhand.webp',
-  ov_7b: 'afbeelding/overstroming/overstroming_naderhand.webp',
-  ov_7c: 'afbeelding/overstroming/overstroming_naderhand.webp',
-  ov_8:  'afbeelding/overstroming/overstroming_naderhand.webp',
 };
