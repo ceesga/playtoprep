@@ -14,7 +14,13 @@ const phoneContacts_stroom = [
       if (state.networkDown) {
         return 'Je probeert mama te bellen, maar het netwerk is overbelast. Eerst hoor je een toon, daarna niets meer. Je stuurt een sms: "Alles goed hier. Wacht even af." Of die aankomt weet je niet.';
       }
-      return 'Je belt mama. Ze neemt snel op. "Alles goed met jullie? Ik hoorde het nieuws." Je vertelt kort wat er speelt. "Pas goed op jezelf. Ik denk aan jullie." Je legt neer met een goed gevoel.';
+      if (state.awarenessLevel === 0) {
+        return 'Je belt mama. Ze neemt op. "Heb jij dat nieuws over het stroomnet ook gezien?" "Ja, maar ze zeggen dat het meevalt hoor." "Toch maar even opletten," zegt ze. Prettig om even bij te praten.';
+      }
+      if (state.awarenessLevel >= 2) {
+        return 'Je belt mama. Ze neemt meteen op. "Ik zag het op het nieuws, alles goed bij jullie?" Je vertelt dat jullie de situatie in de hand hebben. "Bel me als er iets is, hè." Je legt neer met een gerust gevoel.';
+      }
+      return 'Je belt mama. Ze neemt snel op. "Stroom ook uit bij jou?" "Ja, heel de straat." "Heb je genoeg eten en drinken in huis?" Ze maakt zich een beetje zorgen. Je stelt haar gerust.';
     },
     stateChange: {},
     conditionalOn: () => state.phoneBattery > 0
@@ -514,11 +520,10 @@ const scenes_stroom = [
       source: { text: 'Brandweer: gebruik kaarsen altijd in een stabiele houder en laat ze nooit onbeweerd branden', url: 'https://www.brandweer.nl/onderwerpen/veilig-en-warm-de-winter-door/' },
       stateChange: {}
     }, {
+      conditionalOn: () => hasWorkingFlashlight(),
       text: '🔦 Zaklamp pakken en de rest van de avond op batterijen doorbrengen',
       consequence: 'Je haalt de zaklamp tevoorschijn en zet hem als sfeerverlichting op tafel. Handig en functioneel, zonder brandgevaar of kaarsenrook.',
-      stateChange: {
-        hasFlashlight: true
-      }
+      stateChange: () => { useFlashlightCharge(); return { hasFlashlight: true }; }
     }, {
       text: '📵 Telefoon op vliegtuigmodus, accu zo lang mogelijk sparen',
       consequence: 'Je zet de telefoon op vliegtuigmodus. Geen berichten meer, maar ook nauwelijks accuverlies. Morgen heb je hem harder nodig dan vanavond.',

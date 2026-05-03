@@ -129,7 +129,7 @@ const scenes_overstroming = [{
   },
   choices: [{
     conditionalOn: () => !state.packedBag,
-    text: '🎒 Direct beginnen met voorbereiding',
+    text: '🎒 Alvast een vluchttas inpakken en klaarzetten',
     consequence: 'Je begint alvast: documenten in een waterdichte zak, medicijnen, kleding. Je zet je schoenen bij de deur. Als het bevel komt ben je klaar.',
     source: { text: 'Rijksoverheid: bereid je tijdig voor en pak medicijnen, kleding en essentiële spullen in', url: 'https://www.rijksoverheid.nl/onderwerpen/water/vraag-en-antwoord/wat-moet-ik-doen-bij-een-dreigende-overstroming' },
     stateChange: {
@@ -145,10 +145,10 @@ const scenes_overstroming = [{
     stateChange: {}
   }, {
     conditionalOn: () => profile.hasPets && !state.tookPets,
-    text: () => petsCount > 1 ? '🐾 Transportmanden alvast bij de deur zetten' : '🐾 Transportmand alvast bij de deur zetten',
+    text: () => petsCount > 1 ? '🐾 Huisdieren alvast in de transportmanden zetten' : '🐾 Huisdier alvast in de transportmand zetten',
     consequence: () => petsCount > 1
-      ? 'Je zet de transportmanden klaar bij de deur. Als het bevel morgen komt, hoef je de dieren alleen nog erin te zetten en te gaan.'
-      : 'Je zet de transportmand klaar bij de deur. Als het bevel komt, hoef je je huisdier alleen nog erin te zetten en te gaan.',
+      ? 'Je zet de dieren in hun transportmanden en plaatst de manden bij de deur. Als het bevel komt, pak je ze op en ga je.'
+      : 'Je zet je huisdier in de transportmand en plaatst de mand bij de deur. Als het bevel komt, pak je hem op en ga je.',
     stateChange: { tookPets: true }
   }]
 }, {
@@ -284,11 +284,16 @@ const scenes_overstroming = [{
     }
   }, {
     conditionalOn: () => profile.hasPets,
-    text: () => petsCount > 1 ? '🐾 Huisdieren naar een hogere plek in huis brengen' : '🐾 Huisdier naar een hogere plek in huis brengen',
+    text: () => petsCount > 1 ? '🐾 Alsnog huisdieren alvast in de transportmanden zetten' : '🐾 Alsnog huisdier alvast in de transportmand zetten',
     consequence: () => petsCount > 1
-      ? 'Je brengt de dieren naar boven. Ze zijn onrustig door het geluid van het water buiten. Je haalt ook de transportmanden naar boven voor het geval je snel weg moet.'
-      : 'Je brengt je huisdier naar boven. Het is onrustig door het geluid van het water buiten. Je haalt ook de transportmand naar boven voor het geval je snel weg moet.',
+      ? 'Je zet de dieren in hun transportmanden en plaatst de manden bij de deur. Ze zijn onrustig door het geluid van het water buiten, maar zo kun je snel weg als het nodig is.'
+      : 'Je zet je huisdier in de transportmand en plaatst de mand bij de deur. Het is onrustig door het geluid van het water buiten, maar zo kun je snel weg als het nodig is.',
     stateChange: { tookPets: true }
+  }, {
+    conditionalOn: () => !state.packedBag,
+    text: '🎒 Alsnog alvast een vluchttas inpakken en klaarzetten',
+    consequence: 'Je begint alsnog: documenten in een waterdichte zak, medicijnen, kleding. Je zet je schoenen bij de deur. Als het bevel komt ben je klaar.',
+    stateChange: { packedBag: true }
   }]
 }, {
   id: 'ov_2b',
@@ -353,11 +358,21 @@ const scenes_overstroming = [{
   },
   get narrative() {
     const een = profile.childrenCount === 1;
-    return een ? 'Terwijl jij bezig bent met voorbereiden, volgt je kind je van kamer naar kamer. Nu staat het water hoog op straat en wordt het echt spannend. Opeens wil het terugrennen naar de slaapkamer om zijn knuffel te halen. Daarna blijft het stil bij het raam staan en reageert het nergens meer op.' : 'Terwijl jij bezig bent met voorbereiden, volgen de kinderen je van kamer naar kamer. Nu staat het water hoog op straat en wordt het echt spannend. Opeens wil de jongste terugrennen naar de slaapkamer om haar knuffel te halen, omdat die anders alleen is. De oudste blijft stil bij het raam staan en reageert nergens meer op.';
+    return een
+      ? 'Terwijl jij bezig bent met voorbereiden, volgt je kind je van kamer naar kamer. Nu staat het water hoog op straat en wordt het echt spannend. Opeens blijft het stilletjes bij het raam staan en reageert nergens meer op.'
+      : 'Terwijl jij bezig bent met voorbereiden, volgen de kinderen je van kamer naar kamer. Nu staat het water hoog op straat en wordt het echt spannend. Opeens wil de jongste terugrennen naar de slaapkamer om haar knuffel te halen, omdat die anders alleen is. De oudste blijft stil bij het raam staan en reageert nergens meer op.';
   },
   choices: [{
-    text: () => profile.childrenCount === 1 ? '🛑 Je kind tegenhouden en uitleggen waarom het niet terug mag' : '🛑 De jongste tegenhouden en uitleggen waarom ze niet terug mag',
-    consequence: () => profile.childrenCount === 1 ? 'Je legt rustig uit: "We gaan zo samen weg, maar jij mag nu niet alleen terug." Je kind protesteert, maar na twee minuten geeft het toe. Het blijft wel onrustig.' : 'Je legt rustig uit: "We gaan zo samen weg, maar jij mag nu niet alleen terug." Ze protesteert, maar na twee minuten geeft ze toe. Ze blijft wel onrustig.',
+    text: () => profile.childrenCount === 1 ? '💬 Je kind aanspreken dat verstijfd bij het raam staat' : '💬 De oudste aanspreken die verstijfd bij het raam staat',
+    consequence: () => profile.childrenCount === 1 ? 'Je knielt naast je kind en vraagt wat het ziet. "Komt ons huis vol water?" vraagt het. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.' : 'Je knielt naast hem en vraagt wat hij ziet. "Komt ons huis vol water?" vraagt hij. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.',
+    source: FLOOD_CHILD_CRISIS_SOURCE,
+    stateChange: {
+      phoneBattery: -5
+    }
+  }, {
+    conditionalOn: () => profile.childrenCount > 1,
+    text: '🛑 De jongste tegenhouden en uitleggen waarom ze niet terug mag',
+    consequence: 'Je legt rustig uit: "We gaan zo samen weg, maar jij mag nu niet alleen terug." Ze protesteert, maar na twee minuten geeft ze toe. Ze blijft wel onrustig.',
     source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
       comfort: -1
@@ -371,13 +386,13 @@ const scenes_overstroming = [{
       comfort: -1
     }
   }, {
-    text: () => profile.childrenCount === 1 ? '💬 Je kind aanspreken dat verstijfd bij het raam staat' : '💬 De oudste aanspreken die verstijfd bij het raam staat',
-    consequence: () => profile.childrenCount === 1 ? 'Je knielt naast je kind en vraagt wat het ziet. "Komt ons huis vol water?" vraagt het. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.' : 'Je knielt naast hem en vraagt wat hij ziet. "Komt ons huis vol water?" vraagt hij. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.',
+    text: '🏃 Je kind moet het nu maar even zelf redden, elke seconde telt',
+    consequence: () => profile.childrenCount === 1 ? 'Je laat je kind bij het raam staan en gaat verder met voorbereiden. Later trekt het vanzelf bij. Nu telt elke seconde.' : 'Je laat de kinderen even aan zichzelf over en gaat verder met voorbereiden. Later trekken ze vanzelf bij. Nu telt elke seconde.',
     source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
-      phoneBattery: -5
+      comfort: -2
     }
-  }, ]
+  }]
 }, {
   id: 'ov_3',
   time: '10:30',
@@ -664,12 +679,14 @@ const scenes_overstroming = [{
         : (petsCount > 1 ? ' Je huisdieren zijn beneden achtergebleven. Je hoort ze onrustig bewegen.' : ' Je huisdier is beneden achtergebleven. Je hoort het onrustig bewegen.')
       : '';
     const isApt = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+    const noodpakket = profile.hasKit === 'ja' ? ' Je noodpakket staat al boven.' : '';
     const basisAns = state.takingAns
       ? (isApt ? 'Je bent met Ans op een hogere verdieping in het gebouw. Beneden in de gang staat het water. Twee paar ogen zien meer dan één. Hoe bereid je de komende uren voor?' : 'Je bent boven met Ans. Beneden stijgt het water en je hoort het kabbelen. Twee paar ogen zien meer dan één. Hoe bereid je de komende uren voor?')
       : (isApt ? 'Je bent op een hogere verdieping in het gebouw. Beneden in de gang en op straat stijgt het water. Hoe bereid je de komende uren voor?' : 'Je bent boven. Beneden stijgt het water en je hoort het kabbelen. Hoe bereid je de komende uren voor?');
-    return basisAns + huisdier;
+    return basisAns + noodpakket + huisdier;
   },
   choices: [{
+    conditionalOn: () => profile.hasKit !== 'ja',
     text: '💧 Water en eten meenemen naar boven',
     consequence: 'Je haalt flessen water, blikjes, crackers en een blik opener naar boven. Als het water nog hoger stijgt, heb je een dag proviand.',
     stateChange: {
@@ -682,28 +699,20 @@ const scenes_overstroming = [{
       knowsNeighbors: true
     }
   }, {
-    conditionalOn: () => !state.cutElectricity,
+    conditionalOn: () => !state.cutElectricity && state.sealedHome,
     text: '⚡ Alleen uitschakelen als de meterkast nog droog bereikbaar is',
-    consequence: () => state.sealedHome
-      ? 'Je kijkt eerst vanaf de trap. De vloer rond de meterkast is nog droog genoeg. Je gaat snel naar beneden, zet de hoofdschakelaar uit en gaat direct terug naar boven. Zodra daar water staat, blijf je weg van alle elektra beneden.'
-      : 'Je kijkt vanaf de trap en ziet dat er al water bij de meterkast staat. Je blijft weg. Een natte ruimte met elektra is te gevaarlijk; beneden raak je nu geen elektrische apparaten of metalen delen meer aan.',
+    consequence: 'Je kijkt eerst vanaf de trap. De vloer rond de meterkast is nog droog genoeg. Je gaat snel naar beneden, zet de hoofdschakelaar uit en gaat direct terug naar boven. Zodra daar water staat, blijf je weg van alle elektra beneden.',
     source: { text: 'VDE: betreed nooit een natte ruimte met elektra; check ook lokaal overheid- of netbeheerderadvies', url: 'https://www.vde.com/topics-en/consumer-protection/electronics-flooding' },
-    stateChange: () => state.sealedHome ? {
+    stateChange: {
       cutElectricity: true,
       savedItems: true
-    } : {}
+    }
   }, {
-    conditionalOn: () => !state.cutElectricity,
-    text: '⚡💧 Alleen als droog bereikbaar: stroom uit en proviand mee',
-    consequence: () => state.sealedHome
-      ? 'Je controleert eerst of de route droog is. Dat is nog net zo. Je zet de hoofdschakelaar uit, pakt flessen water, blikjes en crackers en gaat meteen terug naar boven. Je neemt niets meer mee zodra het water de elektra kan raken.'
-      : 'Je ziet dat de route naar de meterkast al nat is. Dan geldt: niet meer naar binnen voor elektra of spullen. Je blijft boven en gebruikt alleen wat je al veilig bij je hebt.',
+    conditionalOn: () => hasWorkingFlashlight() && !state.cutElectricity,
+    text: '🔦 Met de zaklamp kijken hoe hoog het water bij de meterkast staat',
+    consequence: 'Je schijnt met de zaklamp de trap af. Duidelijk zichtbaar: het water staat al halverwege de onderkant van de meterkast. Te hoog om veilig naar beneden te gaan. Je blijft boven.',
     source: { text: 'VDE: betreed nooit een natte ruimte met elektra; check ook lokaal overheid- of netbeheerderadvies', url: 'https://www.vde.com/topics-en/consumer-protection/electronics-flooding' },
-    stateChange: () => state.sealedHome ? {
-      cutElectricity: true,
-      savedItems: true,
-      food: 1
-    } : {}
+    stateChange: () => { useFlashlightCharge(); return {}; }
   }, ]
 }, {
   id: 'ov_4c',
@@ -819,12 +828,6 @@ const scenes_overstroming = [{
     stateChange: {
       calledRescue: true
     }
-  }, {
-    conditionalOn: () => !state.cutElectricity,
-    text: '⚡ Niet meer naar de natte meterkast gaan',
-    consequence: 'Je blijft boven. Beneden staat al water en dan ga je niet meer naar een ruimte met elektra. Je houdt iedereen weg van elektrische apparaten en wacht op hulp of professionele uitschakeling van buitenaf.',
-    source: { text: 'VDE: betreed nooit een natte ruimte met elektra; check ook lokaal overheid- of netbeheerderadvies', url: 'https://www.vde.com/topics-en/consumer-protection/electronics-flooding' },
-    stateChange: {}
   }, {
     text: '⏳ Afwachten en batterij sparen',
     consequence: 'Je doet even niets en spaart de batterij. Wel blijf je uit de buurt van beneden: als daar water bij de elektra komt, raak je niets meer aan en wacht je op hulp.',
@@ -1019,7 +1022,7 @@ const scenes_overstroming = [{
     get consequence() {
       const basis = profile.hasKit === 'ja' ?
         'Je opent het noodpakket. Crackers, een reep, een zakje noten. Geen warme maaltijd, maar genoeg voor de avond.' :
-        'Je opent een blik bonen koud en pakt crackers erbij. Het is te doen.';
+        'Je pakt de blikjes en crackers die je eerder naar boven had gehaald. Die staan hier droog, boven het water. Het is te doen.';
       const kids = profile.hasChildren && state.kidsWithYou;
       const kidsZin = kids ?
         (profile.childrenCount === 1 ? ' Je kind wil er eerst niets van, maar eet toch.' : ' De jongste trekt een vies gezicht. De oudste eet zonder commentaar.') :
@@ -1037,7 +1040,8 @@ const scenes_overstroming = [{
       const kidsZin = kids ?
         (profile.childrenCount === 1 ? ' Je kind kruipt naast je aan. Warm eten maakt alles net iets draaglijker.' : ' De kinderen schuiven dichterbij. De warmte en de geur veranderen de sfeer meteen.') :
         ' De warmte en geur veranderen de sfeer direct. Even lijkt de situatie minder zwaar.';
-      return 'Je haalt het gasstelletje tevoorschijn en zet een pan soep op.' + kidsZin;
+      const voorraad = state.savedItems ? 'Je pakt de ingrediënten die je eerder naar boven had gehaald. Die staan hier droog, boven het water. ' : '';
+      return voorraad + 'Je haalt het gasstelletje tevoorschijn en zet een pan soep op.' + kidsZin;
     },
     stateChange: {
       food: -1,
@@ -1047,8 +1051,10 @@ const scenes_overstroming = [{
     text: '🍫 Zoeken wat er nog in de keuken staat',
     get consequence() {
       const basis = state.savedItems ?
-        'Je vindt de crackers en blikjes die je eerder omhoog had gehaald. Met een reep chocolade erbij is het genoeg voor de avond.' :
-        'Je zoekt in de keukenkast: een pak crackers achter in een la, een reep chocolade. Genoeg voor vanavond, maar morgen wordt het lastiger.';
+        'Je pakt de crackers en blikjes die je eerder naar boven had gehaald. Die staan hier droog, boven het water. Met een reep chocolade erbij is het genoeg voor de avond.' :
+        state.food > 2 ?
+          'Je zoekt in de keukenkast: een pak crackers achter in een la, een reep chocolade. Genoeg voor vanavond.' :
+          'Je zoekt in de keukenkast: een pak crackers achter in een la, een reep chocolade. Genoeg voor vanavond, maar morgen wordt het lastiger.';
       const kids = profile.hasChildren && state.kidsWithYou;
       const kidsZin = kids ?
         (profile.childrenCount === 1 ? ' Je kind eet de chocolade gretig op.' : ' De kinderen eten de chocolade als eerste op.') :
@@ -1147,12 +1153,6 @@ const scenes_overstroming = [{
       food: 1
     }
   }, {
-    text: '📱 112 bellen om je locatie door te geven',
-    consequence: () => state.phoneBattery > 0 ? 'Je belt 112. "Eerste verdieping, adres." Ze noteren waar je zit en zeggen dat ze in de ochtend komen. Dat geeft rust.' : 'Je telefoon is leeg. Je kunt 112 niet bereiken.',
-    stateChange: () => state.phoneBattery > 0 ? {
-      calledRescue: true
-    } : {}
-  }, {
     text: '😴 Proberen te slapen, morgen is de nood voorbij',
     consequence: 'Je rolt je jas op als kussen. Het is koud en nat. Je slaapt nauwelijks, maar de ochtend komt toch.',
     stateChange: {
@@ -1244,6 +1244,12 @@ const scenes_overstroming = [{
           returnedHome: true,
           helpedNeighbor: true
         }
+      }, {
+        conditionalOn: () => hasWorkingFlashlight(),
+        text: '🔦 Met de zaklamp de benedenverdieping doorzoeken zonder elektra aan te zetten',
+        consequence: 'Je schijnt langs muren, hoeken en kasten. De zaklamp maakt zichtbaar wat je anders zou missen: een barst bij de meterkastdeur, een losgekomen plintsegment. Je documenteert alles zonder elektra aan te raken.',
+        source: { text: 'Netbeheer Nederland: zet elektra na een overstroming nooit zelf aan — laat dit controleren', url: 'https://www.netbeheernederland.nl/veiligheid-stroomstoringen/overstroming' },
+        stateChange: () => { useFlashlightCharge(); return { returnedHome: true, savedItems: true }; }
       }];
     } else {
       return [{
@@ -1264,6 +1270,12 @@ const scenes_overstroming = [{
         stateChange: {
           returnedHome: true
         }
+      }, {
+        conditionalOn: () => hasWorkingFlashlight(),
+        text: '🔦 Met de zaklamp de schade inspecteren zonder elektra aan te zetten',
+        consequence: 'Je schijnt langs muren en hoeken. De zaklamp maakt schade zichtbaar die je anders zou missen: een barst bij de meterkastdeur, een losgekomen plintdeel. Je documenteert het zonder elektra aan te raken.',
+        source: { text: 'Netbeheer Nederland: zet elektra na een overstroming nooit zelf aan — laat dit controleren', url: 'https://www.netbeheernederland.nl/veiligheid-stroomstoringen/overstroming' },
+        stateChange: () => { useFlashlightCharge(); return { returnedHome: true }; }
       }];
     }
   }

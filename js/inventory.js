@@ -100,6 +100,17 @@ function inventoryRuntime(id) {
   return state.inventory[id];
 }
 
+function hasWorkingFlashlight() {
+  return (prepPresent(profile.hasFlashlight) || state.hasFlashlight)
+    && !inventoryRuntime('flashlight').empty;
+}
+
+function useFlashlightCharge() {
+  const runtime = inventoryRuntime('flashlight');
+  runtime.uses = (runtime.uses || 0) + 1;
+  if (runtime.uses >= 5) runtime.empty = true;
+}
+
 function getRadioAvailableInContext(ctx) {
   return ctx.isHomeScenario
     ? prepPresent(profile.hasRadio)
@@ -206,7 +217,10 @@ const INVENTORY_ITEMS = [
     group: 'bag',
     isVisible: ctx => ctx.isHomeScenario && (prepPresent(profile.hasFlashlight) || state.hasFlashlight),
     getStatus() {
-      return inventoryRuntime('flashlight').empty ? 'Leeg' : '';
+      const runtime = inventoryRuntime('flashlight');
+      if (runtime.empty) return 'Leeg';
+      if ((runtime.uses || 0) >= 4) return 'Bijna leeg';
+      return '';
     },
     isEmpty() {
       return !!inventoryRuntime('flashlight').empty;
@@ -216,9 +230,15 @@ const INVENTORY_ITEMS = [
       if (runtime.empty) {
         return { consequence: 'De zaklamp is leeg.' };
       }
-      runtime.empty = true;
-      runtime.used = true;
-      return { consequence: 'Je zet de zaklamp even aan om beter te zien. Daarna is de batterij leeg.' };
+      runtime.uses = (runtime.uses || 0) + 1;
+      if (runtime.uses >= 5) {
+        runtime.empty = true;
+        return { consequence: 'De batterij is op. De zaklamp gaat uit.' };
+      }
+      if (runtime.uses === 4) {
+        return { consequence: 'Je zet de zaklamp aan. De batterij is bijna leeg.' };
+      }
+      return { consequence: 'Je zet de zaklamp aan om beter te zien.' };
     }
   },
   {

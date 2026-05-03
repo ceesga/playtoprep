@@ -9,6 +9,69 @@ let phoneContacts = [];  // scenario-specifieke contacten
 let _renderedContacts = [];  // gecombineerde lijst op het moment van render
 let phoneOpen = false;
 
+// ─── CONTEXT HELPERS ────────────────────────────────────────────────────────
+
+const _HOME_SCENARIOS = ['stroom', 'overstroming', 'nachtalarm', 'drinkwater', 'natuurbrand'];
+
+function _partnerCallContext() {
+  if (!currentScenario) return 'calm';
+  if (currentScenario === 'overstroming') {
+    if (state.wentUpstairs || state.evacuatedFlood) return 'urgent';
+    if (state.awarenessLevel >= 1 || state.sealedHome) return 'worried';
+  } else if (currentScenario === 'stroom') {
+    if (state.awarenessLevel >= 2) return 'urgent';
+    if (state.awarenessLevel >= 1) return 'worried';
+  } else if (currentScenario === 'natuurbrand') {
+    if (state.evacuated || state.evacuatedFire) return 'urgent';
+    if (state.awarenessLevel >= 1) return 'worried';
+  } else if (currentScenario === 'nachtalarm') {
+    return 'urgent';
+  } else if (currentScenario === 'drinkwater') {
+    if (state.awarenessLevel >= 1) return 'worried';
+  } else if (currentScenario === 'thuis_komen') {
+    if (state.awarenessLevel >= 2) return 'urgent';
+    if (state.awarenessLevel >= 1) return 'worried';
+  }
+  return 'calm';
+}
+
+function _partnerPresentText(ctx) {
+  const s = currentScenario;
+  if (ctx === 'calm') {
+    if (s === 'stroom') return 'Je loopt naar je partner toe. "Vreemd, die stroom," zegt je partner. Jullie bespreken samen hoe jullie de avond aanpakken.';
+    if (s === 'overstroming') return 'Je partner staat bij het raam. "Kijk eens hoe het regent." Jullie bekijken de berichten samen en bespreken of er iets klaargezet moet worden.';
+    if (s === 'drinkwater') return 'Je partner heeft de waarschuwing ook gelezen. "Hoe lang duurt dat?" Jullie kijken samen hoeveel drinkwater jullie in huis hebben.';
+    if (s === 'natuurbrand') return 'Je partner heeft de berichten ook gelezen. "Zou het onze kant op komen?" Jullie houden de situatie samen in de gaten.';
+    return 'Je partner is bij je. Jullie bespreken de situatie en houden elkaar op de hoogte.';
+  }
+  if (ctx === 'worried') {
+    if (s === 'stroom') return 'Je overlegt met je partner. "Als dit lang duurt, wat doen we dan?" Jullie gaan samen na wat jullie nodig hebben en wie wat regelt.';
+    if (s === 'overstroming') return 'Je overlegt met je partner. "Moeten we alvast iets inpakken?" Jullie bespreken de situatie en besluiten samen de eerste stap.';
+    if (s === 'drinkwater') return 'Je overlegt met je partner. "Water koken of flessen halen?" Jullie verdelen de taken.';
+    if (s === 'natuurbrand') return 'Je overlegt met je partner. "Pak jij de vluchttas, dan houd ik de radio bij," stel je voor. Jullie verdelen de taken.';
+    return 'Je overlegt met je partner over de situatie en wat jullie het beste kunnen doen.';
+  }
+  if (s === 'nachtalarm') return 'Je partner is wakker van het alarm. "Wat moet ik doen?" Jullie bespreken snel de route naar buiten en wie wat meeneemt.';
+  if (s === 'overstroming') return 'Je partner staat naast je. "We moeten nu beslissen," zegt je partner. Jullie stemmen snel af over de volgende stap.';
+  if (s === 'stroom') return 'Je partner staat naast je. Jullie bespreken hoe jullie de komende uren doorkomen — licht, warmte, eten. Samen heb je een plan.';
+  if (s === 'natuurbrand') return 'Je partner staat klaar bij de deur. "We gaan?" "We gaan." Jullie pakken het laatste samen en verlaten het huis.';
+  return 'Je partner is bij je. Jullie stemmen snel af over de volgende stap.';
+}
+
+function _partnerCallText(ctx) {
+  if (ctx === 'calm') return 'Je belt naar huis. Je partner neemt op. "Alles goed?" "Ja hoor. Ben je al onderweg?" Jullie praten even bij. Je hangt op met een goed gevoel.';
+  if (ctx === 'worried') return 'Je belt naar huis. "Hoe is het daar?" "Goed, we volgen het nieuws. Wanneer ben jij thuis?" Je belooft zo snel mogelijk te komen.';
+  return 'Je belt naar huis. "Hoe is het bij jullie?" "We staan klaar," zegt je partner. "Kom zo snel je kunt." Jullie stemmen snel af.';
+}
+
+function _friendCallText(ctx) {
+  if (ctx === 'calm') return 'Je belt je beste vriend(in). "Heb je het gehoord?" "Ja, gek hè. Bij ons gaat het goed." Even bijpraten. Fijn om te horen dat het goed gaat.';
+  if (ctx === 'worried') return 'Je belt je beste vriend(in). "Bij jou ook zo?" "Ja, we houden het in de gaten." Jullie wisselen uit wat jullie weten. Fijn om niet alleen in dit te staan.';
+  return 'Je belt je beste vriend(in). Je legt snel uit wat er aan de hand is. "Oké, bel me als je iets nodig hebt." Fijn dat iemand weet waar je bent.';
+}
+
+// ─── UNIVERSELE CONTACTEN ────────────────────────────────────────────────────
+
 function getUniversalContacts() {
   var univ = [];
   var hasScenario112 = phoneContacts.some(function(c) { return c.name === '112'; });
@@ -26,12 +89,17 @@ function getUniversalContacts() {
     univ.push({
       name: 'Partner',
       startSceneId: null,
-      label: 'Bel partner',
+      get label() {
+        return _HOME_SCENARIOS.includes(currentScenario) ? 'Overleg met partner' : 'Bel partner';
+      },
       get consequence() {
         if (state.networkDown) {
-          return 'Je probeert je partner te bellen, maar het netwerk is overbelast. Eerst hoor je een toon, daarna niets meer. Je stuurt een sms: "Alles goed hier." Of die aankomt weet je niet.';
+          return 'Je probeert je partner te bereiken, maar het netwerk is overbelast. Even later stuur je een sms. Of die aankomt, weet je niet.';
         }
-        return 'Je belt naar huis. Na twee keer overgaan neemt je partner op. Je praat even bij — ditjes en datjes, niets bijzonders. "Alles goed daar?" "Ja hoor, gewoon bezig." Het is fijn even iemand te spreken. Je hangt op met een goed gevoel.';
+        const ctx = _partnerCallContext();
+        return _HOME_SCENARIOS.includes(currentScenario)
+          ? _partnerPresentText(ctx)
+          : _partnerCallText(ctx);
       },
       stateChange: {},
       conditionalOn: function() { return state.phoneBattery > 0; }
@@ -44,9 +112,9 @@ function getUniversalContacts() {
       label: 'Bel beste vriend(in)',
       get consequence() {
         if (state.networkDown) {
-          return 'Je probeert je beste vriend(in) te bellen, maar het netwerk is overbelast. Eerst hoor je een toon, daarna niets meer. Je stuurt een sms: "Alles goed hier." Of die aankomt weet je niet.';
+          return 'Je probeert je beste vriend(in) te bellen, maar het netwerk is overbelast. Je stuurt een sms. Of die aankomt, weet je niet.';
         }
-        return 'Je belt je beste vriend(in). Na twee keer overgaan wordt er opgenomen. Je praat even bij — ditjes en datjes, niets bijzonders. "Alles goed daar?" "Ja hoor, gewoon bezig." Het is fijn even iemand te spreken. Je hangt op met een goed gevoel.';
+        return _friendCallText(_partnerCallContext());
       },
       stateChange: {},
       conditionalOn: function() { return state.phoneBattery > 0; }

@@ -959,6 +959,12 @@ const scenes_natuurbrand = [{
     text: '🤝 Buren helpen die meer schade hebben',
     consequence: 'Je loopt naar Kevin. Zijn schuur is verloren, maar hij staat er goed bij. Samen inventariseren jullie de schade. Hij is blij met de hulp.',
     stateChange: {}
+  }, {
+    conditionalOn: () => hasWorkingFlashlight(),
+    text: '🔦 Met de zaklamp de woning controleren zonder elektra aan te zetten',
+    consequence: 'Je schijnt langs plafonds, muren en de meterkast. Je ziet roetafzetting bij één stopcontact en een lichte verkleuring achter de kachel. Elektra aanzetten zonder keuring zou hier gevaarlijk zijn. Goede beslissing om de zaklamp te gebruiken.',
+    source: { text: 'Brandweer: zet elektra na brand of rookschade niet zelf aan', url: 'https://www.brandweer.nl/onderwerpen/na-de-brand/' },
+    stateChange: () => { useFlashlightCharge(); return {}; }
   }]
 }];
 

@@ -244,6 +244,7 @@ function buildScenarioStartState(scenarioId) {
   nextState.hasCash = hasPrepCash;
   nextState.hasFlashlight = hasPrepFlashlight;
   nextState.hasWater = hasPrepWater;
+  nextState.packedBag = profile.hasBOBBag === 'ja';
   nextState.travelMode = profile.commuteMode || 'car';
   nextState.hadEDCBag = hasEDCBag;
   nextState.water = 1 + (hasPrepWater ? 3 : 0);
