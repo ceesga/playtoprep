@@ -221,6 +221,14 @@ function renderPrep() {
   document.getElementById('prep-body').innerHTML = html;
 }
 
+function syncToggleButtons(id, val) {
+  document.querySelectorAll(`[data-qid="${id}"]`).forEach(btn => {
+    const active = btn.dataset.val === val;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active);
+  });
+}
+
 /* ─── TOGGLE HANDLER ─────────────────────────────────────────────────────────
    Verwerkt een klik op een toggle-knop:
      1. Slaat de gekozen waarde op in het profile-object
@@ -231,11 +239,7 @@ function renderPrep() {
 function setToggle(id, val) {
   profile[id] = val;
   // Synchroniseer de visuele staat van alle knoppen die tot dezelfde vraag behoren
-  document.querySelectorAll(`[data-qid="${id}"]`).forEach(btn => {
-    const active = btn.dataset.val === val;
-    btn.classList.toggle('active', active);
-    btn.setAttribute('aria-pressed', active);
-  });
+  syncToggleButtons(id, val);
 
   // Koppeling van sectie-ID naar de bijbehorende kinditems
   const autoFill = {
@@ -249,22 +253,14 @@ function setToggle(id, val) {
   if (val === 'ja' && autoFill[id]) {
     autoFill[id].forEach(kid => {
       profile[kid] = 'ja';
-      document.querySelectorAll(`[data-qid="${kid}"]`).forEach(btn => {
-        const active = btn.dataset.val === 'ja';
-        btn.classList.toggle('active', active);
-        btn.setAttribute('aria-pressed', active);
-      });
+      syncToggleButtons(kid, 'ja');
     });
   }
   // Als de sectieheader op 'nee' wordt gezet, alle kinditems ook op 'nee'
   if (val === 'nee' && autoFill[id]) {
     autoFill[id].forEach(kid => {
       profile[kid] = 'nee';
-      document.querySelectorAll(`[data-qid="${kid}"]`).forEach(btn => {
-        const active = btn.dataset.val === 'nee';
-        btn.classList.toggle('active', active);
-        btn.setAttribute('aria-pressed', active);
-      });
+      syncToggleButtons(kid, 'nee');
     });
   }
 

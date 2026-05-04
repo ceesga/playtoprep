@@ -18,30 +18,53 @@ const STB_AVATARS = ['womanx-1', 'manx-2', 'womanx-2']; // Slecht-ter-been avata
 const OUDEREN_AVATARS = ['old_woman', 'old_man']; // Ouderen avatars
 const PET_AVATARS = ['hond', 'kat', 'konijn', 'hamster', 'paard'];
 
+function showDismissiblePanel(panel) {
+  if (!panel) return;
+  hideDismissiblePanel(panel);
+  panel.hidden = false;
+  const outsideHandler = event => {
+    if (panel.hidden || panel.contains(event.target)) return;
+    hideDismissiblePanel(panel);
+  };
+  panel._outsideHandler = outsideHandler;
+  panel._outsideHandlerTimer = setTimeout(() => {
+    document.addEventListener('click', outsideHandler);
+    panel._outsideHandlerTimer = null;
+  }, 10);
+}
+
+function hideDismissiblePanel(panel) {
+  if (!panel) return;
+  panel.hidden = true;
+  if (panel._outsideHandlerTimer) {
+    clearTimeout(panel._outsideHandlerTimer);
+    panel._outsideHandlerTimer = null;
+  }
+  if (panel._outsideHandler) {
+    document.removeEventListener('click', panel._outsideHandler);
+    panel._outsideHandler = null;
+  }
+}
+
+function getActiveAvatarPicker() {
+  const pickerId = intakeStep <= -1 ? 'hh-avatar-picker' : 'avatar-picker';
+  return document.getElementById(pickerId);
+}
+
+function buildPreviewFigureHtml(fig) {
+  const avatar = getAvatarSelection(fig.type, fig.idx);
+  const compactClass = isCompactFigure(fig.type, avatar) ? ' char-fig--compact' : '';
+  return `<div class="char-fig ${fig.type}${compactClass}" role="button" tabindex="0" aria-label="${getFigureActionLabel(fig.type, 'aanpassen')}" onclick="openAvatarPicker(${fig.idx},'${fig.type}')" onkeydown="handlePickerTriggerKey(event,${fig.idx},'${fig.type}')" title="Klik om te wijzigen">
+    <img src="afbeelding/avatars/${getAvatarFolder(fig.type)}/${avatar}.png" alt="${getFigureAltText(fig.type)}">
+  </div>`;
+}
+
 function updateCharacterPreview() {
   // Sidebar preview during card steps
   const container = document.getElementById('char-figures');
   if (!container) return;
 
-  // Controleer of huisdieren geselecteerd zijn via de speciale-antwoorden-array
-  const hasPets = Array.isArray(intakeAnswers.special) && intakeAnswers.special.includes('pets');
-
-  let html = '';
-  for (let i = 0; i < adultsCount; i++) {
-    const av = avatarSelections.adults[i] || defaultAdultAvatar(i);
-    html += `<div class="char-fig adult" role="button" tabindex="0" aria-label="Volwassene aanpassen" onclick="openAvatarPicker(${i},'adult')" onkeydown="handlePickerTriggerKey(event,${i},'adult')" title="Klik om te wijzigen">
-      <img src="afbeelding/avatars/adult/${av}.png" alt="Volwassen persoon">
-    </div>`;
-  }
-  for (let i = 0; i < childrenCount; i++) {
-    const av = avatarSelections.children[i] || defaultChildAvatar(i);
-    html += `<div class="char-fig child" role="button" tabindex="0" aria-label="Kind aanpassen" onclick="openAvatarPicker(${i},'child')" onkeydown="handlePickerTriggerKey(event,${i},'child')" title="Klik om te wijzigen">
-      <img src="afbeelding/avatars/child/${av}.png" alt="Kind">
-    </div>`;
-  }
-  if (hasPets) html += `<div class="char-pet">🐕</div>`; // Vereenvoudigd huisdier-icoon in de zijbalk
-
-  container.innerHTML = html;
+  container.innerHTML = getFigureDescriptors(true).map(buildPreviewFigureHtml).join('');
 }
 
 /* Geeft het pad terug naar de afbeelding van de primaire avatar (eerste volwassene).
@@ -51,6 +74,9 @@ function updateCharacterPreview() {
 function getPrimaryAvatarPath() {
   if (avatarSelections.adults && avatarSelections.adults[0]) {
     return `afbeelding/avatars/adult/${avatarSelections.adults[0]}.png`;
+  }
+  if (avatarSelections.ouderen && avatarSelections.ouderen[0]) {
+    return `afbeelding/avatars/ouderen/${avatarSelections.ouderen[0]}.png`;
   }
   if (avatarSelections.slechtTerBeen && avatarSelections.slechtTerBeen[0]) {
     return `afbeelding/avatars/slecht%20ter%20been/${avatarSelections.slechtTerBeen[0]}.png`;
@@ -88,11 +114,6 @@ function renderHouseholdIndicator() {
   if (nameEl) nameEl.textContent = profile.playerName || '';
 }
 
-/* ─── AVATAR LIJSTEN ──────────────────────────────────────────────────────────
-   Beschikbare avatar-namen per categorie. De bestandsnamen komen overeen
-   met PNG-bestanden in de afbeelding/avatars/-submappen.
-
-
 /* ─── AVATAR PICKER ───────────────────────────────────────────────────────────
    Opent de avatar-picker voor een specifiek figuur (op index en type).
    In de huishoud-stappen (-4 t/m -1) wordt de picker in #hh-avatar-picker getoond;
@@ -107,8 +128,7 @@ function openAvatarPicker(index, type) {
   };
   // Kies de juiste picker-container op basis van de huidige stap
   const isHousehold = intakeStep <= -1;
-  const pickerId = isHousehold ? 'hh-avatar-picker' : 'avatar-picker';
-  const picker = document.getElementById(pickerId);
+  const picker = getActiveAvatarPicker();
   if (!picker) return;
 
   // Bepaal de lijst en submap op basis van het type figuur
@@ -128,13 +148,7 @@ function openAvatarPicker(index, type) {
     `<img src="afbeelding/avatars/${folder}/${av}.png" alt="Avatar optie" class="${av === current ? 'active' : ''}"
       onclick="selectAvatar('${av}')">`
   ).join('') + (isHousehold ? `<button id="hh-picker-close" onclick="closePickerNow()">✕</button>` : '');
-  picker.style.display = 'flex';
-
-  // Voeg een eenmalige klik-listener toe om de picker te sluiten bij klikken buiten
-  // Kleine vertraging voorkomt dat de openings-klik zelf de picker direct sluit
-  setTimeout(() => document.addEventListener('click', closePicker, {
-    once: true
-  }), 10);
+  showDismissiblePanel(picker);
 }
 
 /* Slaat de gekozen avatar op voor het doelobject en sluit de picker.
@@ -154,40 +168,25 @@ function selectAvatar(av) {
   else if (type === 'ouderen') avatarSelections.ouderen[index] = av;
   else avatarSelections.pets[index] = av;
   const isHousehold = intakeStep <= -1;
+  closePickerNow();
   if (isHousehold) {
-    avatarPickerTarget = null;
     // Herbouw de huidige huishoudstap om de nieuwe avatar direct te tonen
     if (intakeStep === -5) renderHouseholdStep();
+    else if (intakeStep === -4) renderWieBenJijStep();
     else if (intakeStep === -3) renderHouseStep();
     else if (intakeStep === -2) renderVehicleStep();
     else renderEnvironmentStep();
   } else {
     // In kaart-stappen: sluit alleen de picker en ververs de zijbalk-preview
-    document.getElementById('avatar-picker').style.display = 'none';
-    avatarPickerTarget = null;
     updateCharacterPreview();
   }
 }
 
 // Sluit de avatar-picker direct via de sluit-knop (✕) zonder te wachten op een buiten-klik
 function closePickerNow() {
-  const picker = document.getElementById('hh-avatar-picker') || document.getElementById('avatar-picker');
-  if (picker) picker.style.display = 'none';
+  hideDismissiblePanel(document.getElementById('hh-avatar-picker'));
+  hideDismissiblePanel(document.getElementById('avatar-picker'));
   avatarPickerTarget = null;
-}
-
-/* Sluit de avatar-picker als er buiten de picker geklikt wordt.
-   Wordt eenmalig gebonden als document-klik-listener in openAvatarPicker.
-*/
-function closePicker(e) {
-  const isHousehold = intakeStep <= -1;
-  const pickerId = isHousehold ? 'hh-avatar-picker' : 'avatar-picker';
-  const picker = document.getElementById(pickerId);
-  // Sluit alleen als de klik buiten de picker-container plaatsvond
-  if (picker && !picker.contains(e.target)) {
-    picker.style.display = 'none';
-    avatarPickerTarget = null;
-  }
 }
 
 /* ─── INTAKE NAVIGATIE ────────────────────────────────────────────────────────

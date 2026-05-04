@@ -41,7 +41,7 @@
           <label for="login-password" class="login-label">Wachtwoord</label>
           <input type="password" id="login-password" class="login-input" autocomplete="current-password" placeholder="Wachtwoord">
           <p id="login-error" class="login-error" role="alert" style="display:none"></p>
-          <label class="terms-check-label" style="margin-top:16px">
+          <label class="terms-check-label">
             <input type="checkbox" id="login-terms-checkbox"
               onchange="document.getElementById('login-btn').disabled = !this.checked;">
             Ik ga akkoord met de <button type="button" class="terms-link" onclick="event.stopPropagation(); openTerms()">algemene voorwaarden</button>
@@ -118,7 +118,7 @@
     <div id="intake-layout">
       <div id="character-preview">
         <div id="char-figures"></div>
-        <div id="avatar-picker" style="display:none"></div>
+        <div id="avatar-picker" hidden></div>
       </div>
       <div id="intake-body"></div>
     </div>

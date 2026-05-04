@@ -157,6 +157,7 @@ function triggerAlert(text) {
   // Sla het huidige focuselement op voor herstel na sluiten
   _alertReturnFocus = document.activeElement;
   overlay.classList.add('show'); // maak het overlay zichtbaar
+  trapFocus(overlay);
 
   // Verplaats focus naar de sluitknop zodra het overlay is gerenderd
   requestAnimationFrame(() => {
@@ -167,7 +168,9 @@ function triggerAlert(text) {
 
 // Sluit het NL-Alert overlay en geeft focus terug aan het vorige element.
 function closeAlert() {
-  document.getElementById('nl-alert-overlay').classList.remove('show');
+  const overlay = document.getElementById('nl-alert-overlay');
+  releaseFocusTrap(overlay);
+  overlay.classList.remove('show');
   if (_alertReturnFocus) {
     _alertReturnFocus.focus();
     _alertReturnFocus = null; // reset zodat we geen verwijzing bewaren na gebruik
@@ -189,24 +192,36 @@ let _lastFocusBeforeModal = null;
 // Vangt tabulator-navigatie op binnen een modaal element zodat de focus
 // niet buiten het modal kan geraken (toegankelijkheidsvereiste).
 function trapFocus(modalEl) {
-  // Verzamel alle focusbare elementen binnen het modal
-  const focusable = modalEl.querySelectorAll(
-    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-  );
-  const first = focusable[0];
-  const last  = focusable[focusable.length - 1];
+  if (!modalEl) return () => {};
+  if (typeof modalEl._trapFocusCleanup === 'function') modalEl._trapFocusCleanup();
 
-  // Luister op Tab-toetsaanslagen en sla de focus om aan de randen
-  modalEl.addEventListener('keydown', function onTrap(e) {
+  const onTrap = e => {
     if (e.key !== 'Tab') return;
+    const focusable = modalEl.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) return;
     if (e.shiftKey) {
-      // Shift+Tab op het eerste element: spring naar het laatste
       if (document.activeElement === first) { e.preventDefault(); last.focus(); }
     } else {
-      // Tab op het laatste element: spring naar het eerste
       if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
     }
-  });
+  };
+
+  modalEl.addEventListener('keydown', onTrap);
+  modalEl._trapFocusCleanup = () => {
+    modalEl.removeEventListener('keydown', onTrap);
+    if (modalEl._trapFocusCleanup) modalEl._trapFocusCleanup = null;
+  };
+  return modalEl._trapFocusCleanup;
+}
+
+function releaseFocusTrap(modalEl) {
+  if (modalEl && typeof modalEl._trapFocusCleanup === 'function') {
+    modalEl._trapFocusCleanup();
+  }
 }
 
 // Opent het helpoverlay in de opgegeven modus ('scenario' of 'setup').
@@ -223,7 +238,9 @@ function openHelp(mode) {
 
 // Sluit het helpoverlay en herstelt de focus naar het vorige element.
 function closeHelp() {
-  document.getElementById('help-overlay').classList.remove('show');
+  const overlay = document.getElementById('help-overlay');
+  releaseFocusTrap(overlay);
+  overlay.classList.remove('show');
   if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
 }
 
@@ -232,10 +249,13 @@ function openTerms() {
   const overlay = document.getElementById('terms-overlay');
   overlay.classList.add('open');
   trapFocus(overlay);
+  requestAnimationFrame(() => overlay.querySelector('.help-close-x')?.focus());
 }
 
 function closeTerms() {
-  document.getElementById('terms-overlay').classList.remove('open');
+  const overlay = document.getElementById('terms-overlay');
+  releaseFocusTrap(overlay);
+  overlay.classList.remove('open');
   if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
 }
 
@@ -281,12 +301,6 @@ function openHouseholdPortrait() {
   } else {
     // Fallback (bijv. bij file://-protocol): bouw collage opnieuw op uit state
 
-    // Bouw het pad op naar de afbeelding van het geselecteerde woningtype
-    const _htObj = selectedHouseType ? HOUSE_TYPES.find(h => h.val === selectedHouseType) : null;
-    const houseSrc = selectedHouseType === 'overige'
-      ? (selectedOverigeSubType ? `afbeelding/avatars/woningtype/${selectedOverigeSubType}.png` : '')
-      : (_htObj ? `afbeelding/avatars/woningtype/${_htObj.img || _htObj.val}.png` : '');
-
     // Hoogte-lookup-tabel op basis van aantal personen (index = persoonsnummer)
     const ht = [0, 140, 132, 124, 116, 110, 104, 99, 94, 90, 86, 82, 78];
 
@@ -297,10 +311,9 @@ function openHouseholdPortrait() {
     // Stel de volledige collage samen als HTML
     stage.innerHTML = `
       ${buildEnvOverlay(selectedEnvironment)}
-      <img class="hh-portrait-house${selectedHouseType ? ' visible' : ''}${houseStijlKlasse(selectedHouseType) ? ' ' + houseStijlKlasse(selectedHouseType) : ''}" src="${houseSrc}" alt="">
-      <img class="hh-portrait-vehicle left"  src="afbeelding/avatars/vehicles/fiets.png" alt="" style="display:${selectedVehicles.includes('fiets')?'block':'none'}">
-      <img class="hh-portrait-vehicle right" src="afbeelding/avatars/vehicles/auto.png"  alt="" style="display:${selectedVehicles.includes('auto')?'block':'none'}">
-      <div style="position:relative;z-index:3;display:flex;align-items:flex-end;justify-content:center;gap:4px;width:100%">${figures}</div>
+      ${buildHouseImageHtml('hh-portrait-house')}
+      ${buildStageVehiclesHtml('hh-portrait-vehicle')}
+      <div class="hh-portrait-figures">${figures}</div>
       <div class="hh-pet-overlay">${petOverlay}</div>`;
   }
 
@@ -312,7 +325,9 @@ function openHouseholdPortrait() {
 
 // Sluit het huishoudportret-popup en herstelt de focus.
 function closeHouseholdPortrait() {
-  document.getElementById('household-popup').classList.remove('show');
+  const popup = document.getElementById('household-popup');
+  releaseFocusTrap(popup);
+  popup.classList.remove('show');
   if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
 }
 
@@ -473,8 +488,20 @@ document.addEventListener('keydown', function(e) {
       closeHelp();
       return;
     }
+    if (document.getElementById('terms-overlay').classList.contains('open')) {
+      closeTerms();
+      return;
+    }
+    if (document.getElementById('over-overlay').classList.contains('open')) {
+      closeOver();
+      return;
+    }
     if (document.getElementById('household-popup').classList.contains('show')) {
       closeHouseholdPortrait();
+      return;
+    }
+    if (document.getElementById('nl-alert-overlay').classList.contains('show')) {
+      closeAlert();
       return;
     }
   }
@@ -523,6 +550,7 @@ function openGearMenu() {
 function closeGearMenu() {
   const menu = document.getElementById('gear-menu');
   if (!menu) return;
+  releaseFocusTrap(menu);
   menu.classList.remove('show');
   if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
 }
@@ -558,8 +586,10 @@ function loadProfileAndGo() {
     adultsCount        = d.adultsCount        ?? 1;
     childrenCount      = d.childrenCount      ?? 0;
     slechtTerBeenCount = d.slechtTerBeenCount ?? 0;
+    ouderenCount       = d.ouderenCount       ?? 0;
     petsCount          = d.petsCount          ?? 0;
     selectedHouseType  = d.selectedHouseType  ?? null;
+    selectedOverigeSubType = d.selectedOverigeSubType ?? null;
     if (d.selectedVehicles)    selectedVehicles.splice(0, Infinity, ...d.selectedVehicles);
     if (d.selectedEnvironment) selectedEnvironment.splice(0, Infinity, ...d.selectedEnvironment);
     if (d.avatarSelections)    Object.assign(avatarSelections, d.avatarSelections);
@@ -574,8 +604,9 @@ function saveProfile() {
     version: 1,
     savedAt: Date.now(), // tijdstempel voor weergave "X minuten geleden"
     profile: { ...profile }, // spreidt de profiel-eigenschappen in een nieuw object
-    adultsCount, childrenCount, slechtTerBeenCount, petsCount,
+    adultsCount, childrenCount, slechtTerBeenCount, ouderenCount, petsCount,
     selectedHouseType,
+    selectedOverigeSubType,
     selectedVehicles:    [...selectedVehicles],    // kopie van de array
     selectedEnvironment: [...selectedEnvironment], // kopie van de array
     avatarSelections:    JSON.parse(JSON.stringify(avatarSelections)) // diepe kopie
@@ -651,7 +682,7 @@ function checkSave() {
       const p = JSON.parse(rawProf);
       const naam = (p.profile && p.profile.playerName) || '';
       const parts = [];
-      const adults = (p.adultsCount || 0) + (p.slechtTerBeenCount || 0);
+      const adults = (p.adultsCount || 0) + (p.slechtTerBeenCount || 0) + (p.ouderenCount || 0);
       if (adults > 0)           parts.push(`${adults} volw.`);
       if (p.childrenCount > 0)  parts.push(`${p.childrenCount} kind${p.childrenCount > 1 ? 'eren' : ''}`);
       if (p.petsCount > 0)      parts.push(`${p.petsCount} huisdier${p.petsCount > 1 ? 'en' : ''}`);
@@ -678,13 +709,18 @@ function openOver() {
   _overReturnFocus = document.activeElement;
   const overlay = document.getElementById('over-overlay');
   overlay.classList.add('open');
-  const closeBtn = overlay.querySelector('.help-close-x');
-  if (closeBtn) closeBtn.focus();
+  trapFocus(overlay);
+  requestAnimationFrame(() => overlay.querySelector('.help-close-x')?.focus());
 }
 
 function closeOver() {
-  document.getElementById('over-overlay').classList.remove('open');
-  if (_overReturnFocus) _overReturnFocus.focus();
+  const overlay = document.getElementById('over-overlay');
+  releaseFocusTrap(overlay);
+  overlay.classList.remove('open');
+  if (_overReturnFocus) {
+    _overReturnFocus.focus();
+    _overReturnFocus = null;
+  }
 }
 
 /* ─── SCENARIO-KEUZE RENDERER ─────────────────────────────────────────────────

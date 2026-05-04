@@ -55,7 +55,7 @@ function renderNewsPage() {
   const pageIdx = newsLog.length - 1 - newsPage;
   const page = newsLog[Math.max(0, pageIdx)];
   let html = '';
-  if (!page || page.items.length === 0) {
+  if (!page || !page.items?.length) {
     html = '<p class="ch-empty">Nog geen nieuwsberichten.</p>';
   } else {
     // Keer de volgorde om zodat het meest recente bericht bovenaan staat
@@ -73,6 +73,36 @@ function renderNewsPage() {
   updateChannelNav('news');
 }
 
+function parseNlAlertMessage(text) {
+  const lines = (text || '').split('\n');
+  return {
+    time: lines[1] || '',
+    body: lines.slice(2).join('\n').trim()
+  };
+}
+
+function buildNlAlertCardHtml(text) {
+  if (!text) return '';
+  const { time, body } = parseNlAlertMessage(text);
+  return `<div class="alert-card wa-alert-card">
+    <div class="alert-header">🚨 NL-Alert${time ? ' · ' + time : ''}</div>
+    <div class="alert-body">${body}</div>
+  </div>`;
+}
+
+function buildWaMessageHtml(message) {
+  const isOutgoing = !!message.outgoing;
+  return `<div class="wa-msg ${isOutgoing ? 'outgoing' : 'incoming'}">
+    ${!isOutgoing ? `<div class="wa-from">${message.from}</div>` : ''}
+    <div class="wa-bubble">${message.msg}</div>
+    <div class="wa-time">${message.time}</div>
+  </div>`;
+}
+
+function buildWaMessagesHtml(items) {
+  return [...items].reverse().map(buildWaMessageHtml).join('');
+}
+
 // Rendert een berichtenpagina: toont eerst een eventueel NL-Alert,
 // daarna de berichten (nieuwste bovenaan). Maakt onderscheid tussen
 // inkomende en uitgaande berichten.
@@ -81,23 +111,10 @@ function renderWaPage(page) {
   let html = '';
   // Toon NL-Alert bovenaan als deze aan de pagina is gekoppeld
   if (page && page.nlalert) {
-    const alertLines = page.nlalert.split('\n');
-    const alertTime = alertLines[1] || '';
-    const alertBody = alertLines.slice(2).join('\n').trim();
-    html += `<div class="alert-card wa-alert-card">
-      <div class="alert-header">🚨 NL-Alert${alertTime ? ' · ' + alertTime : ''}</div>
-      <div class="alert-body">${alertBody}</div>
-    </div>`;
+    html += buildNlAlertCardHtml(page.nlalert);
   }
-  if (page && page.items.length > 0) {
-    [...page.items].reverse().forEach(m => {
-      const isOut = m.outgoing; // uitgaand bericht van de speler zelf
-      html += `<div class="wa-msg ${isOut ? 'outgoing' : 'incoming'}">
-        ${!isOut ? `<div class="wa-from">${m.from}</div>` : ''}
-        <div class="wa-bubble">${m.msg}</div>
-        <div class="wa-time">${m.time}</div>
-      </div>`;
-    });
+  if (page && page.items?.length > 0) {
+    html += buildWaMessagesHtml(page.items);
   }
   if (!html) html = '<p class="ch-empty">Nog geen berichten.</p>';
   waEl.innerHTML = html;
@@ -199,46 +216,18 @@ function renderChannels(scene) {
     }
   }
 
-  // Initial wa-content: NL-Alert meteen tonen (of lege placeholder)
-  let waInitHtml = '';
-  if (curNlalert) {
-    // Splits het NL-Alert-bericht op regels: regel 0 = type, regel 1 = tijdstip, rest = inhoud
-    const alertLines = curNlalert.split('\n');
-    const alertTime = alertLines[1] || '';
-    const alertBody = alertLines.slice(2).join('\n').trim();
-    waInitHtml += `<div class="alert-card wa-alert-card">
-      <div class="alert-header">🚨 NL-Alert${alertTime ? ' · ' + alertTime : ''}</div>
-      <div class="alert-body">${alertBody}</div>
-    </div>`;
-  }
-  if (newWa.length === 0 && !curNlalert) {
-    waInitHtml = '<p class="ch-empty">Nog geen berichten.</p>';
-  }
-  document.getElementById('wa-content').innerHTML = waInitHtml;
-
-  // Berichten direct tonen, gelijk met nieuws en radio
-  if (newWa.length > 0) {
-    const waContainer = document.getElementById('wa-content');
-    // Verwijder placeholder éénmalig voor het batch-toevoegen
-    const placeholder = waContainer.querySelector('p');
-    if (placeholder) placeholder.remove();
-    // Bouw alle berichten in een fragment, dan één DOM-write
-    const fragment = document.createDocumentFragment();
-    // Keer de volgorde om zodat het nieuwste bericht onderaan staat (chat-stijl)
-    [...newWa].reverse().forEach(m => {
-      const isOut = m.outgoing;
-      const div = document.createElement('div');
-      div.className = `wa-msg ${isOut ? 'outgoing' : 'incoming'}`;
-      div.innerHTML = `${!isOut ? `<div class="wa-from">${m.from}</div>` : ''}
-        <div class="wa-bubble">${m.msg}</div>
-        <div class="wa-time">${m.time}</div>`;
-      fragment.appendChild(div);
+  const currentWaPage = waLog[waLog.length - 1 - waPage] || null;
+  if (newWa.length === 0 && curNlalert) {
+    renderWaPage({
+      items: [],
+      nlalert: curNlalert
     });
-    waContainer.appendChild(fragment);
-    if (activeTab === 'whatsapp') {
-      // Als de berichtentab al actief is, hoeft er geen ongelezen-indicator te zijn
-      document.getElementById('tab-whatsapp')?.classList.remove('has-unread');
-    }
+  } else {
+    renderWaPage(currentWaPage);
+  }
+  if (newWa.length > 0 && activeTab === 'whatsapp') {
+    // Als de berichtentab al actief is, hoeft er geen ongelezen-indicator te zijn
+    document.getElementById('tab-whatsapp')?.classList.remove('has-unread');
   }
 
   updateChannelNav('wa');

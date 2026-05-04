@@ -27,6 +27,15 @@ const phoneContacts_stroom = [
   }
 ];
 
+function stroomStatusBar(parts) {
+  return `<div class="scene-status-bar">${parts.join(' &nbsp;|&nbsp; ')}</div>`;
+}
+
+function stroomAfterword(lines) {
+  if (!lines.length) return null;
+  return `<div class="scene-afterword-box"><b class="scene-afterword-title">Drie weken later</b><br><br>${lines.join('<br>')}</div>`;
+}
+
 const scenes_stroom = [
   // SCENE 1 — Day -1
   {
@@ -94,7 +103,10 @@ const scenes_stroom = [
       radio: 'Goedemorgen, u luistert naar Radio 1. Het is acht uur. Vandaag wisselend bewolkt met kans op natte sneeuw. Het wordt koud: maximaal −1°C. Straks in het nieuws van negen uur meer over de situatie rond de beschadigde zeekabels.'
     },
     get narrative() {
-      const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#22c55e">18°C</b> &nbsp;|&nbsp; 🌨️ Buiten: <b style="color:#93c5fd">−1°C</b> </div>';
+      const statusBar = stroomStatusBar([
+        '🌡️ Binnen: <b style="color:#22c55e">18°C</b>',
+        '🌨️ Buiten: <b style="color:#93c5fd">−1°C</b>'
+      ]);
       const kinderen = profile.hasChildren
         ? (profile.childrenCount === 1
           ? ' Je kind slaapt nog — of is alweer op. Een gewone ochtend.'
@@ -478,7 +490,12 @@ const scenes_stroom = [
       nlalert: null,
       radio: 'Radio 1. Praktische tips voor vanavond: open uw vriezer zo min mogelijk, bevroren voedsel blijft 24 uur goed. Gebruik geen barbecue of campingkooktoestel binnenshuis vanwege koolmonoxide. Slaap warm: meerdere lagen kleding en bij voorkeur met meerdere personen in één kamer.'
     },
-    narrative: '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">13°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−2°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~6 uur zonder stroom</div>Het is al donker buiten, vroeg in februari. In huis is het merkbaar kouder geworden. De koelkast staat stil, de vriezer begint langzaam te ontdooien. Je maag rammelt. De supermarkten zijn al dicht. De stroom is al uren weg — en ondertussen doet ook het gasfornuis het niet meer. Hoe kook je vanavond?',
+    narrative: stroomStatusBar([
+      '🌡️ Binnen: <b style="color:#60a5fa">13°C</b>',
+      '❄️ Buiten: <b style="color:#93c5fd">−2°C</b>',
+      '⚡ <b style="color:#ef4444">Stroom uit</b>',
+      '⏱️ ~6 uur zonder stroom'
+    ]) + 'Het is al donker buiten, vroeg in februari. In huis is het merkbaar kouder geworden. De koelkast staat stil, de vriezer begint langzaam te ontdooien. Je maag rammelt. De supermarkten zijn al dicht. De stroom is al uren weg — en ondertussen doet ook het gasfornuis het niet meer. Hoe kook je vanavond?',
     choices: [{
       text: '🏕️ Campingkooktoestel of barbecue gebruiken',
       consequence: 'Je haalt het campingkooktoestel tevoorschijn. Belangrijk: gebruik het buiten of met veel ventilatie, want koolmonoxide is dodelijk in een besloten ruimte. Je kookt een warme maaltijd.',
@@ -512,7 +529,12 @@ const scenes_stroom = [
       radio: 'Radio 1. Goedenavond. De politie vraagt iedereen zoveel mogelijk binnen te blijven. In meerdere wijken zijn incidenten gemeld. Sluit uw deuren en ramen goed af. Wij zenden de hele nacht door op batterijstroom.'
     },
     get narrative() {
-      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">12°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; 🌙 Nacht valt in</div>Je hebt gegeten. Nu begint de lange avond. Buiten is het pikzwart. Geen lantaarnpalen, geen lichtjes bij de buren. Alleen hier en daar het flakkerende schijnsel van een kaars achter een raam. Het huis koelt langzaam maar zeker af. Je telefoon staat op ' + state.phoneBattery + '%.' + (state.phoneBattery <= 0 && !state.hasCarRadio && profile.hasRadio !== 'ja' ? ' Je telefoon is leeg en je hebt ook geen radio. Je hebt geen goede manier meer om te weten wat er nu gebeurt.' : '');
+      return stroomStatusBar([
+        '🌡️ Binnen: <b style="color:#60a5fa">12°C</b>',
+        '❄️ Buiten: <b style="color:#93c5fd">−3°C</b>',
+        '⚡ <b style="color:#ef4444">Stroom uit</b>',
+        '🌙 Nacht valt in'
+      ]) + 'Je hebt gegeten. Nu begint de lange avond. Buiten is het pikzwart. Geen lantaarnpalen, geen lichtjes bij de buren. Alleen hier en daar het flakkerende schijnsel van een kaars achter een raam. Het huis koelt langzaam maar zeker af. Je telefoon staat op ' + state.phoneBattery + '%.' + (state.phoneBattery <= 0 && !state.hasCarRadio && profile.hasRadio !== 'ja' ? ' Je telefoon is leeg en je hebt ook geen radio. Je hebt geen goede manier meer om te weten wat er nu gebeurt.' : '');
     },
     choices: [{
       text: '🕯️ Kaarsen aansteken, slaapzakken halen en in de woonkamer bij elkaar blijven',
@@ -664,7 +686,12 @@ const scenes_stroom = [
     dayBadge: 'Dag 2',
     dayBadgeClass: '',
     get narrative() {
-      const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">5°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~20 uur zonder stroom</div>';
+      const statusBar = stroomStatusBar([
+        '🌡️ Binnen: <b style="color:#60a5fa">5°C</b>',
+        '❄️ Buiten: <b style="color:#93c5fd">−3°C</b>',
+        '⚡ <b style="color:#ef4444">Stroom uit</b>',
+        '⏱️ ~20 uur zonder stroom'
+      ]);
       const mood = state.comfort >= 4 ?
         'Je hebt een paar uur geslapen en voelt je redelijk.' :
         state.comfort >= 2 ?
@@ -964,7 +991,12 @@ const scenes_stroom = [
       const foodNote = (state.supermarketItems.length > 0 || state.hasExtraFood) ?
         'Je hebt genoeg te eten.' :
         'Je voorraad begint krap te worden.';
-      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">7°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−4°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~30 uur zonder stroom</div>De tweede avond zonder stroom. ' + foodNote + ' In de woonkamer staat het kwik op 7°C. Magen rammelen. Er is een dringend advies om binnen te blijven. De stroom is al meer dan een dag weg — en het gasfornuis doet het al een tijdje niet meer. Hoe kook je vanavond?';
+      return stroomStatusBar([
+        '🌡️ Binnen: <b style="color:#60a5fa">7°C</b>',
+        '❄️ Buiten: <b style="color:#93c5fd">−4°C</b>',
+        '⚡ <b style="color:#ef4444">Stroom uit</b>',
+        '⏱️ ~30 uur zonder stroom'
+      ]) + 'De tweede avond zonder stroom. ' + foodNote + ' In de woonkamer staat het kwik op 7°C. Magen rammelen. Er is een dringend advies om binnen te blijven. De stroom is al meer dan een dag weg — en het gasfornuis doet het al een tijdje niet meer. Hoe kook je vanavond?';
     },
     choices: [{
       text: '🏕️ Campingkooktoestel of barbecue gebruiken',
@@ -1045,7 +1077,12 @@ const scenes_stroom = [
       };
     },
     get narrative() {
-      const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">5°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−4°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~44 uur zonder stroom</div>';
+      const statusBar = stroomStatusBar([
+        '🌡️ Binnen: <b style="color:#60a5fa">5°C</b>',
+        '❄️ Buiten: <b style="color:#93c5fd">−4°C</b>',
+        '⚡ <b style="color:#ef4444">Stroom uit</b>',
+        '⏱️ ~44 uur zonder stroom'
+      ]);
       const mood = state.comfort >= 4 ?
         'Je hebt geslapen. Niet goed, maar genoeg.' :
         state.comfort >= 2 ?
@@ -1150,7 +1187,12 @@ const scenes_stroom = [
         (state.supermarketItems.length > 0 || state.hasExtraFood) ?
         'Je hebt nog voorraad uit je voorbereiding.' :
         'Je voedselvoorraad is bijna op.';
-      return '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">6°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~54 uur zonder stroom</div>Het is de derde avond. ' + foodNote + ' In huis is het nu echt koud. Je ziet je adem. De stroom is al meer dan twee dagen weg. Het gasfornuis doet het ook niet meer. Intussen weet je beter hoe je hiermee om moet gaan. Er moet vanavond opnieuw iets op tafel komen.';
+      return stroomStatusBar([
+        '🌡️ Binnen: <b style="color:#60a5fa">6°C</b>',
+        '❄️ Buiten: <b style="color:#93c5fd">−3°C</b>',
+        '⚡ <b style="color:#ef4444">Stroom uit</b>',
+        '⏱️ ~54 uur zonder stroom'
+      ]) + 'Het is de derde avond. ' + foodNote + ' In huis is het nu echt koud. Je ziet je adem. De stroom is al meer dan twee dagen weg. Het gasfornuis doet het ook niet meer. Intussen weet je beter hoe je hiermee om moet gaan. Er moet vanavond opnieuw iets op tafel komen.';
     },
     choices: [{
       text: '🏕️ Campingkooktoestel of barbecue gebruiken',
@@ -1187,7 +1229,12 @@ const scenes_stroom = [
       radio: 'Radio 1. Goedemorgen. Goed nieuws: het stroomnet wordt vandaag stapsgewijs hersteld in Nederland. Houd alle grote apparaten uitgeschakeld bij herstel om stroompieken te voorkomen. Om tien uur is er een voedseluitdeling bij de supermarkt. Het einde is in zicht.'
     },
     get narrative() {
-      const statusBar = '<div style="background:#070e1b;border:1px solid #1e3a5f;border-radius:var(--r-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem">🌡️ Binnen: <b style="color:#60a5fa">4°C</b> &nbsp;|&nbsp; ❄️ Buiten: <b style="color:#93c5fd">−3°C</b> &nbsp;|&nbsp; ⚡ <b style="color:#ef4444">Stroom uit</b> &nbsp;|&nbsp; ⏱️ ~68 uur zonder stroom</div>';
+      const statusBar = stroomStatusBar([
+        '🌡️ Binnen: <b style="color:#60a5fa">4°C</b>',
+        '❄️ Buiten: <b style="color:#93c5fd">−3°C</b>',
+        '⚡ <b style="color:#ef4444">Stroom uit</b>',
+        '⏱️ ~68 uur zonder stroom'
+      ]);
       const opening = 'De derde ochtend. Bijna windstil buiten. ';
       if (state.knowsNeighbors) {
         return statusBar + opening + 'Er wordt geklopt. Rob staat voor de deur en zijn adem dampt in de kou. "Heb je het gehoord?" zegt hij. "In grote delen van Europa is de stroom terug. Nederland is een van de laatste, maar ze zeggen: vandaag." Hij valt even stil. "En om 10:00 is er hier in de buurt een voedseluitdeling." Voor het eerst in dagen voel je weer een beetje hoop.';
@@ -1307,7 +1354,7 @@ const scenes_stroom = [
       if (state.hasWater) lines.push('Het ingeslagen water bleek goud waard. De tip om alvast te vullen staat nu permanent in je hoofd.');
       if (!state.hasCash) lines.push('Eén les die je nooit vergeet: zorg altijd voor contant geld in huis.');
       if (!lines.length) return null;
-      return `<div style="background:#0a1f0a;border-left:3px solid #22c55e;padding:12px 16px;margin-top:8px;font-size:.85rem;color:#bbf7d0;line-height:1.8"><b style="color:#4ade80">Drie weken later</b><br><br>${lines.join('<br>')}</div>`;
+      return stroomAfterword(lines);
     }
   }
 ];

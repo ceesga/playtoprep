@@ -11,10 +11,6 @@ function renderChoices(scene) {
     _conseqEl.classList.remove('show');
     _conseqEl.innerHTML = '';
   }
-  if (!scene.choices) {
-    if (wrap) wrap.innerHTML = '';
-    return;
-  }
   if (!wrap) return;
   const catOrder = {
     'cat-action': 0,
@@ -26,7 +22,8 @@ function renderChoices(scene) {
   };
 
   // Reguliere (locatiegebonden) keuzes
-  const visibleRegular = scene.choices
+  const regularChoices = Array.isArray(scene?.choices) ? scene.choices : [];
+  const visibleRegular = regularChoices
     .map((c, i) => ({ c, id: `cbtn-${i}`, onclick: `pickChoice(${i})` }))
     .filter(({ c }) => !c.conditionalOn || c.conditionalOn());
 
@@ -616,45 +613,30 @@ function parseChoiceIcon(text) {
   };
 }
 
-/* ─── KEUZE VERWERKEN ─────────────────────────────────────────────────────────
-   Verwerkt de keuze van de speler: past de spelstatus aan, toont zwevende
-   delta-indicators bij de statistieken, schrijft de keuze naar de geschiedenis
-   en toont de consequentietekst via de typewriter. Daarna wordt automatisch
-   naar de volgende scène gegaan.
-*/
-function pickChoice(idx) {
-  const btn = document.getElementById('cbtn-' + idx);
-  if (btn.classList.contains('picked')) return; // prevent double-picking same choice
-  if (typeof hideInventoryConsequence === 'function') hideInventoryConsequence();
+const CHOICE_STATE_ANCHORS = {
+  water: 'ss-water',
+  food: 'ss-food',
+  comfort: 'ss-comfort',
+  phoneBattery: 'batt-phone-fill',
+  cash: 'ss-cash-amount'
+};
 
-  const visibleScenes = getActiveScenes();
-  const scene = visibleScenes[currentSceneIdx];
-  const choice = scene.choices[idx];
-
-  // Check fail condition (bijv. onvoldoende cash)
-  if (choice.failCondition && choice.failCondition()) {
-    const failText = typeof choice.failConsequence === 'function'
-      ? choice.failConsequence()
-      : (choice.failConsequence || 'Je kunt deze keuze nu niet maken.');
-    switchTab('buiten');
-    const failNarrativeEl = document.getElementById('sc-narrative');
-    if (!failNarrativeEl) return;
-    failNarrativeEl.innerHTML = '';
-    const failSpan = document.createElement('span');
-    failSpan.className = 'consequence-inline';
-    failNarrativeEl.appendChild(failSpan);
-    Typewriter.run(failText, failSpan, null);
-    return; // stop hier — geen lock, geen stateChange, geen advance
+const CHOICE_STATE_OPTIONS = {
+  customHandlers: {
+    awarenessLevel(target, value) {
+      target.awarenessLevel = Math.max(target.awarenessLevel, value);
+    }
   }
+};
 
-  // Vergrendel alle keuzes zodra er één is gekozen
-  document.querySelectorAll('#sc-choices .choice-btn').forEach(b => { b.disabled = true; });
-  btn.classList.add('picked');
-  pendingChoiceMade = true;
-  if (typeof lockPhoneButton === 'function') lockPhoneButton(true);
+function resolveChoiceField(choice, key, fallback = undefined) {
+  const value = choice?.[key];
+  if (typeof value === 'function') return value();
+  return value === undefined ? fallback : value;
+}
 
-  // Snapshot state before changes for delta calculation
-  const statsBefore = {
+function snapshotChoiceStats() {
+  return {
     water: state.water,
     food: state.food,
     comfort: state.comfort,
@@ -662,161 +644,20 @@ function pickChoice(idx) {
     phoneBattery: state.phoneBattery,
     cash: state.cash
   };
+}
 
-  // Apply state changes (stateChange may be a function or object)
-  const rawSc = typeof choice.stateChange === 'function' ? choice.stateChange() : choice.stateChange;
-  const sc = rawSc || {};
-  applyStateChange(state, sc, {
-    customHandlers: {
-      awarenessLevel(target, value) {
-        target.awarenessLevel = Math.max(target.awarenessLevel, value);
-      }
-    }
-  });
-  if (state.water === 0) state.ranOutOfWater = true;
-  if (state.food === 0) state.ranOutOfFood = true;
-  renderStatusBars();
-  if (typeof renderInventory === 'function') renderInventory();
-  Ambience.resumeForScene(scene.id);
-  if (scene.id === 'na_alarm') playSmokeAlarmSound();
-  else stopSmokeAlarmSound();
-
-  // Floating stat delta indicators
-  const statAnchorMap = {
-    water: 'ss-water',
-    food: 'ss-food',
-    comfort: 'ss-comfort',
-    phoneBattery: 'batt-phone-fill',
-    cash: 'ss-cash-amount'
-  };
-  // Batch reads before writes to avoid layout thrashing
-  // Bereken alle delta's en hun schermposities voordat er iets naar de DOM wordt geschreven
-  const deltaItems = Object.keys(statsBefore).map(k => {
-    const delta = state[k] - statsBefore[k];
-    if (delta === 0) return null; // geen wijziging: geen indicator nodig
-    const anchor = document.getElementById(statAnchorMap[k]);
+function showChoiceDeltas(statsBefore) {
+  const deltaItems = Object.keys(statsBefore).map(key => {
+    const delta = state[key] - statsBefore[key];
+    if (delta === 0) return null;
+    const anchor = document.getElementById(CHOICE_STATE_ANCHORS[key]);
     if (!anchor) return null;
     return {
       delta,
-      rect: anchor.getBoundingClientRect() // lees positie eenmalig (batch read)
+      rect: anchor.getBoundingClientRect()
     };
   }).filter(Boolean);
-  deltaItems.forEach(({
-    delta,
-    rect
-  }) => {
-    const span = document.createElement('span');
-    span.className = 'stat-delta';
-    // Toon '+' voor positieve delta, '−' voor negatieve (gebruik min-teken, geen koppelteken)
-    span.textContent = (delta > 0 ? '+' : '−') + Math.abs(delta);
-    span.style.color = delta > 0 ? '#22c55e' : '#ef4444'; // groen voor winst, rood voor verlies
-    // Centreer de indicator boven het ankerelement
-    span.style.left = (rect.left + rect.width / 2 - 12) + 'px';
-    span.style.top = (rect.top - 4) + 'px';
-    document.body.appendChild(span);
-    // Verwijder de indicator na de CSS-animatieduur (1,1 seconde)
-    setTimeout(() => span.remove(), 1100);
-  });
 
-  // Record choice history
-  choiceHistory.push({
-    sceneId: scene.id,
-    time: scene.time,
-    date: scene.date,
-    dayBadge: scene.dayBadge,
-    choiceText: typeof choice.text === 'function' ? choice.text() : choice.text
-  });
-
-  // Toon consequence in 'wat je ervaart'-tab met typewriter-effect
-  const consequenceText = typeof choice.consequence === 'function' ? choice.consequence() : choice.consequence;
-  switchTab('buiten');
-  const narrativeEl = document.getElementById('sc-narrative');
-  if (!narrativeEl) return;
-  narrativeEl.innerHTML = ''; // wis de scene-tekst
-  const twSpan = document.createElement('span');
-  twSpan.className = 'consequence-inline';
-  narrativeEl.appendChild(twSpan);
-
-  // Toon de consequentie met typewriter-effect; speler klikt zelf op "Verder →" om door te gaan
-  Typewriter.run(consequenceText, twSpan, null);
-
-  // Toon bronverwijzing als de keuze een source-veld heeft
-  if (choice.source) {
-    const sourceEl = document.createElement('p');
-    sourceEl.className = 'choice-source';
-    sourceEl.innerHTML = `<a href="${choice.source.url}" target="_blank" rel="noopener noreferrer">${choice.source.text}</a>`;
-    narrativeEl.appendChild(sourceEl);
-  }
-
-  // Speel keuze-specifiek geluidseffect af indien opgegeven
-  if (choice.sound && typeof SceneEffects !== 'undefined') {
-    SceneEffects._get(choice.sound).play();
-  }
-}
-
-function pickPersistentChoice(idx) {
-  const btn = document.getElementById('pbtn-' + idx);
-  if (btn && btn.classList.contains('picked')) return;
-  if (typeof hideInventoryConsequence === 'function') hideInventoryConsequence();
-
-  const allPersistent = (typeof persistentChoices !== 'undefined') ? persistentChoices : [];
-  const choice = allPersistent[idx];
-  if (!choice) return;
-
-  const visibleScenes = getActiveScenes();
-  const scene = visibleScenes[currentSceneIdx];
-
-  if (choice.failCondition && choice.failCondition()) {
-    const failText = typeof choice.failConsequence === 'function'
-      ? choice.failConsequence()
-      : (choice.failConsequence || 'Je kunt deze keuze nu niet maken.');
-    switchTab('buiten');
-    const failNarrativeEl = document.getElementById('sc-narrative');
-    if (!failNarrativeEl) return;
-    failNarrativeEl.innerHTML = '';
-    const failSpan = document.createElement('span');
-    failSpan.className = 'consequence-inline';
-    failNarrativeEl.appendChild(failSpan);
-    Typewriter.run(failText, failSpan, null);
-    return;
-  }
-
-  document.querySelectorAll('#sc-choices .choice-btn').forEach(b => { b.disabled = true; });
-  if (btn) btn.classList.add('picked');
-  pendingChoiceMade = true;
-
-  const statsBefore = {
-    water: state.water,
-    food: state.food,
-    comfort: state.comfort,
-    health: state.health,
-    phoneBattery: state.phoneBattery,
-    cash: state.cash
-  };
-
-  const rawSc = typeof choice.stateChange === 'function' ? choice.stateChange() : choice.stateChange;
-  const sc = rawSc || {};
-  applyStateChange(state, sc);
-  if (state.water === 0) state.ranOutOfWater = true;
-  if (state.food === 0) state.ranOutOfFood = true;
-  renderStatusBars();
-  if (typeof renderInventory === 'function') renderInventory();
-  Ambience.resumeForScene(scene.id);
-
-  const statAnchorMap = {
-    water: 'ss-water',
-    food: 'ss-food',
-    comfort: 'ss-comfort',
-    phoneBattery: 'batt-phone-fill',
-    cash: 'ss-cash-amount'
-  };
-  const deltaItems = Object.keys(statsBefore).map(k => {
-    const delta = state[k] - statsBefore[k];
-    if (delta === 0) return null;
-    const anchor = document.getElementById(statAnchorMap[k]);
-    if (!anchor) return null;
-    return { delta, rect: anchor.getBoundingClientRect() };
-  }).filter(Boolean);
   deltaItems.forEach(({ delta, rect }) => {
     const span = document.createElement('span');
     span.className = 'stat-delta';
@@ -827,35 +668,114 @@ function pickPersistentChoice(idx) {
     document.body.appendChild(span);
     setTimeout(() => span.remove(), 1100);
   });
+}
 
+function renderChoiceConsequence(text, source) {
+  switchTab('buiten');
+  const narrativeEl = document.getElementById('sc-narrative');
+  if (!narrativeEl) return;
+
+  narrativeEl.innerHTML = '';
+  const twSpan = document.createElement('span');
+  twSpan.className = 'consequence-inline';
+  narrativeEl.appendChild(twSpan);
+  Typewriter.run(text || '', twSpan, null);
+
+  if (!source) return;
+  const sourceEl = document.createElement('p');
+  sourceEl.className = 'choice-source';
+  sourceEl.innerHTML = `<a href="${source.url}" target="_blank" rel="noopener noreferrer">${source.text}</a>`;
+  narrativeEl.appendChild(sourceEl);
+}
+
+function showChoiceFailure(choice) {
+  const failText = resolveChoiceField(choice, 'failConsequence', 'Je kunt deze keuze nu niet maken.');
+  renderChoiceConsequence(failText, null);
+}
+
+function lockChoiceButtons(selectedButton) {
+  document.querySelectorAll('#sc-choices .choice-btn').forEach(button => { button.disabled = true; });
+  selectedButton?.classList.add('picked');
+  pendingChoiceMade = true;
+}
+
+function recordChoiceHistory(scene, choice) {
   choiceHistory.push({
     sceneId: scene.id,
     time: scene.time,
     date: scene.date,
     dayBadge: scene.dayBadge,
-    choiceText: typeof choice.text === 'function' ? choice.text() : choice.text
+    choiceText: resolveChoiceField(choice, 'text', '')
   });
+}
 
-  const consequenceText = typeof choice.consequence === 'function' ? choice.consequence() : choice.consequence;
-  switchTab('buiten');
-  const narrativeEl = document.getElementById('sc-narrative');
-  if (!narrativeEl) return;
-  narrativeEl.innerHTML = '';
-  const twSpan = document.createElement('span');
-  twSpan.className = 'consequence-inline';
-  narrativeEl.appendChild(twSpan);
-  Typewriter.run(consequenceText, twSpan, null);
+function executeChoice(choice, {
+  button = null,
+  scene = null,
+  lockPhone = false,
+  stateOptions = CHOICE_STATE_OPTIONS
+} = {}) {
+  if (!choice || !scene) return;
+  if (button?.classList.contains('picked')) return;
+  if (typeof hideInventoryConsequence === 'function') hideInventoryConsequence();
 
-  if (choice.source) {
-    const sourceEl = document.createElement('p');
-    sourceEl.className = 'choice-source';
-    sourceEl.innerHTML = `<a href="${choice.source.url}" target="_blank" rel="noopener noreferrer">${choice.source.text}</a>`;
-    narrativeEl.appendChild(sourceEl);
+  if (choice.failCondition && choice.failCondition()) {
+    showChoiceFailure(choice);
+    return;
   }
+
+  lockChoiceButtons(button);
+  if (lockPhone && typeof lockPhoneButton === 'function') lockPhoneButton(true);
+
+  const statsBefore = snapshotChoiceStats();
+  const stateChange = resolveChoiceField(choice, 'stateChange', {}) || {};
+  applyStateChange(state, stateChange, stateOptions);
+  if (state.water === 0) state.ranOutOfWater = true;
+  if (state.food === 0) state.ranOutOfFood = true;
+
+  renderStatusBars();
+  if (typeof renderInventory === 'function') renderInventory();
+  Ambience.resumeForScene(scene.id);
+  if (scene.id === 'na_alarm') playSmokeAlarmSound();
+  else stopSmokeAlarmSound();
+
+  showChoiceDeltas(statsBefore);
+  recordChoiceHistory(scene, choice);
+  renderChoiceConsequence(resolveChoiceField(choice, 'consequence', ''), choice.source);
 
   if (choice.sound && typeof SceneEffects !== 'undefined') {
     SceneEffects._get(choice.sound).play();
   }
+}
+
+/* ─── KEUZE VERWERKEN ─────────────────────────────────────────────────────────
+   Verwerkt de keuze van de speler: past de spelstatus aan, toont zwevende
+   delta-indicators bij de statistieken, schrijft de keuze naar de geschiedenis
+   en toont de consequentietekst via de typewriter. Daarna wordt automatisch
+   naar de volgende scène gegaan.
+*/
+function pickChoice(idx) {
+  const btn = document.getElementById('cbtn-' + idx);
+  const visibleScenes = getActiveScenes();
+  const scene = visibleScenes[currentSceneIdx];
+  const choice = scene?.choices?.[idx];
+  executeChoice(choice, {
+    button: btn,
+    scene,
+    lockPhone: true
+  });
+}
+
+function pickPersistentChoice(idx) {
+  const btn = document.getElementById('pbtn-' + idx);
+  const allPersistent = (typeof persistentChoices !== 'undefined') ? persistentChoices : [];
+  const choice = allPersistent[idx];
+  const visibleScenes = getActiveScenes();
+  const scene = visibleScenes[currentSceneIdx];
+  executeChoice(choice, {
+    button: btn,
+    scene
+  });
 }
 
 /* ─── SCÈNE VOORUITGAAN ───────────────────────────────────────────────────────

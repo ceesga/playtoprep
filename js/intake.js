@@ -202,7 +202,7 @@ function renderIntake() {
     layout.style.display = 'none';
     household.style.display = 'flex';
     renderHouseholdStep();
-    document.getElementById('intake-next').disabled = false; // Altijd doorgaan mogelijk
+    document.getElementById('intake-next').disabled = getHouseholdPersonCount() === 0;
     return;
   }
 

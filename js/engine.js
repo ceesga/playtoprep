@@ -201,8 +201,10 @@ function saveGame() {
     adultsCount,
     childrenCount,
     slechtTerBeenCount,
+    ouderenCount,
     petsCount,
     selectedHouseType,
+    selectedOverigeSubType,
     selectedVehicles: [...selectedVehicles],
     selectedEnvironment: [...selectedEnvironment],
     avatarSelections: structuredClone(avatarSelections)
@@ -251,11 +253,13 @@ function loadGame() {
   newsPage = 0;
   waPage = 0;
 
-  adultsCount = d.adultsCount || 1;
-  childrenCount = d.childrenCount || 0;
-  slechtTerBeenCount = d.slechtTerBeenCount || 0;
-  petsCount = d.petsCount || 0;
-  selectedHouseType = d.selectedHouseType || null;
+  adultsCount = d.adultsCount ?? 1;
+  childrenCount = d.childrenCount ?? 0;
+  slechtTerBeenCount = d.slechtTerBeenCount ?? 0;
+  ouderenCount = d.ouderenCount ?? 0;
+  petsCount = d.petsCount ?? 0;
+  selectedHouseType = d.selectedHouseType ?? null;
+  selectedOverigeSubType = d.selectedOverigeSubType ?? null;
   selectedVehicles.splice(0, Infinity, ...(d.selectedVehicles || []));
   selectedEnvironment.splice(0, Infinity, ...(d.selectedEnvironment || []));
   if (d.avatarSelections) Object.assign(avatarSelections, d.avatarSelections);
@@ -357,13 +361,6 @@ function renderScene() {
     state.comfort = Math.max(0, state.comfort - 1);
   }
   renderStatusBars();
-
-  // Clear all unread dots en badges — only re-add below for this scene's new content
-  ['news', 'whatsapp', 'radio'].forEach(t => {
-    const tab = document.getElementById('tab-' + t);
-    if (tab) tab.classList.remove('has-unread');
-    unreadCounts[t] = 0; setBadge(t, 0);
-  });
 
   // Show/hide back button
   document.getElementById('btn-back').style.display = currentSceneIdx > 0 ? 'inline-block' : 'none';
