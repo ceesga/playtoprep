@@ -201,7 +201,8 @@ const scenes_natuurbrand = [{
     consequence: () => profile.childrenCount === 1 ? 'Je pakt je kind even apart. "Er is een brand dichtbij. We weten nog niet wat er gaat gebeuren, maar ik houd het goed in de gaten. Jij hoeft nu niets te doen." Je kind knikt. Dat helpt meer dan doen alsof er niets aan de hand is.' : 'Je neemt even vijf minuten. Jullie zitten aan tafel en je legt uit wat er aan de hand is, dat je alles goed volgt en wat er misschien gaat gebeuren. Ze luisteren serieus. Dat helpt meer dan wachten tot ze de spanning zelf voelen.',
     source: CHILD_CRISIS_SOURCE,
     stateChange: {
-      comfort: 1
+      comfort: 1,
+      kidsBriefedFire: true
     }
   }]
 }, {
@@ -276,6 +277,11 @@ const scenes_natuurbrand = [{
   },
   get narrative() {
     const een = profile.childrenCount === 1;
+    if (state.kidsBriefedFire) {
+      return een ?
+        'Je hebt eerder al uitgelegd wat er aan de hand was, maar nu de lucht echt oranje kleurt staat je kind toch weer stil bij het hek. Het kijkt naar de rookwolk aan de horizon en zoekt in jouw gezicht of het plan nog steeds hetzelfde is.' :
+        'Je hebt eerder al uitgelegd wat er aan de hand was, maar nu de lucht echt oranje kleurt staan de kinderen toch weer stil bij het hek. Ze kijken naar de rookwolk aan de horizon en zoeken in jouw gezicht of het plan nog steeds hetzelfde is.';
+    }
     return een ?
       'De lucht is al een tijd oranje. Je kind staat buiten stil bij het hek en kijkt naar de rookwolk aan de horizon. Je kind speelt niet meer en voelt dat er iets mis is.' :
       'De lucht is al een tijd oranje. De kinderen staan buiten stil bij het hek en kijken naar de rookwolk aan de horizon. Ze spelen niet meer en zeggen niets. Ze voelen dat er iets mis is.';
@@ -321,6 +327,11 @@ const scenes_natuurbrand = [{
   },
   get narrative() {
     const een = profile.childrenCount === 1;
+    if (state.kidsBriefedFire) {
+      return een ?
+        'Je kind is binnen. De rook hangt laag en je ruikt hem nu ook in huis. Het blijft dicht bij je en kijkt steeds of jij nog hetzelfde rustige plan hebt als net. Het eerdere gesprek hielp, maar nu wordt alles ineens echt.' :
+        'De kinderen zijn binnen. De rook hangt laag en je ruikt hem nu ook in huis. Ze blijven dicht bij je en kijken of jij nog hetzelfde rustige plan hebt als net. Het eerdere gesprek hielp, maar nu wordt alles ineens echt.';
+    }
     return een ?
       'Je kind is binnen. De rook hangt laag en je ruikt hem nu ook in huis. Je kind loopt stil achter je aan van kamer naar kamer. Het zegt niets en kijkt steeds naar jou.' :
       'De kinderen zijn binnen. De rook hangt laag en je ruikt hem nu ook in huis. Ze lopen stil achter je aan van kamer naar kamer. Ze zeggen weinig en kijken vooral naar jou.';
@@ -338,11 +349,23 @@ const scenes_natuurbrand = [{
     source: CHILD_CRISIS_SOURCE,
     stateChange: {}
   }, {
-    text: '💬 Stoppen en rustig uitleggen wat er aan de hand is',
-    consequence: () => profile.childrenCount === 1 ? '"Er is een natuurbrand in de buurt. We gaan zo naar een veilige plek. Jij hoeft alleen bij mij te blijven." Je kind knikt. Het weet waar het aan toe is en dat helpt meteen.' : '"Er is een natuurbrand in de buurt. We gaan zo naar een veilige plek. Jullie hoeven alleen bij mij te blijven." Ze knikken. Ze weten waar ze aan toe zijn en dat helpt meteen.',
+    text: () => state.kidsBriefedFire
+      ? '💬 Kort herhalen wat er nu gebeurt en wat jullie als eerste doen'
+      : '💬 Stoppen en rustig uitleggen wat er aan de hand is',
+    consequence: () => {
+      if (state.kidsBriefedFire) {
+        return profile.childrenCount === 1
+          ? 'Je herhaalt rustig wat je eerder al zei: er is brand in de buurt, jullie gaan zo weg en je kind hoeft alleen bij jou te blijven. Dat is geen nieuw gesprek meer, maar precies de houvast die nu nodig is.'
+          : 'Je herhaalt rustig wat je eerder al zei: er is brand in de buurt, jullie gaan zo weg en ze hoeven alleen bij jou te blijven. Dat is geen nieuw gesprek meer, maar precies de houvast die nu nodig is.';
+      }
+      return profile.childrenCount === 1
+        ? '"Er is een natuurbrand in de buurt. We gaan zo naar een veilige plek. Jij hoeft alleen bij mij te blijven." Je kind knikt. Het weet waar het aan toe is en dat helpt meteen.'
+        : '"Er is een natuurbrand in de buurt. We gaan zo naar een veilige plek. Jullie hoeven alleen bij mij te blijven." Ze knikken. Ze weten waar ze aan toe zijn en dat helpt meteen.';
+    },
     source: CHILD_CRISIS_SOURCE,
     stateChange: {
-      comfort: 1
+      comfort: 1,
+      kidsBriefedFire: true
     }
   }]
 }, {
@@ -935,7 +958,7 @@ const scenes_natuurbrand = [{
     }, {
       from: 'Buurman Kevin',
       msg: 'Mijn schuur is weg maar het huis staat er nog. Jij?',
-      time: '11:10',
+      time: '09:10',
       outgoing: false
     }],
     nlalert: null,

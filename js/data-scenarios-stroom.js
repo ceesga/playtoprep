@@ -1221,19 +1221,24 @@ const scenes_stroom = [
       stateChange: {}
     }, {
       conditionalOn: () => state.knowsNeighbors || profile.hasRadio === 'ja',
+      text: '🥫 Ga naar de voedseluitdeling om 10:00',
+      consequence: 'Je besluit om 10:00 naar de supermarkt te gaan. Je trekt je jas aan en pakt een boodschappentas.',
+      stateChange: { goingToFoodDistWed: true }
+    }, {
+      conditionalOn: () => state.knowsNeighbors || profile.hasRadio === 'ja',
       text: '🙈 Niets verwachten, ik geloof het pas als ik het zie',
       consequence: 'Je hebt te vaak "binnenkort" gehoord. Daarom houd je jezelf rustig. Beter niets verwachten dan opnieuw teleurgesteld worden.',
       stateChange: {}
     }]
   },
-  // SCENE 15 — Food distribution (conditional: player planned to go)
+  // SCENE 15 — Food distribution (conditional: player chose to go Wednesday morning)
   {
     id: 'st_13',
     time: '10:15',
     date: 'Woensdag 3 februari 2027',
     dayBadge: 'Dag 4',
     dayBadgeClass: 'green',
-    conditionalOn: () => state.wentToFoodDist === true,
+    conditionalOn: () => state.goingToFoodDistWed === true,
     channels: {
       news: [],
       whatsapp: [],

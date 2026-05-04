@@ -770,21 +770,24 @@ const scenes_thuis_komen = [{
       consequence: 'Je klopt aan bij een verlicht huis. Een man doet open. "Wat een dag met die stroomstoring. Kom binnen." Je slaapt op de bank. De volgende ochtend vertrek je fris verder.',
       stateChange: {
         foundAlternative: true,
-        comfort: 1
+        comfort: 1,
+        stayedOvernight: true
       }
     }, {
       text: '📞 Het gemeentelijke noodnummer bellen',
       consequence: () => state.phoneBattery > 0 ? 'Je belt het gemeentelijke noodnummer. Ze verwijzen je naar tijdelijke opvang in een dorpshuis 500 meter verderop. Je slaapt er op een slaapmat. Warm en veilig.' : 'Je telefoon is leeg. Je kunt niemand bereiken. Je loopt op goed geluk naar de dichtstbijzijnde plek waar nog licht brandt.',
       stateChange: () => state.phoneBattery > 0 ? {
         foundAlternative: true,
-        calledRescue: true
-      } : {}
+        calledRescue: true,
+        stayedOvernight: true
+      } : { stayedOvernight: true }
     }];
     if (state.travelMode === 'car') opts.splice(1, 0, {
       text: '🚗 Overnachten in de auto',
       consequence: 'Je vindt een zijstraat en kruipt op de achterbank. Het is koud, maar wel droog. Je trekt alles wat je bij je hebt over je heen. Je slaapt een paar uur.',
       stateChange: {
-        comfort: -1
+        comfort: -1,
+        stayedOvernight: true
       }
     });
     return opts;
@@ -795,7 +798,7 @@ const scenes_thuis_komen = [{
   date: 'Donderdag 14 januari 2027',
   dayBadge: 'Thuis',
   dayBadgeClass: 'green',
-  conditionalOn: () => !state.arriveHomeAt1743,
+  conditionalOn: () => !state.arriveHomeAt1743 && !state.stayedOvernight,
   channels: {
     news: [],
     get whatsapp() {

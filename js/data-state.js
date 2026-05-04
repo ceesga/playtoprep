@@ -169,6 +169,8 @@ const STATE_DEFAULTS = {
   kidsPickedUp: false,
   kidsArranged: false,
   kidsNoodpakket: false,
+  kidsBriefedFlood: false,
+  kidsBriefedFire: false,
   kidsKeptHome: false,
   hadEDCBag: false,
   evacuatedEarly: false,

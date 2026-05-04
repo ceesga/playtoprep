@@ -39,14 +39,20 @@ const phoneContacts_overstroming = [
   {
     name: 'Oma',
     startSceneId: 'ov_2b',
-    get label() { return profile.childrenCount === 1 ? 'Bel oma (kind ophalen)' : 'Bel oma (kinderen ophalen)'; },
+    get label() {
+      if (state.calledOma) return profile.childrenCount === 1 ? 'Oma (kind is onderweg)' : 'Oma (kinderen zijn onderweg)';
+      return profile.childrenCount === 1 ? 'Bel oma (kind ophalen)' : 'Bel oma (kinderen ophalen)';
+    },
     get consequence() {
+      if (state.calledOma) return profile.childrenCount === 1
+        ? 'Oma is al onderweg. Je kind is in goede handen.'
+        : 'Oma is al onderweg. De kinderen zijn in goede handen.';
       return profile.childrenCount === 1
         ? 'Je belt oma. Ze neemt direct op: "Ik ga er meteen heen." Ze woont dichtbij en is snel bij de school. "Maak je geen zorgen, ik zorg goed voor hem." Je hangt op met een goed gevoel.'
         : 'Je belt oma. Ze neemt direct op: "Ik ga er meteen heen." Ze woont dichtbij en is snel bij de school. "Maak je geen zorgen, ik zorg goed voor ze." Je hangt op met een goed gevoel.';
     },
-    stateChange: { kidsWithYou: false },
-    conditionalOn: () => profile.hasChildren && state.sentKidsToSchool === true && !state.evacuatedFlood && !state.kidsWithYou && state.phoneBattery > 0
+    stateChange: () => state.calledOma ? {} : { kidsWithYou: false, calledOma: true },
+    conditionalOn: () => profile.hasChildren && state.sentKidsToSchool === true && !state.evacuatedFlood && state.phoneBattery > 0
   }
 ];
 
@@ -193,7 +199,7 @@ const scenes_overstroming = [{
     stateChange: {
       kidsWithYou: true,
       kidsKeptHome: true,
-      kidsNoodpakket: true
+      kidsBriefedFlood: true
     }
   }]
 }, {
@@ -211,6 +217,11 @@ const scenes_overstroming = [{
   },
   get narrative() {
     const een = profile.childrenCount === 1;
+    if (state.kidsBriefedFlood) {
+      return een ?
+        'Je hebt net samen besproken wat jullie gaan doen. Toch volgt je kind je nu van kamer naar kamer. Nu het water echt op de stoep staat, zoekt het vooral bevestiging en wil het niet ver bij je vandaan zijn.' :
+        'Jullie hebben net samen besproken wat jullie gaan doen. Toch lopen de kinderen nu van kamer naar kamer achter je aan. Nu het water echt op de stoep staat, zoeken ze vooral bevestiging en blijven ze dicht bij je.';
+    }
     return een ?
       'Je kind loopt achter je aan van kamer naar kamer. Het zegt niets, maar volgt elke beweging. Het water staat al op de stoep. Je moet van alles doen, maar je kind weet niet goed waar het heen moet.' :
       'De kinderen lopen achter je aan van kamer naar kamer. Ze zeggen weinig en volgen elke beweging. Het water staat al op de stoep. Je moet van alles doen, maar zij weten niet goed waar ze heen moeten.';
@@ -228,11 +239,23 @@ const scenes_overstroming = [{
     source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {}
   }, {
-    text: () => profile.childrenCount === 1 ? '💬 Stoppen en rustig uitleggen wat er aan de hand is' : '💬 Stoppen en rustig uitleggen wat er aan de hand is',
-    consequence: () => profile.childrenCount === 1 ? '"Er komt veel water. We gaan straks naar een veilige plek. Jij hoeft alleen bij mij te blijven." Je kind knikt. Het weet nu beter wat er gebeurt en dat helpt meteen.' : '"Er komt veel water. We gaan straks naar een veilige plek. Jullie hoeven alleen bij mij te blijven." Ze knikken. Ze weten nu beter wat er gebeurt en dat helpt meteen.',
+    text: () => state.kidsBriefedFlood
+      ? '💬 Kort herhalen wat er nu gebeurt en wat jij van hen nodig hebt'
+      : '💬 Stoppen en rustig uitleggen wat er aan de hand is',
+    consequence: () => {
+      if (state.kidsBriefedFlood) {
+        return profile.childrenCount === 1
+          ? '"Weet je nog wat we net bespraken? Het water komt dichterbij. We gaan straks naar een veilige plek en jij blijft bij mij." Je kind knikt. De herhaling werkt: het weet weer waar het zich aan kan vasthouden.'
+          : '"Weet je nog wat we net bespraken? Het water komt dichterbij. We gaan straks naar een veilige plek en jullie blijven bij mij." Ze knikken. De herhaling werkt: ze weten weer waar ze zich aan kunnen vasthouden.';
+      }
+      return profile.childrenCount === 1
+        ? '"Er komt veel water. We gaan straks naar een veilige plek. Jij hoeft alleen bij mij te blijven." Je kind knikt. Het weet nu beter wat er gebeurt en dat helpt meteen.'
+        : '"Er komt veel water. We gaan straks naar een veilige plek. Jullie hoeven alleen bij mij te blijven." Ze knikken. Ze weten nu beter wat er gebeurt en dat helpt meteen.';
+    },
     source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
-      comfort: 1
+      comfort: 1,
+      kidsBriefedFlood: true
     }
   }]
 }, {
@@ -329,7 +352,7 @@ const scenes_overstroming = [{
     consequence: () => state.phoneBattery > 0
       ? (profile.childrenCount === 1 ? 'Je belt oma. Ze gaat direct en brengt je kind naar een veilig adres.' : 'Je belt oma. Ze gaat direct en brengt de kinderen naar een veilig adres.')
       : 'Je telefoon is leeg. Je kunt niemand bereiken om op te halen.',
-    stateChange: () => state.phoneBattery > 0 ? { kidsWithYou: false } : {}
+    stateChange: () => state.phoneBattery > 0 ? { kidsWithYou: false, calledOma: true } : {}
   }, {
     text: '⏳ Even wachten en straks tegelijk ophalen en spullen pakken',
     consequence: 'Je wacht een kwartier. Als je rijdt, staat de weg al half blank. Je komt er nog, maar het was spannend.',
@@ -358,32 +381,53 @@ const scenes_overstroming = [{
   },
   get narrative() {
     const een = profile.childrenCount === 1;
+    if (state.kidsBriefedFlood) {
+      return een
+        ? 'Je kind weet inmiddels wat er aan de hand is, maar nu het water hoog op straat staat slaat de spanning alsnog toe. Opeens blijft het stil bij het raam staan en reageert nergens meer op.'
+        : 'Jullie hebben al besproken wat er kan gebeuren, maar nu het water hoog op straat staat slaat de spanning alsnog toe. Opeens wil de jongste terugrennen naar de slaapkamer om haar knuffel te halen, terwijl de oudste stil bij het raam blijft staan en nergens op reageert.';
+    }
     return een
       ? 'Terwijl jij bezig bent met voorbereiden, volgt je kind je van kamer naar kamer. Nu staat het water hoog op straat en wordt het echt spannend. Opeens blijft het stilletjes bij het raam staan en reageert nergens meer op.'
       : 'Terwijl jij bezig bent met voorbereiden, volgen de kinderen je van kamer naar kamer. Nu staat het water hoog op straat en wordt het echt spannend. Opeens wil de jongste terugrennen naar de slaapkamer om haar knuffel te halen, omdat die anders alleen is. De oudste blijft stil bij het raam staan en reageert nergens meer op.';
   },
   choices: [{
     text: () => profile.childrenCount === 1 ? '💬 Je kind aanspreken dat verstijfd bij het raam staat' : '💬 De oudste aanspreken die verstijfd bij het raam staat',
-    consequence: () => profile.childrenCount === 1 ? 'Je knielt naast je kind en vraagt wat het ziet. "Komt ons huis vol water?" vraagt het. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.' : 'Je knielt naast hem en vraagt wat hij ziet. "Komt ons huis vol water?" vraagt hij. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.',
+    consequence: () => {
+      if (state.kidsBriefedFlood) {
+        return profile.childrenCount === 1
+          ? 'Je knielt naast je kind en vraagt wat het ziet. "Komt ons huis vol water?" vraagt het. Je herhaalt rustig wat jullie eerder bespraken en voegt toe wat er nu anders is. Langzaam komt er weer beweging in.'
+          : 'Je knielt naast hem en vraagt wat hij ziet. "Komt ons huis vol water?" vraagt hij. Je herhaalt rustig wat jullie eerder bespraken en voegt toe wat er nu anders is. Langzaam komt er weer beweging in.';
+      }
+      return profile.childrenCount === 1
+        ? 'Je knielt naast je kind en vraagt wat het ziet. "Komt ons huis vol water?" vraagt het. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.'
+        : 'Je knielt naast hem en vraagt wat hij ziet. "Komt ons huis vol water?" vraagt hij. Je legt uit wat er gebeurt. Langzaam komt er weer beweging in.';
+    },
     source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
-      phoneBattery: -5
+      phoneBattery: -5,
+      kidsBriefedFlood: true
     }
   }, {
     conditionalOn: () => profile.childrenCount > 1,
     text: '🛑 De jongste tegenhouden en uitleggen waarom ze niet terug mag',
-    consequence: 'Je legt rustig uit: "We gaan zo samen weg, maar jij mag nu niet alleen terug." Ze protesteert, maar na twee minuten geeft ze toe. Ze blijft wel onrustig.',
+    consequence: () => state.kidsBriefedFlood
+      ? 'Je herhaalt rustig wat jullie al hadden afgesproken: "We gaan zo samen weg, maar jij mag nu niet alleen terug." Ze protesteert nog even, maar zakt daarna terug. De onrust blijft, maar ze weet wel weer waar ze aan toe is.'
+      : 'Je legt rustig uit: "We gaan zo samen weg, maar jij mag nu niet alleen terug." Ze protesteert, maar na twee minuten geeft ze toe. Ze blijft wel onrustig.',
     source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
-      comfort: -1
+      comfort: -1,
+      kidsBriefedFlood: true
     }
   }, {
     conditionalOn: () => profile.childrenCount > 1,
     text: '🛑🗣️ Beide kinderen aanpakken: jongste tegenhouden én oudste aanspreken',
-    consequence: 'Je houdt de jongste stevig vast en legt uit waarom ze niet terug mag. Dan kniel je naast de oudste: "Wat zie je?" vraag je. "Komt ons huis vol water?" vraagt hij. Je legt het uit. Langzaam komen allebei tot rust.',
+    consequence: () => state.kidsBriefedFlood
+      ? 'Je houdt de jongste stevig vast en herhaalt waarom ze niet terug mag. Dan kniel je naast de oudste en voeg je aan jullie eerdere gesprek toe wat er nu verandert. Langzaam komen allebei weer in beweging.'
+      : 'Je houdt de jongste stevig vast en legt uit waarom ze niet terug mag. Dan kniel je naast de oudste: "Wat zie je?" vraag je. "Komt ons huis vol water?" vraagt hij. Je legt het uit. Langzaam komen allebei tot rust.',
     source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
-      comfort: -1
+      comfort: -1,
+      kidsBriefedFlood: true
     }
   }, {
     text: '🏃 Je kind moet het nu maar even zelf redden, elke seconde telt',
@@ -634,6 +678,11 @@ const scenes_overstroming = [{
   },
   get narrative() {
     const een = profile.childrenCount === 1;
+    if (state.kidsBriefedFlood) {
+      return een ?
+        'Je klimt de trap op. Je kind weet inmiddels wat er aan de hand is, maar nu het water echt onder de voordeur door sijpelt stokt het halverwege alsnog. "Gaat ons huis kapot?" vraagt het. Het zoekt naar dezelfde zekerheid als eerder.' :
+        'Je klimt de trap op met de kinderen. Ze weten inmiddels wat er aan de hand is, maar nu het water echt onder de voordeur door sijpelt stokt het toch. De jongste wil terug voor haar tekeningen en de oudste vraagt zacht of het huis kapotgaat. Ze zoeken opnieuw naar houvast.';
+    }
     return een ?
       'Je klimt de trap op. Je kind loopt mee maar halverwege stopt het. Het kijkt naar de benedenverdieping: het water sijpelt al onder de voordeur door. "Gaat ons huis kapot?" vraagt het. Het staat stil. Bevroren.' :
       'Je klimt de trap op met de kinderen. De jongste stopt halverwege en wil terug: haar tekeningen liggen nog op de keukentafel. De oudste staat boven al stil bij het raam en reageert nergens meer op. "Gaat ons huis kapot?" vraagt hij zacht.';
@@ -656,7 +705,8 @@ const scenes_overstroming = [{
     consequence: () => profile.childrenCount === 1 ? 'Je kind kijkt je aan. Even is het stil. Daarna loopt het weer mee de trap op. Het weet nu beter wat er gebeurt.' : 'De oudste knikt langzaam en loopt mee. De jongste ziet dat en volgt vanzelf. Ze weten nu beter wat er gebeurt.',
     source: FLOOD_CHILD_CRISIS_SOURCE,
     stateChange: {
-      comfort: 1
+      comfort: 1,
+      kidsBriefedFlood: true
     }
   }]
 }, {
@@ -761,6 +811,10 @@ const scenes_overstroming = [{
       return een ?
         'Je kind heeft zijn rugzakje opengemaakt en speelt rustig. Af en toe vraagt het wanneer de boot komt, maar daarna gaat het weer verder. Je merkt dat het zichzelf beter bezighoudt dan je had gedacht.' :
         'De jongste heeft haar rugzakje opengemaakt en speelt rustig. De oudste leest. Ze stellen af en toe een vraag, maar houden zichzelf bezig. Voorbereiding is zichtbaar.';
+    } else if (state.kidsBriefedFlood) {
+      return een ?
+        'Je kind vraagt nog steeds wanneer de boot komt, maar niet meer in paniek. Af en toe herhaalt het hardop wat jullie eerder bespraken: boven blijven, samen wachten, samen weg. De spanning is er nog, maar er zit meer houvast in.' :
+        'De jongste vraagt nog steeds wanneer de boot komt, maar minder paniekerig dan eerder. De oudste herhaalt zacht wat jullie al bespraken: boven blijven, samen wachten, samen weg. De spanning is er nog, maar er zit meer houvast in.';
     } else {
       return een ?
         'Je kind vraagt al twee uur elke tien minuten hetzelfde: "Wanneer gaan we weg?" Het loopt heen en weer over de slaapkamervloer. Je merkt dat de onrust groeit naarmate er niets te doen is.' :
@@ -787,6 +841,8 @@ const scenes_overstroming = [{
     consequence: () => {
       if (state.kidsNoodpakket) {
         return profile.childrenCount === 1 ? 'Je kind speelt rustig. Jij houdt buiten alles in de gaten. Dat werkt vooral omdat het iets heeft om mee te spelen.' : 'De kinderen spelen rustig. Jij houdt buiten alles in de gaten. Dat werkt vooral omdat ze iets hebben om mee te spelen.';
+      } else if (state.kidsBriefedFlood) {
+        return profile.childrenCount === 1 ? 'Je kind blijft dicht bij je en stelt af en toe dezelfde vraag, maar zonder paniek. Het redt zich omdat het weet wat jullie aan het doen zijn.' : 'De kinderen blijven dicht bij je. Ze stellen nog vragen, maar niet meer in paniek. Dat werkt vooral omdat ze weten wat jullie aan het doen zijn.';
       } else {
         return profile.childrenCount === 1 ? 'Je kind loopt onrustig heen en weer. De verveling en spanning wisselen elkaar af. Wachten wordt steeds moeilijker.' : 'De jongste begint te huilen van verveling en spanning. De oudste vraagt steeds opnieuw wanneer jullie weggaan. Zonder afleiding wordt wachten veel zwaarder.';
       }
@@ -1203,7 +1259,7 @@ const scenes_overstroming = [{
       headline: 'Water zakt, terugkeer geëvacueerde gebieden mogelijk',
       body: 'Het waterpeil daalt snel. Bewoners van geëvacueerde gebieden mogen terugkeren voor een eerste inspectie, maar overnachten wordt afgeraden vanwege gas- en elektrarisico\'s.'
     }, {
-      time: '10:00',
+      time: '07:50',
       headline: 'Waterschade woningen: gas en elektra eerst laten controleren',
       body: 'Experts waarschuwen dat gas en elektra in overstroomde woningen absoluut eerst door een professional gecontroleerd moeten worden voor gebruik.'
     }],
