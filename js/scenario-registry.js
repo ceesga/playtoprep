@@ -10,6 +10,8 @@ const DEFAULT_SCENE_BACKGROUND = 'afbeelding/algemeen/huis_normaal.webp';
 const FIRE_OVERLAY_BY_SCENE = {
   bf_2: 0.30,
   bf_2b: 0.35,
+  bf_2c: 0.35,
+  bf_2d: 0.35,
   bf_3: 0.40,
   bf_3c: 0.45,
   bf_4: 0.50,
@@ -24,7 +26,6 @@ const RAIN_OVERLAY_BY_SCENE = {
   ov_2: 0.35,
   ov_2b: 0.35,
   ov_3: 0.45,
-  ov_4b: 0.50,
   ov_4b: 0.50,
   ov_5: 0.55,
   ov_5b: 0.55,
@@ -147,7 +148,7 @@ const SCENARIO_REGISTRY = {
     visuals: {
       imageMap: sceneImages_thuis_komen,
       imageMapFn(sceneId) {
-        const isApartment = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+        const isApartment = isApartmentHouse();
         if ((sceneId === 'tk_5c' || sceneId === 'tk_6') && isApartment) {
           return 'afbeelding/stroomstoring/appartement_winter_1.webp';
         }
@@ -201,7 +202,7 @@ const SCENARIO_REGISTRY = {
       imageMap: sceneImages_nachtalarm,
       darknessOverride: DARKNESS_OVERRIDE_BY_SCENE,
       imageMapFn(sceneId) {
-        const isApartment = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+        const isApartment = isApartmentHouse();
         if (sceneId === 'na_4') {
           return isApartment
             ? 'afbeelding/brandalarm/appartement_zomer_nacht.webp'

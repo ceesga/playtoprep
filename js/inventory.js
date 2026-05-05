@@ -18,9 +18,6 @@ function prepYes(value) {
   return value === 'ja';
 }
 
-function prepPresent(value) {
-  return value === 'ja';
-}
 
 function getInventoryScene() {
   if (typeof getActiveScenes !== 'function') return null;
@@ -86,7 +83,7 @@ function ensureInventoryState() {
   });
 
   // Scenario-keuzes kunnen later alsnog een zaklamp of autoradio opleveren.
-  if (state.hasFlashlight && !prepPresent(profile.hasFlashlight) && !state.inventory.flashlight.used) {
+  if (state.hasFlashlight && !prepYes(profile.hasFlashlight) && !state.inventory.flashlight.used) {
     state.inventory.flashlight.empty = false;
   }
   if (state.hasCarRadio) {
@@ -101,7 +98,7 @@ function inventoryRuntime(id) {
 }
 
 function hasWorkingFlashlight() {
-  return (prepPresent(profile.hasFlashlight) || state.hasFlashlight)
+  return (prepYes(profile.hasFlashlight) || state.hasFlashlight)
     && !inventoryRuntime('flashlight').empty;
 }
 
@@ -113,7 +110,7 @@ function useFlashlightCharge() {
 
 function getRadioAvailableInContext(ctx) {
   return ctx.isHomeScenario
-    ? prepPresent(profile.hasRadio)
+    ? prepYes(profile.hasRadio)
     : !!state.hasCarRadio;
 }
 
@@ -215,7 +212,7 @@ const INVENTORY_ITEMS = [
     label: 'Zaklamp',
     icon: 'flashlight',
     group: 'bag',
-    isVisible: ctx => ctx.isHomeScenario && (prepPresent(profile.hasFlashlight) || state.hasFlashlight),
+    isVisible: ctx => ctx.isHomeScenario && (prepYes(profile.hasFlashlight) || state.hasFlashlight),
     getStatus() {
       const runtime = inventoryRuntime('flashlight');
       if (runtime.empty) return 'Leeg';
@@ -466,7 +463,7 @@ const INVENTORY_ITEMS = [
     label: 'Powerbank',
     icon: 'smartphone-charging',
     group: 'noodpakket',
-    isVisible: () => prepPresent(profile.hasPowerbank),
+    isVisible: () => prepYes(profile.hasPowerbank),
     getStatus() {
       return inventoryRuntime('powerbank').empty ? 'Leeg' : '';
     },
@@ -481,7 +478,7 @@ const INVENTORY_ITEMS = [
       const phoneDelta = Math.min(100, state.phoneBattery + 30) - state.phoneBattery;
       const flashlightRuntime = inventoryRuntime('flashlight');
       const canRechargeFlashlight = ctx.isHomeScenario
-        && (prepPresent(profile.hasFlashlight) || state.hasFlashlight)
+        && (prepYes(profile.hasFlashlight) || state.hasFlashlight)
         && flashlightRuntime.empty;
       if (phoneDelta === 0 && !canRechargeFlashlight) {
         return { consequence: 'Je powerbank heeft nu niets om op te laden.' };

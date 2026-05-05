@@ -311,7 +311,7 @@ function renderScene() {
   Typewriter.cancel();
   pendingChoiceMade = false; // reset bij elke nieuwe scène
   if (typeof lockPhoneButton === 'function') lockPhoneButton(false);
-  var _phoneArea = document.getElementById('phone-consequence-area');
+  const _phoneArea = document.getElementById('phone-consequence-area');
   if (_phoneArea) _phoneArea.innerHTML = '';
   // Annuleer timers van de vorige scène
   if (_badgeMarkTimer) { clearTimeout(_badgeMarkTimer); _badgeMarkTimer = null; }
@@ -333,9 +333,9 @@ function renderScene() {
     return;
   }
 
-  var _hideHUD = !!(scene.hideHUD);
-  var _elPhone = document.getElementById('scenario-phone');
-  var _elInventory = document.getElementById('scenario-inventory');
+  const _hideHUD = !!(scene.hideHUD);
+  const _elPhone = document.getElementById('scenario-phone');
+  const _elInventory = document.getElementById('scenario-inventory');
   if (_elPhone) _elPhone.hidden = _hideHUD;
   if (_elInventory) _elInventory.hidden = _hideHUD;
 

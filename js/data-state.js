@@ -246,11 +246,12 @@ function buildScenarioStartState(scenarioId) {
   nextState.hasCash = hasPrepCash;
   nextState.hasFlashlight = hasPrepFlashlight;
   nextState.hasWater = hasPrepWater;
+  nextState.hasExtraFood = hasPrepKit;
   nextState.packedBag = profile.hasBOBBag === 'ja';
   nextState.travelMode = profile.commuteMode || 'car';
   nextState.hadEDCBag = hasEDCBag;
   nextState.water = 1 + (hasPrepWater ? 3 : 0);
-  nextState.food = 2 + ((hasPrepKit || profile.hasExtraFood) ? 3 : 0);
+  nextState.food = 2 + (hasPrepKit ? 3 : 0);
   nextState.cash = 20 + homeCash + (hasEDCBag ? 100 : 0);
   nextState.powerbank = profile.hasPowerbank === 'ja' ? 5 : 0;
   nextState.phoneBattery = 80;
@@ -433,11 +434,8 @@ const sceneDecay_thuis_komen = {
     phoneBattery: -25
   }, // +4.5h→20:00
   tk_6: {
-    phoneBattery: -10
-  }, // +2h naar 18:00 pad
-  tk_6: {
     phoneBattery: -15
-  } // +3h avond
+  } // +5.5h → 21:00
 };
 const sceneDecay_drinkwater = {
   // phoneBattery: start 13:10, scenario duurt ~7 uur
@@ -452,6 +450,10 @@ const sceneDecay_drinkwater = {
 const sceneDecay_nachtalarm = {
   // Scenario duurt ~30 min — batterijafname verwaarloosbaar (<5% per uur)
 };
+
+function isApartmentHouse() {
+  return profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+}
 
 // ─── PERSISTENT CHANNEL CONTENT ───────────────────────────────────────────────
 const channels = {

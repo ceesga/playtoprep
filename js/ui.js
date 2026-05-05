@@ -134,10 +134,6 @@ let portraitSnapshot = null;
    het bijbehorende alarmgeluid af.
 ─────────────────────────────────────────────────────────────── */
 
-// Slaat het element op dat focus had vóór het openen van het overlay,
-// zodat we daar na het sluiten naartoe kunnen terugkeren.
-let _alertReturnFocus = null;
-
 // Toont het NL-Alert overlay met de opgegeven tekst en speelt het alarmgeluid af.
 // De tekst wordt opgesplitst: regel 0 = titel, regel 1 = tijdstip, rest = berichttekst.
 function triggerAlert(text) {
@@ -154,27 +150,12 @@ function triggerAlert(text) {
   const fullText = 'NL-Alert ' + timeLine + '\n' + bodyLines.join('\n').trim();
   document.getElementById('overlay-text').textContent = fullText;
 
-  // Sla het huidige focuselement op voor herstel na sluiten
-  _alertReturnFocus = document.activeElement;
-  overlay.classList.add('show'); // maak het overlay zichtbaar
-  trapFocus(overlay);
-
-  // Verplaats focus naar de sluitknop zodra het overlay is gerenderd
-  requestAnimationFrame(() => {
-    const closeBtn = document.getElementById('nl-alert-close-btn');
-    if (closeBtn) closeBtn.focus();
-  });
+  _openModal(overlay, 'show', '#nl-alert-close-btn');
 }
 
 // Sluit het NL-Alert overlay en geeft focus terug aan het vorige element.
 function closeAlert() {
-  const overlay = document.getElementById('nl-alert-overlay');
-  releaseFocusTrap(overlay);
-  overlay.classList.remove('show');
-  if (_alertReturnFocus) {
-    _alertReturnFocus.focus();
-    _alertReturnFocus = null; // reset zodat we geen verwijzing bewaren na gebruik
-  }
+  _closeModal(document.getElementById('nl-alert-overlay'), 'show');
 }
 
 /* ───────────────────────────────────────────────────────────────
@@ -187,7 +168,7 @@ function closeAlert() {
 let _helpMode = 'scenario';
 
 // Slaat de laatste gefocuste element op voor focus-herstel bij sluiten
-let _lastFocusBeforeModal = null;
+let _modalReturnFocus = null;
 
 // Vangt tabulator-navigatie op binnen een modaal element zodat de focus
 // niet buiten het modal kan geraken (toegankelijkheidsvereiste).
@@ -224,39 +205,40 @@ function releaseFocusTrap(modalEl) {
   }
 }
 
+
+function _openModal(el, openClass, focusQuery) {
+  _modalReturnFocus = document.activeElement;
+  el.classList.add(openClass);
+  trapFocus(el);
+  requestAnimationFrame(() => (focusQuery ? el.querySelector(focusQuery) : null)?.focus());
+}
+
+function _closeModal(el, openClass) {
+  releaseFocusTrap(el);
+  el.classList.remove(openClass);
+  _modalReturnFocus?.focus();
+  _modalReturnFocus = null;
+}
+
 // Opent het helpoverlay in de opgegeven modus ('scenario' of 'setup').
 // Slaat de huidige focus op, toont pagina 1 en activeert de focus-trap.
 function openHelp(mode) {
   _helpMode = mode || 'scenario';
-  _lastFocusBeforeModal = document.activeElement; // bewaar focus voor herstel bij sluiten
-  helpPage(1); // start altijd op de eerste pagina
-  const helpOverlay = document.getElementById('help-overlay');
-  helpOverlay.classList.add('show');
-  trapFocus(helpOverlay); // zet de focus-trap aan binnen dit overlay
-  document.getElementById('help-next').focus(); // zet focus op de Volgende-knop
+  helpPage(1);
+  _openModal(document.getElementById('help-overlay'), 'show', '#help-next');
 }
 
 // Sluit het helpoverlay en herstelt de focus naar het vorige element.
 function closeHelp() {
-  const overlay = document.getElementById('help-overlay');
-  releaseFocusTrap(overlay);
-  overlay.classList.remove('show');
-  if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
+  _closeModal(document.getElementById('help-overlay'), 'show');
 }
 
 function openTerms() {
-  _lastFocusBeforeModal = document.activeElement;
-  const overlay = document.getElementById('terms-overlay');
-  overlay.classList.add('open');
-  trapFocus(overlay);
-  requestAnimationFrame(() => overlay.querySelector('.help-close-x')?.focus());
+  _openModal(document.getElementById('terms-overlay'), 'open', '.help-close-x');
 }
 
 function closeTerms() {
-  const overlay = document.getElementById('terms-overlay');
-  releaseFocusTrap(overlay);
-  overlay.classList.remove('open');
-  if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
+  _closeModal(document.getElementById('terms-overlay'), 'open');
 }
 
 // Toont de juiste pagina in het helpoverlay.
@@ -293,8 +275,6 @@ function openHouseholdPortrait() {
   const stage = document.getElementById('hh-portrait-stage');
   if (!stage) return;
 
-  _lastFocusBeforeModal = document.activeElement; // bewaar focus voor herstel bij sluiten
-
   if (portraitSnapshot) {
     // Toon de canvas-snapshot die aan het einde van intake is gemaakt
     stage.innerHTML = `<img src="${portraitSnapshot}" class="hh-portrait-snapshot" alt="Jouw huishouden">`;
@@ -317,18 +297,12 @@ function openHouseholdPortrait() {
       <div class="hh-pet-overlay">${petOverlay}</div>`;
   }
 
-  const hhPopup = document.getElementById('household-popup');
-  hhPopup.classList.add('show'); // maak het popup zichtbaar
-  trapFocus(hhPopup);            // zet de focus-trap aan
-  document.querySelector('#household-popup .help-close-x').focus(); // focus de sluitknop
+  _openModal(document.getElementById('household-popup'), 'show', '.help-close-x');
 }
 
 // Sluit het huishoudportret-popup en herstelt de focus.
 function closeHouseholdPortrait() {
-  const popup = document.getElementById('household-popup');
-  releaseFocusTrap(popup);
-  popup.classList.remove('show');
-  if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
+  _closeModal(document.getElementById('household-popup'), 'show');
 }
 
 // Sluit het popup als de gebruiker buiten de inhoud klikt (op de overlay-achtergrond).
@@ -340,6 +314,18 @@ document.getElementById('household-popup').addEventListener('click', function(e)
    UTILITIES
    Algemene UI-hulpfuncties voor schermnavigatie.
 ─────────────────────────────────────────────────────────────── */
+
+const _SCREEN_CFG = {
+  's-login':         { hideInv: true,  hideMenu: true,  hideClock: false, sidebar: false },
+  's-start':         { hideInv: true,  hideMenu: true,  hideClock: false, sidebar: false },
+  's-uitleg':        { hideInv: true,  hideMenu: true,  hideClock: true,  sidebar: false },
+  's-intake':        { hideInv: true,  hideMenu: true,  hideClock: false, sidebar: false },
+  's-prep':          { hideInv: false, hideMenu: false, hideClock: false, sidebar: true  },
+  's-scenariokeuze': { hideInv: false, hideMenu: false, hideClock: false, sidebar: true  },
+  's-commute':       { hideInv: false, hideMenu: false, hideClock: false, sidebar: true  },
+  's-scenario':      { hideInv: false, hideMenu: true,  hideClock: true,  sidebar: true  },
+  's-report':        { hideInv: true,  hideMenu: true,  hideClock: true,  sidebar: false },
+};
 
 // Wisselt het actieve scherm naar het scherm met het opgegeven ID.
 // Verbergt alle andere schermen, past de sidebar-zichtbaarheid aan,
@@ -359,24 +345,17 @@ function show(id) {
     card.classList.toggle('start-active', id === 's-start' || id === 's-login');
   }
 
-  // Rugzakknop verborgen op startpagina, uitleg, intake en rapportpagina
+  const cfg = _SCREEN_CFG[id] || {};
+  const showSidebar = !!cfg.sidebar;
+
   const invToggle = document.getElementById('scenario-inventory');
-  if (invToggle) {
-    const hideInv = ['s-login','s-start','s-uitleg','s-intake','s-report'].includes(id);
-    if (hideInv) { invToggle.setAttribute('hidden', ''); }
-    else { invToggle.removeAttribute('hidden'); }
-  }
+  if (invToggle) invToggle.toggleAttribute('hidden', !!cfg.hideInv);
 
-  // Hamburgerknop verborgen op startpagina
   const globalMenuBtn = document.getElementById('global-menu-btn');
-  if (globalMenuBtn) globalMenuBtn.style.display = ['s-login','s-start','s-uitleg','s-intake','s-scenario','s-report'].includes(id) ? 'none' : 'flex';
+  if (globalMenuBtn) globalMenuBtn.style.display = cfg.hideMenu ? 'none' : 'flex';
 
-  // Globale klok: verborgen op startpagina, scenario en rapportpagina
   const globalClock = document.getElementById('global-clock');
-  if (globalClock) globalClock.style.display = (id === 's-uitleg' || id === 's-scenario' || id === 's-report') ? 'none' : '';
-
-  // Sidebar: toon op prep en tussenliggende schermen, niet op rapport
-  const showSidebar = ['s-prep','s-scenariokeuze','s-commute','s-scenario'].includes(id);
+  if (globalClock) globalClock.style.display = cfg.hideClock ? 'none' : '';
   const sidebar = document.getElementById('status-sidebar');
   if (sidebar) sidebar.classList.toggle('visible', showSidebar);
   const cashBox = document.getElementById('ss-cash-box');
@@ -427,7 +406,7 @@ function show(id) {
   // Achtergrondafbeelding wisselen per scherm
   const layerA = document.getElementById('bg-layer-a');
   if (layerA && id !== 's-scenario') {
-    const isApartment = profile.houseType === 'hoogbouw' || profile.houseType === 'laagbouw';
+    const isApartment = isApartmentHouse();
     let bgUrl = isApartment
       ? 'afbeelding/algemeen/appartement_zomer.webp'
       : 'afbeelding/algemeen/huis_normaal.webp';
@@ -537,22 +516,16 @@ document.addEventListener('keydown', function(e) {
 function openGearMenu() {
   const menu = document.getElementById('gear-menu');
   if (!menu) return;
-  _lastFocusBeforeModal = document.activeElement;
-  checkSave(); // laad-info bijwerken voordat het menu zichtbaar wordt
-  gearPage(0); // begin altijd op de hoofdpagina van het menu
-  menu.classList.add('show');
-  trapFocus(menu);
-  // Zet focus op de sluitknop zodra het menu is gerenderd
-  requestAnimationFrame(() => document.querySelector('.help-close-x', menu)?.focus());
+  checkSave();
+  gearPage(0);
+  _openModal(menu, 'show', '.help-close-x');
 }
 
 // Sluit het tandwielmenu en herstelt de focus naar het vorige element.
 function closeGearMenu() {
   const menu = document.getElementById('gear-menu');
   if (!menu) return;
-  releaseFocusTrap(menu);
-  menu.classList.remove('show');
-  if (_lastFocusBeforeModal) { _lastFocusBeforeModal.focus(); _lastFocusBeforeModal = null; }
+  _closeModal(menu, 'show');
 }
 
 // Wisselt de zichtbare subpagina van het tandwielmenu (0 = hoofd, 1 = opslaan, 2 = laden).
@@ -628,11 +601,6 @@ function saveProfile() {
 // Controleert of er een opgeslagen sessie beschikbaar is en werkt
 // de "Spel laden"-knop in het startmenu bij.
 function checkSave() {
-  const scenarioNames = {
-    stroom: 'Stroomstoring', natuurbrand: 'Bosbrand', overstroming: 'Overstroming',
-    thuis_komen: 'Thuiskomen', drinkwater: 'Drinkwater', nachtalarm: 'Nachtalarm'
-  };
-
   // Vorige opslag laden
   const saveBtn      = document.getElementById('start-savegame-btn');
   const saveInfo     = document.getElementById('start-load-info');
@@ -652,7 +620,7 @@ function checkSave() {
       const timeStr = min < 1   ? 'zojuist'
                     : min < 60  ? `${min} min geleden`
                     :             `${Math.round(min / 60)} uur geleden`;
-      const scenarioLabel = `${scenarioNames[d.currentScenario] || d.currentScenario} — ${timeStr}`;
+      const scenarioLabel = `${getScenarioConfig(d.currentScenario).label} — ${timeStr}`;
       if (saveInfo)     saveInfo.textContent = scenarioLabel;
       if (saveBtn)      saveBtn.disabled = false;
       if (gearLoadInfo) gearLoadInfo.textContent = scenarioLabel;
@@ -703,24 +671,12 @@ function checkSave() {
 
 // ─── OVER GOED VOORBEREID ─────────────────────────────────────────────────────
 
-let _overReturnFocus = null;
-
 function openOver() {
-  _overReturnFocus = document.activeElement;
-  const overlay = document.getElementById('over-overlay');
-  overlay.classList.add('open');
-  trapFocus(overlay);
-  requestAnimationFrame(() => overlay.querySelector('.help-close-x')?.focus());
+  _openModal(document.getElementById('over-overlay'), 'open', '.help-close-x');
 }
 
 function closeOver() {
-  const overlay = document.getElementById('over-overlay');
-  releaseFocusTrap(overlay);
-  overlay.classList.remove('open');
-  if (_overReturnFocus) {
-    _overReturnFocus.focus();
-    _overReturnFocus = null;
-  }
+  _closeModal(document.getElementById('over-overlay'), 'open');
 }
 
 /* ─── SCENARIO-KEUZE RENDERER ─────────────────────────────────────────────────
